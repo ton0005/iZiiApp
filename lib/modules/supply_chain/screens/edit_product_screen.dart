@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../bloc/inventory_bloc.dart';
+import 'barcode_scanner_screen.dart';
 
 class EditProductScreen extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -14,6 +15,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   late TextEditingController _nameController;
   late TextEditingController _priceController;
   late TextEditingController _stockController;
+  late TextEditingController _barcodeController;
 
   // Custom field controllers
   late TextEditingController _descController;
@@ -35,6 +37,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _nameController = TextEditingController(text: widget.product['name']);
     _priceController = TextEditingController(text: widget.product['price'].toString());
     _stockController = TextEditingController(text: widget.product['stock'].toString());
+    _barcodeController = TextEditingController(text: widget.product['barcode']?.toString() ?? '');
 
     // Load custom fields
     final customFields = widget.product['custom_fields'] as Map<String, dynamic>? ?? {};
@@ -56,6 +59,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _nameController.dispose();
     _priceController.dispose();
     _stockController.dispose();
+    _barcodeController.dispose();
     _descController.dispose();
     _categoryController.dispose();
     _brandController.dispose();
@@ -115,6 +119,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       'name': _nameController.text,
       'price': price,
       'stock': stock,
+      'barcode': _barcodeController.text.isNotEmpty ? _barcodeController.text : null,
       'custom_fields': customFields,
     };
 
@@ -164,6 +169,27 @@ class _EditProductScreenState extends State<EditProductScreen> {
             _buildSectionHeader('Thông tin cơ bản'),
             const SizedBox(height: 12),
             _buildTextField(_nameController, 'Tên sản phẩm', Icons.label_outline),
+            _buildTextField(
+              _barcodeController,
+              'Mã vạch / QR Code',
+              Icons.qr_code,
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.qr_code_scanner, color: Color(0xFF6366F1)),
+                tooltip: 'Quét mã vạch/QR',
+                onPressed: () async {
+                  final scannedCode = await Navigator.of(context).push<String>(
+                    MaterialPageRoute(
+                      builder: (_) => const BarcodeScannerScreen(returnCode: true),
+                    ),
+                  );
+                  if (scannedCode != null && scannedCode.isNotEmpty) {
+                    setState(() {
+                      _barcodeController.text = scannedCode;
+                    });
+                  }
+                },
+              ),
+            ),
             _buildTextField(_priceController, 'Giá (VNĐ)', Icons.attach_money, keyboardType: TextInputType.number),
             _buildTextField(_stockController, 'Số lượng tồn kho', Icons.inventory, keyboardType: TextInputType.number),
 
@@ -270,6 +296,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     IconData icon, {
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
+    Widget? suffixIcon,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -280,6 +307,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, size: 20),
+          suffixIcon: suffixIcon,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

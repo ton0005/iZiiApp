@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:drift/drift.dart' as drift;
@@ -14,32 +13,58 @@ abstract class CrmEvent extends Equatable {
 
 class LoadLeadsEvent extends CrmEvent {}
 
+class LoadDealsEvent extends CrmEvent {}
+
+class UpdateDealStageEvent extends CrmEvent {
+  final String dealId;
+  final String newStage;
+
+  const UpdateDealStageEvent(this.dealId, this.newStage);
+
+  @override
+  List<Object?> get props => [dealId, newStage];
+}
+
+class UpdateLeadStatusEvent extends CrmEvent {
+  final String leadId;
+  final String newStatus;
+
+  const UpdateLeadStatusEvent(this.leadId, this.newStatus);
+
+  @override
+  List<Object?> get props => [leadId, newStatus];
+}
+
 // State
 class CrmState extends Equatable {
   final bool isLoading;
-  final List<dynamic> leads; // Sử dụng Model cụ thể sau
+  final List<dynamic> leads;
+  final List<Map<String, dynamic>> deals;
   final String? error;
 
   const CrmState({
     this.isLoading = false,
     this.leads = const [],
+    this.deals = const [],
     this.error,
   });
 
   CrmState copyWith({
     bool? isLoading,
     List<dynamic>? leads,
+    List<Map<String, dynamic>>? deals,
     String? error,
   }) {
     return CrmState(
       isLoading: isLoading ?? this.isLoading,
       leads: leads ?? this.leads,
+      deals: deals ?? this.deals,
       error: error ?? this.error,
     );
   }
 
   @override
-  List<Object?> get props => [isLoading, leads, error];
+  List<Object?> get props => [isLoading, leads, deals, error];
 }
 
 class CrmRepository {
@@ -55,9 +80,7 @@ class CrmRepository {
       if (decoded is Map) {
         return decoded.map((key, value) => MapEntry(key.toString(), value));
       }
-    } catch (_) {
-      // Ignore invalid older payloads so the CRM screen still loads.
-    }
+    } catch (_) {}
     return {};
   }
 
@@ -72,8 +95,6 @@ class CrmRepository {
 
   Future<List<Map<String, dynamic>>> getLeads() async {
     final leads = await _db.select(_db.leads).get();
-
-    // Sort leads to simulate insertion order (newest first)
     final sortedLeads = List.from(leads)
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
@@ -82,13 +103,38 @@ class CrmRepository {
               'id': l.id,
               'title': l.title,
               'status': l.status,
-              'name': l.notes ??
-                  'Không tên', // Map name to notes for UI compatibility
+              'name': l.notes ?? 'Không tên',
               'expected_revenue': l.expectedRevenue,
               'custom_fields': _decodeCustomFields(l.customFields),
               'created_at': l.createdAt.toIso8601String(),
             })
         .toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getDeals() async {
+    final query = _db.select(_db.deals).join([
+      drift.leftOuterJoin(_db.contacts, _db.contacts.id.equalsExp(_db.deals.contactId)),
+      drift.leftOuterJoin(_db.leads, _db.leads.id.equalsExp(_db.deals.leadId)),
+    ]);
+
+    final rows = await query.get();
+    return rows.map((row) {
+      final deal = row.readTable(_db.deals);
+      final contact = row.readTableOrNull(_db.contacts);
+      final lead = row.readTableOrNull(_db.leads);
+
+      return {
+        'id': deal.id,
+        'title': deal.title,
+        'amount': deal.amount,
+        'stage': deal.stage,
+        'expected_close_date': deal.expectedCloseDate?.toIso8601String(),
+        'created_at': deal.createdAt.toIso8601String(),
+        'contact_name': contact?.name ?? 'Không rõ liên hệ',
+        'contact_phone': contact?.phone,
+        'lead_title': lead?.title,
+      };
+    }).toList();
   }
 
   Future<void> addLead(Map<String, dynamic> lead) async {
@@ -117,6 +163,18 @@ class CrmRepository {
           notes: drift.Value(leadMap['name']),
           customFields: _encodeCustomFields(leadMap['custom_fields']),
         ));
+  }
+
+  Future<void> updateLeadStatus(String leadId, String newStatus) async {
+    final leads = await _db.select(_db.leads).get();
+    final lead = leads.firstWhere((l) => l.id == leadId);
+    await _db.update(_db.leads).replace(lead.copyWith(status: newStatus));
+  }
+
+  Future<void> updateDealStage(String dealId, String newStage) async {
+    final deals = await _db.select(_db.deals).get();
+    final deal = deals.firstWhere((d) => d.id == dealId);
+    await _db.update(_db.deals).replace(deal.copyWith(stage: newStage));
   }
 
   Future<bool> updateLead(
@@ -167,6 +225,39 @@ class CrmBloc extends Bloc<CrmEvent, CrmState> {
         ));
       } catch (e) {
         emit(state.copyWith(isLoading: false, error: e.toString()));
+      }
+    });
+
+    on<LoadDealsEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      try {
+        final deals = await CrmRepository().getDeals();
+        emit(state.copyWith(
+          isLoading: false,
+          deals: deals,
+        ));
+      } catch (e) {
+        emit(state.copyWith(isLoading: false, error: e.toString()));
+      }
+    });
+
+    on<UpdateDealStageEvent>((event, emit) async {
+      try {
+        await CrmRepository().updateDealStage(event.dealId, event.newStage);
+        final deals = await CrmRepository().getDeals();
+        emit(state.copyWith(deals: deals));
+      } catch (e) {
+        emit(state.copyWith(error: e.toString()));
+      }
+    });
+
+    on<UpdateLeadStatusEvent>((event, emit) async {
+      try {
+        await CrmRepository().updateLeadStatus(event.leadId, event.newStatus);
+        final leads = await CrmRepository().getLeads();
+        emit(state.copyWith(leads: leads));
+      } catch (e) {
+        emit(state.copyWith(error: e.toString()));
       }
     });
   }

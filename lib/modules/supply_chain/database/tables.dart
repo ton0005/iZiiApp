@@ -6,7 +6,10 @@ class Products extends Table {
   TextColumn get name => text()();
   RealColumn get price => real()();
   RealColumn get cost => real()();
-  TextColumn get type => text().withDefault(const Constant('product'))(); // product, service, consumable
+  TextColumn get type => text()
+      .withDefault(const Constant('product'))(); // product, service, consumable
+  TextColumn get barcode =>
+      text().nullable()(); // Note: unique constraint handled at app level
   TextColumn get customFields => text().withDefault(const Constant('{}'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
@@ -31,7 +34,8 @@ class StockMoves extends Table {
   RealColumn get quantity => real()();
   TextColumn get sourceLocationId => text()();
   TextColumn get destLocationId => text()();
-  TextColumn get status => text().withDefault(const Constant('draft'))(); // draft, done, cancelled
+  TextColumn get status =>
+      text().withDefault(const Constant('draft'))(); // draft, done, cancelled
   DateTimeColumn get date => dateTime().withDefault(currentDateAndTime)();
 
   @override

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/inventory_bloc.dart';
 import 'add_product_from_image_screen.dart';
 import 'edit_product_screen.dart';
+import 'barcode_scanner_screen.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -24,6 +25,20 @@ class ProductsScreen extends StatelessWidget {
                 ),
               ),
               actions: [
+                IconButton(
+                  icon: const Icon(Icons.qr_code_scanner),
+                  tooltip: 'Quét mã vạch/QR',
+                  onPressed: () async {
+                    final result = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(
+                        builder: (_) => const BarcodeScannerScreen(),
+                      ),
+                    );
+                    if (result == true && context.mounted) {
+                      context.read<InventoryBloc>().add(LoadProductsEvent());
+                    }
+                  },
+                ),
                 IconButton(icon: const Icon(Icons.search), onPressed: () {}),
               ],
             ),

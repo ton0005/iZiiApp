@@ -41,31 +41,36 @@ class ServicesRepository {
 
   Future<List<Map<String, dynamic>>> getServiceItems() async {
     final items = await serviceItemsDao.getAllServiceItems();
-    return items.map((item) => {
-      'id': item.id,
-      'name': item.name,
-      'category': item.category,
-      'hourly_rate': item.hourlyRate,
-      'estimated_hours': item.estimatedHours,
-      'description': item.description ?? '',
-      'is_active': item.isActive,
-      'custom_fields': _decodeCustomFields(item.customFields),
-      'created_at': item.createdAt.toIso8601String(),
-    }).toList();
+    return items
+        .map((item) => {
+              'id': item.id,
+              'name': item.name,
+              'category': item.category,
+              'hourly_rate': item.hourlyRate,
+              'estimated_hours': item.estimatedHours,
+              'description': item.description ?? '',
+              'is_active': item.isActive,
+              'custom_fields': _decodeCustomFields(item.customFields),
+              'created_at': item.createdAt.toIso8601String(),
+            })
+        .toList();
   }
 
-  Future<List<Map<String, dynamic>>> getServiceItemsByCategory(String category) async {
+  Future<List<Map<String, dynamic>>> getServiceItemsByCategory(
+      String category) async {
     final items = await serviceItemsDao.getServiceItemsByCategory(category);
-    return items.map((item) => {
-      'id': item.id,
-      'name': item.name,
-      'category': item.category,
-      'hourly_rate': item.hourlyRate,
-      'estimated_hours': item.estimatedHours,
-      'description': item.description ?? '',
-      'is_active': item.isActive,
-      'custom_fields': _decodeCustomFields(item.customFields),
-    }).toList();
+    return items
+        .map((item) => {
+              'id': item.id,
+              'name': item.name,
+              'category': item.category,
+              'hourly_rate': item.hourlyRate,
+              'estimated_hours': item.estimatedHours,
+              'description': item.description ?? '',
+              'is_active': item.isActive,
+              'custom_fields': _decodeCustomFields(item.customFields),
+            })
+        .toList();
   }
 
   Future<void> addServiceItem(Map<String, dynamic> data) async {
@@ -151,7 +156,8 @@ class ServicesRepository {
     // Calculate estimated total
     double totalAmount = 0;
     if (data['service_item_id'] != null) {
-      final service = await serviceItemsDao.getServiceItemById(data['service_item_id']);
+      final service =
+          await serviceItemsDao.getServiceItemById(data['service_item_id']);
       if (service != null) {
         final hours = data['estimated_hours'] ?? service.estimatedHours;
         totalAmount = service.hourlyRate * (hours as num).toDouble();
@@ -172,13 +178,15 @@ class ServicesRepository {
     ));
   }
 
-  Future<void> updateBookingStatus(String bookingId, String status, {double? actualHours}) async {
+  Future<void> updateBookingStatus(String bookingId, String status,
+      {double? actualHours}) async {
     final booking = await serviceBookingsDao.getBookingById(bookingId);
     if (booking == null) throw Exception('Booking not found: $bookingId');
 
     double totalAmount = booking.totalAmount;
     if (actualHours != null) {
-      final service = await serviceItemsDao.getServiceItemById(booking.serviceItemId);
+      final service =
+          await serviceItemsDao.getServiceItemById(booking.serviceItemId);
       if (service != null) {
         totalAmount = service.hourlyRate * actualHours;
       }
@@ -192,6 +200,25 @@ class ServicesRepository {
   }
 
   // === AI AGENT ===
+
+  Future<Map<String, dynamic>?> getServiceItemByName(String serviceName) async {
+    final items = await serviceItemsDao.getAllServiceItems();
+    for (final item in items) {
+      if (item.name.toLowerCase().contains(serviceName.toLowerCase())) {
+        return {
+          'id': item.id,
+          'name': item.name,
+          'category': item.category,
+          'hourly_rate': item.hourlyRate,
+          'estimated_hours': item.estimatedHours,
+          'description': item.description ?? '',
+          'is_active': item.isActive,
+          'custom_fields': _decodeCustomFields(item.customFields),
+        };
+      }
+    }
+    return null;
+  }
 
   Future<String> getServiceInfo(String serviceName) async {
     final items = await serviceItemsDao.getAllServiceItems();

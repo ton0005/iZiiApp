@@ -15,6 +15,9 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
   Future<Product?> getProductById(String id) =>
       (select(products)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
+  Future<Product?> getProductByBarcode(String barcode) =>
+      (select(products)..where((tbl) => tbl.barcode.equals(barcode))).getSingleOrNull();
+
   Future<void> insertProduct(ProductsCompanion entry) =>
       into(products).insert(entry);
 

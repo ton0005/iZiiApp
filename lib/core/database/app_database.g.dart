@@ -2166,6 +2166,12 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('product'));
+  static const VerificationMeta _barcodeMeta =
+      const VerificationMeta('barcode');
+  @override
+  late final GeneratedColumn<String> barcode = GeneratedColumn<String>(
+      'barcode', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _customFieldsMeta =
       const VerificationMeta('customFields');
   @override
@@ -2184,7 +2190,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
       defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, sku, name, price, cost, type, customFields, createdAt];
+      [id, sku, name, price, cost, type, barcode, customFields, createdAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2228,6 +2234,10 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
       context.handle(
           _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
     }
+    if (data.containsKey('barcode')) {
+      context.handle(_barcodeMeta,
+          barcode.isAcceptableOrUnknown(data['barcode']!, _barcodeMeta));
+    }
     if (data.containsKey('custom_fields')) {
       context.handle(
           _customFieldsMeta,
@@ -2259,6 +2269,8 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
           .read(DriftSqlType.double, data['${effectivePrefix}cost'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+      barcode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}barcode']),
       customFields: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}custom_fields'])!,
       createdAt: attachedDatabase.typeMapping
@@ -2279,6 +2291,7 @@ class Product extends DataClass implements Insertable<Product> {
   final double price;
   final double cost;
   final String type;
+  final String? barcode;
   final String customFields;
   final DateTime createdAt;
   const Product(
@@ -2288,6 +2301,7 @@ class Product extends DataClass implements Insertable<Product> {
       required this.price,
       required this.cost,
       required this.type,
+      this.barcode,
       required this.customFields,
       required this.createdAt});
   @override
@@ -2299,6 +2313,9 @@ class Product extends DataClass implements Insertable<Product> {
     map['price'] = Variable<double>(price);
     map['cost'] = Variable<double>(cost);
     map['type'] = Variable<String>(type);
+    if (!nullToAbsent || barcode != null) {
+      map['barcode'] = Variable<String>(barcode);
+    }
     map['custom_fields'] = Variable<String>(customFields);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -2312,6 +2329,9 @@ class Product extends DataClass implements Insertable<Product> {
       price: Value(price),
       cost: Value(cost),
       type: Value(type),
+      barcode: barcode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(barcode),
       customFields: Value(customFields),
       createdAt: Value(createdAt),
     );
@@ -2327,6 +2347,7 @@ class Product extends DataClass implements Insertable<Product> {
       price: serializer.fromJson<double>(json['price']),
       cost: serializer.fromJson<double>(json['cost']),
       type: serializer.fromJson<String>(json['type']),
+      barcode: serializer.fromJson<String?>(json['barcode']),
       customFields: serializer.fromJson<String>(json['customFields']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -2341,6 +2362,7 @@ class Product extends DataClass implements Insertable<Product> {
       'price': serializer.toJson<double>(price),
       'cost': serializer.toJson<double>(cost),
       'type': serializer.toJson<String>(type),
+      'barcode': serializer.toJson<String?>(barcode),
       'customFields': serializer.toJson<String>(customFields),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -2353,6 +2375,7 @@ class Product extends DataClass implements Insertable<Product> {
           double? price,
           double? cost,
           String? type,
+          Value<String?> barcode = const Value.absent(),
           String? customFields,
           DateTime? createdAt}) =>
       Product(
@@ -2362,6 +2385,7 @@ class Product extends DataClass implements Insertable<Product> {
         price: price ?? this.price,
         cost: cost ?? this.cost,
         type: type ?? this.type,
+        barcode: barcode.present ? barcode.value : this.barcode,
         customFields: customFields ?? this.customFields,
         createdAt: createdAt ?? this.createdAt,
       );
@@ -2373,6 +2397,7 @@ class Product extends DataClass implements Insertable<Product> {
       price: data.price.present ? data.price.value : this.price,
       cost: data.cost.present ? data.cost.value : this.cost,
       type: data.type.present ? data.type.value : this.type,
+      barcode: data.barcode.present ? data.barcode.value : this.barcode,
       customFields: data.customFields.present
           ? data.customFields.value
           : this.customFields,
@@ -2389,6 +2414,7 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('price: $price, ')
           ..write('cost: $cost, ')
           ..write('type: $type, ')
+          ..write('barcode: $barcode, ')
           ..write('customFields: $customFields, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -2396,8 +2422,8 @@ class Product extends DataClass implements Insertable<Product> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, sku, name, price, cost, type, customFields, createdAt);
+  int get hashCode => Object.hash(
+      id, sku, name, price, cost, type, barcode, customFields, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2408,6 +2434,7 @@ class Product extends DataClass implements Insertable<Product> {
           other.price == this.price &&
           other.cost == this.cost &&
           other.type == this.type &&
+          other.barcode == this.barcode &&
           other.customFields == this.customFields &&
           other.createdAt == this.createdAt);
 }
@@ -2419,6 +2446,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<double> price;
   final Value<double> cost;
   final Value<String> type;
+  final Value<String?> barcode;
   final Value<String> customFields;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
@@ -2429,6 +2457,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.price = const Value.absent(),
     this.cost = const Value.absent(),
     this.type = const Value.absent(),
+    this.barcode = const Value.absent(),
     this.customFields = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2440,6 +2469,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     required double price,
     required double cost,
     this.type = const Value.absent(),
+    this.barcode = const Value.absent(),
     this.customFields = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2455,6 +2485,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Expression<double>? price,
     Expression<double>? cost,
     Expression<String>? type,
+    Expression<String>? barcode,
     Expression<String>? customFields,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
@@ -2466,6 +2497,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (price != null) 'price': price,
       if (cost != null) 'cost': cost,
       if (type != null) 'type': type,
+      if (barcode != null) 'barcode': barcode,
       if (customFields != null) 'custom_fields': customFields,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
@@ -2479,6 +2511,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       Value<double>? price,
       Value<double>? cost,
       Value<String>? type,
+      Value<String?>? barcode,
       Value<String>? customFields,
       Value<DateTime>? createdAt,
       Value<int>? rowid}) {
@@ -2489,6 +2522,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       price: price ?? this.price,
       cost: cost ?? this.cost,
       type: type ?? this.type,
+      barcode: barcode ?? this.barcode,
       customFields: customFields ?? this.customFields,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
@@ -2516,6 +2550,9 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (type.present) {
       map['type'] = Variable<String>(type.value);
     }
+    if (barcode.present) {
+      map['barcode'] = Variable<String>(barcode.value);
+    }
     if (customFields.present) {
       map['custom_fields'] = Variable<String>(customFields.value);
     }
@@ -2537,6 +2574,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('price: $price, ')
           ..write('cost: $cost, ')
           ..write('type: $type, ')
+          ..write('barcode: $barcode, ')
           ..write('customFields: $customFields, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
@@ -7896,6 +7934,7 @@ typedef $$ProductsTableCreateCompanionBuilder = ProductsCompanion Function({
   required double price,
   required double cost,
   Value<String> type,
+  Value<String?> barcode,
   Value<String> customFields,
   Value<DateTime> createdAt,
   Value<int> rowid,
@@ -7907,6 +7946,7 @@ typedef $$ProductsTableUpdateCompanionBuilder = ProductsCompanion Function({
   Value<double> price,
   Value<double> cost,
   Value<String> type,
+  Value<String?> barcode,
   Value<String> customFields,
   Value<DateTime> createdAt,
   Value<int> rowid,
@@ -7938,6 +7978,9 @@ class $$ProductsTableFilterComposer
 
   ColumnFilters<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get barcode => $composableBuilder(
+      column: $table.barcode, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get customFields => $composableBuilder(
       column: $table.customFields, builder: (column) => ColumnFilters(column));
@@ -7973,6 +8016,9 @@ class $$ProductsTableOrderingComposer
   ColumnOrderings<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get barcode => $composableBuilder(
+      column: $table.barcode, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get customFields => $composableBuilder(
       column: $table.customFields,
       builder: (column) => ColumnOrderings(column));
@@ -8007,6 +8053,9 @@ class $$ProductsTableAnnotationComposer
 
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get barcode =>
+      $composableBuilder(column: $table.barcode, builder: (column) => column);
 
   GeneratedColumn<String> get customFields => $composableBuilder(
       column: $table.customFields, builder: (column) => column);
@@ -8044,6 +8093,7 @@ class $$ProductsTableTableManager extends RootTableManager<
             Value<double> price = const Value.absent(),
             Value<double> cost = const Value.absent(),
             Value<String> type = const Value.absent(),
+            Value<String?> barcode = const Value.absent(),
             Value<String> customFields = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -8055,6 +8105,7 @@ class $$ProductsTableTableManager extends RootTableManager<
             price: price,
             cost: cost,
             type: type,
+            barcode: barcode,
             customFields: customFields,
             createdAt: createdAt,
             rowid: rowid,
@@ -8066,6 +8117,7 @@ class $$ProductsTableTableManager extends RootTableManager<
             required double price,
             required double cost,
             Value<String> type = const Value.absent(),
+            Value<String?> barcode = const Value.absent(),
             Value<String> customFields = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -8077,6 +8129,7 @@ class $$ProductsTableTableManager extends RootTableManager<
             price: price,
             cost: cost,
             type: type,
+            barcode: barcode,
             customFields: customFields,
             createdAt: createdAt,
             rowid: rowid,

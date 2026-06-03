@@ -43,6 +43,7 @@ class SupplyChainRepository {
   Future<List<Product>> getAllProducts() => productsDao.getAllProducts();
   Stream<List<Product>> watchAllProducts() => productsDao.watchAllProducts();
   Future<Product?> getProductById(String id) => productsDao.getProductById(id);
+  Future<Product?> getProductByBarcode(String barcode) => productsDao.getProductByBarcode(barcode);
 
   Future<void> addProductWithStock({
     required String id,
@@ -51,6 +52,7 @@ class SupplyChainRepository {
     required double price,
     required double cost,
     required double stock,
+    String? barcode,
     String locationId = 'MAIN',
     dynamic customFields,
   }) async {
@@ -60,6 +62,7 @@ class SupplyChainRepository {
       name: name,
       price: price,
       cost: cost,
+      barcode: barcode != null ? Value(barcode) : const Value.absent(),
       customFields: Value(_encodeCustomFields(customFields)),
     ));
 
@@ -79,6 +82,7 @@ class SupplyChainRepository {
     required double price,
     required double cost,
     double? stock,
+    String? barcode,
     String locationId = 'MAIN',
     dynamic customFields,
   }) async {
@@ -104,6 +108,7 @@ class SupplyChainRepository {
       name: name,
       price: price,
       cost: cost,
+      barcode: Value(barcode),
       customFields: updatedCustomFields,
     ));
 

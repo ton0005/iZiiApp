@@ -3,7 +3,7 @@ import '../../core/modules/module_interface.dart';
 import '../../core/modules/module_manifest.dart';
 import '../../core/ai_agent/models/chat_models.dart';
 import 'manifest.dart';
-import 'bloc/services_bloc.dart';
+import 'repository.dart';
 import 'screens/services_screen.dart';
 import 'screens/bookings_screen.dart';
 
@@ -32,7 +32,111 @@ class ServicesModule implements IZiiModule {
           },
           execute: (args) async {
             final serviceName = args['service_name'] as String;
-            return await ServiceModuleRepository().getServiceInfo(serviceName);
+            return await ServicesRepository().getServiceInfo(serviceName);
+          },
+        ),
+        AgentTool(
+          name: 'create_service_booking',
+          description:
+              'Chuẩn bị tạo đơn booking dịch vụ theo tên dịch vụ, thông tin khách hàng và ngày giờ. Yêu cầu xác nhận trước khi thực hiện.',
+          parameters: {
+            'type': 'object',
+            'properties': {
+              'service_name': {
+                'type': 'string',
+                'description': 'Tên dịch vụ muốn đặt',
+              },
+              'customer_name': {
+                'type': 'string',
+                'description': 'Tên khách hàng',
+              },
+              'customer_phone': {
+                'type': 'string',
+                'description': 'Số điện thoại liên hệ của khách hàng',
+              },
+              'scheduled_date': {
+                'type': 'string',
+                'description':
+                    'Ngày giờ lên lịch dịch vụ theo ISO 8601 hoặc định dạng dễ đọc',
+              },
+              'customer_address': {
+                'type': 'string',
+                'description': 'Địa chỉ thực hiện dịch vụ (nếu có)',
+              },
+              'notes': {
+                'type': 'string',
+                'description': 'Ghi chú bổ sung cho booking',
+              },
+            },
+            'required': ['service_name', 'customer_name', 'customer_phone'],
+          },
+          requiresConfirmation: true,
+          execute: (args) async {
+            final serviceName = args['service_name']?.toString().trim() ?? '';
+            final customerName = args['customer_name']?.toString().trim() ?? '';
+            final customerPhone =
+                args['customer_phone']?.toString().trim() ?? '';
+            final scheduledAt = args['scheduled_date']?.toString().trim();
+            final customerAddress = args['customer_address']?.toString().trim();
+            final notes = args['notes']?.toString().trim();
+            final hasCustomerAddress = customerAddress?.isNotEmpty == true;
+            final hasNotes = notes?.isNotEmpty == true;
+
+            if (serviceName.isEmpty) {
+              return 'Vui lòng cung cấp tên dịch vụ để tạo booking.';
+            }
+            if (customerName.isEmpty) {
+              return 'Vui lòng cung cấp tên khách hàng để tạo booking.';
+            }
+            if (customerPhone.isEmpty) {
+              return 'Vui lòng cung cấp số điện thoại khách hàng để liên hệ.';
+            }
+
+            final service =
+                await ServicesRepository().getServiceItemByName(serviceName);
+            if (service == null) {
+              return 'Không tìm thấy dịch vụ phù hợp với tên "$serviceName". Vui lòng thử lại với tên dịch vụ rõ ràng hơn.';
+            }
+
+            String? normalizedSchedule;
+            if (scheduledAt != null && scheduledAt.isNotEmpty) {
+              try {
+                final parsedDate = DateTime.parse(scheduledAt);
+                normalizedSchedule = parsedDate.toIso8601String();
+              } catch (_) {
+                normalizedSchedule = scheduledAt;
+              }
+            }
+
+            final bookingData = {
+              'service_item_id': service['id'],
+              'customer_name': customerName,
+              'customer_phone': customerPhone,
+              'scheduled_at': normalizedSchedule,
+              'notes': notes,
+              'custom_fields': {
+                if (hasCustomerAddress) 'customer_address': customerAddress,
+                if (hasNotes) 'notes': notes,
+                'created_by': 'ai_chat',
+              },
+            };
+            await ServicesRepository().addBooking(bookingData);
+
+            final summary = <String>[];
+            summary.add('Dịch vụ: ${service['name']}');
+            summary.add('Khách hàng: $customerName');
+            summary.add('SĐT: $customerPhone');
+            if (normalizedSchedule != null) {
+              summary.add('Thời gian: $normalizedSchedule');
+            }
+            if (hasCustomerAddress) {
+              summary.add('Địa chỉ: $customerAddress');
+            }
+            if (hasNotes) {
+              summary.add('Ghi chú: $notes');
+            }
+
+            return 'Đã tạo booking dịch vụ thành công: ${summary.join(' • ')}';
           },
         ),
         AgentTool(
@@ -82,7 +186,7 @@ class ServicesModule implements IZiiModule {
             data['description'] = args['description']?.toString();
             data['custom_fields'] = args['custom_fields'] ?? {};
 
-            await ServiceModuleRepository().addService(data);
+            await ServicesRepository().addServiceItem(data);
             return 'Đã tạo dịch vụ "${data['name']}" thành công.';
           },
         ),

@@ -89,16 +89,41 @@ class LeadsScreen extends StatelessWidget {
                     ],
                   ),
                   isThreeLine: customFields.isEmpty,
-                  trailing: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      lead['status'],
-                      style: const TextStyle(fontSize: 12),
+                  trailing: PopupMenuButton<String>(
+                    onSelected: (newStatus) {
+                      context.read<CrmBloc>().add(
+                        UpdateLeadStatusEvent(lead['id'], newStatus),
+                      );
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(value: 'new', child: Text('🆕 Mới (New)')),
+                      const PopupMenuItem(value: 'qualified', child: Text('💎 Tiềm năng (Qualified)')),
+                      const PopupMenuItem(value: 'won', child: Text('✅ Thành công (Won)')),
+                      const PopupMenuItem(value: 'lost', child: Text('❌ Thất bại (Lost)')),
+                    ],
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(lead['status']).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: _getStatusColor(lead['status']).withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _getStatusLabel(lead['status']),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: _getStatusColor(lead['status']),
+                            ),
+                          ),
+                          Icon(Icons.arrow_drop_down, size: 16, color: _getStatusColor(lead['status'])),
+                        ],
+                      ),
                     ),
                   ),
                   onTap: () async {
@@ -118,5 +143,35 @@ class LeadsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'new':
+        return Colors.blue;
+      case 'qualified':
+        return Colors.purple;
+      case 'won':
+        return Colors.green;
+      case 'lost':
+        return Colors.red;
+      default:
+        return Colors.blueGrey;
+    }
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status) {
+      case 'new':
+        return 'Mới';
+      case 'qualified':
+        return 'Tiềm năng';
+      case 'won':
+        return 'Thắng';
+      case 'lost':
+        return 'Thua';
+      default:
+        return status;
+    }
   }
 }

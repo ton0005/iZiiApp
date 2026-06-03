@@ -6,7 +6,8 @@ import '../bloc/inventory_bloc.dart';
 import '../services/product_vision_service.dart';
 
 class AddProductFromImageScreen extends StatefulWidget {
-  const AddProductFromImageScreen({super.key});
+  final String? initialBarcode;
+  const AddProductFromImageScreen({super.key, this.initialBarcode});
 
   @override
   State<AddProductFromImageScreen> createState() => _AddProductFromImageScreenState();
@@ -29,6 +30,21 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
   final _categoryController = TextEditingController();
   final _brandController = TextEditingController();
   final _specsController = TextEditingController();
+  late final TextEditingController _barcodeController;
+
+  @override
+  void initState() {
+    super.initState();
+    _barcodeController = TextEditingController(text: widget.initialBarcode);
+    if (widget.initialBarcode != null) {
+      _result = ProductVisionResult(
+        name: '',
+        description: '',
+        suggestedPrice: 0.0,
+        category: '',
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -39,6 +55,7 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
     _categoryController.dispose();
     _brandController.dispose();
     _specsController.dispose();
+    _barcodeController.dispose();
     super.dispose();
   }
 
@@ -114,6 +131,7 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
       'name': _nameController.text,
       'price': price,
       'stock': stock,
+      'barcode': _barcodeController.text.isNotEmpty ? _barcodeController.text : null,
       'custom_fields': customFields,
     };
 
@@ -173,6 +191,7 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
               _buildSectionHeader('Thông tin AI nhận diện (chỉnh sửa được)'),
               const SizedBox(height: 12),
               _buildTextField(_nameController, 'Tên sản phẩm', Icons.label_outline),
+              _buildTextField(_barcodeController, 'Mã vạch / QR Code', Icons.qr_code),
               _buildTextField(_descController, 'Mô tả', Icons.description_outlined, maxLines: 2),
               _buildTextField(_priceController, 'Giá (VNĐ)', Icons.attach_money, keyboardType: TextInputType.number),
               _buildTextField(_stockController, 'Số lượng tồn kho', Icons.inventory, keyboardType: TextInputType.number),

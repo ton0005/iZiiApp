@@ -70,7 +70,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -87,6 +87,12 @@ class AppDatabase extends _$AppDatabase {
           if (from < 4) {
             await m.createTable(serviceItems);
             await m.createTable(serviceBookings);
+          }
+          if (from < 5) {
+            // Add barcode column as nullable text
+            // Note: SQLite doesn't support adding UNIQUE constraints via ALTER TABLE,
+            // so we add it nullable and can enforce uniqueness at application level
+            await m.addColumn(products, products.barcode);
           }
         },
       );
@@ -105,4 +111,3 @@ LazyDatabase _openConnection() {
     return NativeDatabase.createInBackground(file, logStatements: false);
   });
 }
-

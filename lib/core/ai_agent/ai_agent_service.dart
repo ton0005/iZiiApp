@@ -8,6 +8,7 @@ class AiAgentService {
   GeminiProvider? _geminiProvider;
   final SettingsService _settingsService = SettingsService();
   String? _lastApiKey;
+  PendingToolCall? _pendingToolCall;
 
   final List<ChatMessage> _history = [];
 
@@ -46,6 +47,78 @@ class AiAgentService {
 
   List<ChatMessage> get history => List<ChatMessage>.from(_history);
 
+  PendingToolCall? get pendingToolCall => _pendingToolCall;
+
+  Future<void> confirmPendingToolCall() async {
+    final pending = _pendingToolCall;
+    if (pending == null) return;
+
+    try {
+      final tool = toolRegistry.getTool(pending.name);
+      if (tool == null) {
+        _history.add(ChatMessage(
+          id: '${DateTime.now().millisecondsSinceEpoch}_err',
+          role: MessageRole.assistant,
+          content: 'Lỗi: Không tìm thấy tool ${pending.name}.',
+          timestamp: DateTime.now(),
+        ));
+        _pendingToolCall = null;
+        return;
+      }
+
+      final String result = await tool.execute(pending.arguments);
+      final toolResponseText = await _geminiProvider?.sendFunctionResponse(
+        pending.name,
+        {'result': result},
+      );
+
+      _history.add(ChatMessage(
+        id: '${DateTime.now().millisecondsSinceEpoch}_ai',
+        role: MessageRole.assistant,
+        content: toolResponseText ?? 'Đã hoàn thành thao tác.',
+        timestamp: DateTime.now(),
+      ));
+    } catch (e) {
+      print('[AiAgentService] Confirm pending tool error: $e');
+      _history.add(ChatMessage(
+        id: '${DateTime.now().millisecondsSinceEpoch}_err',
+        role: MessageRole.assistant,
+        content: '❌ Lỗi khi xác nhận thao tác: $e',
+        timestamp: DateTime.now(),
+      ));
+    } finally {
+      _pendingToolCall = null;
+    }
+  }
+
+  Future<void> rejectPendingToolCall() async {
+    final pending = _pendingToolCall;
+    if (pending == null) return;
+
+    try {
+      final toolResponseText = await _geminiProvider?.sendFunctionResponse(
+        pending.name,
+        {'result': 'USER_REJECTED'},
+      );
+      _history.add(ChatMessage(
+        id: '${DateTime.now().millisecondsSinceEpoch}_ai',
+        role: MessageRole.assistant,
+        content: toolResponseText ?? 'Đã hủy yêu cầu.',
+        timestamp: DateTime.now(),
+      ));
+    } catch (e) {
+      print('[AiAgentService] Reject pending tool error: $e');
+      _history.add(ChatMessage(
+        id: '${DateTime.now().millisecondsSinceEpoch}_err',
+        role: MessageRole.assistant,
+        content: '❌ Lỗi khi hủy thao tác: $e',
+        timestamp: DateTime.now(),
+      ));
+    } finally {
+      _pendingToolCall = null;
+    }
+  }
+
   Future<void> addUserMessage(String text) async {
     _history.add(ChatMessage(
       id: '${DateTime.now().millisecondsSinceEpoch}',
@@ -76,6 +149,14 @@ class AiAgentService {
           await _geminiProvider!.sendMessage(text, (toolName, args) async {
         final tool = toolRegistry.getTool(toolName);
         if (tool != null) {
+          if (tool.requiresConfirmation) {
+            _pendingToolCall = PendingToolCall(
+              name: toolName,
+              description: tool.description,
+              arguments: args,
+            );
+            return 'PENDING_CONFIRMATION';
+          }
           final result = await tool.execute(args);
           toolCalls.add(ToolCall(
             id: 'call_${DateTime.now().millisecondsSinceEpoch}',
@@ -88,10 +169,14 @@ class AiAgentService {
         return 'Lỗi: Không tìm thấy tool $toolName';
       });
 
+      final responseTextWithConfirmation = _pendingToolCall != null
+          ? _buildPendingConfirmationText(_pendingToolCall!)
+          : responseText;
+
       _history.add(ChatMessage(
         id: '${DateTime.now().millisecondsSinceEpoch}_ai',
         role: MessageRole.assistant,
-        content: responseText,
+        content: responseTextWithConfirmation,
         timestamp: DateTime.now(),
         toolCalls: toolCalls.isNotEmpty ? toolCalls : null,
       ));
@@ -100,10 +185,21 @@ class AiAgentService {
       _history.add(ChatMessage(
         id: '${DateTime.now().millisecondsSinceEpoch}_err',
         role: MessageRole.assistant,
-        content: '❌ Lỗi kết nối AI:\n$e\n\nHãy kiểm tra API Key trong Settings.',
+        content:
+            '❌ Lỗi kết nối AI:\n$e\n\nHãy kiểm tra API Key trong Settings.',
         timestamp: DateTime.now(),
       ));
     }
+  }
+
+  String _buildPendingConfirmationText(PendingToolCall pending) {
+    final summaryText =
+        pending.summary.isNotEmpty ? pending.summary : pending.description;
+
+    return '''Tin nhắn yêu cầu xác nhận:
+$summaryText
+
+Nếu bạn đồng ý, hãy bấm "Xác nhận" để tiếp tục tạo booking. Nếu không, bấm "Từ chối" để hủy.''';
   }
 
   void clearHistory() {

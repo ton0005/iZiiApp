@@ -66,6 +66,7 @@ class InventoryRepository {
       stock: productMap['stock'] != null
           ? (productMap['stock'] as num).toDouble()
           : 0.0,
+      barcode: productMap['barcode'],
       customFields: productMap['custom_fields'],
     );
   }
@@ -79,8 +80,13 @@ class InventoryRepository {
       stock: productMap['stock'] != null
           ? (productMap['stock'] as num).toDouble()
           : null,
+      barcode: productMap['barcode'],
       customFields: productMap['custom_fields'],
     );
+  }
+
+  Future<Product?> getProductByBarcode(String barcode) async {
+    return await _repo.getProductByBarcode(barcode);
   }
 
   Future<int> checkStock(String productNameQuery) async {
