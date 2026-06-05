@@ -45,6 +45,18 @@ class ModuleRegistryTable extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class OutboxMutations extends Table {
+  TextColumn get id => text()();
+  TextColumn get targetTable => text()();
+  TextColumn get operation => text()();
+  TextColumn get payload => text()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  TextColumn get status => text().withDefault(const Constant('pending'))(); // pending, synced, error
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(tables: [
   AppSettings,
   Users,
@@ -61,7 +73,8 @@ class ModuleRegistryTable extends Table {
   ServiceOrders,
   Reviews,
   ServiceItems,
-  ServiceBookings
+  ServiceBookings,
+  OutboxMutations
 ])
 class AppDatabase extends _$AppDatabase {
   static final AppDatabase _instance = AppDatabase._internal();
@@ -70,7 +83,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -93,6 +106,9 @@ class AppDatabase extends _$AppDatabase {
             // Note: SQLite doesn't support adding UNIQUE constraints via ALTER TABLE,
             // so we add it nullable and can enforce uniqueness at application level
             await m.addColumn(products, products.barcode);
+          }
+          if (from < 6) {
+            await m.createTable(outboxMutations);
           }
         },
       );

@@ -1,34 +1,60 @@
+import 'dart:convert';
+import 'package:drift/drift.dart';
+import 'package:uuid/uuid.dart';
+import '../database/app_database.dart';
+
 class OutboxQueue {
   static final OutboxQueue _instance = OutboxQueue._internal();
   factory OutboxQueue() => _instance;
   OutboxQueue._internal();
 
-  final List<Map<String, dynamic>> _queue = [];
+  final AppDatabase _db = AppDatabase();
 
-  void addMutation(String table, String operation, Map<String, dynamic> data) {
-    _queue.add({
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'table': table,
-      'operation': operation, // insert, update, delete
-      'data': data,
-      'timestamp': DateTime.now().toIso8601String(),
-      'status': 'pending',
-    });
-    // Trong thực tế sẽ lưu xuống SQLite table tên `OutboxMutations`
+  Future<void> addMutation(String tableName, String operation, Map<String, dynamic> data) async {
+    final id = const Uuid().v4();
+    await _db.into(_db.outboxMutations).insert(
+      OutboxMutationsCompanion.insert(
+        id: id,
+        targetTable: tableName,
+        operation: operation,
+        payload: jsonEncode(data),
+      ),
+    );
   }
 
-  List<Map<String, dynamic>> getPendingMutations() {
-    return _queue.where((m) => m['status'] == 'pending').toList();
+  Future<List<Map<String, dynamic>>> getPendingMutations() async {
+    final list = await (_db.select(_db.outboxMutations)
+          ..where((tbl) => tbl.status.equals('pending'))
+          ..orderBy([(tbl) => OrderingTerm(expression: tbl.createdAt)]))
+        .get();
+
+    return list.map((m) {
+      Map<String, dynamic> data = {};
+      try {
+        data = jsonDecode(m.payload);
+      } catch (_) {}
+      return {
+        'id': m.id,
+        'table': m.targetTable,
+        'operation': m.operation,
+        'data': data,
+        'timestamp': m.createdAt.toIso8601String(),
+        'status': m.status,
+      };
+    }).toList();
   }
 
-  void markAsSynced(String mutationId) {
-    final index = _queue.indexWhere((m) => m['id'] == mutationId);
-    if (index != -1) {
-      _queue[index]['status'] = 'synced';
-    }
+  Future<void> markAsSynced(String mutationId) async {
+    await (_db.update(_db.outboxMutations)..where((tbl) => tbl.id.equals(mutationId)))
+        .write(const OutboxMutationsCompanion(status: Value('synced')));
   }
 
-  void clearSynced() {
-    _queue.removeWhere((m) => m['status'] == 'synced');
+  Future<void> markAsFailed(String mutationId) async {
+    await (_db.update(_db.outboxMutations)..where((tbl) => tbl.id.equals(mutationId)))
+        .write(const OutboxMutationsCompanion(status: Value('error')));
+  }
+
+  Future<void> clearSynced() async {
+    await (_db.delete(_db.outboxMutations)..where((tbl) => tbl.status.equals('synced'))).go();
   }
 }

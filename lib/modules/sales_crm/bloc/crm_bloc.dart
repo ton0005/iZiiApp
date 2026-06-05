@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../../core/database/app_database.dart';
+import '../../../core/sync/sync_service.dart';
 
 // Events
 abstract class CrmEvent extends Equatable {
@@ -150,6 +151,7 @@ class CrmRepository {
             ),
           ),
         );
+    SyncService().queueMutation('leads', 'insert', lead);
   }
 
   Future<void> updateLeadFull(Map<String, dynamic> leadMap) async {
@@ -163,18 +165,27 @@ class CrmRepository {
           notes: drift.Value(leadMap['name']),
           customFields: _encodeCustomFields(leadMap['custom_fields']),
         ));
+    SyncService().queueMutation('leads', 'update', leadMap);
   }
 
   Future<void> updateLeadStatus(String leadId, String newStatus) async {
     final leads = await _db.select(_db.leads).get();
     final lead = leads.firstWhere((l) => l.id == leadId);
     await _db.update(_db.leads).replace(lead.copyWith(status: newStatus));
+    SyncService().queueMutation('leads', 'update', {
+      'id': leadId,
+      'status': newStatus,
+    });
   }
 
   Future<void> updateDealStage(String dealId, String newStage) async {
     final deals = await _db.select(_db.deals).get();
     final deal = deals.firstWhere((d) => d.id == dealId);
     await _db.update(_db.deals).replace(deal.copyWith(stage: newStage));
+    SyncService().queueMutation('deals', 'update', {
+      'id': dealId,
+      'stage': newStage,
+    });
   }
 
   Future<bool> updateLead(
@@ -206,6 +217,15 @@ class CrmRepository {
               }),
             ),
           );
+      SyncService().queueMutation('leads', 'update', {
+        'id': lead.id,
+        'title': updatedTitle,
+        'expected_revenue': newExpectedRevenue ?? lead.expectedRevenue,
+        'custom_fields': {
+          ..._decodeCustomFields(lead.customFields),
+          ...customFields,
+        },
+      });
       return true;
     }
     return false;

@@ -37,6 +37,15 @@ class LeadsScreen extends StatelessWidget {
             if (state.isLoading) {
               return const Center(child: CircularProgressIndicator());
             }
+            if (state.error != null) {
+              return Center(
+                child: Text(
+                  'Lỗi khi tải leads: ${state.error}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
+            }
             if (state.leads.isEmpty) {
               return const Center(child: Text('No leads found.'));
             }
@@ -92,22 +101,30 @@ class LeadsScreen extends StatelessWidget {
                   trailing: PopupMenuButton<String>(
                     onSelected: (newStatus) {
                       context.read<CrmBloc>().add(
-                        UpdateLeadStatusEvent(lead['id'], newStatus),
-                      );
+                            UpdateLeadStatusEvent(lead['id'], newStatus),
+                          );
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem(value: 'new', child: Text('🆕 Mới (New)')),
-                      const PopupMenuItem(value: 'qualified', child: Text('💎 Tiềm năng (Qualified)')),
-                      const PopupMenuItem(value: 'won', child: Text('✅ Thành công (Won)')),
-                      const PopupMenuItem(value: 'lost', child: Text('❌ Thất bại (Lost)')),
+                      const PopupMenuItem(
+                          value: 'new', child: Text('🆕 Mới (New)')),
+                      const PopupMenuItem(
+                          value: 'qualified',
+                          child: Text('💎 Tiềm năng (Qualified)')),
+                      const PopupMenuItem(
+                          value: 'won', child: Text('✅ Thành công (Won)')),
+                      const PopupMenuItem(
+                          value: 'lost', child: Text('❌ Thất bại (Lost)')),
                     ],
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: _getStatusColor(lead['status']).withValues(alpha: 0.12),
+                        color: _getStatusColor(lead['status'])
+                            .withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: _getStatusColor(lead['status']).withValues(alpha: 0.3),
+                          color: _getStatusColor(lead['status'])
+                              .withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -121,7 +138,8 @@ class LeadsScreen extends StatelessWidget {
                               color: _getStatusColor(lead['status']),
                             ),
                           ),
-                          Icon(Icons.arrow_drop_down, size: 16, color: _getStatusColor(lead['status'])),
+                          Icon(Icons.arrow_drop_down,
+                              size: 16, color: _getStatusColor(lead['status'])),
                         ],
                       ),
                     ),

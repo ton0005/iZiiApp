@@ -4,6 +4,7 @@ import '../bloc/inventory_bloc.dart';
 import 'add_product_from_image_screen.dart';
 import 'edit_product_screen.dart';
 import 'barcode_scanner_screen.dart';
+import 'product_info_screen.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -47,6 +48,15 @@ class ProductsScreen extends StatelessWidget {
                 if (state.isLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
+                if (state.error != null) {
+                  return Center(
+                    child: Text(
+                      'Lỗi khi tải sản phẩm: ${state.error}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
                 if (state.products.isEmpty) {
                   return const Center(child: Text('No products available.'));
                 }
@@ -62,7 +72,7 @@ class ProductsScreen extends StatelessWidget {
                       onTap: () async {
                         final result = await Navigator.of(context).push<bool>(
                           MaterialPageRoute(
-                            builder: (_) => EditProductScreen(product: product),
+                            builder: (_) => ProductInfoScreen(product: product),
                           ),
                         );
                         if (result == true && context.mounted) {
@@ -87,24 +97,49 @@ class ProductsScreen extends StatelessWidget {
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                       subtitle:
                           Text('Giá: ${_formatPrice(product['price'])} VNĐ'),
-                      trailing: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: outOfStock
-                              ? Colors.red.withValues(alpha: 0.1)
-                              : Colors.green.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          outOfStock
-                              ? 'Out of Stock'
-                              : 'In Stock: ${product['stock']}',
-                          style: TextStyle(
-                            color: outOfStock ? Colors.red : Colors.green,
-                            fontWeight: FontWeight.bold,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: outOfStock
+                                  ? Colors.red.withValues(alpha: 0.1)
+                                  : Colors.green.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              outOfStock
+                                  ? 'Out of Stock'
+                                  : 'In Stock: ${product['stock']}',
+                              style: TextStyle(
+                                color: outOfStock ? Colors.red : Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.edit,
+                                color: Color(0xFF10B981)),
+                            tooltip: 'Chỉnh sửa sản phẩm',
+                            onPressed: () async {
+                              final result =
+                                  await Navigator.of(context).push<bool>(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      EditProductScreen(product: product),
+                                ),
+                              );
+                              if (result == true && context.mounted) {
+                                context
+                                    .read<InventoryBloc>()
+                                    .add(LoadProductsEvent());
+                              }
+                            },
+                          ),
+                        ],
                       ),
                     );
                   },

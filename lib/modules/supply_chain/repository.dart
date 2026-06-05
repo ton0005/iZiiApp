@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:uuid/uuid.dart';
 import 'package:drift/drift.dart';
 import '../../core/database/app_database.dart';
+import '../../core/sync/sync_service.dart';
 import 'daos/products_dao.dart';
 import 'daos/stock_moves_dao.dart';
 import 'daos/stock_quants_dao.dart';
@@ -74,6 +75,16 @@ class SupplyChainRepository {
         quantity: stock,
       ));
     }
+
+    SyncService().queueMutation('products', 'insert', {
+      'id': id,
+      'sku': sku,
+      'name': name,
+      'price': price,
+      'cost': cost,
+      'barcode': barcode,
+      'custom_fields': customFields is Map ? customFields : {},
+    });
   }
 
   Future<void> updateProductWithStock({
@@ -125,6 +136,15 @@ class SupplyChainRepository {
         ));
       }
     }
+
+    SyncService().queueMutation('products', 'update', {
+      'id': id,
+      'name': name,
+      'price': price,
+      'cost': cost,
+      'barcode': barcode,
+      'custom_fields': _decodeCustomFields(updatedCustomFields),
+    });
   }
 
   Future<List<StockMove>> getStockMoves() => stockMovesDao.getAllStockMoves();

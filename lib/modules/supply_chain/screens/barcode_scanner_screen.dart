@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../bloc/inventory_bloc.dart';
 import 'add_product_from_image_screen.dart';
-import 'edit_product_screen.dart';
+import 'product_info_screen.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
   final bool returnCode;
@@ -86,7 +86,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
             Navigator.of(context).pop(); // Close bottom sheet
             final result = await Navigator.of(context).push<bool>(
               MaterialPageRoute(
-                builder: (_) => EditProductScreen(product: productMap),
+                builder: (_) => ProductInfoScreen(product: productMap),
               ),
             );
             if (result == true && mounted) {
@@ -180,8 +180,12 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      exists ? Icons.check_circle_outline : Icons.add_circle_outline,
-                      color: exists ? const Color(0xFF10B981) : const Color(0xFF6366F1),
+                      exists
+                          ? Icons.check_circle_outline
+                          : Icons.add_circle_outline,
+                      color: exists
+                          ? const Color(0xFF10B981)
+                          : const Color(0xFF6366F1),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -245,8 +249,14 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: exists
-                              ? [const Color(0xFF10B981), const Color(0xFF06B6D4)]
-                              : [const Color(0xFF6366F1), const Color(0xFF06B6D4)],
+                              ? [
+                                  const Color(0xFF10B981),
+                                  const Color(0xFF06B6D4)
+                                ]
+                              : [
+                                  const Color(0xFF6366F1),
+                                  const Color(0xFF06B6D4)
+                                ],
                         ),
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -375,7 +385,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                           height: 3,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Colors.transparent, Colors.red, Colors.transparent],
+                              colors: [
+                                Colors.transparent,
+                                Colors.red,
+                                Colors.transparent
+                              ],
                             ),
                             boxShadow: [
                               BoxShadow(

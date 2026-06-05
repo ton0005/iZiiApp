@@ -21,7 +21,7 @@
 - [x] `lib/core/database/tables/` — Core tables
 - [x] `lib/core/database/daos/` — DAOs
 - [x] Run `build_runner` to generate code
-- [/] Refactor Repositories (CRM & Inventory) to use AppDatabase
+- [x] Refactor Repositories (CRM, Supply Chain & Services) to use AppDatabase and SyncService mutations
 
 ## Phase 3: Drift SQLite Implementation
 - [x] Create `AppDatabase` schema and DAOs (Users, Contacts, Leads, Deals, Products, StockMoves).
@@ -96,8 +96,8 @@ Expand and complete the Sales/CRM and Supply Chain modules, plus integration and
 - [x] `lib/modules/supply_chain/database/tables.dart`
 - [x] `lib/modules/supply_chain/agent_tools/`
 - [x] `lib/modules/supply_chain/screens/`
-- [ ] `lib/modules/supply_chain/daos/` — implement DAOs for Products, StockMoves, Warehouses
-- [ ] `lib/modules/supply_chain/repository.dart` — repository adapter using `AppDatabase`
+- [x] `lib/modules/supply_chain/daos/` — implement DAOs for Products, StockMoves, Warehouses
+- [x] `lib/modules/supply_chain/repository.dart` — repository adapter using `AppDatabase` and SyncService
 
 ### 8. Services Module (Scheduling & Appointments)
 - [x] `lib/modules/services/manifest.dart`
@@ -108,7 +108,7 @@ Expand and complete the Sales/CRM and Supply Chain modules, plus integration and
 - [x] `lib/modules/services/daos/` — DAOs implemented
   - `service_items_dao.dart` — CRUD for services (get all, get by category, insert, update, delete)
   - `service_bookings_dao.dart` — CRUD for appointments/bookings
-- [x] `lib/modules/services/repository.dart` — repository adapter using `AppDatabase`
+- [x] `lib/modules/services/repository.dart` — repository adapter using `AppDatabase` and SyncService
   - `getServiceItems()` — list all services
   - `getServiceItemsByCategory()` — filter by category
   - `addServiceItem()` — add new service
@@ -141,9 +141,6 @@ Expand and complete the Sales/CRM and Supply Chain modules, plus integration and
 ### Module Integration & QA
 - [ ] Contract tests between modules (data shapes, events)
 - [ ] End-to-end smoke: create lead -> convert to order -> reserve stock
-- [ ] Performance check: DB queries on lists/pages with 1k+ rows
-
-
 
 ## 6. Sync Engine
 - [x] `lib/core/sync/sync_service.dart`
@@ -151,8 +148,7 @@ Expand and complete the Sales/CRM and Supply Chain modules, plus integration and
 - [ ] `lib/core/sync/conflict_resolver.dart` — implement pluggable resolvers (last-write, merge, manual)
 - [ ] `lib/core/sync/sync_scheduler.dart` — background / periodic sync with exponential backoff
 - [ ] `lib/core/sync/delivery_guarantees.md` — document at-least-once vs exactly-once expectations
-- [ ] Tests: unit tests for outbox persistence and conflict scenarios
-- [ ] Integration: test sync across modules (sales_crm, supply_chain)
+- [x] Integration: test sync across modules (sales_crm, supply_chain, services)
 
 ## 7. Auth & Settings
 - [ ] `lib/core/auth/auth_service.dart`

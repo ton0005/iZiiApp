@@ -393,6 +393,12 @@ class _MenuSection extends StatelessWidget {
         onTap: () {},
       ),
       _MenuData(
+        icon: Icons.sync_rounded,
+        title: 'Đồng bộ Dữ liệu',
+        color: const Color(0xFF06B6D4),
+        onTap: () => context.push('/settings/sync'),
+      ),
+      _MenuData(
         icon: Icons.bar_chart_rounded,
         title: 'Báo cáo',
         color: IZiiColors.secondary,

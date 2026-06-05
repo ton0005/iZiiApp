@@ -5,7 +5,7 @@ const salesCrmManifest = ModuleManifest(
   name: 'Sales & CRM',
   description:
       'Manage potential customers, sales opportunities, orders, and point-of-sale (POS) systems.',
-  version: '1.0.1',
+  version: '1.0.2',
   category: 'Business',
   tags: ['crm', 'sales', 'pos', 'leads'],
 );

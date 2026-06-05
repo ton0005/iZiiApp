@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'settings_service.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -17,6 +18,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _loadApiKey();
+  }
+
+  @override
+  void dispose() {
+    _apiKeyController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadApiKey() async {
@@ -38,51 +45,121 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('Cài đặt AI (BYOK)')),
-      body: Padding(
+      appBar: AppBar(
+        title: const Text('Cài đặt hệ thống', style: TextStyle(fontWeight: FontWeight.bold)),
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Cấu hình Google Gemini API',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Nhập API Key của bạn để sử dụng AI Agent. Dữ liệu này chỉ lưu trên thiết bị của bạn.',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: _apiKeyController,
-              decoration: const InputDecoration(
-                labelText: 'Gemini API Key',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.key),
-              ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _saveApiKey,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: const Color(0xFF6366F1),
-                  foregroundColor: Colors.white,
+            // --- AI Configurations ---
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.smart_toy_outlined, color: Color(0xFF6366F1)),
+                        SizedBox(width: 8),
+                        Text(
+                          'Cấu hình Google Gemini API',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Nhập API Key của bạn để sử dụng AI Agent. Dữ liệu này chỉ lưu trên thiết bị của bạn.',
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _apiKeyController,
+                      decoration: const InputDecoration(
+                        labelText: 'Gemini API Key',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.key),
+                      ),
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _saveApiKey,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: const Color(0xFF6366F1),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        child: const Text('Lưu API Key', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    if (_isSaved) ...[
+                      const SizedBox(height: 12),
+                      const Center(
+                        child: Text('Đã lưu thành công!', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                      ),
+                    ]
+                  ],
                 ),
-                child: const Text('Lưu API Key'),
               ),
             ),
-            if (_isSaved) ...[
-              const SizedBox(height: 16),
-              const Center(
-                child: Text('Đã lưu thành công!', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+            
+            const SizedBox(height: 16),
+
+            // --- Sync Settings ---
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.sync_rounded, color: Color(0xFF06B6D4)),
+                        SizedBox(width: 8),
+                        Text(
+                          'Đồng bộ Dữ liệu (Sync)',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Đồng bộ hóa dữ liệu offline giữa thiết bị di động, ứng dụng Windows và máy chủ đám mây (Cloud Server).',
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.sync_outlined),
+                        label: const Text('Đi tới màn hình Đồng bộ', style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: const Color(0xFF06B6D4),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onPressed: () => context.push('/settings/sync'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ]
+            ),
           ],
         ),
       ),

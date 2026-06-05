@@ -21,6 +21,7 @@ import '../settings/settings_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/discover/discover_screen.dart';
 import 'scaffold_with_nav.dart';
+import '../sync/screens/sync_screen.dart';
 
 AgentToolRegistry _buildToolRegistry() {
   final registry = AgentToolRegistry();
@@ -154,6 +155,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: '/settings/sync',
+      builder: (context, state) => const SyncScreen(),
     ),
     // Services module routes
     GoRoute(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:uuid/uuid.dart';
 import 'package:drift/drift.dart';
 import '../../core/database/app_database.dart';
+import '../../core/sync/sync_service.dart';
 import 'daos/service_items_dao.dart';
 import 'daos/service_bookings_dao.dart';
 
@@ -86,6 +87,16 @@ class ServicesRepository {
       description: Value(data['description']),
       customFields: Value(_encodeCustomFields(data['custom_fields'])),
     ));
+
+    SyncService().queueMutation('service_items', 'insert', {
+      'id': id,
+      'name': data['name'],
+      'category': data['category'] ?? 'other',
+      'hourly_rate': (data['hourly_rate'] as num).toDouble(),
+      'estimated_hours': data['estimated_hours'] ?? 1.0,
+      'description': data['description'],
+      'custom_fields': data['custom_fields'] ?? {},
+    });
   }
 
   Future<void> updateServiceItem(Map<String, dynamic> data) async {
@@ -118,6 +129,17 @@ class ServicesRepository {
       isActive: data['is_active'] ?? item.isActive,
       customFields: updatedCustomFields,
     ));
+
+    SyncService().queueMutation('service_items', 'update', {
+      'id': data['id'],
+      'name': data['name'],
+      'category': data['category'],
+      'hourly_rate': data['hourly_rate'],
+      'estimated_hours': data['estimated_hours'],
+      'description': data['description'],
+      'is_active': data['is_active'],
+      'custom_fields': _decodeCustomFields(updatedCustomFields),
+    });
   }
 
   // === BOOKINGS ===
@@ -176,6 +198,17 @@ class ServicesRepository {
       notes: Value(data['notes']),
       customFields: Value(_encodeCustomFields(data['custom_fields'])),
     ));
+
+    SyncService().queueMutation('service_bookings', 'insert', {
+      'id': id,
+      'service_item_id': data['service_item_id'],
+      'customer_name': data['customer_name'],
+      'customer_phone': data['customer_phone'],
+      'scheduled_at': data['scheduled_at'],
+      'total_amount': totalAmount,
+      'notes': data['notes'],
+      'custom_fields': data['custom_fields'] ?? {},
+    });
   }
 
   Future<void> updateBookingStatus(String bookingId, String status,
@@ -197,6 +230,13 @@ class ServicesRepository {
       actualHours: Value(actualHours ?? booking.actualHours),
       totalAmount: totalAmount,
     ));
+
+    SyncService().queueMutation('service_bookings', 'update', {
+      'id': bookingId,
+      'status': status,
+      'actual_hours': actualHours,
+      'total_amount': totalAmount,
+    });
   }
 
   // === AI AGENT ===
