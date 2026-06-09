@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../bloc/services_bloc.dart';
 import 'add_booking_screen.dart';
 
@@ -48,7 +49,7 @@ class _BookingsBodyState extends State<_BookingsBody> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đơn đặt Dịch vụ', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('ser_bookings_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -72,11 +73,14 @@ class _BookingsBodyState extends State<_BookingsBody> {
                 children: _statusLabels.entries.map((entry) {
                   final isSelected = _statusFilter == entry.key;
                   final color = entry.key == 'all' ? const Color(0xFF8B5CF6) : (_statusColors[entry.key] ?? Colors.grey);
+                  final label = entry.key == 'all'
+                      ? context.tr('ser_cat_all')
+                      : context.tr('ser_status_${entry.key}');
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: FilterChip(
                       selected: isSelected,
-                      label: Text(entry.value),
+                      label: Text(label),
                       selectedColor: color.withValues(alpha: 0.2),
                       checkmarkColor: color,
                       labelStyle: TextStyle(
@@ -111,9 +115,9 @@ class _BookingsBodyState extends State<_BookingsBody> {
                       children: [
                         Icon(Icons.event_note_outlined, size: 80, color: Colors.grey[300]),
                         const SizedBox(height: 16),
-                        Text('Chưa có đơn đặt dịch vụ', style: TextStyle(fontSize: 18, color: Colors.grey[500], fontWeight: FontWeight.w600)),
+                        Text(context.tr('ser_bookings_empty'), style: TextStyle(fontSize: 18, color: Colors.grey[500], fontWeight: FontWeight.w600)),
                         const SizedBox(height: 8),
-                        Text('Nhấn nút + để tạo đơn mới', style: TextStyle(fontSize: 14, color: Colors.grey[400])),
+                        Text(context.tr('ser_bookings_create_prompt'), style: TextStyle(fontSize: 14, color: Colors.grey[400])),
                       ],
                     ),
                   );
@@ -149,7 +153,7 @@ class _BookingsBodyState extends State<_BookingsBody> {
           }
         },
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Tạo đơn', style: TextStyle(fontWeight: FontWeight.bold)),
+        label: Text(context.tr('ser_bookings_create_button'), style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF8B5CF6),
         foregroundColor: Colors.white,
       ),
@@ -168,7 +172,7 @@ class _BookingCard extends StatelessWidget {
     final theme = Theme.of(context);
     final status = booking['status'] as String? ?? 'pending';
     final statusColor = _BookingsBodyState._statusColors[status] ?? Colors.grey;
-    final statusLabel = _BookingsBodyState._statusLabels[status] ?? status;
+    final statusLabel = status == 'all' ? context.tr('ser_cat_all') : context.tr('ser_status_$status');
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -198,14 +202,14 @@ class _BookingCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            _infoRow(Icons.person_outline, 'Khách hàng', booking['customer_name'] ?? ''),
+            _infoRow(Icons.person_outline, context.tr('ser_booking_customer'), booking['customer_name'] ?? ''),
             if ((booking['customer_phone'] ?? '').isNotEmpty)
-              _infoRow(Icons.phone_outlined, 'SĐT', booking['customer_phone']),
+              _infoRow(Icons.phone_outlined, context.tr('ser_booking_phone'), booking['customer_phone']),
             if (booking['scheduled_at'] != null)
-              _infoRow(Icons.schedule, 'Lịch hẹn', _formatDateTime(booking['scheduled_at'])),
-            _infoRow(Icons.attach_money, 'Thành tiền', '${_formatPrice(booking['total_amount'])} VNĐ'),
+              _infoRow(Icons.schedule, context.tr('ser_booking_appointment'), _formatDateTime(booking['scheduled_at'])),
+            _infoRow(Icons.attach_money, context.tr('ser_booking_total_amount'), '${_formatPrice(booking['total_amount'])} VNĐ'),
             if (booking['actual_hours'] != null)
-              _infoRow(Icons.timer, 'Giờ thực tế', '${booking['actual_hours']} giờ'),
+              _infoRow(Icons.timer, context.tr('ser_booking_actual_hours'), '${booking['actual_hours']} ${context.tr('ser_booking_hours_unit')}'),
 
             // Action buttons based on status
             if (status != 'completed' && status != 'cancelled') ...[
@@ -241,7 +245,7 @@ class _BookingCard extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: () => onStatusChange('cancelled'),
                 style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFFF43F5E)),
-                child: const Text('Huỷ'),
+                child: Text(context.tr('ser_action_cancel')),
               ),
             ),
             const SizedBox(width: 12),
@@ -249,7 +253,7 @@ class _BookingCard extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => onStatusChange('confirmed'),
                 style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-                child: const Text('Xác nhận'),
+                child: Text(context.tr('ser_action_confirm')),
               ),
             ),
           ],
@@ -258,14 +262,14 @@ class _BookingCard extends StatelessWidget {
         return ElevatedButton.icon(
           onPressed: () => onStatusChange('in_progress'),
           icon: const Icon(Icons.play_arrow_rounded),
-          label: const Text('Bắt đầu thực hiện'),
+          label: Text(context.tr('ser_action_start')),
           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF8B5CF6)),
         );
       case 'in_progress':
         return ElevatedButton.icon(
           onPressed: () => _showCompleteDialog(context),
           icon: const Icon(Icons.check_circle_outline),
-          label: const Text('Hoàn thành'),
+          label: Text(context.tr('ser_action_complete')),
           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
         );
       default:
@@ -278,25 +282,25 @@ class _BookingCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Hoàn thành dịch vụ'),
+        title: Text(context.tr('ser_dialog_complete_title')),
         content: TextField(
           controller: hoursController,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Số giờ thực tế',
-            hintText: 'VD: 2.5',
-            prefixIcon: Icon(Icons.timer),
+          decoration: InputDecoration(
+            labelText: context.tr('ser_dialog_actual_hours'),
+            hintText: context.tr('ser_dialog_hours_hint'),
+            prefixIcon: const Icon(Icons.timer),
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Huỷ')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(context.tr('ser_action_cancel'))),
           ElevatedButton(
             onPressed: () {
               final hours = double.tryParse(hoursController.text);
               Navigator.pop(ctx);
               onStatusChange('completed', hours: hours);
             },
-            child: const Text('Xác nhận'),
+            child: Text(context.tr('ser_action_confirm')),
           ),
         ],
       ),

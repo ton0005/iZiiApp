@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../bloc/inventory_bloc.dart';
 import 'add_product_from_image_screen.dart';
 import 'edit_product_screen.dart';
@@ -17,7 +20,7 @@ class ProductsScreen extends StatelessWidget {
         builder: (context) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Products'),
+              title: Text(context.tr('inv_products_title')),
               flexibleSpace: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -28,7 +31,7 @@ class ProductsScreen extends StatelessWidget {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.qr_code_scanner),
-                  tooltip: 'Quét mã vạch/QR',
+                  tooltip: context.tr('inv_scanner_tooltip'),
                   onPressed: () async {
                     final result = await Navigator.of(context).push<bool>(
                       MaterialPageRoute(
@@ -51,14 +54,16 @@ class ProductsScreen extends StatelessWidget {
                 if (state.error != null) {
                   return Center(
                     child: Text(
-                      'Lỗi khi tải sản phẩm: ${state.error}',
+                      context
+                          .tr('inv_load_error')
+                          .replaceAll('{error}', state.error ?? ''),
                       textAlign: TextAlign.center,
                       style: const TextStyle(color: Colors.red),
                     ),
                   );
                 }
                 if (state.products.isEmpty) {
-                  return const Center(child: Text('No products available.'));
+                  return Center(child: Text(context.tr('inv_no_products')));
                 }
                 return ListView.separated(
                   padding: const EdgeInsets.only(
@@ -68,6 +73,13 @@ class ProductsScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final product = state.products[index];
                     final bool outOfStock = product['stock'] == 0;
+                    final customFields =
+                        product['custom_fields'] as Map<String, dynamic>? ?? {};
+                    final imagePath = customFields['image_path']?.toString();
+                    final hasImage = imagePath != null &&
+                        imagePath.isNotEmpty &&
+                        File(imagePath).existsSync();
+
                     return ListTile(
                       onTap: () async {
                         final result = await Navigator.of(context).push<bool>(
@@ -90,13 +102,24 @@ class ProductsScreen extends StatelessWidget {
                           border: Border.all(
                               color: Colors.grey.withValues(alpha: 0.2)),
                         ),
-                        child: const Icon(Icons.inventory_2_outlined,
-                            color: Color(0xFF10B981)),
+                        child: hasImage
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(imagePath),
+                                  width: 48,
+                                  height: 48,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : const Icon(Icons.inventory_2_outlined,
+                                color: Color(0xFF10B981)),
                       ),
                       title: Text(product['name'],
                           style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle:
-                          Text('Giá: ${_formatPrice(product['price'])} VNĐ'),
+                      subtitle: Text(context.tr('inv_price_label').replaceAll(
+                              '{price}', _formatPrice(product['price'])) +
+                          ' VNĐ'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -111,8 +134,9 @@ class ProductsScreen extends StatelessWidget {
                             ),
                             child: Text(
                               outOfStock
-                                  ? 'Out of Stock'
-                                  : 'In Stock: ${product['stock']}',
+                                  ? context.tr('inv_out_of_stock')
+                                  : context.tr('inv_in_stock').replaceAll(
+                                      '{count}', product['stock'].toString()),
                               style: TextStyle(
                                 color: outOfStock ? Colors.red : Colors.green,
                                 fontWeight: FontWeight.bold,
@@ -123,7 +147,7 @@ class ProductsScreen extends StatelessWidget {
                           IconButton(
                             icon: const Icon(Icons.edit,
                                 color: Color(0xFF10B981)),
-                            tooltip: 'Chỉnh sửa sản phẩm',
+                            tooltip: context.tr('inv_edit_product_tooltip'),
                             onPressed: () async {
                               final result =
                                   await Navigator.of(context).push<bool>(
@@ -164,7 +188,7 @@ class ProductsScreen extends StatelessWidget {
                     }
                   },
                   icon: const Icon(Icons.camera_alt),
-                  label: const Text('Gallery / Camera'),
+                  label: Text(context.tr('inv_add_from_image_title')),
                   backgroundColor: const Color(0xFF6366F1),
                   foregroundColor: Colors.white,
                 ),

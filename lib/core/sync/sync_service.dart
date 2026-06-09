@@ -212,6 +212,14 @@ class SyncService {
         return _upsertServiceItem(data);
       case 'service_bookings':
         return _upsertServiceBooking(data);
+      case 'projects':
+        return _upsertProject(data);
+      case 'tasks':
+        return _upsertTask(data);
+      case 'purchase_orders':
+        return _upsertPurchaseOrder(data);
+      case 'purchase_order_lines':
+        return _upsertPurchaseOrderLine(data);
       default:
         _log('   ⚠️ Bảng "$table" chưa được hỗ trợ đồng bộ PULL.');
         return false;
@@ -239,6 +247,8 @@ class SyncService {
         status: Value(data['status'] as String? ?? 'new'),
         expectedRevenue: Value((data['expected_revenue'] as num?)?.toDouble() ?? 0.0),
         notes: Value(data['name'] as String?),
+        source: Value(data['source'] as String? ?? 'direct'),
+        ownerId: Value(data['owner_id'] as String?),
         customFields: Value(customFields),
       ),
     );
@@ -301,6 +311,8 @@ class SyncService {
         contactId: Value(data['contact_id'] as String? ?? ''),
         amount: Value((data['amount'] as num?)?.toDouble() ?? 0.0),
         stage: Value(data['stage'] as String? ?? 'proposal'),
+        source: Value(data['source'] as String? ?? 'direct'),
+        ownerId: Value(data['owner_id'] as String?),
         expectedCloseDate: data['expected_close_date'] != null
             ? Value(DateTime.tryParse(data['expected_close_date'].toString()))
             : const Value(null),
@@ -360,6 +372,116 @@ class SyncService {
         status: Value(data['status'] as String? ?? 'pending'),
         notes: Value(data['notes'] as String?),
         customFields: Value(customFields),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertProject(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+
+    String customFields = '{}';
+    if (data['custom_fields'] != null) {
+      customFields = data['custom_fields'] is String
+          ? data['custom_fields']
+          : jsonEncode(data['custom_fields']);
+    }
+
+    await _db.into(_db.projects).insertOnConflictUpdate(
+      ProjectsCompanion(
+        id: Value(id),
+        name: Value(data['name'] as String? ?? 'Untitled Project'),
+        description: Value(data['description'] as String?),
+        status: Value(data['status'] as String? ?? 'active'),
+        createdAt: data['created_at'] != null
+            ? Value(DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now())
+            : Value(DateTime.now()),
+        customFields: Value(customFields),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertTask(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+
+    String customFields = '{}';
+    if (data['custom_fields'] != null) {
+      customFields = data['custom_fields'] is String
+          ? data['custom_fields']
+          : jsonEncode(data['custom_fields']);
+    }
+
+    await _db.into(_db.tasks).insertOnConflictUpdate(
+      TasksCompanion(
+        id: Value(id),
+        projectId: Value(data['project_id'] as String? ?? ''),
+        title: Value(data['title'] as String? ?? 'Untitled Task'),
+        description: Value(data['description'] as String?),
+        status: Value(data['status'] as String? ?? 'todo'),
+        priority: Value(data['priority'] as String? ?? 'medium'),
+        dueDate: data['due_date'] != null
+            ? Value(DateTime.tryParse(data['due_date'].toString()))
+            : const Value(null),
+        createdAt: data['created_at'] != null
+            ? Value(DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now())
+            : Value(DateTime.now()),
+        customFields: Value(customFields),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertPurchaseOrder(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+
+    String customFields = '{}';
+    if (data['custom_fields'] != null) {
+      customFields = data['custom_fields'] is String
+          ? data['custom_fields']
+          : jsonEncode(data['custom_fields']);
+    }
+
+    await _db.into(_db.purchaseOrders).insertOnConflictUpdate(
+      PurchaseOrdersCompanion(
+        id: Value(id),
+        orderNumber: Value(data['order_number'] as String? ?? 'PO-${id.substring(0, 8)}'),
+        partnerName: Value(data['partner_name'] as String? ?? 'Unknown'),
+        orderDate: data['order_date'] != null
+            ? Value(DateTime.tryParse(data['order_date'].toString()) ?? DateTime.now())
+            : Value(DateTime.now()),
+        totalAmount: Value((data['total_amount'] as num?)?.toDouble() ?? 0.0),
+        status: Value(data['status'] as String? ?? 'draft'),
+        createdAt: data['created_at'] != null
+            ? Value(DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now())
+            : Value(DateTime.now()),
+        customFields: Value(customFields),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertPurchaseOrderLine(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+
+    final qty = (data['quantity'] as num?)?.toDouble() ?? 1.0;
+    final price = (data['unit_price'] as num?)?.toDouble() ?? 0.0;
+
+    await _db.into(_db.purchaseOrderLines).insertOnConflictUpdate(
+      PurchaseOrderLinesCompanion(
+        id: Value(id),
+        purchaseOrderId: Value(data['purchase_order_id'] as String? ?? ''),
+        productName: Value(data['product_name'] as String? ?? 'Unnamed Product'),
+        quantity: Value(qty),
+        unitPrice: Value(price),
+        totalPrice: Value((data['total_price'] as num?)?.toDouble() ?? (qty * price)),
+        createdAt: data['created_at'] != null
+            ? Value(DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now())
+            : Value(DateTime.now()),
       ),
     );
     return true;

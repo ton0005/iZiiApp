@@ -36,6 +36,30 @@ class UpdateLeadStatusEvent extends CrmEvent {
   List<Object?> get props => [leadId, newStatus];
 }
 
+class ConvertLeadToDealEvent extends CrmEvent {
+  final String leadId;
+  const ConvertLeadToDealEvent(this.leadId);
+
+  @override
+  List<Object?> get props => [leadId];
+}
+
+class LoadDealsByLeadIdEvent extends CrmEvent {
+  final String leadId;
+  const LoadDealsByLeadIdEvent(this.leadId);
+
+  @override
+  List<Object?> get props => [leadId];
+}
+
+class LoadLeadsByDealFilterEvent extends CrmEvent {
+  final String dealId;
+  const LoadLeadsByDealFilterEvent(this.dealId);
+
+  @override
+  List<Object?> get props => [dealId];
+}
+
 // State
 class CrmState extends Equatable {
   final bool isLoading;
@@ -95,21 +119,59 @@ class CrmRepository {
   }
 
   Future<List<Map<String, dynamic>>> getLeads() async {
-    final leads = await _db.select(_db.leads).get();
-    final sortedLeads = List.from(leads)
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final query = _db.select(_db.leads).join([
+      drift.leftOuterJoin(_db.deals, _db.deals.leadId.equalsExp(_db.leads.id)),
+    ]);
+    final rows = await query.get();
 
-    return sortedLeads
-        .map((l) => {
-              'id': l.id,
-              'title': l.title,
-              'status': l.status,
-              'name': l.notes ?? 'Không tên',
-              'expected_revenue': l.expectedRevenue,
-              'custom_fields': _decodeCustomFields(l.customFields),
-              'created_at': l.createdAt.toIso8601String(),
-            })
-        .toList();
+    final Map<String, Map<String, dynamic>> leadsMap = {};
+    for (final row in rows) {
+      final lead = row.readTable(_db.leads);
+      final deal = row.readTableOrNull(_db.deals);
+
+      leadsMap[lead.id] = {
+        'id': lead.id,
+        'title': lead.title,
+        'status': lead.status,
+        'name': lead.notes,
+        'expected_revenue': lead.expectedRevenue,
+        'contact_id': lead.contactId,
+        'source': lead.source,
+        'owner_id': lead.ownerId,
+        'custom_fields': _decodeCustomFields(lead.customFields),
+        'created_at': lead.createdAt.toIso8601String(),
+        'deal_id': deal?.id,
+        'deal_title': deal?.title,
+        'deal_amount': deal?.amount,
+        'deal_stage': deal?.stage,
+        'deal_expected_close_date': deal?.expectedCloseDate?.toIso8601String(),
+        'deal_contact_id': deal?.contactId,
+        'deal_source': deal?.source,
+        'deal_owner_id': deal?.ownerId,
+      };
+    }
+
+    final sortedLeads = leadsMap.values.toList()
+      ..sort((a, b) => DateTime.parse(b['created_at']).compareTo(DateTime.parse(a['created_at'])));
+
+    return sortedLeads;
+  }
+
+  Future<Map<String, dynamic>?> getLeadById(String id) async {
+    final lead = await (_db.select(_db.leads)..where((l) => l.id.equals(id))).getSingleOrNull();
+    if (lead == null) return null;
+    return {
+      'id': lead.id,
+      'title': lead.title,
+      'status': lead.status,
+      'name': lead.notes,
+      'expected_revenue': lead.expectedRevenue,
+      'contact_id': lead.contactId,
+      'source': lead.source,
+      'owner_id': lead.ownerId,
+      'custom_fields': _decodeCustomFields(lead.customFields),
+      'created_at': lead.createdAt.toIso8601String(),
+    };
   }
 
   Future<List<Map<String, dynamic>>> getDeals() async {
@@ -131,11 +193,85 @@ class CrmRepository {
         'stage': deal.stage,
         'expected_close_date': deal.expectedCloseDate?.toIso8601String(),
         'created_at': deal.createdAt.toIso8601String(),
-        'contact_name': contact?.name ?? 'Không rõ liên hệ',
+        'contact_name': contact?.name,
         'contact_phone': contact?.phone,
         'lead_title': lead?.title,
+        'lead_id': deal.leadId,
+        'contact_id': deal.contactId,
+        'source': deal.source,
+        'owner_id': deal.ownerId,
       };
     }).toList();
+  }
+
+  Future<Map<String, dynamic>?> getDealByLeadId(String leadId) async {
+    final query = _db.select(_db.deals).join([
+      drift.leftOuterJoin(_db.contacts, _db.contacts.id.equalsExp(_db.deals.contactId)),
+    ])..where(_db.deals.leadId.equals(leadId));
+
+    final row = await query.getSingleOrNull();
+    if (row == null) return null;
+    final deal = row.readTable(_db.deals);
+    final contact = row.readTableOrNull(_db.contacts);
+
+    return {
+      'id': deal.id,
+      'title': deal.title,
+      'amount': deal.amount,
+      'stage': deal.stage,
+      'expected_close_date': deal.expectedCloseDate?.toIso8601String(),
+      'created_at': deal.createdAt.toIso8601String(),
+      'contact_name': contact?.name,
+      'contact_phone': contact?.phone,
+      'lead_id': deal.leadId,
+      'contact_id': deal.contactId,
+      'source': deal.source,
+      'owner_id': deal.ownerId,
+    };
+  }
+
+  Future<Map<String, dynamic>?> getLeadByDealId(String dealId) async {
+    final deal = await (_db.select(_db.deals)..where((d) => d.id.equals(dealId))).getSingleOrNull();
+    if (deal == null || deal.leadId == null) return null;
+    return getLeadById(deal.leadId!);
+  }
+
+  Future<List<Map<String, dynamic>>> getDealsByLeadId(String leadId) async {
+    final query = _db.select(_db.deals).join([
+      drift.leftOuterJoin(_db.contacts, _db.contacts.id.equalsExp(_db.deals.contactId)),
+      drift.leftOuterJoin(_db.leads, _db.leads.id.equalsExp(_db.deals.leadId)),
+    ])..where(_db.deals.leadId.equals(leadId));
+
+    final rows = await query.get();
+    return rows.map((row) {
+      final deal = row.readTable(_db.deals);
+      final contact = row.readTableOrNull(_db.contacts);
+      final lead = row.readTableOrNull(_db.leads);
+
+      return {
+        'id': deal.id,
+        'title': deal.title,
+        'amount': deal.amount,
+        'stage': deal.stage,
+        'expected_close_date': deal.expectedCloseDate?.toIso8601String(),
+        'created_at': deal.createdAt.toIso8601String(),
+        'contact_name': contact?.name,
+        'contact_phone': contact?.phone,
+        'lead_title': lead?.title,
+        'lead_id': deal.leadId,
+        'contact_id': deal.contactId,
+        'source': deal.source,
+        'owner_id': deal.ownerId,
+      };
+    }).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getLeadsByDealFilter(String dealId) async {
+    final deal = await (_db.select(_db.deals)..where((d) => d.id.equals(dealId))).getSingleOrNull();
+    if (deal == null || deal.leadId == null) return [];
+    final leadMap = await getLeadById(deal.leadId!);
+    if (leadMap == null) return [];
+    return [leadMap];
   }
 
   Future<void> addLead(Map<String, dynamic> lead) async {
@@ -143,9 +279,12 @@ class CrmRepository {
           LeadsCompanion.insert(
             id: lead['id'],
             title: lead['title'],
-            status: drift.Value(lead['status']),
-            expectedRevenue: drift.Value(lead['expected_revenue']),
+            status: drift.Value(lead['status'] ?? 'new'),
+            expectedRevenue: drift.Value(lead['expected_revenue'] ?? 0.0),
             notes: drift.Value(lead['name']),
+            contactId: drift.Value(lead['contact_id']),
+            source: drift.Value(lead['source'] ?? 'direct'),
+            ownerId: drift.Value(lead['owner_id']),
             customFields: drift.Value(
               _encodeCustomFields(lead['custom_fields']),
             ),
@@ -163,6 +302,9 @@ class CrmRepository {
           status: leadMap['status'],
           expectedRevenue: leadMap['expected_revenue'],
           notes: drift.Value(leadMap['name']),
+          contactId: drift.Value(leadMap['contact_id']),
+          source: leadMap['source'] ?? 'direct',
+          ownerId: drift.Value(leadMap['owner_id']),
           customFields: _encodeCustomFields(leadMap['custom_fields']),
         ));
     SyncService().queueMutation('leads', 'update', leadMap);
@@ -230,6 +372,78 @@ class CrmRepository {
     }
     return false;
   }
+
+  Future<void> convertLeadToDeal(String leadId) async {
+    final lead = await (_db.select(_db.leads)..where((l) => l.id.equals(leadId))).getSingleOrNull();
+    if (lead == null) throw Exception('Lead not found');
+
+    final existingDeal = await (_db.select(_db.deals)..where((d) => d.leadId.equals(leadId))).getSingleOrNull();
+    if (existingDeal != null) {
+      if (lead.status != 'qualified' && lead.status != 'won') {
+        await updateLeadStatus(leadId, 'qualified');
+      }
+      return;
+    }
+
+    String? contactId = lead.contactId;
+    if (contactId == null) {
+      final contactName = lead.notes ?? lead.title;
+      contactId = 'contact_${DateTime.now().millisecondsSinceEpoch}_${leadId.substring(0, leadId.length < 4 ? leadId.length : 4)}';
+      
+      final contactMap = {
+        'id': contactId,
+        'name': contactName,
+        'isCustomer': true,
+        'createdAt': DateTime.now().toIso8601String(),
+      };
+      
+      await _db.into(_db.contacts).insert(
+        ContactsCompanion.insert(
+          id: contactId,
+          name: contactName,
+          isCustomer: const drift.Value(true),
+        ),
+      );
+      SyncService().queueMutation('contacts', 'insert', contactMap);
+
+      await _db.update(_db.leads).replace(lead.copyWith(
+        contactId: drift.Value(contactId),
+      ));
+      SyncService().queueMutation('leads', 'update', {
+        'id': leadId,
+        'contact_id': contactId,
+      });
+    }
+
+    final dealId = 'deal_${DateTime.now().millisecondsSinceEpoch}_${leadId.substring(0, leadId.length < 4 ? leadId.length : 4)}';
+    final dealMap = {
+      'id': dealId,
+      'title': lead.title,
+      'contact_id': contactId,
+      'amount': lead.expectedRevenue,
+      'lead_id': leadId,
+      'source': lead.source,
+      'owner_id': lead.ownerId,
+      'stage': 'proposal',
+      'created_at': DateTime.now().toIso8601String(),
+    };
+
+    await _db.into(_db.deals).insert(
+      DealsCompanion.insert(
+        id: dealId,
+        title: lead.title,
+        contactId: contactId,
+        amount: lead.expectedRevenue,
+        leadId: drift.Value(leadId),
+        source: drift.Value(lead.source),
+        ownerId: drift.Value(lead.ownerId),
+        stage: const drift.Value('proposal'),
+      ),
+    );
+    SyncService().queueMutation('deals', 'insert', dealMap);
+
+    await updateLeadStatus(leadId, 'qualified');
+  }
 }
 
 // Bloc
@@ -273,11 +487,64 @@ class CrmBloc extends Bloc<CrmEvent, CrmState> {
 
     on<UpdateLeadStatusEvent>((event, emit) async {
       try {
-        await CrmRepository().updateLeadStatus(event.leadId, event.newStatus);
+        if (event.newStatus == 'qualified' || event.newStatus == 'won') {
+          final repo = CrmRepository();
+          final existingDeal = await repo.getDealByLeadId(event.leadId);
+          if (existingDeal == null) {
+            await repo.convertLeadToDeal(event.leadId);
+          } else {
+            await repo.updateLeadStatus(event.leadId, event.newStatus);
+          }
+        } else {
+          await CrmRepository().updateLeadStatus(event.leadId, event.newStatus);
+        }
         final leads = await CrmRepository().getLeads();
-        emit(state.copyWith(leads: leads));
+        final deals = await CrmRepository().getDeals();
+        emit(state.copyWith(leads: leads, deals: deals));
       } catch (e) {
         emit(state.copyWith(error: e.toString()));
+      }
+    });
+
+    on<ConvertLeadToDealEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      try {
+        await CrmRepository().convertLeadToDeal(event.leadId);
+        final leads = await CrmRepository().getLeads();
+        final deals = await CrmRepository().getDeals();
+        emit(state.copyWith(
+          isLoading: false,
+          leads: leads,
+          deals: deals,
+        ));
+      } catch (e) {
+        emit(state.copyWith(isLoading: false, error: e.toString()));
+      }
+    });
+
+    on<LoadDealsByLeadIdEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      try {
+        final deals = await CrmRepository().getDealsByLeadId(event.leadId);
+        emit(state.copyWith(
+          isLoading: false,
+          deals: deals,
+        ));
+      } catch (e) {
+        emit(state.copyWith(isLoading: false, error: e.toString()));
+      }
+    });
+
+    on<LoadLeadsByDealFilterEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      try {
+        final leads = await CrmRepository().getLeadsByDealFilter(event.dealId);
+        emit(state.copyWith(
+          isLoading: false,
+          leads: leads,
+        ));
+      } catch (e) {
+        emit(state.copyWith(isLoading: false, error: e.toString()));
       }
     });
   }

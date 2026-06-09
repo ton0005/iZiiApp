@@ -1,7 +1,12 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/localization/app_localizations.dart';
+import 'barcode_scanner_screen.dart';
 import '../bloc/inventory_bloc.dart';
 import '../services/product_vision_service.dart';
 
@@ -10,14 +15,16 @@ class AddProductFromImageScreen extends StatefulWidget {
   const AddProductFromImageScreen({super.key, this.initialBarcode});
 
   @override
-  State<AddProductFromImageScreen> createState() => _AddProductFromImageScreenState();
+  State<AddProductFromImageScreen> createState() =>
+      _AddProductFromImageScreenState();
 }
 
 class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
   final _picker = ImagePicker();
   final _visionService = ProductVisionService();
-  
+
   Uint8List? _imageBytes;
+  String? _savedImagePath;
   bool _isAnalyzing = false;
   ProductVisionResult? _result;
   String? _error;
@@ -61,18 +68,47 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final pickedFile = await _picker.pickImage(source: source, maxWidth: 1024, maxHeight: 1024, imageQuality: 85);
+      final pickedFile = await _picker.pickImage(
+        source: source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
       if (pickedFile != null) {
         final bytes = await pickedFile.readAsBytes();
+        final savedPath = await _saveImageToLocal(bytes, pickedFile.path);
         setState(() {
           _imageBytes = bytes;
+          _savedImagePath = savedPath;
           _result = null;
           _error = null;
         });
         _analyzeImage(bytes, pickedFile.mimeType ?? 'image/jpeg');
       }
     } catch (e) {
-      setState(() => _error = 'Lỗi chọn ảnh: $e');
+      setState(() => _error =
+          '${context.tr('inv_image_picked_error').replaceAll('{error}', '')} $e');
+    }
+  }
+
+  Future<String?> _saveImageToLocal(Uint8List bytes, String sourcePath) async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final imagesDir = Directory(p.join(appDir.path, 'product_images'));
+      if (!await imagesDir.exists()) {
+        await imagesDir.create(recursive: true);
+      }
+
+      final extension =
+          p.extension(sourcePath).replaceFirst('.', '').toLowerCase();
+      final fileName =
+          'product_${const Uuid().v4()}.${extension.isNotEmpty ? extension : 'jpg'}';
+      final filePath = p.join(imagesDir.path, fileName);
+      final imageFile = File(filePath);
+      await imageFile.writeAsBytes(bytes, flush: true);
+      return imageFile.path;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -102,13 +138,29 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
     }
   }
 
+  Future<void> _scanBarcode() async {
+    final scannedCode = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => const BarcodeScannerScreen(returnCode: true),
+      ),
+    );
+
+    if (scannedCode != null && scannedCode.isNotEmpty) {
+      setState(() {
+        _barcodeController.text = scannedCode;
+      });
+    }
+  }
+
   Future<void> _saveProduct() async {
     if (_nameController.text.isEmpty) {
-      setState(() => _error = 'Tên sản phẩm không được để trống');
+      setState(() => _error = context.tr('inv_name_empty_error'));
       return;
     }
 
-    final price = double.tryParse(_priceController.text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+    final price = double.tryParse(
+            _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '')) ??
+        0;
     final stock = int.tryParse(_stockController.text) ?? 1;
 
     // Build custom fields from AI-detected extra fields
@@ -125,24 +177,30 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
     if (_specsController.text.isNotEmpty) {
       customFields['specs'] = _specsController.text;
     }
+    if (_savedImagePath != null) {
+      customFields['image_path'] = _savedImagePath;
+    }
 
     final newProduct = {
       'id': const Uuid().v4(),
       'name': _nameController.text,
       'price': price,
       'stock': stock,
-      'barcode': _barcodeController.text.isNotEmpty ? _barcodeController.text : null,
+      'barcode':
+          _barcodeController.text.isNotEmpty ? _barcodeController.text : null,
       'custom_fields': customFields,
     };
 
     try {
       await InventoryRepository().addProduct(newProduct);
-      
+
       if (!context.mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Đã thêm sản phẩm "${_nameController.text}" vào kho!'),
+          content: Text(context
+              .tr('inv_product_added')
+              .replaceAll('{name}', _nameController.text)),
           backgroundColor: const Color(0xFF10B981),
         ),
       );
@@ -152,7 +210,9 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Lỗi khi thêm sản phẩm: $e'),
+          content: Text(context
+              .tr('inv_error_adding')
+              .replaceAll('{error}', e.toString())),
           backgroundColor: const Color(0xFFF43F5E),
           duration: const Duration(seconds: 5),
         ),
@@ -164,7 +224,7 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thêm SP từ Hình ảnh'),
+        title: Text(context.tr('inv_add_from_image_title')),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -188,16 +248,37 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
 
             // --- AI Results Form ---
             if (_result != null) ...[
-              _buildSectionHeader('Thông tin AI nhận diện (chỉnh sửa được)'),
+              _buildSectionHeader(context.tr('inv_ai_info_header')),
               const SizedBox(height: 12),
-              _buildTextField(_nameController, 'Tên sản phẩm', Icons.label_outline),
-              _buildTextField(_barcodeController, 'Mã vạch / QR Code', Icons.qr_code),
-              _buildTextField(_descController, 'Mô tả', Icons.description_outlined, maxLines: 2),
-              _buildTextField(_priceController, 'Giá (VNĐ)', Icons.attach_money, keyboardType: TextInputType.number),
-              _buildTextField(_stockController, 'Số lượng tồn kho', Icons.inventory, keyboardType: TextInputType.number),
-              _buildTextField(_categoryController, 'Danh mục', Icons.category_outlined),
-              _buildTextField(_brandController, 'Thương hiệu', Icons.business_outlined),
-              _buildTextField(_specsController, 'Thông số kỹ thuật', Icons.settings_outlined, maxLines: 2),
+              _buildTextField(_nameController, context.tr('inv_product_name'),
+                  Icons.label_outline),
+              _buildTextField(
+                _barcodeController,
+                context.tr('inv_barcode_qr'),
+                Icons.qr_code,
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.qr_code_scanner,
+                      color: Color(0xFF6366F1)),
+                  tooltip: context.tr('inv_scanner_tooltip'),
+                  onPressed: _scanBarcode,
+                ),
+              ),
+              _buildTextField(_descController, context.tr('inv_description'),
+                  Icons.description_outlined,
+                  maxLines: 2),
+              _buildTextField(_priceController, context.tr('inv_price_vnd'),
+                  Icons.attach_money,
+                  keyboardType: TextInputType.number),
+              _buildTextField(_stockController,
+                  context.tr('inv_stock_quantity'), Icons.inventory,
+                  keyboardType: TextInputType.number),
+              _buildTextField(_categoryController, context.tr('inv_category'),
+                  Icons.category_outlined),
+              _buildTextField(_brandController, context.tr('inv_brand'),
+                  Icons.business_outlined),
+              _buildTextField(_specsController, context.tr('inv_specs'),
+                  Icons.settings_outlined,
+                  maxLines: 2),
               const SizedBox(height: 24),
               _buildSaveButton(),
             ],
@@ -227,7 +308,8 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
         children: [
           if (_imageBytes != null)
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(14)),
               child: Image.memory(
                 _imageBytes!,
                 width: double.infinity,
@@ -242,15 +324,16 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add_photo_alternate_outlined, size: 64, color: Colors.grey[400]),
+                  Icon(Icons.add_photo_alternate_outlined,
+                      size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 8),
                   Text(
-                    'Chụp ảnh hoặc chọn ảnh sản phẩm',
+                    context.tr('inv_picker_prompt'),
                     style: TextStyle(color: Colors.grey[500], fontSize: 16),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'AI sẽ tự động nhận diện thông tin',
+                    context.tr('inv_ai_analyzing_prompt'),
                     style: TextStyle(color: Colors.grey[400], fontSize: 13),
                   ),
                 ],
@@ -263,28 +346,34 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _isAnalyzing ? null : () => _pickImage(ImageSource.camera),
+                    onPressed: _isAnalyzing
+                        ? null
+                        : () => _pickImage(ImageSource.camera),
                     icon: const Icon(Icons.camera_alt),
-                    label: const Text('Camera'),
+                    label: Text(context.tr('inv_camera')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6366F1),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _isAnalyzing ? null : () => _pickImage(ImageSource.gallery),
+                    onPressed: _isAnalyzing
+                        ? null
+                        : () => _pickImage(ImageSource.gallery),
                     icon: const Icon(Icons.photo_library),
-                    label: const Text('Thư viện'),
+                    label: Text(context.tr('inv_gallery')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF06B6D4),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
@@ -303,11 +392,12 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+        border:
+            Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 24,
             height: 24,
             child: CircularProgressIndicator(
@@ -315,14 +405,17 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
               valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF59E0B)),
             ),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('AI đang phân tích hình ảnh...', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                SizedBox(height: 4),
-                Text('Nhận diện sản phẩm, giá, thương hiệu...', style: TextStyle(color: Colors.grey, fontSize: 13)),
+                Text(context.tr('inv_ai_analyzing_status'),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15)),
+                const SizedBox(height: 4),
+                Text(context.tr('inv_ai_analyzing_details'),
+                    style: const TextStyle(color: Colors.grey, fontSize: 13)),
               ],
             ),
           ),
@@ -338,13 +431,16 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFFF43F5E).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF43F5E).withValues(alpha: 0.3)),
+        border:
+            Border.all(color: const Color(0xFFF43F5E).withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           const Icon(Icons.error_outline, color: Color(0xFFF43F5E)),
           const SizedBox(width: 12),
-          Expanded(child: Text(_error!, style: const TextStyle(color: Color(0xFFF43F5E)))),
+          Expanded(
+              child: Text(_error!,
+                  style: const TextStyle(color: Color(0xFFF43F5E)))),
         ],
       ),
     );
@@ -366,7 +462,8 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
           ),
         ),
         const SizedBox(width: 8),
-        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -375,6 +472,7 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
     TextEditingController controller,
     String label,
     IconData icon, {
+    Widget? suffixIcon,
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
   }) {
@@ -396,9 +494,11 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
           ),
+          suffixIcon: suffixIcon,
           filled: true,
           fillColor: Theme.of(context).colorScheme.surface,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );
@@ -422,13 +522,15 @@ class _AddProductFromImageScreenState extends State<AddProductFromImageScreen> {
       child: ElevatedButton.icon(
         onPressed: _saveProduct,
         icon: const Icon(Icons.save_alt_rounded, size: 22),
-        label: const Text('Lưu vào Kho', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        label: Text(context.tr('inv_save_to_inventory'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
     );

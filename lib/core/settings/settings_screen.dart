@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'settings_service.dart';
+import '../bloc/app_bloc.dart';
+import '../localization/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -37,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settingsService.saveGeminiApiKey(_apiKeyController.text);
     setState(() => _isSaved = true);
     
-    // Ẩn thông báo sau 2s
+    // Hide notification after 2s
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) setState(() => _isSaved = false);
     });
@@ -45,17 +48,88 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cài đặt hệ thống', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('settings_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // --- Language Configurations ---
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.language_rounded, color: Color(0xFF10B981)),
+                        const SizedBox(width: 8),
+                        Text(
+                          context.tr('settings_language'),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.tr('settings_language_desc'),
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ChoiceChip(
+                            label: const Center(
+                              child: Text(
+                                'Tiếng Việt',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            selected: Localizations.localeOf(context).languageCode == 'vi',
+                            selectedColor: const Color(0xFF10B981).withOpacity(0.25),
+                            checkmarkColor: const Color(0xFF10B981),
+                            onSelected: (selected) {
+                              if (selected) {
+                                context.read<AppBloc>().add(const ChangeLocaleEvent(Locale('vi')));
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ChoiceChip(
+                            label: const Center(
+                              child: Text(
+                                'English',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            selected: Localizations.localeOf(context).languageCode == 'en',
+                            selectedColor: const Color(0xFF10B981).withOpacity(0.25),
+                            checkmarkColor: const Color(0xFF10B981),
+                            onSelected: (selected) {
+                              if (selected) {
+                                context.read<AppBloc>().add(const ChangeLocaleEvent(Locale('en')));
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
             // --- AI Configurations ---
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -65,28 +139,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.smart_toy_outlined, color: Color(0xFF6366F1)),
-                        SizedBox(width: 8),
+                        const Icon(Icons.smart_toy_outlined, color: Color(0xFF6366F1)),
+                        const SizedBox(width: 8),
                         Text(
-                          'Cấu hình Google Gemini API',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          context.tr('settings_api_config'),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Nhập API Key của bạn để sử dụng AI Agent. Dữ liệu này chỉ lưu trên thiết bị của bạn.',
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    Text(
+                      context.tr('settings_api_desc'),
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: _apiKeyController,
-                      decoration: const InputDecoration(
-                        labelText: 'Gemini API Key',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.key),
+                      decoration: InputDecoration(
+                        labelText: context.tr('settings_api_key_label'),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.key),
                       ),
                       obscureText: true,
                     ),
@@ -101,13 +175,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                        child: const Text('Lưu API Key', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(context.tr('settings_save_api_key'), style: const TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     ),
                     if (_isSaved) ...[
                       const SizedBox(height: 12),
-                      const Center(
-                        child: Text('Đã lưu thành công!', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                      Center(
+                        child: Text(
+                          context.tr('settings_save_success'),
+                          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ]
                   ],
@@ -126,27 +203,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.sync_rounded, color: Color(0xFF06B6D4)),
-                        SizedBox(width: 8),
+                        const Icon(Icons.sync_rounded, color: Color(0xFF06B6D4)),
+                        const SizedBox(width: 8),
                         Text(
-                          'Đồng bộ Dữ liệu (Sync)',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          context.tr('settings_sync_title'),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Đồng bộ hóa dữ liệu offline giữa thiết bị di động, ứng dụng Windows và máy chủ đám mây (Cloud Server).',
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    Text(
+                      context.tr('settings_sync_desc'),
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.sync_outlined),
-                        label: const Text('Đi tới màn hình Đồng bộ', style: TextStyle(fontWeight: FontWeight.bold)),
+                        label: Text(context.tr('settings_go_to_sync'), style: const TextStyle(fontWeight: FontWeight.bold)),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           backgroundColor: const Color(0xFF06B6D4),

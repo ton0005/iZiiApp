@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class LeadForm extends StatefulWidget {
   final Map<String, dynamic>? initialLead;
   final Future<void> Function(Map<String, dynamic>) onSave;
-  final String submitLabel;
+  final String? submitLabel;
 
   const LeadForm({
     super.key,
     this.initialLead,
     required this.onSave,
-    this.submitLabel = 'Lưu Lead',
+    this.submitLabel,
   });
 
   @override
@@ -24,10 +25,10 @@ class _LeadFormState extends State<LeadForm> {
   late String _status;
 
   final List<String> _statuses = [
-    'Khách hàng mới',
-    'Đang đàm phán',
-    'Chốt đơn',
-    'Huỷ',
+    'new',
+    'qualified',
+    'won',
+    'lost',
   ];
 
   @override
@@ -40,7 +41,16 @@ class _LeadFormState extends State<LeadForm> {
         TextEditingController(text: initial['title']?.toString() ?? '');
     _revenueController = TextEditingController(
         text: initial['expected_revenue']?.toString() ?? '0');
-    final currentStatus = initial['status']?.toString() ?? _statuses.first;
+    var currentStatus = initial['status']?.toString() ?? 'new';
+    if (currentStatus == 'Khách hàng mới') {
+      currentStatus = 'new';
+    } else if (currentStatus == 'Đang đàm phán') {
+      currentStatus = 'qualified';
+    } else if (currentStatus == 'Chốt đơn') {
+      currentStatus = 'won';
+    } else if (currentStatus == 'Huỷ') {
+      currentStatus = 'lost';
+    }
     _status =
         _statuses.contains(currentStatus) ? currentStatus : _statuses.first;
   }
@@ -63,7 +73,7 @@ class _LeadFormState extends State<LeadForm> {
       ...?widget.initialLead,
       'name': _nameController.text.trim(),
       'title': _titleController.text.trim().isEmpty
-          ? 'Khách hàng: ${_nameController.text.trim()}'
+          ? '${context.tr('crm_customer_label')}: ${_nameController.text.trim()}'
           : _titleController.text.trim(),
       'status': _status,
       'expected_revenue': revenue,
@@ -80,22 +90,22 @@ class _LeadFormState extends State<LeadForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildSectionHeader('Thông tin Khách hàng'),
+          _buildSectionHeader(context.tr('crm_info_customer_info')),
           const SizedBox(height: 12),
           _buildTextField(
             controller: _nameController,
-            label: 'Tên khách hàng',
+            label: context.tr('crm_info_customer_name'),
             icon: Icons.person_outline,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Tên khách hàng không được để trống';
+                return context.tr('crm_info_customer_name_empty');
               }
               return null;
             },
           ),
           _buildTextField(
             controller: _titleController,
-            label: 'Nhu cầu / Ghi chú',
+            label: context.tr('crm_info_needs_notes'),
             icon: Icons.description_outlined,
             validator: (value) {
               return null;
@@ -104,23 +114,23 @@ class _LeadFormState extends State<LeadForm> {
           ),
           _buildTextField(
             controller: _revenueController,
-            label: 'Trị giá dự kiến (VNĐ)',
+            label: context.tr('crm_info_expected_revenue'),
             icon: Icons.monetization_on_outlined,
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Vui lòng nhập trị giá dự kiến';
+                return context.tr('crm_info_expected_revenue_empty');
               }
               final parsed =
                   double.tryParse(value.replaceAll(RegExp(r'[^0-9.]'), ''));
               if (parsed == null || parsed < 0) {
-                return 'Trị giá phải là số hợp lệ và không âm';
+                return context.tr('crm_info_expected_revenue_invalid');
               }
               return null;
             },
           ),
           const SizedBox(height: 16),
-          _buildSectionHeader('Trạng thái'),
+          _buildSectionHeader(context.tr('crm_info_status')),
           const SizedBox(height: 12),
           _buildStatusDropdown(),
           const SizedBox(height: 24),
@@ -201,7 +211,7 @@ class _LeadFormState extends State<LeadForm> {
           icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF6366F1)),
           items: _statuses
               .map((status) =>
-                  DropdownMenuItem(value: status, child: Text(status)))
+                  DropdownMenuItem(value: status, child: Text(_getStatusLabel(status, context))))
               .toList(),
           onChanged: (value) {
             if (value != null) {
@@ -220,8 +230,23 @@ class _LeadFormState extends State<LeadForm> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
-      child: Text(widget.submitLabel,
+      child: Text(widget.submitLabel ?? context.tr('crm_info_save_lead'),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
     );
+  }
+
+  String _getStatusLabel(String status, BuildContext context) {
+    switch (status) {
+      case 'new':
+        return context.tr('crm_status_new');
+      case 'qualified':
+        return context.tr('crm_status_qualified');
+      case 'won':
+        return context.tr('crm_status_won');
+      case 'lost':
+        return context.tr('crm_status_lost');
+      default:
+        return status;
+    }
   }
 }

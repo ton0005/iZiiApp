@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/modules/module_interface.dart';
 import '../../core/modules/module_manifest.dart';
 import '../../core/ai_agent/models/chat_models.dart';
+import '../../core/localization/app_localizations.dart';
 import 'manifest.dart';
 import 'repository.dart';
 import 'screens/services_screen.dart';
@@ -203,7 +204,16 @@ class ServicesModule implements IZiiModule {
   Widget? get dashboardWidget => const _ServicesDashboardWidget();
 
   @override
-  Future<void> initialize() async {}
+  Future<void> initialize() async {
+    AppLocalizations.registerModuleTranslations('vi', {
+      'module_services_title': 'Services',
+      'services_categories': 'Sửa chữa • Lắp đặt • Vận chuyển • Dọn dẹp • Điện nước',
+    });
+    AppLocalizations.registerModuleTranslations('en', {
+      'module_services_title': 'Services',
+      'services_categories': 'Repair • Installation • Delivery • Cleaning • Electrical',
+    });
+  }
 
   @override
   Future<void> dispose() async {}
@@ -223,13 +233,13 @@ class _ServicesDashboardWidget extends StatelessWidget {
         color: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Quản lý Dịch vụ',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          SizedBox(height: 8),
-          Text('Sửa chữa • Lắp đặt • Vận chuyển • Dọn dẹp • Điện nước'),
+          Text(context.tr('module_services_title'),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          const SizedBox(height: 8),
+          Text(context.tr('services_categories')),
         ],
       ),
     );

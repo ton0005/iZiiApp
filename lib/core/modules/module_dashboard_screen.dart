@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'module_interface.dart';
 import 'module_registry.dart';
+import '../localization/app_localizations.dart';
 
 class ModuleDashboardScreen extends StatelessWidget {
   final String moduleId;
@@ -16,23 +17,27 @@ class ModuleDashboardScreen extends StatelessWidget {
     if (module == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Module')),
-        body: const Center(
+        body: Center(
           child: Text(
-            'Không thể tải module. Đã xảy ra lỗi khi cài đặt.',
-            style: TextStyle(color: Colors.redAccent),
+            context.tr('module_error_load'),
+            style: const TextStyle(color: Colors.redAccent),
           ),
         ),
       );
     }
 
     final theme = Theme.of(context);
-    final actions = _moduleActions(moduleId);
+    final actions = _moduleActions(moduleId, context);
+    final moduleNameKey = 'module_${module.manifest.id}_name';
+    final moduleDescKey = 'module_${module.manifest.id}_desc';
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: Text(module.manifest.name,
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          context.tr(moduleNameKey),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -55,7 +60,7 @@ class ModuleDashboardScreen extends StatelessWidget {
                 .slideY(begin: 0.1, end: 0),
             const SizedBox(height: 32),
             if (module.dashboardWidget != null) ...[
-              _buildSectionTitle(context, 'Tổng quan'),
+              _buildSectionTitle(context, context.tr('module_overview')),
               const SizedBox(height: 16),
               Container(
                 decoration: BoxDecoration(
@@ -80,7 +85,7 @@ class ModuleDashboardScreen extends StatelessWidget {
                   .slideY(begin: 0.1, end: 0),
               const SizedBox(height: 32),
             ],
-            _buildSectionTitle(context, 'Điều hướng nhanh'),
+            _buildSectionTitle(context, context.tr('module_quick_actions')),
             const SizedBox(height: 16),
             _buildActionGrid(context, actions)
                 .animate()
@@ -89,7 +94,7 @@ class ModuleDashboardScreen extends StatelessWidget {
             const SizedBox(height: 48),
             Center(
               child: Text(
-                module.manifest.description,
+                context.tr(moduleDescKey),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
@@ -139,7 +144,7 @@ class ModuleDashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  module.manifest.name,
+                  context.tr('module_${module.manifest.id}_name'),
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     letterSpacing: -0.5,
@@ -313,18 +318,18 @@ class ModuleDashboardScreen extends StatelessWidget {
     );
   }
 
-  List<_ModuleAction> _moduleActions(String moduleId) {
+  List<_ModuleAction> _moduleActions(String moduleId, BuildContext context) {
     if (moduleId == 'izii.sales_crm') {
-      return const [
+      return [
         _ModuleAction(
-          label: 'Quản lý Leads',
-          subtitle: 'Khách hàng tiềm năng',
+          label: context.tr('crm_action_leads'),
+          subtitle: context.tr('crm_action_leads_sub'),
           path: '/crm/leads',
           icon: Icons.person_search_rounded,
         ),
         _ModuleAction(
-          label: 'Deal Pipeline',
-          subtitle: 'Theo dõi cơ hội',
+          label: context.tr('crm_action_pipeline'),
+          subtitle: context.tr('crm_action_pipeline_sub'),
           path: '/crm/deals',
           icon: Icons.bar_chart_rounded,
         ),
@@ -332,10 +337,10 @@ class ModuleDashboardScreen extends StatelessWidget {
     }
 
     if (moduleId == 'izii.supply_chain') {
-      return const [
+      return [
         _ModuleAction(
-          label: 'Products & Stock',
-          subtitle: 'Inventory management',
+          label: context.tr('supply_action_products'),
+          subtitle: context.tr('supply_action_products_sub'),
           path: '/inventory/products',
           icon: Icons.inventory_2_rounded,
         ),
@@ -343,23 +348,74 @@ class ModuleDashboardScreen extends StatelessWidget {
     }
 
     if (moduleId == 'izii.services') {
-      return const [
+      return [
         _ModuleAction(
-          label: 'Danh sách Dịch vụ',
-          subtitle: 'Sửa chữa, Lắp đặt, Điện nước',
+          label: context.tr('services_action_list'),
+          subtitle: context.tr('services_action_list_sub'),
           path: '/services/list',
           icon: Icons.home_repair_service_rounded,
         ),
         _ModuleAction(
-          label: 'Đơn đặt Dịch vụ',
-          subtitle: 'Theo dõi & quản lý đơn',
+          label: context.tr('services_action_bookings'),
+          subtitle: context.tr('services_action_bookings_sub'),
           path: '/services/bookings',
           icon: Icons.event_note_rounded,
         ),
       ];
     }
 
-    return const [];
+    if (moduleId == 'izii.project_management') {
+      return [
+        _ModuleAction(
+          label: context.tr('project_action_list'),
+          subtitle: context.tr('project_action_list_sub'),
+          path: '/project/list',
+          icon: Icons.assignment_rounded,
+        ),
+      ];
+    }
+
+    if (moduleId == 'izii.purchase_management') {
+      return [
+        _ModuleAction(
+          label: context.tr('purchase_orders_title'),
+          subtitle: context.tr('purchase_overview_desc'),
+          path: '/purchase/list',
+          icon: Icons.shopping_cart_rounded,
+        ),
+      ];
+    }
+
+    if (moduleId == 'izii.accountant') {
+      return [
+        _ModuleAction(
+          label: context.tr('acc_action_coa'),
+          subtitle: context.tr('acc_action_coa_sub'),
+          path: '/accountant/coa',
+          icon: Icons.account_balance_rounded,
+        ),
+        _ModuleAction(
+          label: context.tr('acc_action_journal'),
+          subtitle: context.tr('acc_action_journal_sub'),
+          path: '/accountant/journal',
+          icon: Icons.article_rounded,
+        ),
+        _ModuleAction(
+          label: context.tr('acc_action_reports'),
+          subtitle: context.tr('acc_action_reports_sub'),
+          path: '/accountant/reports',
+          icon: Icons.analytics_rounded,
+        ),
+        _ModuleAction(
+          label: context.tr('acc_action_payroll'),
+          subtitle: context.tr('acc_action_payroll_sub'),
+          path: '/accountant/payroll',
+          icon: Icons.payments_rounded,
+        ),
+      ];
+    }
+
+    return [];
   }
 }
 

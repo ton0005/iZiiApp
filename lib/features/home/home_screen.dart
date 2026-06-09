@@ -620,6 +620,12 @@ IconData _iconForModule(String moduleId) {
       return Icons.inventory_2_rounded;
     case 'izii.services':
       return Icons.handyman_rounded;
+    case 'izii.project_management':
+      return Icons.assignment_rounded;
+    case 'izii.purchase_management':
+      return Icons.shopping_cart_rounded;
+    case 'izii.accountant':
+      return Icons.account_balance_rounded;
     default:
       return Icons.extension_rounded;
   }
@@ -633,6 +639,12 @@ Color _colorForModule(String moduleId) {
       return IZiiColors.accent;
     case 'izii.services':
       return const Color(0xFF22D3EE);
+    case 'izii.project_management':
+      return const Color(0xFF8B5CF6);
+    case 'izii.purchase_management':
+      return IZiiColors.success;
+    case 'izii.accountant':
+      return const Color(0xFF06B6D4);
     default:
       return IZiiColors.primary;
   }
@@ -646,6 +658,12 @@ String _routeForModule(String moduleId) {
       return '/inventory';
     case 'izii.services':
       return '/services/list';
+    case 'izii.project_management':
+      return '/project';
+    case 'izii.purchase_management':
+      return '/purchase';
+    case 'izii.accountant':
+      return '/accountant';
     default:
       return '/';
   }

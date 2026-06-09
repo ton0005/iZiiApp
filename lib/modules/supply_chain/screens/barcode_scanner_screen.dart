@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../bloc/inventory_bloc.dart';
 import 'add_product_from_image_screen.dart';
 import 'product_info_screen.dart';
@@ -79,7 +80,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
         _showProductBottomSheet(
           code: code,
           exists: true,
-          title: 'Đã tìm thấy sản phẩm',
+          title: context.tr('inv_scanned_product_found'),
           name: product.name,
           price: product.price,
           onAction: () async {
@@ -100,8 +101,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
         _showProductBottomSheet(
           code: code,
           exists: false,
-          title: 'Sản phẩm mới',
-          name: 'Mã: $code',
+          title: context.tr('inv_scanned_new_product'),
+          name: context.tr('inv_scanned_code_label').replaceAll('{code}', code),
           price: 0,
           onAction: () async {
             Navigator.of(context).pop(); // Close bottom sheet
@@ -122,7 +123,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi khi tra cứu: $e'),
+            content: Text('${context.tr('error')}: $e'),
             backgroundColor: const Color(0xFFF43F5E),
           ),
         );
@@ -208,7 +209,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Mã Barcode: $code',
+                context.tr('inv_scanned_code_label').replaceAll('{code}', code),
                 style: TextStyle(
                   color: Colors.grey[500],
                   fontFamily: 'monospace',
@@ -218,7 +219,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
               if (exists) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Đơn giá: ${_formatPrice(price)} VNĐ',
+                  context.tr('inv_price_label').replaceAll('{price}', '${_formatPrice(price)} VNĐ'),
                   style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF10B981),
@@ -240,7 +241,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                         Navigator.of(context).pop();
                         _resumeScanner();
                       },
-                      child: const Text('Quét lại'),
+                      child: Text(context.tr('inv_scan_again')),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -270,7 +271,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                               borderRadius: BorderRadius.circular(14)),
                         ),
                         onPressed: onAction,
-                        child: Text(exists ? 'Chỉnh sửa' : 'Thêm sản phẩm'),
+                        child: Text(exists ? context.tr('edit') : context.tr('inv_add_product')),
                       ),
                     ),
                   ),
@@ -304,9 +305,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Quét mã vạch / QR',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          context.tr('inv_barcode_scanner_title'),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -420,10 +421,10 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.white10),
               ),
-              child: const Text(
-                'Đặt mã vạch hoặc mã QR vào giữa khung hình để quét tự động',
+              child: Text(
+                context.tr('inv_scanner_instruction'),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,

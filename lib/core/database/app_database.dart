@@ -8,6 +8,9 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import '../../modules/sales_crm/database/tables.dart';
 import '../../modules/supply_chain/database/tables.dart';
 import '../../modules/services/database/tables.dart';
+import '../../modules/project/database/tables.dart';
+import '../../modules/purchase/database/tables.dart';
+import '../../modules/accountant/database/tables.dart';
 import '../community/database/tables.dart';
 
 part 'app_database.g.dart';
@@ -74,7 +77,17 @@ class OutboxMutations extends Table {
   Reviews,
   ServiceItems,
   ServiceBookings,
-  OutboxMutations
+  OutboxMutations,
+  Projects,
+  Tasks,
+  PurchaseOrders,
+  PurchaseOrderLines,
+  AuContacts,
+  Accounts,
+  TaxRates,
+  JournalEntries,
+  JournalLines,
+  PayrollEvents
 ])
 class AppDatabase extends _$AppDatabase {
   static final AppDatabase _instance = AppDatabase._internal();
@@ -83,7 +96,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -109,6 +122,26 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 6) {
             await m.createTable(outboxMutations);
+          }
+          if (from < 7) {
+            await m.createTable(projects);
+            await m.createTable(tasks);
+            await m.createTable(purchaseOrders);
+            await m.createTable(purchaseOrderLines);
+          }
+          if (from < 8) {
+            await m.addColumn(leads, leads.source);
+            await m.addColumn(leads, leads.ownerId);
+            await m.addColumn(deals, deals.source);
+            await m.addColumn(deals, deals.ownerId);
+          }
+          if (from < 9) {
+            await m.createTable(auContacts);
+            await m.createTable(accounts);
+            await m.createTable(taxRates);
+            await m.createTable(journalEntries);
+            await m.createTable(journalLines);
+            await m.createTable(payrollEvents);
           }
         },
       );

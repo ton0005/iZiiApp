@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../bloc/crm_bloc.dart';
 import '../ui/lead_form.dart';
 
@@ -23,7 +24,7 @@ class _AddLeadScreenState extends State<AddLeadScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Đã thêm khách hàng "${lead['name']}"!'),
+          content: Text(context.tr('crm_customer_added').replaceAll('{name}', lead['name'] ?? '')),
           backgroundColor: const Color(0xFF10B981),
         ),
       );
@@ -32,7 +33,7 @@ class _AddLeadScreenState extends State<AddLeadScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Lỗi khi thêm lead: $e'),
+          content: Text(context.tr('crm_error_adding_lead').replaceAll('{error}', e.toString())),
           backgroundColor: const Color(0xFFF43F5E),
           duration: const Duration(seconds: 5),
         ),
@@ -44,7 +45,7 @@ class _AddLeadScreenState extends State<AddLeadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thêm Khách hàng Mới'),
+        title: Text(context.tr('crm_add_new_customer')),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -56,7 +57,7 @@ class _AddLeadScreenState extends State<AddLeadScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: LeadForm(
-          submitLabel: 'Thêm Lead',
+          submitLabel: context.tr('crm_add_lead'),
           onSave: _saveLead,
         ),
       ),

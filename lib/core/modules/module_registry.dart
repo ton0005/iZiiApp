@@ -1,6 +1,9 @@
 import '../../modules/sales_crm/sales_crm_module.dart';
 import '../../modules/supply_chain/supply_chain_module.dart';
 import '../../modules/services/services_module.dart';
+import '../../modules/project/project_module.dart';
+import '../../modules/purchase/purchase_module.dart';
+import '../../modules/accountant/accountant_module.dart';
 import 'module_interface.dart';
 import 'module_manifest.dart';
 
@@ -41,6 +44,9 @@ class ModuleRegistry {
     registerModuleFactory(() => SalesCrmModule());
     registerModuleFactory(() => SupplyChainModule());
     registerModuleFactory(() => ServicesModule());
+    registerModuleFactory(() => ProjectModule());
+    registerModuleFactory(() => PurchaseModule());
+    registerModuleFactory(() => AccountantModule());
     _defaultFactoriesRegistered = true;
   }
 

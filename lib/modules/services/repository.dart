@@ -5,6 +5,7 @@ import '../../core/database/app_database.dart';
 import '../../core/sync/sync_service.dart';
 import 'daos/service_items_dao.dart';
 import 'daos/service_bookings_dao.dart';
+import '../../modules/accountant/repository.dart';
 
 class ServicesRepository {
   final AppDatabase _db;
@@ -237,6 +238,98 @@ class ServicesRepository {
       'actual_hours': actualHours,
       'total_amount': totalAmount,
     });
+
+    if (status == 'completed') {
+      final accRepo = AccountantRepository();
+      final ref = 'BK-$bookingId';
+      final isAlreadyPosted = await accRepo.hasJournalEntryReference(ref);
+      if (!isAlreadyPosted) {
+        // Ensure standard accounts are seeded
+        await accRepo.seedTaxRatesAndAccounts();
+
+        final accounts = await accRepo.getAccounts();
+        final serviceItem =
+            await serviceItemsDao.getServiceItemById(booking.serviceItemId);
+        final isDelivery = serviceItem?.category == 'delivery';
+
+        final totalAmt = totalAmount;
+        final gstAmt = double.parse((totalAmt * 0.1 / 1.1).toStringAsFixed(4));
+        final netAmt = double.parse((totalAmt - gstAmt).toStringAsFixed(4));
+
+        if (isDelivery) {
+          // Shipping/Delivery Expense Booking
+          final deliveryExpenseAcc =
+              accounts.firstWhere((a) => a['code'] == '6-1500');
+          final gstPaidAcc = accounts.firstWhere((a) => a['code'] == '2-2100');
+          final bankAcc = accounts.firstWhere((a) => a['code'] == '1-1000');
+
+          await accRepo.addJournalEntry({
+            'entry_date': DateTime.now().toIso8601String(),
+            'reference': ref,
+            'narration': 'Automated Delivery Expense for Booking $bookingId',
+            'lines': [
+              {
+                'account_id': deliveryExpenseAcc['id'],
+                'debit': netAmt,
+                'credit': 0.0,
+                'gst_tax_code': 'GST',
+                'gst_amount': gstAmt,
+              },
+              {
+                'account_id': gstPaidAcc['id'],
+                'debit': gstAmt,
+                'credit': 0.0,
+                'gst_tax_code': 'ITS',
+                'gst_amount': 0.0,
+              },
+              {
+                'account_id': bankAcc['id'],
+                'debit': 0.0,
+                'credit': totalAmt,
+                'gst_tax_code': 'ITS',
+                'gst_amount': 0.0,
+              },
+            ],
+          });
+        } else {
+          // Standard Sales Revenue Booking
+          final bankAcc = accounts.firstWhere((a) => a['code'] == '1-1000');
+          final salesRevAcc = accounts.firstWhere((a) => a['code'] == '4-1000');
+          final gstCollectedAcc =
+              accounts.firstWhere((a) => a['code'] == '2-2000');
+
+          await accRepo.addJournalEntry({
+            'entry_date': DateTime.now().toIso8601String(),
+            'reference': ref,
+            'narration':
+                'Automated Services Revenue for Booking $bookingId from ${booking.customerName}',
+            'lines': [
+              {
+                'account_id': bankAcc['id'],
+                'debit': totalAmt,
+                'credit': 0.0,
+                'gst_tax_code': 'ITS',
+                'gst_amount': 0.0,
+              },
+              {
+                'account_id': salesRevAcc['id'],
+                'debit': 0.0,
+                'credit': netAmt,
+                'gst_tax_code': 'GST',
+                'gst_amount': gstAmt,
+              },
+              {
+                'account_id': gstCollectedAcc['id'],
+                'debit': 0.0,
+                'credit': gstAmt,
+                'gst_tax_code': 'ITS',
+                'gst_amount': 0.0,
+              },
+            ],
+          });
+        }
+      }
+    }
   }
 
   // === AI AGENT ===

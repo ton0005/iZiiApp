@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../bloc/services_bloc.dart';
 
 class EditServiceScreen extends StatefulWidget {
@@ -82,7 +83,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
   Future<void> _save() async {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tên dịch vụ không được để trống')),
+        SnackBar(content: Text(context.tr('ser_service_name_empty_err'))),
       );
       return;
     }
@@ -113,7 +114,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Đã cập nhật dịch vụ "${_nameController.text}"!'),
+          content: Text(context.tr('ser_service_updated').replaceAll('{name}', _nameController.text)),
           backgroundColor: const Color(0xFF10B981),
         ),
       );
@@ -121,7 +122,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi: $e'), backgroundColor: const Color(0xFFF43F5E), duration: const Duration(seconds: 5)),
+        SnackBar(content: Text('${context.tr('error')}: $e'), backgroundColor: const Color(0xFFF43F5E), duration: const Duration(seconds: 5)),
       );
     }
   }
@@ -130,7 +131,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chỉnh sửa Dịch vụ'),
+        title: Text(context.tr('ser_edit_service_title')),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
@@ -142,19 +143,19 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildSectionHeader('Thông tin dịch vụ'),
+            _buildSectionHeader(context.tr('ser_service_info_section')),
             const SizedBox(height: 12),
-            _buildTextField(_nameController, 'Tên dịch vụ', Icons.home_repair_service_rounded),
-            _buildTextField(_descController, 'Mô tả', Icons.description_outlined, maxLines: 2),
+            _buildTextField(_nameController, context.tr('ser_service_name_label').replaceAll(' *', ''), Icons.home_repair_service_rounded),
+            _buildTextField(_descController, context.tr('inv_description'), Icons.description_outlined, maxLines: 2),
 
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: DropdownButtonFormField<String>(
                 value: _category,
-                items: _categories.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+                items: _categories.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(context.tr('ser_cat_${e.key}')))).toList(),
                 onChanged: (v) => setState(() => _category = v ?? 'other'),
                 decoration: InputDecoration(
-                  labelText: 'Loại dịch vụ',
+                  labelText: context.tr('ser_service_category_label'),
                   prefixIcon: const Icon(Icons.category_outlined, size: 20),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   enabledBorder: OutlineInputBorder(
@@ -171,21 +172,21 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
             SwitchListTile(
               value: _isActive,
               onChanged: (v) => setState(() => _isActive = v),
-              title: const Text('Dịch vụ đang hoạt động', style: TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: Text(_isActive ? 'Khách hàng có thể đặt dịch vụ này' : 'Tạm ngưng nhận đặt dịch vụ'),
+              title: Text(context.tr('ser_active_status_label'), style: const TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: Text(_isActive ? context.tr('ser_active_status_desc_on') : context.tr('ser_active_status_desc_off')),
               activeColor: const Color(0xFF10B981),
               contentPadding: EdgeInsets.zero,
             ),
 
             const SizedBox(height: 8),
-            _buildSectionHeader('Đơn giá'),
+            _buildSectionHeader(context.tr('ser_service_hourly_rate_label_edit').split(' (')[0]),
             const SizedBox(height: 12),
-            _buildTextField(_hourlyRateController, 'Đơn giá / giờ (VNĐ)', Icons.attach_money, keyboardType: TextInputType.number),
-            _buildTextField(_estimatedHoursController, 'Số giờ ước tính', Icons.timer_outlined, keyboardType: TextInputType.number),
+            _buildTextField(_hourlyRateController, context.tr('ser_service_hourly_rate_label_edit'), Icons.attach_money, keyboardType: TextInputType.number),
+            _buildTextField(_estimatedHoursController, context.tr('ser_service_est_hours_label'), Icons.timer_outlined, keyboardType: TextInputType.number),
 
             if (_customFieldControllers.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildSectionHeader('Trường tuỳ chỉnh'),
+              _buildSectionHeader(context.tr('inv_custom_fields')),
               const SizedBox(height: 12),
               ..._customFieldControllers.entries.map((entry) {
                 return Padding(
@@ -204,13 +205,13 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
             ],
 
             const SizedBox(height: 16),
-            _buildSectionHeader('Thêm trường mới'),
+            _buildSectionHeader(context.tr('inv_add_new_field')),
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(flex: 2, child: _buildTextField(_newFieldKeyController, 'Tên trường', Icons.vpn_key_outlined)),
+                Expanded(flex: 2, child: _buildTextField(_newFieldKeyController, context.tr('inv_field_name'), Icons.vpn_key_outlined)),
                 const SizedBox(width: 8),
-                Expanded(flex: 3, child: _buildTextField(_newFieldValueController, 'Giá trị', Icons.text_fields)),
+                Expanded(flex: 3, child: _buildTextField(_newFieldValueController, context.tr('inv_field_value'), Icons.text_fields)),
                 const SizedBox(width: 4),
                 Container(
                   decoration: BoxDecoration(
@@ -267,7 +268,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
       child: ElevatedButton.icon(
         onPressed: _save,
         icon: const Icon(Icons.save_alt_rounded, size: 22),
-        label: const Text('Lưu thay đổi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        label: Text(context.tr('inv_save_changes'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent, shadowColor: Colors.transparent, foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),

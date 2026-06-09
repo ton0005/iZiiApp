@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:izii_app/core/theme/izii_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../bloc/services_bloc.dart';
 import 'add_service_screen.dart';
 import 'edit_service_screen.dart';
@@ -77,7 +78,6 @@ class _ServicesBodyState extends State<_ServicesBody> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: IZiiColors.darkBackground,
       appBar: AppBar(
@@ -87,8 +87,8 @@ class _ServicesBodyState extends State<_ServicesBody> {
                 onPressed: () => Navigator.of(context).maybePop(),
               )
             : null,
-        title: const Text('Danh sách Dịch vụ',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('ser_services_title'),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
           IconButton(
@@ -121,8 +121,8 @@ class _ServicesBodyState extends State<_ServicesBody> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Services',
-                        style: TextStyle(
+                        context.tr('module_izii.services_name'),
+                        style: const TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -132,7 +132,7 @@ class _ServicesBodyState extends State<_ServicesBody> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Tìm kiếm và quản lý dịch vụ của bạn một cách dễ dàng',
+                        context.tr('ser_intro_subtitle'),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.white.withOpacity(0.65),
@@ -152,7 +152,7 @@ class _ServicesBodyState extends State<_ServicesBody> {
                   child: Row(
                     children: [
                       Text(
-                        'Kết quả',
+                        context.tr('ser_results_label'),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -198,8 +198,8 @@ class _ServicesBodyState extends State<_ServicesBody> {
                         const SizedBox(height: 20),
                         Text(
                           _searchQuery.isEmpty
-                              ? 'Chưa có dịch vụ nào'
-                              : 'Không tìm thấy dịch vụ phù hợp',
+                              ? context.tr('ser_no_services_found')
+                              : context.tr('ser_no_matching_services'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18,
@@ -210,8 +210,8 @@ class _ServicesBodyState extends State<_ServicesBody> {
                         const SizedBox(height: 12),
                         Text(
                           _searchQuery.isEmpty
-                              ? 'Nhấn nút + để thêm dịch vụ mới'
-                              : 'Thử một từ khóa khác hoặc chọn danh mục khác.',
+                              ? context.tr('ser_fab_add_prompt')
+                              : context.tr('ser_search_different_prompt'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14,
@@ -266,8 +266,8 @@ class _ServicesBodyState extends State<_ServicesBody> {
           }
         },
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Thêm dịch vụ',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        label: Text(context.tr('ser_add_service_button'),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF8B5CF6),
         foregroundColor: Colors.white,
       ),
@@ -295,7 +295,7 @@ class _ServicesBodyState extends State<_ServicesBody> {
               style: const TextStyle(color: Colors.white, fontSize: 15),
               onChanged: (value) => setState(() => _searchQuery = value),
               decoration: InputDecoration(
-                hintText: 'Tìm tên dịch vụ, mô tả hoặc danh mục',
+                hintText: context.tr('ser_search_hint'),
                 hintStyle: TextStyle(
                     color: Colors.white.withOpacity(0.35), fontSize: 14),
                 prefixIcon: Icon(Icons.search_rounded,
@@ -356,7 +356,7 @@ class _ServicesBodyState extends State<_ServicesBody> {
                       color: isSelected ? IZiiColors.primary : Colors.white70),
                   const SizedBox(width: 10),
                   Text(
-                    entry.value,
+                    context.tr('ser_cat_${entry.key}'),
                     style: TextStyle(
                       color: isSelected ? Colors.white : Colors.white70,
                       fontWeight:
@@ -432,8 +432,8 @@ class _ServiceCard extends StatelessWidget {
                               color: Colors.orange.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Text('Tạm ngưng',
-                                style: TextStyle(
+                            child: Text(context.tr('ser_inactive_badge'),
+                                style: const TextStyle(
                                     fontSize: 10,
                                     color: Colors.orange,
                                     fontWeight: FontWeight.bold)),
@@ -442,7 +442,7 @@ class _ServiceCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      ServicesScreen._categories[category] ?? 'Khác',
+                      context.tr('ser_cat_$category'),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.textTheme.bodySmall?.color
                             ?.withValues(alpha: 0.6),
@@ -463,7 +463,7 @@ class _ServiceCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'VNĐ/giờ',
+                    context.tr('ser_price_unit'),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.textTheme.bodySmall?.color
                           ?.withValues(alpha: 0.5),

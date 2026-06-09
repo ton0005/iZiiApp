@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import '../../core/modules/module_interface.dart';
 import '../../core/modules/module_manifest.dart';
 import '../../core/ai_agent/models/chat_models.dart';
+import '../../core/localization/app_localizations.dart';
 import 'manifest.dart';
 import 'bloc/inventory_bloc.dart';
 import 'repository.dart';
@@ -112,7 +113,16 @@ class SupplyChainModule implements IZiiModule {
   Widget? get dashboardWidget => const _SupplyChainDashboardWidget();
 
   @override
-  Future<void> initialize() async {}
+  Future<void> initialize() async {
+    AppLocalizations.registerModuleTranslations('vi', {
+      'module_supply_title': 'Inventory',
+      'supply_pending_moves': 'Lệnh xuất kho cần xử lý',
+    });
+    AppLocalizations.registerModuleTranslations('en', {
+      'module_supply_title': 'Inventory',
+      'supply_pending_moves': 'Pending moves to process',
+    });
+  }
 
   @override
   Future<void> dispose() async {}
@@ -132,13 +142,13 @@ class _SupplyChainDashboardWidget extends StatelessWidget {
         color: const Color(0xFF10B981).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Inventory',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          SizedBox(height: 8),
-          Text('15 Lệnh xuất kho cần xử lý'),
+          Text(context.tr('module_supply_title'),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          const SizedBox(height: 8),
+          Text('15 ${context.tr('supply_pending_moves')}'),
         ],
       ),
     );

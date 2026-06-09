@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../bloc/inventory_bloc.dart';
 import 'barcode_scanner_screen.dart';
 
@@ -94,7 +95,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Future<void> _saveProduct() async {
     if (_nameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tên sản phẩm không được để trống')),
+        SnackBar(content: Text(context.tr('inv_name_empty_error'))),
       );
       return;
     }
@@ -130,7 +131,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Đã cập nhật sản phẩm "${_nameController.text}"!'),
+          content: Text(context.tr('inv_product_updated').replaceAll('{name}', _nameController.text)),
           backgroundColor: const Color(0xFF10B981),
         ),
       );
@@ -140,7 +141,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Lỗi khi cập nhật: $e'),
+          content: Text(context.tr('inv_error_updating').replaceAll('{error}', e.toString())),
           backgroundColor: const Color(0xFFF43F5E),
           duration: const Duration(seconds: 5),
         ),
@@ -152,7 +153,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chỉnh sửa Sản phẩm'),
+        title: Text(context.tr('inv_edit_product_title')),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -166,16 +167,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildSectionHeader('Thông tin cơ bản'),
+            _buildSectionHeader(context.tr('inv_basic_info')),
             const SizedBox(height: 12),
-            _buildTextField(_nameController, 'Tên sản phẩm', Icons.label_outline),
+            _buildTextField(_nameController, context.tr('inv_product_name'), Icons.label_outline),
             _buildTextField(
               _barcodeController,
-              'Mã vạch / QR Code',
+              context.tr('inv_barcode_qr'),
               Icons.qr_code,
               suffixIcon: IconButton(
                 icon: const Icon(Icons.qr_code_scanner, color: Color(0xFF6366F1)),
-                tooltip: 'Quét mã vạch/QR',
+                tooltip: context.tr('inv_scanner_tooltip'),
                 onPressed: () async {
                   final scannedCode = await Navigator.of(context).push<String>(
                     MaterialPageRoute(
@@ -190,21 +191,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
             ),
-            _buildTextField(_priceController, 'Giá (VNĐ)', Icons.attach_money, keyboardType: TextInputType.number),
-            _buildTextField(_stockController, 'Số lượng tồn kho', Icons.inventory, keyboardType: TextInputType.number),
-
+            _buildTextField(_priceController, context.tr('inv_price_vnd'), Icons.attach_money, keyboardType: TextInputType.number),
+            _buildTextField(_stockController, context.tr('inv_stock_quantity'), Icons.inventory, keyboardType: TextInputType.number),
+ 
             const SizedBox(height: 20),
-            _buildSectionHeader('Thông tin mở rộng'),
+            _buildSectionHeader(context.tr('inv_extended_info')),
             const SizedBox(height: 12),
-            _buildTextField(_descController, 'Mô tả', Icons.description_outlined, maxLines: 2),
-            _buildTextField(_categoryController, 'Danh mục', Icons.category_outlined),
-            _buildTextField(_brandController, 'Thương hiệu', Icons.business_outlined),
-            _buildTextField(_specsController, 'Thông số kỹ thuật', Icons.settings_outlined, maxLines: 2),
+            _buildTextField(_descController, context.tr('inv_description'), Icons.description_outlined, maxLines: 2),
+            _buildTextField(_categoryController, context.tr('inv_category'), Icons.category_outlined),
+            _buildTextField(_brandController, context.tr('inv_brand'), Icons.business_outlined),
+            _buildTextField(_specsController, context.tr('inv_specs'), Icons.settings_outlined, maxLines: 2),
 
             // --- Extra custom fields ---
             if (_extraFieldControllers.isNotEmpty) ...[
               const SizedBox(height: 20),
-              _buildSectionHeader('Trường tuỳ chỉnh'),
+              _buildSectionHeader(context.tr('inv_custom_fields')),
               const SizedBox(height: 12),
               ..._extraFieldControllers.entries.map((entry) {
                 return Padding(
@@ -221,7 +222,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       IconButton(
                         icon: const Icon(Icons.remove_circle_outline, color: Color(0xFFF43F5E)),
                         onPressed: () => _removeCustomField(entry.key),
-                        tooltip: 'Xoá trường',
+                        tooltip: context.tr('inv_delete_field_tooltip'),
                       ),
                     ],
                   ),
@@ -231,18 +232,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
             // --- Add new custom field ---
             const SizedBox(height: 16),
-            _buildSectionHeader('Thêm trường mới'),
+            _buildSectionHeader(context.tr('inv_add_new_field')),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   flex: 2,
-                  child: _buildTextField(_newFieldKeyController, 'Tên trường', Icons.vpn_key_outlined),
+                  child: _buildTextField(_newFieldKeyController, context.tr('inv_field_name'), Icons.vpn_key_outlined),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   flex: 3,
-                  child: _buildTextField(_newFieldValueController, 'Giá trị', Icons.text_fields),
+                  child: _buildTextField(_newFieldValueController, context.tr('inv_field_value'), Icons.text_fields),
                 ),
                 const SizedBox(width: 4),
                 Container(
@@ -255,7 +256,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   child: IconButton(
                     icon: const Icon(Icons.add_rounded, color: Colors.white),
                     onPressed: _addCustomField,
-                    tooltip: 'Thêm trường',
+                    tooltip: context.tr('inv_add_new_field'),
                   ),
                 ),
               ],
@@ -343,7 +344,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       child: ElevatedButton.icon(
         onPressed: _saveProduct,
         icon: const Icon(Icons.save_alt_rounded, size: 22),
-        label: const Text('Lưu thay đổi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        label: Text(context.tr('inv_save_changes'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,

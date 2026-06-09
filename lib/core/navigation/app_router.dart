@@ -9,8 +9,21 @@ import '../ai_agent/tools/agent_tool_registry.dart';
 import '../../modules/sales_crm/agent_tools/crm_tools.dart';
 import '../../modules/sales_crm/ui/deal_pipeline.dart';
 import '../../modules/sales_crm/screens/leads_screen.dart';
+import '../../modules/sales_crm/screens/deal_detail_screen.dart';
+import '../../modules/sales_crm/bloc/crm_bloc.dart';
 import '../../modules/supply_chain/supply_chain_module.dart';
 import '../../modules/services/services_module.dart';
+import '../../modules/project/project_module.dart';
+import '../../modules/project/screens/project_list_screen.dart';
+import '../../modules/project/screens/task_board_screen.dart';
+import '../../modules/purchase/purchase_module.dart';
+import '../../modules/purchase/screens/purchase_orders_list_screen.dart';
+import '../../modules/purchase/screens/purchase_order_form_screen.dart';
+import '../../modules/accountant/bloc/accountant_bloc.dart';
+import '../../modules/accountant/screens/chart_of_accounts_screen.dart';
+import '../../modules/accountant/screens/add_journal_entry_screen.dart';
+import '../../modules/accountant/screens/financial_reports_screen.dart';
+import '../../modules/accountant/screens/payroll_payrun_screen.dart';
 import '../modules/module_dashboard_screen.dart';
 import '../modules/module_directory_screen.dart';
 import '../modules/module_registry.dart';
@@ -32,6 +45,12 @@ AgentToolRegistry _buildToolRegistry() {
     registry.registerTool(t);
   }
   for (final t in ServicesModule().agentTools) {
+    registry.registerTool(t);
+  }
+  for (final t in ProjectModule().agentTools) {
+    registry.registerTool(t);
+  }
+  for (final t in PurchaseModule().agentTools) {
     registry.registerTool(t);
   }
   return registry;
@@ -140,6 +159,44 @@ final appRouter = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/crm/deals/detail',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.sales_crm'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          final deal = state.extra as Map<String, dynamic>?;
+          if (deal != null) {
+            return DealDetailScreen(deal: deal);
+          }
+          
+          final dealId = state.uri.queryParameters['dealId'] ?? '';
+          return FutureBuilder<List<Map<String, dynamic>>>(
+            future: CrmRepository().getDeals(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()));
+              }
+              final deals = snapshot.data ?? [];
+              final dealData = deals.firstWhere(
+                (d) => d['id'] == dealId,
+                orElse: () => <String, dynamic>{},
+              );
+              if (dealData.isEmpty) {
+                return const Scaffold(
+                  body: Center(child: Text('Deal not found')),
+                );
+              }
+              return DealDetailScreen(deal: dealData);
+            },
+          );
+        },
+      ),
+    ),
+    GoRoute(
       path: '/inventory/products',
       builder: (context, state) => FutureBuilder(
         future: _moduleRegistry.installModule('izii.supply_chain'),
@@ -197,6 +254,166 @@ final appRouter = GoRouter(
                 body: Center(child: CircularProgressIndicator()));
           }
           return const BookingsScreen();
+        },
+      ),
+    ),
+    // Project module routes
+    GoRoute(
+      path: '/project',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.project_management'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const ModuleDashboardScreen(moduleId: 'izii.project_management');
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/project/list',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.project_management'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const ProjectListScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/project/tasks',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.project_management'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          final projectId = state.uri.queryParameters['projectId'] ?? '';
+          final projectName = state.uri.queryParameters['projectName'] ?? 'Tasks';
+          return TaskBoardScreen(projectId: projectId, projectName: projectName);
+        },
+      ),
+    ),
+    // Purchase module routes
+    GoRoute(
+      path: '/purchase',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.purchase_management'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const ModuleDashboardScreen(moduleId: 'izii.purchase_management');
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/purchase/list',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.purchase_management'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const PurchaseOrdersListScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/purchase/create',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.purchase_management'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const PurchaseOrderFormScreen();
+        },
+      ),
+    ),
+    // Accountant module routes
+    GoRoute(
+      path: '/accountant',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.accountant'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const ModuleDashboardScreen(moduleId: 'izii.accountant');
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/accountant/coa',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.accountant'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return BlocProvider(
+            create: (context) => AccountantBloc(),
+            child: const ChartOfAccountsScreen(),
+          );
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/accountant/journal',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.accountant'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return BlocProvider(
+            create: (context) => AccountantBloc(),
+            child: const AddJournalEntryScreen(),
+          );
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/accountant/reports',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.accountant'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return BlocProvider(
+            create: (context) => AccountantBloc(),
+            child: const FinancialReportsScreen(),
+          );
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/accountant/payroll',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.accountant'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return BlocProvider(
+            create: (context) => AccountantBloc(),
+            child: const PayrollPayrunScreen(),
+          );
         },
       ),
     ),

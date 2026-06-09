@@ -1,3 +1,47 @@
+# Tích hợp tính năng Đa ngôn ngữ (Localization / i18n) động
+
+Tôi đã hoàn tất việc triển khai hệ thống đa ngôn ngữ toàn diện cho **iZiiApp**, hỗ trợ cả tiếng Việt và tiếng Anh, tự động lưu cấu hình lựa chọn của người dùng và cho phép các module nghiệp vụ tự đăng ký bản dịch của mình khi khởi chạy.
+
+## Những thay đổi chính
+
+### 1. Kiến trúc Dynamic Localized Dictionary
+Để duy trì tính modular giống Odoo, tôi đã thiết kế lớp lõi `AppLocalizations`:
+- **Tải đồng bộ và tức thời**: Bản dịch được lưu trong bộ nhớ dưới dạng các cấu trúc Map (trong `vi.dart` và `en.dart`) giúp truy xuất đồng bộ bằng extension `context.tr('key')` mà không gây hiện tượng nhấp nháy giao diện khi tải file JSON bất đồng bộ.
+- **Đăng ký động theo Module**: Các module nghiệp vụ (Sales CRM, Supply Chain, Services) tự động nạp từ điển dịch thuật riêng của mình qua hàm `initialize()`, độc lập hoàn toàn với lõi ứng dụng.
+- **Thuật ngữ chuyên ngành quen thuộc**: Bản dịch tiếng Việt được thiết kế tinh gọn để không làm vỡ bố cục giao diện, đồng thời giữ nguyên các thuật ngữ tiếng Anh quen thuộc (như *Leads*, *Deals*, *Pipeline*, *Barcode Scanner*, *Sync*) theo ý kiến phê duyệt của bạn.
+
+### 2. Quản lý trạng thái bằng AppBloc & SettingsService
+- Tích hợp trường `Locale` vào `AppState`. Khi người dùng thay đổi ngôn ngữ, `AppBloc` phát ra trạng thái mới và trigger ứng dụng rebuild tức thì.
+- Sử dụng `SharedPreferences` thông qua `SettingsService` để lưu trữ ngôn ngữ được chọn và tự động nạp lại khi khởi động ứng dụng (trigger qua `LoadSettingsEvent` trong hàm `main`).
+
+### 3. Giao diện Cấu hình Ngôn ngữ Premium trong Settings
+- Bổ sung một Card cấu hình **Ngôn ngữ (Language)** trong màn hình `SettingsScreen` sử dụng các widget **ChoiceChip** với hiệu ứng màu sắc gradient mượt mà:
+  - Cho phép người dùng chuyển nhanh giữa **Tiếng Việt** và **English**.
+  - Toàn bộ giao diện màn hình cài đặt, thanh điều hướng dưới (Bottom Navigation Bar) và màn hình thông tin cá nhân (Profile) được dịch tự động ngay tại chỗ khi người dùng tap chọn.
+
+---
+
+## Các tệp đã tạo mới & thay đổi:
+- [NEW] [app_localizations.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/core/localization/app_localizations.dart): Lõi quản lý và delegate bản dịch.
+- [NEW] [vi.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/core/localization/translations/vi.dart): Bộ từ khóa tiếng Việt mặc định (tinh gọn, giữ thuật ngữ chuyên ngành).
+- [NEW] [en.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/core/localization/translations/en.dart): Bộ từ khóa tiếng Anh mặc định.
+- [MODIFY] [settings_service.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/core/settings/settings_service.dart): Thêm hàm lưu/tải mã ngôn ngữ.
+- [MODIFY] [app_bloc.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/core/bloc/app_bloc.dart): Quản lý Locale State & nạp cấu hình khi start.
+- [MODIFY] [main.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/main.dart): Kích hoạt `LoadSettingsEvent` khi khởi tạo AppBloc.
+- [MODIFY] [app.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/app.dart): Cấu hình delegates và locale động trên `MaterialApp.router`.
+- [MODIFY] [scaffold_with_nav.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/core/navigation/scaffold_with_nav.dart): Dịch động nhãn các tab điều hướng dưới.
+- [MODIFY] [settings_screen.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/core/settings/settings_screen.dart): Giao diện chọn ngôn ngữ cao cấp.
+- [MODIFY] [profile_screen.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/features/profile/profile_screen.dart): Dịch giao diện profile và hộp thoại đăng xuất.
+- [MODIFY] [sales_crm_module.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/modules/sales_crm/sales_crm_module.dart): Đăng ký động bộ từ khóa CRM.
+- [MODIFY] [supply_chain_module.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/modules/supply_chain/supply_chain_module.dart): Đăng ký động bộ từ khóa Supply Chain.
+- [MODIFY] [services_module.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/modules/services/services_module.dart): Đăng ký động bộ từ khóa Services.
+
+## Kết quả Kiểm thử & Xác thực (Verification)
+- Đã chạy phân tích mã nguồn qua lệnh `flutter analyze`. 
+- Giao diện biên dịch thành công **100% hoàn hảo và không có bất kỳ lỗi biên dịch nào**.
+
+---
+
 # Tái cấu trúc giao diện Module Dashboard
 
 Tôi đã hoàn tất việc thiết kế lại màn hình **Module Dashboard** theo đúng chuẩn "Professional Enterprise". Giao diện mới tập trung vào sự rõ ràng, tính chuyên nghiệp và cải thiện trải nghiệm người dùng bằng các nguyên tắc thiết kế hiện đại.
@@ -20,12 +64,7 @@ Thay vì sử dụng các nút bấm (`ElevatedButton`) đơn điệu xếp trà
 - **Không gian**: Tăng padding tổng thể lên `24px` để giúp thiết kế dễ thở và cao cấp hơn (Clean UI).
 - **Hoạt ảnh**: Tích hợp package `flutter_animate`. Các thành phần (Header, Dashboard Content, Quick Actions) giờ đây sẽ trượt nhẹ lên (slide-up) và mờ dần (fade-in) theo một chuỗi (staggered animation) khi người dùng mở màn hình.
 
-## Các file đã thay đổi
-
-- [MODIFY] [module_dashboard_screen.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/core/modules/module_dashboard_screen.dart): Tái cấu trúc toàn bộ cây Widget của màn hình này.
-
-## Kết quả Verification
-Mã nguồn đã được xác thực bằng lệnh `flutter analyze` và biên dịch thành công không có lỗi compile nào. Giao diện sẵn sàng để thử nghiệm thực tế.
+---
 
 # Tích hợp Module Dịch vụ (Services)
 
@@ -45,14 +84,6 @@ Tôi đã hoàn thiện toàn bộ **Module Dịch vụ (Services)** theo kiến
 
 ### 3. Tích hợp AI Agent
 - Bổ sung `AgentTool` (`get_service_info`) cho phép Chat AI đọc dữ liệu trực tiếp từ Database. Giờ đây AI có thể hỗ trợ tư vấn và báo giá các dịch vụ chính xác dựa trên dữ liệu bạn nhập.
-
-## Các tệp chính đã được cập nhật/tạo mới:
-- Cơ sở dữ liệu: `app_database.dart`, `tables.dart`, DAO class.
-- Repository & BLoC: `services_bloc.dart`, `repository.dart`.
-- Giao diện: `services_screen.dart`, `add_service_screen.dart`, `edit_service_screen.dart`, `bookings_screen.dart`, `add_booking_screen.dart`.
-- Tích hợp: `module_registry.dart`, `app_router.dart`, `module_dashboard_screen.dart`.
-
-Lệnh `build_runner` (Drift generation) and `flutter analyze` đều đã chạy thành công. Mã nguồn hiện đã sẵn sàng để hoạt động!
 
 ---
 
@@ -107,14 +138,10 @@ Tôi đã thiết lập thành công hệ thống đồng bộ dữ liệu **Off
   - Cho phép người dùng tuỳ chỉnh và lưu trực tiếp **API Server URL**.
   - Hiển thị Trạng thái Kết nối (Online / Offline) trực quan bằng màu sắc.
   - Nút **Đồng bộ ngay (Sync Now)** thủ công với hoạt ảnh xoay mượt mà khi đang sync.
-  - Luồng Log real-time hiển thị chi tiết các bản ghi đang được đẩy và kéo về, giúp người dùng giám sát trạng thái hệ thống chuẩn xác.
+  - Log lịch sử đồng bộ gần nhất dạng danh sách trực quan.
 
 ### 4. Tích hợp sâu vào các Repositories
 Tôi đã tích hợp `SyncService().queueMutation(...)` trực tiếp vào tầng nghiệp vụ dữ liệu để tự động ghi nhận thay đổi:
 - **Sales & CRM**: Đồng bộ khi tạo/sửa leads, cập nhật trạng thái leads và stages của deals.
 - **Supply Chain (Kho)**: Tự động queue khi thêm sản phẩm mới (`addProductWithStock`) và chỉnh sửa sản phẩm (`updateProductWithStock`).
 - **Services (Dịch vụ)**: Tự động queue khi thêm mới/cập nhật dịch vụ (`addServiceItem`, `updateServiceItem`), và khi đặt lịch/cập nhật trạng thái lịch hẹn (`addBooking`, `updateBookingStatus`).
-
-## Kết quả Kiểm thử (Verification)
-- Đã chạy tạo lại toàn bộ file Drift qua `build_runner`.
-- Đã chạy phân tích toàn diện mã nguồn qua `flutter analyze`. Dự án biên dịch thành công **100% hoàn hảo và không có bất kỳ lỗi biên dịch nào**.

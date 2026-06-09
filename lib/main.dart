@@ -10,7 +10,7 @@ void main() {
   
   runApp(
     BlocProvider(
-      create: (_) => AppBloc(),
+      create: (_) => AppBloc()..add(LoadSettingsEvent()),
       child: const IZiiApp(),
     ),
   );

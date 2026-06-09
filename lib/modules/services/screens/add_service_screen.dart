@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../bloc/services_bloc.dart';
 
 class AddServiceScreen extends StatefulWidget {
@@ -66,13 +67,13 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
   Future<void> _save() async {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tên dịch vụ không được để trống')),
+        SnackBar(content: Text(context.tr('ser_service_name_empty_err'))),
       );
       return;
     }
     if (_hourlyRateController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đơn giá / giờ không được để trống')),
+        SnackBar(content: Text(context.tr('ser_service_rate_empty_err'))),
       );
       return;
     }
@@ -102,7 +103,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Đã thêm dịch vụ "${_nameController.text}"!'),
+          content: Text(context.tr('ser_service_added').replaceAll('{name}', _nameController.text)),
           backgroundColor: const Color(0xFF10B981),
         ),
       );
@@ -111,7 +112,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Lỗi: $e'),
+          content: Text('${context.tr('error')}: $e'),
           backgroundColor: const Color(0xFFF43F5E),
           duration: const Duration(seconds: 5),
         ),
@@ -129,7 +130,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
             Navigator.of(context).maybePop();
           },
         ),
-        title: const Text('Thêm Dịch vụ mới'),
+        title: Text(context.tr('ser_add_service_title')),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
@@ -141,10 +142,10 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildSectionHeader('Thông tin dịch vụ'),
+            _buildSectionHeader(context.tr('ser_service_info_section')),
             const SizedBox(height: 12),
-            _buildTextField(_nameController, 'Tên dịch vụ *', Icons.home_repair_service_rounded),
-            _buildTextField(_descController, 'Mô tả', Icons.description_outlined, maxLines: 2),
+            _buildTextField(_nameController, context.tr('ser_service_name_label'), Icons.home_repair_service_rounded),
+            _buildTextField(_descController, context.tr('inv_description'), Icons.description_outlined, maxLines: 2),
 
             // Category dropdown
             Padding(
@@ -152,11 +153,11 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
               child: DropdownButtonFormField<String>(
                 value: _category,
                 items: _categories.entries
-                    .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
+                    .map((e) => DropdownMenuItem(value: e.key, child: Text(context.tr('ser_cat_${e.key}'))))
                     .toList(),
                 onChanged: (v) => setState(() => _category = v ?? 'other'),
                 decoration: InputDecoration(
-                  labelText: 'Loại dịch vụ',
+                  labelText: context.tr('ser_service_category_label'),
                   prefixIcon: const Icon(Icons.category_outlined, size: 20),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   enabledBorder: OutlineInputBorder(
@@ -174,15 +175,15 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
             ),
 
             const SizedBox(height: 8),
-            _buildSectionHeader('Đơn giá'),
+            _buildSectionHeader(context.tr('ser_service_hourly_rate_label_edit').split(' (')[0]),
             const SizedBox(height: 12),
-            _buildTextField(_hourlyRateController, 'Đơn giá / giờ (VNĐ) *', Icons.attach_money, keyboardType: TextInputType.number),
-            _buildTextField(_estimatedHoursController, 'Số giờ ước tính', Icons.timer_outlined, keyboardType: TextInputType.number),
+            _buildTextField(_hourlyRateController, context.tr('ser_service_hourly_rate_label'), Icons.attach_money, keyboardType: TextInputType.number),
+            _buildTextField(_estimatedHoursController, context.tr('ser_service_est_hours_label'), Icons.timer_outlined, keyboardType: TextInputType.number),
 
             // Custom fields
             if (_customFieldControllers.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildSectionHeader('Trường tuỳ chỉnh'),
+              _buildSectionHeader(context.tr('inv_custom_fields')),
               const SizedBox(height: 12),
               ..._customFieldControllers.entries.map((entry) {
                 return Padding(
@@ -201,13 +202,13 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
             ],
 
             const SizedBox(height: 16),
-            _buildSectionHeader('Thêm trường mới'),
+            _buildSectionHeader(context.tr('inv_add_new_field')),
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(flex: 2, child: _buildTextField(_newFieldKeyController, 'Tên trường', Icons.vpn_key_outlined)),
+                Expanded(flex: 2, child: _buildTextField(_newFieldKeyController, context.tr('inv_field_name'), Icons.vpn_key_outlined)),
                 const SizedBox(width: 8),
-                Expanded(flex: 3, child: _buildTextField(_newFieldValueController, 'Giá trị', Icons.text_fields)),
+                Expanded(flex: 3, child: _buildTextField(_newFieldValueController, context.tr('inv_field_value'), Icons.text_fields)),
                 const SizedBox(width: 4),
                 Container(
                   decoration: BoxDecoration(
@@ -285,7 +286,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
       child: ElevatedButton.icon(
         onPressed: _save,
         icon: const Icon(Icons.save_alt_rounded, size: 22),
-        label: const Text('Lưu dịch vụ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        label: Text(context.tr('ser_service_save_btn'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,

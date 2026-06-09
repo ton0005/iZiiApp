@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../../core/localization/app_localizations.dart';
 import 'edit_product_screen.dart';
 
 class ProductInfoScreen extends StatelessWidget {
@@ -20,16 +23,16 @@ class ProductInfoScreen extends StatelessWidget {
     return price?.toString() ?? '-';
   }
 
-  String _buildShareText(Map<String, dynamic> product) {
+  String _buildShareText(Map<String, dynamic> product, BuildContext context) {
     final customFields =
         (product['custom_fields'] as Map<String, dynamic>?) ?? {};
-    return '''${product['name'] ?? 'Sản phẩm'}
-Giá: ${_formatPrice(product['price'])}
-Tồn kho: ${product['stock']?.toString() ?? '0'}
-Mã vạch: ${product['barcode'] ?? '-'}
-Danh mục: ${customFields['category'] ?? '-'}
-Thương hiệu: ${customFields['brand'] ?? '-'}
-Mô tả: ${customFields['description'] ?? '-'}''';
+    return '''${product['name'] ?? context.tr('inv_products_title')}
+${context.tr('inv_price_label').replaceAll('{price}', _formatPrice(product['price']))}
+${context.tr('inv_stock_quantity')}: ${product['stock']?.toString() ?? '0'}
+${context.tr('inv_barcode_qr')}: ${product['barcode'] ?? '-'}
+${context.tr('inv_category')}: ${customFields['category'] ?? '-'}
+${context.tr('inv_brand')}: ${customFields['brand'] ?? '-'}
+${context.tr('inv_description')}: ${customFields['description'] ?? '-'}''';
   }
 
   Widget _buildInfoTile(String label, String value) {
@@ -79,33 +82,40 @@ Mô tả: ${customFields['description'] ?? '-'}''';
         product['sku']?.toString() ??
         product['id']?.toString() ??
         '';
+    final imagePath = customFields['image_path']?.toString();
+    final hasImage = imagePath != null &&
+        imagePath.isNotEmpty &&
+        File(imagePath).existsSync();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thông tin sản phẩm'),
+        title: Text(context.tr('inv_product_info_title')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Quay lại',
+          tooltip: context.tr('inv_back_tooltip'),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
-            tooltip: 'Chia sẻ',
+            tooltip: context.tr('inv_share_tooltip'),
             onPressed: () {
-              Share.share(_buildShareText(product));
+              Share.share(_buildShareText(product, context));
             },
           ),
           IconButton(
             icon: const Icon(Icons.copy),
-            tooltip: 'Sao chép mã',
+            tooltip: context.tr('inv_copy_code_tooltip'),
             onPressed: () {
-              final codeToCopy =
-                  productCode.isNotEmpty ? productCode : 'Không có mã';
+              final codeToCopy = productCode.isNotEmpty
+                  ? productCode
+                  : context.tr('inv_no_code');
               Clipboard.setData(ClipboardData(text: codeToCopy));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Đã sao chép: $codeToCopy'),
+                  content: Text(context
+                      .tr('inv_copied_code_msg')
+                      .replaceAll('{code}', codeToCopy)),
                   duration: const Duration(seconds: 2),
                 ),
               );
@@ -113,7 +123,7 @@ Mô tả: ${customFields['description'] ?? '-'}''';
           ),
           IconButton(
             icon: const Icon(Icons.edit),
-            tooltip: 'Chỉnh sửa',
+            tooltip: context.tr('inv_edit_product_tooltip'),
             onPressed: () async {
               final result = await Navigator.of(context).push<bool>(
                 MaterialPageRoute(
@@ -139,6 +149,25 @@ Mô tả: ${customFields['description'] ?? '-'}''';
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (hasImage) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Image.file(
+                  File(imagePath),
+                  width: double.infinity,
+                  height: 220,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 220,
+                    color: const Color(0xFFF8FAFC),
+                    child: const Center(
+                        child: Icon(Icons.broken_image,
+                            size: 48, color: Colors.grey)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             Container(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
@@ -175,8 +204,9 @@ Mô tả: ${customFields['description'] ?? '-'}''';
                         ),
                         child: Text(
                           product['stock']?.toString() == '0'
-                              ? 'Hết hàng'
-                              : 'Còn ${product['stock']?.toString() ?? '0'}',
+                              ? context.tr('inv_out_of_stock')
+                              : context.tr('inv_in_stock').replaceAll('{count}',
+                                  product['stock']?.toString() ?? '0'),
                           style: TextStyle(
                             color: product['stock']?.toString() == '0'
                                 ? Colors.red
@@ -196,7 +226,9 @@ Mô tả: ${customFields['description'] ?? '-'}''';
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          productCode.isNotEmpty ? productCode : 'Không có mã',
+                          productCode.isNotEmpty
+                              ? productCode
+                              : context.tr('inv_no_code'),
                           style: const TextStyle(
                             color: Color(0xFF0369A1),
                             fontWeight: FontWeight.w600,
@@ -210,7 +242,7 @@ Mô tả: ${customFields['description'] ?? '-'}''';
                     children: [
                       Expanded(
                         child: _InfoBadge(
-                          label: 'Giá',
+                          label: context.tr('inv_price_vnd'),
                           value: _formatPrice(product['price']),
                           icon: Icons.attach_money,
                           color: const Color(0xFF10B981),
@@ -219,7 +251,7 @@ Mô tả: ${customFields['description'] ?? '-'}''';
                       const SizedBox(width: 12),
                       Expanded(
                         child: _InfoBadge(
-                          label: 'Mã hàng',
+                          label: context.tr('inv_sku_label'),
                           value: product['sku']?.toString() ?? '-',
                           icon: Icons.receipt_long,
                           color: const Color(0xFF0EA5E9),
@@ -231,8 +263,8 @@ Mô tả: ${customFields['description'] ?? '-'}''';
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Thông tin chi tiết',
+            Text(
+              context.tr('inv_detailed_info'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -257,17 +289,17 @@ Mô tả: ${customFields['description'] ?? '-'}''';
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildInfoTile('Mô tả', description),
-                  _buildInfoTile('Danh mục', category),
-                  _buildInfoTile('Thương hiệu', brand),
-                  _buildInfoTile('Thông số', specs),
+                  _buildInfoTile(context.tr('inv_description'), description),
+                  _buildInfoTile(context.tr('inv_category'), category),
+                  _buildInfoTile(context.tr('inv_brand'), brand),
+                  _buildInfoTile(context.tr('inv_specs_short'), specs),
                   if (otherFields.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     const Divider(color: Color(0xFFE2E8F0)),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Trường tuỳ chỉnh',
-                      style: TextStyle(
+                    Text(
+                      context.tr('inv_custom_fields'),
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF334155),
@@ -292,7 +324,7 @@ Mô tả: ${customFields['description'] ?? '-'}''';
                 ),
               ),
               icon: const Icon(Icons.edit),
-              label: const Text('Chỉnh sửa sản phẩm'),
+              label: Text(context.tr('inv_edit_product_tooltip')),
               onPressed: () async {
                 final result = await Navigator.of(context).push<bool>(
                   MaterialPageRoute(

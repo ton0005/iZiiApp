@@ -1,168 +1,123 @@
-# iZiiApp — Phase 1 Task Tracker
+# iZiiApp — Danh sách Task & Kế hoạch Phát triển Chức năng
 
-## Environment Setup
-- [x] Install Flutter SDK
-- [x] Add Flutter to PATH
-- [x] Create Flutter project `izii_app`
-- [x] Configure pubspec.yaml with dependencies
-
-## 1. Core App Shell & Theme
-- [x] `lib/main.dart` — Entry point
-- [x] `lib/app.dart` — MaterialApp + GoRouter
-- [x] `lib/core/theme/izii_colors.dart` — Brand colors
-- [x] `lib/core/theme/izii_theme.dart` — Dark/Light themes
-- [ ] `lib/core/theme/izii_typography.dart` — Typography
-- [ ] `lib/core/theme/izii_spacing.dart` — Spacing tokens
-- [x] `lib/core/navigation/app_router.dart` — Router
-- [ ] `lib/core/widgets/` — Reusable components
-
-## 2. Database Engine (Drift)
-- [x] `lib/core/database/app_database.dart` — Main DB
-- [x] `lib/core/database/tables/` — Core tables
-- [x] `lib/core/database/daos/` — DAOs
-- [x] Run `build_runner` to generate code
-- [x] Refactor Repositories (CRM, Supply Chain & Services) to use AppDatabase and SyncService mutations
-
-## Phase 3: Drift SQLite Implementation
-- [x] Create `AppDatabase` schema and DAOs (Users, Contacts, Leads, Deals, Products, StockMoves).
-- [x] Run `build_runner` to generate Drift code.
-- [x] Refactor `CrmRepository` to use `AppDatabase` instead of `mockLeads`.
-- [x] Refactor `InventoryRepository` to use `AppDatabase` instead of `mockProducts`.
-- [x] Refactor screens (`AddLeadScreen`, `EditLeadScreen`, `AddProductFromImageScreen`, `EditProductScreen`) to `await` asynchronous database calls.
-
-## Phase 4: Community Layer (Trust & Referral)
-- [x] Define Community Models (`UserProfile`, `ServiceListing`, `Order`).
-- [x] Implement Community Database Tables (`TrustScores`, `Referrals`, `ServiceListings`, `Orders`) and run `build_runner`.
-- [x] Implement `TrustNetworkService` (Trust graph and scoring).
-- [x] Implement `InviteService` (Referral system).
-- [x] Implement `MatchingEngine` (Service provider matching).
-- [x] `lib/core/ai_agent/models/chat_models.dart`
-- [x] `lib/core/ai_agent/llm_providers/llm_provider.dart`
-- [x] `lib/core/ai_agent/tools/agent_tool_registry.dart`
-- [x] `lib/core/ai_agent/ai_agent_service.dart`
-- [x] `lib/core/ai_agent/ai_tool_router.dart`
-- [x] `lib/core/ai_agent/ai_tool_executor.dart`
-- [ ] `lib/core/ai_agent/llm_providers/openai_provider.dart`
-- [ ] `lib/core/ai_agent/llm_providers/ondevice_provider.dart`
-- [x] `lib/core/ai_agent/ui/ai_chat_screen.dart`
-- [x] `lib/core/ai_agent/ui/ai_message_bubble.dart`
-
-## 4. Community Layer
-- [ ] `lib/core/community/trust_network_service.dart`
-- [ ] `lib/core/community/trust_score_calculator.dart`
-- [ ] `lib/core/community/matching_engine.dart`
-- [ ] `lib/core/community/invite_service.dart`
-- [x] `lib/core/community/models/community_models.dart`
-
-## 5. Module Manager
-- [x] `lib/core/modules/module_interface.dart` — iZiiModule
-- [x] `lib/core/modules/module_manifest.dart`
-- [x] `lib/core/modules/module_registry.dart`
-- [ ] `lib/core/modules/dependency_graph.dart`
-- [ ] `lib/core/modules/module_installer.dart`
+Dưới đây là bảng theo dõi tiến độ các tính năng cốt lõi hiện tại và danh sách các tính năng đề xuất bổ sung dựa trên hệ thống module của Odoo 19.0.
 
 ---
 
-## Phase 5: Core Screens
-- [ ] Implement `DiscoverScreen` (Search, Filters, Matching Engine UI).
-- [ ] Implement `ProviderCard` for displaying matched services.
-- [ ] Implement `ProfileScreen` (User info, Trust Score, Referrals).
-- [ ] Implement `OnboardingScreen` (KYC status and setup).
+## 🛠️ Trạng thái Hệ thống Hiện tại (Current Codebase Status)
 
-## Phase 6: Modules — Next Steps
+### 1. Khung ứng dụng & Giao diện (Core App Shell & Theme)
+- [x] `lib/main.dart` — Điểm khởi chạy ứng dụng
+- [x] `lib/app.dart` — MaterialApp + GoRouter
+- [x] `lib/core/theme/izii_colors.dart` — Bảng màu thương hiệu
+- [x] `lib/core/theme/izii_theme.dart` — Cấu hình Dark/Light theme
+- [ ] `lib/core/theme/izii_typography.dart` — Định nghĩa Typography chuẩn (Outfit & Inter)
+- [ ] `lib/core/theme/izii_spacing.dart` — Định nghĩa Spacing & BorderRadius tokens
+- [x] `lib/core/navigation/app_router.dart` — Cấu hình GoRouter đa nền tảng
+- [ ] `lib/core/widgets/` — Thư mục chứa các thành phần giao diện dùng chung (Common Widgets)
 
-Expand and complete the Sales/CRM and Supply Chain modules, plus integration and QA tasks.
+### 2. Cơ sở dữ liệu (Drift SQLite Engine)
+- [x] `lib/core/database/app_database.dart` — Quản lý cơ sở dữ liệu và Migrations (Schema v6)
+- [x] `lib/core/database/tables/` — Khai báo các bảng dữ liệu gốc (Contacts, Leads, Deals, Products, Stock, Booking...)
+- [x] Quản lý tạo mã tự động Drift thông qua `build_runner`
+- [x] Tích hợp database vào tất cả Repositories hiện có
 
-### 6. Sales & CRM Module
-- [x] `lib/modules/sales_crm/manifest.dart`
-- [x] `lib/modules/sales_crm/sales_crm_module.dart`
-- [x] `lib/modules/sales_crm/database/tables.dart`
-- [x] `lib/modules/sales_crm/models/`
-- [x] `lib/modules/sales_crm/agent_tools/crm_tools.dart`
-- [x] `lib/modules/sales_crm/bloc/`
-- [x] `lib/modules/sales_crm/screens/`
-- [x] `lib/modules/sales_crm/daos/` — implement DAOs for Leads, Contacts, Deals
-- [x] `lib/modules/sales_crm/repository.dart` — repository adapter using `AppDatabase`
-- [x] `lib/modules/sales_crm/services/crm_service.dart` — business logic and sync hooks
-- [ ] `lib/modules/sales_crm/ui/lead_form.dart` — add/edit lead UI and validation
-- [ ] `lib/modules/sales_crm/ui/deal_pipeline.dart` — Kanban/list view
-- [ ] Tests: unit tests for DAOs + widget tests for screens
-- [ ] Docs: `modules/sales_crm/README.md` (API, data model, integration)
-- [ ] Integrate with `ModuleRegistry` and enable lazy loading
+### 3. Tương tác AI Agent (AI Engine)
+- [x] `lib/core/ai_agent/models/chat_models.dart` — Khai báo các models chat & tool calls
+- [x] `lib/core/ai_agent/llm_providers/llm_provider.dart` — Abstract class định nghĩa LLM Provider
+- [x] `lib/core/ai_agent/llm_providers/gemini_provider.dart` — Tích hợp Google Gemini (mặc định)
+- [ ] `lib/core/ai_agent/llm_providers/openai_provider.dart` — Tích hợp OpenAI GPT-4o (chưa hoàn thành)
+- [ ] `lib/core/ai_agent/llm_providers/ondevice_provider.dart` — Tích hợp LLM chạy offline (Ollama / Llama.cpp) (chưa hoàn thành)
+- [x] `lib/core/ai_agent/tools/` — Đăng ký, định tuyến và thực thi các Agent Tools tự động
+- [x] Tích hợp luồng Xác nhận đặt dịch vụ (`requiresConfirmation`) bằng Card giao diện nổi bật (Gemini Booking Confirmation Card)
+- [x] `lib/core/ai_agent/ui/` — Giao diện AI Chat bong bóng, Suggestion chips và Card xác nhận
 
-### 7. Supply Chain Module
-- [x] `lib/modules/supply_chain/manifest.dart`
-- [x] `lib/modules/supply_chain/supply_chain_module.dart`
-- [x] `lib/modules/supply_chain/database/tables.dart`
-- [x] `lib/modules/supply_chain/agent_tools/`
-- [x] `lib/modules/supply_chain/screens/`
-- [x] `lib/modules/supply_chain/daos/` — implement DAOs for Products, StockMoves, Warehouses
-- [x] `lib/modules/supply_chain/repository.dart` — repository adapter using `AppDatabase` and SyncService
+### 4. Lớp Cộng đồng (Community Layer)
+- [x] `lib/core/community/models/` — Định nghĩa Profile, TrustScore, Listing, Booking...
+- [x] `lib/core/community/trust_network_service.dart` — Tính toán điểm tin cậy dựa trên mạng lưới giới thiệu
+- [x] `lib/core/community/matching_engine.dart` — Công cụ gợi ý & kết hợp nhà cung cấp phù hợp
+- [x] `lib/core/community/invite_service.dart` — Tạo link mời và quản lý referral chains
+- [x] `lib/core/community/trust_score_calculator.dart` — Thuật toán tính điểm Trust Level (Newcomer, Trusted, Verified, Elite)
 
-### 8. Services Module (Scheduling & Appointments)
-- [x] `lib/modules/services/manifest.dart`
-- [x] `lib/modules/services/services_module.dart`
-- [x] `lib/modules/services/database/tables.dart` — ServiceItems & ServiceBookings tables created
-  - `ServiceItems` table: id, name, category (repair, installation, delivery, cleaning, electrical, plumbing), hourlyRate, estimatedHours, description, customFields
-  - `ServiceBookings` table: id, serviceItemId, customerName, customerPhone, scheduledAt, actualHours, totalAmount, status (pending, confirmed, in_progress, completed, cancelled), notes, customFields
-- [x] `lib/modules/services/daos/` — DAOs implemented
-  - `service_items_dao.dart` — CRUD for services (get all, get by category, insert, update, delete)
-  - `service_bookings_dao.dart` — CRUD for appointments/bookings
-- [x] `lib/modules/services/repository.dart` — repository adapter using `AppDatabase` and SyncService
-  - `getServiceItems()` — list all services
-  - `getServiceItemsByCategory()` — filter by category
-  - `addServiceItem()` — add new service
-  - `getServiceBookings()` — list appointments by status/date
-  - `createBooking()` — schedule appointment
-  - `updateBookingStatus()` — update appointment status
-- [/] `lib/modules/services/agent_tools/` — AI tools partially implemented
-  - `get_service_info` — tra cứu thông tin dịch vụ (needs integration with repository)
-  - TODO: `schedule_service_tool` — create appointments via AI
-  - TODO: `get_service_availability_tool` — check available slots
-  - TODO: `update_service_booking_tool` — modify existing bookings
-- [x] `lib/modules/services/screens/`
-  - `services_screen.dart` — list available services with category filter
-  - `bookings_screen.dart` — list scheduled appointments
-  - `add_service_screen.dart` — form to add new service
-  - `edit_service_screen.dart` — edit existing service
-  - `add_booking_screen.dart` — schedule appointment form
-- [x] `lib/modules/services/bloc/` — state management
-  - `services_bloc.dart` — ServicesBLoC with events/states for CRUD operations
-- [x] Integration with `ModuleRegistry` — ServicesModule registered and lazy loaded
-- [ ] Test suite — unit tests for DAOs, repository, and widget tests for screens
-- [ ] API Documentation — `modules/services/README.md`
-- [ ] `lib/modules/supply_chain/services/stock_service.dart` — inventory adjustments, reservations
-- [ ] `lib/modules/supply_chain/ui/stock_management.dart` — stock list, receiving, transfer flows
-- [ ] `lib/modules/supply_chain/integration/order_fulfillment.dart` — connect with Sales module
-- [ ] Tests: unit tests for DAOs + integration tests for stock flows
-- [ ] Docs: `modules/supply_chain/README.md`
-- [ ] Integrate with `ModuleRegistry` and add dependency edges (e.g., sales -> supply_chain)
+### 5. Quản lý Hệ thống Module (Module Manager)
+- [x] `lib/core/modules/module_interface.dart` — Định nghĩa interface `IZiiModule` và manifest
+- [x] `lib/core/modules/module_registry.dart` — Trình quản lý đăng ký và cài đặt module động
+- [x] `lib/core/modules/module_dashboard_screen.dart` — Giao diện Dashboard module hiện đại (Active status, Quick Actions grid)
+- [x] `lib/core/modules/module_directory_screen.dart` — Cửa hàng module (Module Store) cho phép bật/tắt module
+- [ ] `lib/core/modules/dependency_graph.dart` — Thuật toán sắp xếp topological giải quyết xung đột/phụ thuộc khi cài đặt module (chưa hoàn thành)
 
-### Module Integration & QA
-- [ ] Contract tests between modules (data shapes, events)
-- [ ] End-to-end smoke: create lead -> convert to order -> reserve stock
+### 6. Đồng bộ hóa Offline-First (Sync Engine)
+- [x] `lib/core/database/tables.dart` -> Thêm bảng `OutboxMutations` lưu hàng đợi ngoại tuyến
+- [x] `lib/core/sync/outbox_queue.dart` — Quản lý thêm, lấy, xoá hàng đợi offline trong database local
+- [x] `lib/core/sync/sync_service.dart` — Đẩy dữ liệu (PUSH), Kéo dữ liệu (PULL), cập nhật trạng thái mạng (Connectivity)
+- [x] Tích hợp đồng bộ tự động cho cả 6 bảng: `leads`, `products`, `contacts`, `deals`, `service_items`, `service_bookings`
+- [x] `lib/core/sync/screens/sync_screen.dart` — Dashboard đồng bộ (Cấu hình Server URL, Token, Nút Sync Now, Log real-time)
+- [ ] `lib/core/sync/conflict_resolver.dart` — Triển khai cơ chế giải quyết xung đột (Last-Write-Wins, Merge fields, hoặc hỏi ý kiến người dùng)
+- [ ] `lib/core/sync/sync_scheduler.dart` — Hẹn giờ đồng bộ nền định kỳ khi app bị đóng (WorkManager)
 
-## 6. Sync Engine
-- [x] `lib/core/sync/sync_service.dart`
-- [x] `lib/core/sync/outbox_queue.dart`
-- [ ] `lib/core/sync/conflict_resolver.dart` — implement pluggable resolvers (last-write, merge, manual)
-- [ ] `lib/core/sync/sync_scheduler.dart` — background / periodic sync with exponential backoff
-- [ ] `lib/core/sync/delivery_guarantees.md` — document at-least-once vs exactly-once expectations
-- [x] Integration: test sync across modules (sales_crm, supply_chain, services)
+### 7. Các Module Nghiệp vụ Hiện có
+- [x] **Sales & CRM Module**:
+  - Giao diện quản lý Leads CRUD, Quick Status Changer cho Leads (Popup Menu)
+  - Deal Pipeline dạng Kanban hỗ trợ thao tác Kéo & Thả (Drag-and-Drop) trơn tru
+- [x] **Supply Chain Module**:
+  - Quản lý kho hàng, sản phẩm CRUD, thêm SP nhanh bằng ảnh
+  - Tích hợp quét mã vạch Barcode/QR bằng camera qua package `mobile_scanner` để tìm kiếm và điền mã tự động
+- [x] **Services Module**:
+  - Quản lý danh mục Dịch vụ (có trường tùy chỉnh Custom Fields), đặt lịch Booking hẹn khách
+  - Hộp thoại tính tiền tự động dựa trên thời gian thực tế hoàn thành (`actual_hours * hourly_rate`)
 
-## 7. Auth & Settings
-- [ ] `lib/core/auth/auth_service.dart`
-- [ ] `lib/core/settings/settings_screen.dart`
-- [ ] `lib/core/settings/ai_config_screen.dart`
+---
 
-## 8. Feature Screens
-- [x] `lib/features/home/home_screen.dart`
-- [ ] `lib/features/discover/discover_screen.dart`
-- [ ] `lib/features/onboarding/onboarding_screen.dart`
-- [ ] `lib/features/profile/profile_screen.dart`
+## 🚀 Các Tính năng Cần Bổ sung (Đề xuất Mới & Gaps)
 
-## Verification
-- [ ] `flutter run -d windows` works
-- [ ] Core navigation functional
-- [ ] AI Chat screen renders
-- [ ] Module Manager lists available modules
+Dưới đây là các tính năng và module mới cần bổ sung để iZiiApp trở thành một siêu ứng dụng ERP hoàn chỉnh lấy cảm hứng từ Odoo 19.0.
+
+### A) Hoàn thiện các Lỗ hổng Cốt lõi (Core Gaps)
+- [x] **Multi-Language Support (Đa ngôn ngữ)**:
+  - Triển khai `AppLocalizations` quản lý từ điển động và BuildContext extensions.
+  - Tạo bảng dịch mặc định `vi.dart` (Tiếng Việt) và `en.dart` (Tiếng Anh) tinh gọn.
+  - Tích hợp `locale` và settings lưu trữ ngôn ngữ vào `AppBloc` & `SettingsService`.
+  - Thiết kế Card cấu hình Ngôn ngữ bằng ChoiceChips trong SettingsScreen.
+  - Hỗ trợ các module tự đăng ký dịch động (`initialize()`) trên môi trường modular.
+- [ ] **Auth Module (Xác thực & Người dùng)**:
+  - Triển khai `lib/core/auth/auth_service.dart` (hỗ trợ JWT Login/Register/Logout).
+  - Thêm màn hình Đăng nhập/Đăng ký với thiết kế Premium Glassmorphism.
+  - Phân quyền người dùng (Role-based access control: Admin, Manager, Staff, Customer).
+- [ ] **AI Config Screen (Cấu hình AI)**:
+  - Cho phép người dùng cấu hình loại LLM (Gemini, OpenAI, Ollama), nhập API Key, cấu hình Prompt hệ thống của riêng mình.
+- [ ] **Onboarding & KYC Screen**:
+  - Giao diện hướng dẫn người dùng cung cấp giấy tờ định danh (KYC) để xác minh tài khoản, nâng cấp điểm Trust Score.
+- [ ] **Typography & Spacing Tokens**:
+  - Tách biệt định nghĩa style chữ và khoảng cách ra file riêng (`izii_typography.dart`, `izii_spacing.dart`) để giao diện thống nhất hơn.
+
+### B) Các Module Nghiệp vụ Mới (New Odoo-inspired Modules)
+
+#### 1. 🧾 Module Hóa đơn & Kế toán (Invoicing & Accounting)
+*Hỗ trợ thanh toán và quản lý dòng tiền từ hoạt động Bán hàng (CRM) và Dịch vụ.*
+- [ ] Khai báo bảng: `Invoices` (id, code, customer_id, issue_date, due_date, total, status: draft/unpaid/paid), `InvoiceItems` (id, invoice_id, description, quantity, price), `Payments` (id, invoice_id, amount, payment_method, transaction_date).
+- [ ] Tính năng "Xuất Hoá đơn" nhanh từ một **Deal thắng (CRM)** hoặc **Booking hoàn thành (Services)**.
+- [ ] Dashboard Tài chính: Thống kê doanh thu, chi phí, công nợ khách hàng dạng biểu đồ trực quan (sử dụng package `fl_chart`).
+- [ ] Xuất hoá đơn ra file PDF hoặc xuất hóa đơn in nhiệt để gửi cho khách hàng.
+
+#### 2. 👥 Module Nhân sự & Chấm công (Human Resources & Attendance)
+*Quản lý nhân viên nội bộ, chấm công hàng ngày và xin nghỉ phép.*
+- [ ] Khai báo bảng: `Employees` (id, user_id, job_title, department, manager_id), `Attendances` (id, employee_id, check_in, check_out, gps_latitude, gps_longitude), `LeaveRequests` (id, employee_id, start_date, end_date, reason, status: pending/approved/rejected).
+- [ ] Chức năng **Chấm công thông minh (Check-in / Check-out)** bằng nút bấm lớn kèm định vị GPS hoặc xác thực sóng Wi-Fi văn phòng.
+- [ ] Màn hình nộp đơn xin nghỉ phép (Time Off) và luồng duyệt đơn cho người quản lý.
+
+#### 3. 📋 Module Quản lý Dự án & Task (Project & Task Management)
+*Quản lý công việc của đội ngũ và ghi nhận thời gian hoàn thành.*
+- [ ] Khai báo bảng: `Projects` (id, name, description, status), `ProjectTasks` (id, project_id, title, description, assignee_id, priority, status: todo/in_progress/done), `Timesheets` (id, task_id, employee_id, date, duration_hours, description).
+- [ ] Bảng Kanban quản lý Task công việc hỗ trợ kéo thả trạng thái.
+- [ ] Chức năng bấm giờ làm việc (Timesheet Timer) tự động ghi nhận giờ vào công việc cụ thể.
+
+#### 4. 🛒 Module Mua hàng (Purchase Management)
+*Đặt mua nguyên vật liệu/sản phẩm từ nhà cung cấp và nhập kho.*
+- [ ] Khai báo bảng: `Vendors` (id, name, phone, email, address), `PurchaseOrders` (id, vendor_id, order_date, total_amount, status: draft/confirmed/received), `PurchaseOrderLines` (id, po_id, product_id, quantity, unit_price).
+- [ ] Quy trình Mua hàng: Tạo đơn hàng gửi Nhà cung cấp -> Xác nhận giao hàng -> Tự động cộng số lượng tồn kho sản phẩm trong Supply Chain.
+
+#### 5. 🏪 Module Điểm bán lẻ (Point of Sale - POS)
+*Giao diện bán hàng nhanh tại quầy cho các cửa hàng bán lẻ.*
+- [ ] Giao diện POS tối ưu hóa cho màn hình ngang (Tablet/Desktop) và dọc (Mobile): Chọn nhanh sản phẩm từ lưới danh mục -> Giỏ hàng -> Thanh toán.
+- [ ] Thanh toán tiện lợi bằng mã QR động ngân hàng (VietQR) hoặc ví điện tử.
+- [ ] Hỗ trợ quét mã vạch trực tiếp từ Camera để add sản phẩm vào giỏ hàng POS.

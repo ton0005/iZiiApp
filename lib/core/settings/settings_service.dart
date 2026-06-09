@@ -5,6 +5,17 @@ class SettingsService {
   static const String _syncServerUrl = 'sync_server_url';
   static const String _syncToken = 'sync_token';
   static const String _lastSyncTimestamp = 'last_sync_timestamp';
+  static const String _languageCode = 'selected_language_code';
+
+  Future<void> saveLanguage(String code) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_languageCode, code);
+  }
+
+  Future<String> getLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_languageCode) ?? 'vi';
+  }
 
   Future<void> saveGeminiApiKey(String key) async {
     final prefs = await SharedPreferences.getInstance();

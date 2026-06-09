@@ -22,6 +22,8 @@ class Leads extends Table {
       text().withDefault(const Constant('new'))(); // new, qualified, won, lost
   RealColumn get expectedRevenue => real().withDefault(const Constant(0.0))();
   TextColumn get notes => text().nullable()();
+  TextColumn get source => text().withDefault(const Constant('direct'))(); // direct, website, referral, campaign
+  TextColumn get ownerId => text().nullable()(); // assigned sales rep
   TextColumn get customFields => text().withDefault(const Constant('{}'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
@@ -37,6 +39,8 @@ class Deals extends Table {
   RealColumn get amount => real()();
   TextColumn get stage => text().withDefault(const Constant(
       'proposal'))(); // proposal, negotiation, closed_won, closed_lost
+  TextColumn get source => text().withDefault(const Constant('direct'))(); // direct, website, referral, campaign
+  TextColumn get ownerId => text().nullable()(); // assigned sales rep
   DateTimeColumn get expectedCloseDate => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 

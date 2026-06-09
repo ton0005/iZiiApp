@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'module_manifest.dart';
 import 'module_registry.dart';
+import '../localization/app_localizations.dart';
 
 class ModuleDirectoryScreen extends StatefulWidget {
   const ModuleDirectoryScreen({super.key});
@@ -43,7 +44,7 @@ class _ModuleDirectoryScreenState extends State<ModuleDirectoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Khám phá Module'),
+        title: Text(context.tr('module_dir_title')),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient:
@@ -58,7 +59,7 @@ class _ModuleDirectoryScreenState extends State<ModuleDirectoryScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Tìm module theo tên, mô tả, hoặc thẻ...',
+                hintText: context.tr('module_dir_search_hint'),
                 prefixIcon: const Icon(Icons.search_rounded),
                 suffixIcon: _searchTerm.isNotEmpty
                     ? IconButton(
@@ -86,8 +87,8 @@ class _ModuleDirectoryScreenState extends State<ModuleDirectoryScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 32),
                       child: Text(
                         _searchTerm.isEmpty
-                            ? 'Chưa có module nào để hiển thị.'
-                            : 'Không tìm thấy module phù hợp với "$_searchTerm".',
+                            ? context.tr('module_dir_empty')
+                            : '${context.tr('module_dir_no_results')} "$_searchTerm".',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -120,13 +121,13 @@ class _ModuleDirectoryScreenState extends State<ModuleDirectoryScreen> {
                         ),
                         title: _buildHighlightedText(
                           context,
-                          module.name,
+                          context.tr('module_${module.id}_name'),
                           searchTerms,
                           const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: _buildHighlightedText(
                           context,
-                          module.description,
+                          context.tr('module_${module.id}_desc'),
                           searchTerms,
                           const TextStyle(fontSize: 13, color: Colors.black54),
                           maxLines: 2,
@@ -149,6 +150,9 @@ class _ModuleDirectoryScreenState extends State<ModuleDirectoryScreen> {
     if (moduleId == 'izii.sales_crm') return '/sales';
     if (moduleId == 'izii.supply_chain') return '/inventory';
     if (moduleId == 'izii.services') return '/services/list';
+    if (moduleId == 'izii.project_management') return '/project';
+    if (moduleId == 'izii.purchase_management') return '/purchase';
+    if (moduleId == 'izii.accountant') return '/accountant';
     return '/';
   }
 
@@ -226,6 +230,14 @@ class _ModuleDirectoryScreenState extends State<ModuleDirectoryScreen> {
         return Icons.people_alt_rounded;
       case 'izii.supply_chain':
         return Icons.inventory_2_rounded;
+      case 'izii.services':
+        return Icons.home_repair_service_rounded;
+      case 'izii.project_management':
+        return Icons.assignment_rounded;
+      case 'izii.purchase_management':
+        return Icons.shopping_cart_rounded;
+      case 'izii.accountant':
+        return Icons.account_balance_rounded;
       default:
         return Icons.extension_rounded;
     }

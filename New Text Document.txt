@@ -10,3 +10,131 @@ I/InsetsController(15410): onStateChanged: host=com.izii.izii_app/com.izii.izii_
 I/VRI[MainActivity]@4517d75(15410): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
 I/VRI[MainActivity]@4517d75(15410): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@4517d75
 I/VRI[MainActivity]@4517d75(15410): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@4517d75
+
+
+# Kế hoạch phát triển: Bổ sung tính năng mới & Hoàn thiện Hệ sinh thái iZiiApp
+
+Tài liệu này đánh giá toàn diện trạng thái dự án hiện tại, chỉ ra các khoảng trống tính năng (gaps) và đề xuất lộ trình tích hợp các module mới lấy cảm hứng từ bộ ứng dụng của Odoo 19.0 nhằm hướng tới một siêu ứng dụng ERP hoàn chỉnh, hoạt động đa nền tảng và offline-first.
+
+---
+
+## 🛠️ Đánh giá Trạng thái Hiện tại (Current Status Evaluation)
+
+Dự án **iZiiApp** đã đạt được các cột mốc quan trọng về mặt kiến trúc và trải nghiệm người dùng:
+1. **Core UI**: Giao diện tối hiện đại, hỗ trợ chuyển theme, thanh điều hướng mượt mà và hoạt ảnh chuyển cảnh đẹp mắt.
+2. **AI Agent**: Hỗ trợ Gemini API, tích hợp thành công luồng đặt lịch hẹn tự động có màn hình xác thực thông tin (Confirmation Card UI).
+3. **Lớp Cộng đồng & Trust**: Thuật toán chấm điểm tin cậy (Trust Level), đề xuất giới thiệu nhà cung cấp (Matching Engine), và chuỗi link giới thiệu (Referral Chain).
+4. **Các module nghiệp vụ**: Sales & CRM (kéo thả Deals), Supply Chain (quét barcode tìm kiếm và thêm sản phẩm nhanh), và Services (Custom fields, booking, tự động tính tiền).
+5. **Sync Engine (Đồng bộ offline-first)**: Lưu tạm mutations ngoại tuyến vào SQLite và đồng bộ hai chiều (PUSH/PULL) mượt mà với Mock Sync Server qua 6 bảng dữ liệu.
+
+---
+
+## 📢 Yêu cầu Người dùng Đánh giá (User Review Required)
+
+> [!IMPORTANT]
+> Trước khi đi vào viết mã chi tiết, chúng ta cần thống nhất về định hướng thiết kế và mức độ ưu tiên của các tính năng sau:
+> 
+> 1. **Cơ chế Xác thực & Phân quyền**: Cần có hệ thống Auth thực thụ để đồng bộ dữ liệu theo từng tài khoản riêng biệt thay vì dùng chung một database ảo như hiện tại.
+> 2. **Cầu nối dữ liệu giữa các Module**: Tích hợp luồng tạo Hóa đơn tự động mỗi khi một Deal trong CRM chuyển sang trạng thái "Won" (Thành công) hoặc khi một Lịch hẹn Dịch vụ hoàn thành.
+> 3. **Giải quyết tranh chấp Đồng bộ (Conflict Resolution)**: Khi dữ liệu trên Client và Server cùng thay đổi khi offline, cần một cơ chế thông minh (ví dụ: gộp trường dữ liệu hoặc hiện bảng so sánh cho người dùng chọn) thay vì chỉ ghi đè trực tiếp theo thời gian (Last-Write-Wins).
+
+---
+
+## ❓ Câu hỏi Mở cho Người dùng (Open Questions)
+
+> [!WARNING]
+> Vui lòng phản hồi các câu hỏi sau để làm rõ định hướng thực hiện:
+> 
+> 1. **Bạn muốn ưu tiên thực hiện nhóm tính năng nào trước?**
+>    - *Lựa chọn 1*: Hoàn thiện các khoảng trống cốt lõi (Auth xác thực người dùng, Cấu hình AI key, Màn hình nộp KYC).
+>    - *Lựa chọn 2*: Phát triển **Module Hóa đơn & Kế toán (Accounting)** trước để theo dõi dòng tiền và thanh toán.
+>    - *Lựa chọn 3*: Phát triển **Module Nhân sự & Chấm công (HR & Attendance)** có tích hợp định vị GPS check-in.
+>    - *Lựa chọn 4*: Phát triển các module còn lại (Quản lý Dự án, Mua hàng, POS).
+> 2. **Đối với hệ thống Xác thực (Auth)**, bạn muốn sử dụng giải pháp tự xây dựng (JWT Tokens lưu trên Shared Preferences và xác thực qua máy chủ riêng) hay tích hợp dịch vụ bên thứ ba như Firebase Authentication?
+> 3. **Bạn có muốn nâng cấp máy chủ Mock hiện tại** (`sync_server.py`) thành một backend lưu trữ cơ sở dữ liệu thực tế (như PocketBase, Node.js + PostgreSQL hoặc Python FastAPI) để có thể thử nghiệm kết nối ổn định hơn không?
+
+---
+
+## 💡 Đề xuất Nội dung các Tính năng mới (Proposed Changes)
+
+Dưới đây là thiết kế kiến trúc chi tiết cho các module đề xuất bổ sung:
+
+### 1. Module Hóa đơn & Kế toán (Invoicing & Accounting)
+*Mục tiêu:* Theo dõi chi tiết hóa đơn, các khoản thanh toán của khách hàng và thống kê dòng tiền.
+
+#### [NEW] Bảng dữ liệu Drift SQLite
+- `Invoices`: `id` (UUID), `code` (mã hóa đơn tự động tăng), `customerId` (liên kết contact), `sourceType` (leads/deals/bookings), `sourceId` (ID nguồn tương ứng), `issueDate`, `dueDate`, `totalAmount`, `status` (draft, unpaid, paid, cancelled), `customFields` (JSON).
+- `InvoiceLines`: `id`, `invoiceId`, `description`, `quantity`, `price`, `amount`.
+- `Payments`: `id`, `invoiceId`, `amount`, `paymentMethod` (cash, bank_transfer, qr), `transactionDate`, `notes`.
+
+#### [NEW] Giao diện người dùng
+- `InvoiceListScreen`: Danh sách hóa đơn có lọc theo trạng thái (Đã thanh toán, Chưa thanh toán, Quá hạn).
+- `InvoiceDetailScreen`: Chi tiết hóa đơn định dạng chuyên nghiệp, nút "Thanh toán nhanh", và tính năng xuất PDF/In nhiệt.
+- `AccountingDashboard`: Biểu đồ cột doanh thu & chi phí hàng tháng, chỉ số tổng quan tài chính dòng tiền.
+
+---
+
+### 2. Module Nhân sự & Chấm công (Human Resources & Attendance)
+*Mục tiêu:* Quản lý thông tin nhân sự, chấm công thời gian thực và quản lý đơn từ nghỉ phép.
+
+#### [NEW] Bảng dữ liệu Drift SQLite
+- `Employees`: `id` (UUID), `userId` (liên kết bảng Users), `jobTitle`, `department`, `managerId`, `hireDate`, `isActive`.
+- `Attendances`: `id` (UUID), `employeeId`, `checkIn` (DateTime), `checkOut` (DateTime), `gpsLatitude`, `gpsLongitude`, `locationName`.
+- `LeaveRequests`: `id` (UUID), `employeeId`, `startDate`, `endDate`, `leaveType` (annual, sick, unpaid), `reason`, `status` (pending, approved, rejected).
+
+#### [NEW] Giao diện người dùng
+- `AttendanceScreen`: Nút bấm Chấm công cực lớn với hiệu ứng chạm và gradient động. Sử dụng package `geolocator` lấy vị trí GPS để đảm bảo chấm công đúng văn phòng.
+- `LeaveRequestForm`: Form gửi yêu cầu nghỉ phép đơn giản, trực quan.
+- `ManagerApprovalScreen`: Giao diện duyệt đơn từ dành cho quản lý cấp cao.
+
+---
+
+### 3. Module Quản lý Dự án & Task (Project & Task Management)
+*Mục tiêu:* Tổ chức công việc đội nhóm, theo dõi tiến độ dự án và ghi nhận thời gian làm việc.
+
+#### [NEW] Bảng dữ liệu Drift SQLite
+- `Projects`: `id` (UUID), `name`, `description`, `status` (planning, active, completed, archived), `createdAt`.
+- `ProjectTasks`: `id`, `projectId`, `title`, `description`, `assigneeId`, `priority` (low, medium, high), `status` (todo, in_progress, done), `dueDate`.
+- `Timesheets`: `id`, `taskId`, `employeeId`, `date`, `durationHours`, `description`.
+
+#### [NEW] Giao diện người dùng
+- `ProjectDashboard`: Danh sách các dự án đang hoạt động kèm tiến độ hoàn thành (%).
+- `TaskKanbanBoard`: Bảng Kanban kéo thả các công việc theo trạng thái (To Do -> In Progress -> Done) tương tự màn hình Deal Pipeline.
+- `TaskTimerWidget`: Tiện ích bấm giờ (Play/Pause) trực tiếp trong Task để ghi nhận giờ làm việc tự động vào bảng Timesheet.
+
+---
+
+### 4. Module Mua hàng (Purchase Management)
+*Mục tiêu:* Đặt mua hàng hóa/nguyên vật liệu từ Nhà cung cấp để tự động nạp kho cho Supply Chain.
+
+#### [NEW] Bảng dữ liệu Drift SQLite
+- `Vendors`: `id` (UUID), `name`, `phone`, `email`, `address`, `company`.
+- `PurchaseOrders`: `id`, `vendorId`, `orderDate`, `totalAmount`, `status` (draft, sent, confirmed, received).
+- `PurchaseLines`: `id`, `purchaseOrderId`, `productId`, `quantity`, `unitPrice`.
+
+#### [NEW] Quy trình tích hợp
+- Khi đơn mua hàng ở trạng thái `received` (Đã nhận hàng) -> Hệ thống tự động gọi hàm cập nhật tăng số lượng hàng tồn kho (`StockQuants`) tương ứng trong Module Supply Chain và lưu lịch sử dịch chuyển kho (`StockMoves`).
+
+---
+
+### 5. Module Điểm bán lẻ (Point of Sale - POS)
+*Mục tiêu:* Bán lẻ tại quầy nhanh chóng, phù hợp cho tablet và thiết bị di động cầm tay.
+
+#### [NEW] Giao diện người dùng
+- `PosRegisterScreen`: Lưới sản phẩm bên trái (có lọc theo danh mục) + Giỏ hàng bên phải (hỗ trợ tăng giảm số lượng, giảm giá, chọn khách hàng).
+- Hỗ trợ quét mã vạch qua camera để nạp trực tiếp sản phẩm vào giỏ hàng POS.
+- Nút "Thanh toán nhanh" hiển thị mã QR động để khách hàng quét trả tiền.
+
+---
+
+## 📈 Kế hoạch Xác thực (Verification Plan)
+
+### Automated Tests
+1. Chạy lệnh sinh code Drift: `C:\flutter\bin\flutter.bat pub run build_runner build --delete-conflicting-outputs` để tích hợp các bảng mới vào schema database.
+2. Kiểm tra tính toàn vẹn và không lỗi biên dịch: `C:\flutter\bin\flutter.bat analyze`.
+
+### Manual Verification
+1. Sau khi người dùng lựa chọn module triển khai, chúng tôi sẽ viết mã nguồn tích hợp và kiểm tra:
+   - Các màn hình hiển thị chính xác theo thiết kế dark mode glassmorphism premium.
+   - Thao tác ghi dữ liệu local lưu đúng vào SQLite.
+   - Dữ liệu mới được tự động nạp vào hàng chờ `OutboxMutations` để đẩy lên server đồng bộ.

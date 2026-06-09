@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/izii_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import 'widgets/trust_score_widget.dart';
 import 'widgets/stats_row.dart';
 import 'widgets/menu_item.dart';
@@ -48,22 +49,22 @@ class ProfileScreen extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: const StatsRow(
+              child: StatsRow(
                 items: [
                   StatItem(
                     icon: Icons.check_circle_outline_rounded,
                     value: '12',
-                    label: 'Đơn hoàn thành',
+                    label: context.tr('profile_completed_orders'),
                   ),
                   StatItem(
                     icon: Icons.star_rounded,
                     value: '4.5',
-                    label: 'Đánh giá TB',
+                    label: context.tr('profile_avg_rating'),
                   ),
                   StatItem(
                     icon: Icons.people_outline_rounded,
                     value: '3',
-                    label: 'Giới thiệu',
+                    label: context.tr('profile_referrals'),
                   ),
                 ],
               )
@@ -120,9 +121,9 @@ class _ProfileHeader extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Hồ sơ',
-                    style: TextStyle(
+                  Text(
+                    context.tr('nav_profile'),
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -208,7 +209,7 @@ class _ProfileHeader extends StatelessWidget {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      'Chưa xác minh',
+                      context.tr('profile_kyc_unverified'),
                       style: TextStyle(
                         color: IZiiColors.accent,
                         fontSize: 11,
@@ -364,55 +365,55 @@ class _MenuSection extends StatelessWidget {
     final items = <_MenuData>[
       _MenuData(
         icon: Icons.build_circle_outlined,
-        title: 'Dịch vụ của tôi',
+        title: context.tr('profile_menu_services'),
         color: IZiiColors.primary,
         onTap: () {},
       ),
       _MenuData(
         icon: Icons.inventory_2_outlined,
-        title: 'Đơn hàng',
+        title: context.tr('profile_menu_orders'),
         color: IZiiColors.secondary,
         onTap: () {},
       ),
       _MenuData(
         icon: Icons.people_alt_outlined,
-        title: 'Mời bạn bè',
+        title: context.tr('profile_menu_invite'),
         color: IZiiColors.success,
         onTap: () => context.push('/invite'),
       ),
       _MenuData(
         icon: Icons.settings_outlined,
-        title: 'Cài đặt',
+        title: context.tr('profile_menu_settings'),
         color: const Color(0xFF8B5CF6),
         onTap: () => context.push('/settings'),
       ),
       _MenuData(
         icon: Icons.smart_toy_outlined,
-        title: 'Cấu hình AI',
+        title: context.tr('profile_menu_ai_config'),
         color: IZiiColors.accent,
         onTap: () {},
       ),
       _MenuData(
         icon: Icons.sync_rounded,
-        title: 'Đồng bộ Dữ liệu',
+        title: context.tr('settings_sync_title'),
         color: const Color(0xFF06B6D4),
         onTap: () => context.push('/settings/sync'),
       ),
       _MenuData(
         icon: Icons.bar_chart_rounded,
-        title: 'Báo cáo',
+        title: context.tr('profile_menu_reports'),
         color: IZiiColors.secondary,
         onTap: () {},
       ),
       _MenuData(
         icon: Icons.help_outline_rounded,
-        title: 'Trợ giúp',
+        title: context.tr('profile_menu_help'),
         color: const Color(0xFF64748B),
         onTap: () {},
       ),
       _MenuData(
         icon: Icons.logout_rounded,
-        title: 'Đăng xuất',
+        title: context.tr('profile_menu_logout'),
         color: IZiiColors.error,
         onTap: () => _showLogoutDialog(context),
       ),
@@ -439,20 +440,20 @@ class _MenuSection extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: IZiiColors.darkSurface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Đăng xuất',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+        title: Text(
+          context.tr('profile_menu_logout'),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
         ),
-        content: const Text(
-          'Bạn có chắc chắn muốn đăng xuất?',
-          style: TextStyle(color: Colors.white70),
+        content: Text(
+          context.tr('profile_logout_confirm'),
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(
-              'Huỷ',
-              style: TextStyle(color: Colors.white54),
+              context.tr('profile_logout_cancel'),
+              style: const TextStyle(color: Colors.white54),
             ),
           ),
           TextButton(
@@ -461,7 +462,7 @@ class _MenuSection extends StatelessWidget {
               // TODO: Implement actual logout
             },
             child: Text(
-              'Đăng xuất',
+              context.tr('profile_menu_logout'),
               style: TextStyle(color: IZiiColors.error),
             ),
           ),

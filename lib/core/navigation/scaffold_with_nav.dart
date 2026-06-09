@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/izii_colors.dart';
+import '../localization/app_localizations.dart';
 
 class ScaffoldWithNav extends StatelessWidget {
   final Widget child;
@@ -146,7 +147,15 @@ class _NavItem extends StatelessWidget {
                       ? IZiiColors.primary
                       : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                 ),
-                child: Text(tab.label),
+                child: Text(
+                  tab.path == '/'
+                      ? context.tr('nav_home')
+                      : tab.path == '/chat'
+                          ? context.tr('nav_chat')
+                          : tab.path == '/discover'
+                              ? context.tr('nav_discover')
+                              : context.tr('nav_profile'),
+                ),
               ),
             ],
           ),
