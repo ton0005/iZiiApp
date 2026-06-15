@@ -117,9 +117,8 @@ class ProductsScreen extends StatelessWidget {
                       ),
                       title: Text(product['name'],
                           style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(context.tr('inv_price_label').replaceAll(
-                              '{price}', _formatPrice(product['price'])) +
-                          ' VNĐ'),
+                      subtitle: Text(
+                          '${context.tr('inv_price_label').replaceAll('{price}', _formatPrice(product['price']))} VNĐ'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

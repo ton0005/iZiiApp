@@ -10,11 +10,12 @@ class AiMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.role == MessageRole.user;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isUser) ...[
@@ -26,9 +27,12 @@ class AiMessageBubble extends StatelessWidget {
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               decoration: BoxDecoration(
-                color: isUser ? const Color(0xFF6366F1) : Theme.of(context).colorScheme.surface,
+                color: isUser
+                    ? const Color(0xFF6366F1)
+                    : Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
@@ -37,20 +41,23 @@ class AiMessageBubble extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
               child: Column(
-                crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   // Render text with inline lead cards
                   _buildRichContent(context, isUser),
-                  if (message.toolCalls != null && message.toolCalls!.isNotEmpty) ...[
+                  if (message.toolCalls != null &&
+                      message.toolCalls!.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    ...message.toolCalls!.map((t) => _buildToolCard(t, context)),
+                    ...message.toolCalls!
+                        .map((t) => _buildToolCard(t, context)),
                   ]
                 ],
               ),
@@ -59,21 +66,24 @@ class AiMessageBubble extends StatelessWidget {
           if (isUser) const SizedBox(width: 32),
         ],
       ),
-    ).animate().fade(duration: 300.ms).slideY(begin: 0.1, end: 0, duration: 300.ms, curve: Curves.easeOutQuad);
+    ).animate().fade(duration: 300.ms).slideY(
+        begin: 0.1, end: 0, duration: 300.ms, curve: Curves.easeOutQuad);
   }
 
   Widget _buildRichContent(BuildContext context, bool isUser) {
     final content = message.content;
-    
+
     // Check if the content contains lead card markers: [LEAD:name|status|revenue|title]
     if (!isUser && content.contains('[LEAD:')) {
       return _buildContentWithLeadCards(context, content);
     }
-    
+
     return Text(
       content,
       style: TextStyle(
-        color: isUser ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
+        color: isUser
+            ? Colors.white
+            : Theme.of(context).textTheme.bodyMedium?.color,
       ),
     );
   }
@@ -90,7 +100,8 @@ class AiMessageBubble extends StatelessWidget {
         if (textBefore.isNotEmpty) {
           parts.add(Text(
             textBefore,
-            style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+            style:
+                TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
           ));
           parts.add(const SizedBox(height: 8));
         }
@@ -119,7 +130,8 @@ class AiMessageBubble extends StatelessWidget {
         parts.add(const SizedBox(height: 4));
         parts.add(Text(
           remaining,
-          style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+          style:
+              TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
         ));
       }
     }
@@ -130,7 +142,8 @@ class AiMessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildLeadCard(BuildContext context, {
+  Widget _buildLeadCard(
+    BuildContext context, {
     required String name,
     required String status,
     required String revenue,
@@ -158,7 +171,8 @@ class AiMessageBubble extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: () => _showLeadDetail(context, name: name, status: status, revenue: revenue, title: title),
+      onTap: () => _showLeadDetail(context,
+          name: name, status: status, revenue: revenue, title: title),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(12),
@@ -190,7 +204,8 @@ class AiMessageBubble extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   const SizedBox(height: 2),
                   if (title.isNotEmpty)
@@ -203,34 +218,43 @@ class AiMessageBubble extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: statusColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           status,
-                          style: TextStyle(fontSize: 11, color: statusColor, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: statusColor,
+                              fontWeight: FontWeight.w600),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         revenue,
-                        style: const TextStyle(fontSize: 12, color: Colors.green, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: statusColor.withValues(alpha: 0.5), size: 20),
+            Icon(Icons.chevron_right,
+                color: statusColor.withValues(alpha: 0.5), size: 20),
           ],
         ),
       ),
     );
   }
 
-  void _showLeadDetail(BuildContext context, {
+  void _showLeadDetail(
+    BuildContext context, {
     required String name,
     required String status,
     required String revenue,
@@ -285,7 +309,10 @@ class AiMessageBubble extends StatelessWidget {
                   backgroundColor: statusColor.withValues(alpha: 0.15),
                   child: Text(
                     name.isNotEmpty ? name[0].toUpperCase() : '?',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: statusColor),
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: statusColor),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -293,15 +320,22 @@ class AiMessageBubble extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(name,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: statusColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(status, style: TextStyle(color: statusColor, fontWeight: FontWeight.w600, fontSize: 13)),
+                        child: Text(status,
+                            style: TextStyle(
+                                color: statusColor,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13)),
                       ),
                     ],
                   ),
@@ -310,10 +344,13 @@ class AiMessageBubble extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             // Info rows
-            _buildDetailRow(Icons.monetization_on_outlined, 'Trị giá dự kiến', revenue, Colors.green),
+            _buildDetailRow(Icons.monetization_on_outlined, 'Trị giá dự kiến',
+                revenue, Colors.green),
             if (title.isNotEmpty)
-              _buildDetailRow(Icons.description_outlined, 'Nhu cầu', title, const Color(0xFF6366F1)),
-            _buildDetailRow(Icons.calendar_today_outlined, 'Ngày tạo', 'Hôm nay', Colors.grey),
+              _buildDetailRow(Icons.description_outlined, 'Nhu cầu', title,
+                  const Color(0xFF6366F1)),
+            _buildDetailRow(Icons.calendar_today_outlined, 'Ngày tạo',
+                'Hôm nay', Colors.grey),
             const SizedBox(height: 24),
             // Actions
             Row(
@@ -327,7 +364,8 @@ class AiMessageBubble extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       side: BorderSide(color: statusColor),
                       foregroundColor: statusColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
@@ -341,7 +379,8 @@ class AiMessageBubble extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       backgroundColor: statusColor,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
@@ -354,7 +393,8 @@ class AiMessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value, Color iconColor) {
+  Widget _buildDetailRow(
+      IconData icon, String label, String value, Color iconColor) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -373,9 +413,12 @@ class AiMessageBubble extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                Text(label,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[500])),
                 const SizedBox(height: 2),
-                Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+                Text(value,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w500)),
               ],
             ),
           ),
@@ -389,9 +432,9 @@ class AiMessageBubble extends StatelessWidget {
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.05),
+        color: Colors.black.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

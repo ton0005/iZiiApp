@@ -1,0 +1,433 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .root { padding: 0; }
+
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px 10px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .top-bar .plant-id {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    color: var(--color-text-tertiary); text-transform: uppercase;
+  }
+  .top-bar .plant-name {
+    font-size: 18px; font-weight: 500; color: var(--color-text-primary);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .top-bar .plant-name i { font-size: 18px; color: var(--color-text-secondary); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #27c56a; display: inline-block; }
+
+  .metrics-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    padding: 12px 20px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .metric {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 14px;
+  }
+  .metric .m-label { font-size: 11px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .metric .m-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .metric .m-sub { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+
+  .main-layout { display: grid; grid-template-columns: 260px 1fr; min-height: 480px; }
+
+  .room-panel {
+    border-right: 0.5px solid var(--color-border-tertiary);
+    overflow-y: auto;
+    max-height: 560px;
+  }
+  .room-panel-header {
+    padding: 10px 14px 6px;
+    font-size: 11px; font-weight: 500; color: var(--color-text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .room-filter { display: flex; gap: 6px; padding: 8px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .filter-btn {
+    font-size: 11px; padding: 3px 9px; border-radius: 20px;
+    border: 0.5px solid var(--color-border-secondary);
+    background: transparent; color: var(--color-text-secondary); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; }
+
+  .room-list { }
+  .room-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px; cursor: pointer;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    transition: background 0.1s;
+  }
+  .room-item:hover { background: var(--color-background-secondary); }
+  .room-item.selected { background: var(--color-background-secondary); border-left: 2px solid #378ADD; }
+  .room-num {
+    font-size: 13px; font-weight: 500; min-width: 32px; color: var(--color-text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .room-stage { flex: 1; }
+  .room-stage .stage-name { font-size: 12px; color: var(--color-text-primary); }
+  .room-stage .stage-day { font-size: 11px; color: var(--color-text-secondary); margin-top: 1px; }
+  .stage-badge {
+    font-size: 10px; padding: 2px 7px; border-radius: 10px; white-space: nowrap; font-weight: 500;
+  }
+  .badge-filling { background: #E6F1FB; color: #185FA5; }
+  .badge-airing { background: #EAF3DE; color: #3B6D11; }
+  .badge-harvest { background: #FAEEDA; color: #854F0B; }
+  .badge-clean { background: #EEEDFE; color: #3C3489; }
+  .badge-watering { background: #E1F5EE; color: #0F6E56; }
+  .badge-prochloraz { background: #FCEBEB; color: #A32D2D; }
+  .badge-idle { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+
+  .detail-panel { padding: 0; }
+  .detail-header {
+    padding: 14px 20px 12px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .detail-header .room-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+  .detail-header .room-meta { font-size: 12px; color: var(--color-text-secondary); margin-top: 3px; }
+  .action-btns { display: flex; gap: 8px; }
+  .btn-primary {
+    font-size: 12px; padding: 6px 14px;
+    background: var(--color-background-info); color: var(--color-text-info);
+    border: none; border-radius: var(--border-radius-md); cursor: pointer; font-weight: 500;
+  }
+  .btn-secondary {
+    font-size: 12px; padding: 6px 14px;
+    background: transparent; color: var(--color-text-secondary);
+    border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer;
+  }
+
+  .job-pipeline {
+    padding: 14px 20px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .section-label {
+    font-size: 11px; font-weight: 500; color: var(--color-text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
+  }
+  .pipeline { display: flex; flex-direction: column; gap: 6px; }
+  .job-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-tertiary);
+    cursor: pointer; transition: border-color 0.1s;
+    position: relative;
+  }
+  .job-row:hover { border-color: var(--color-border-secondary); }
+  .job-row.active { border-color: #378ADD; }
+  .job-row.done { opacity: 0.55; }
+  .job-seq {
+    font-size: 11px; font-weight: 500; color: var(--color-text-tertiary);
+    min-width: 20px; font-variant-numeric: tabular-nums;
+  }
+  .job-icon { font-size: 15px; color: var(--color-text-secondary); width: 20px; text-align: center; }
+  .job-info { flex: 1; }
+  .job-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .job-detail { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+  .job-status { display: flex; align-items: center; gap: 6px; }
+  .job-check {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid var(--color-border-secondary);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .job-check.checked { background: #27c56a; border-color: #27c56a; }
+  .job-check.checked i { color: white; font-size: 10px; }
+  .job-check:not(.checked) i { display: none; }
+  .job-assign {
+    font-size: 11px; color: var(--color-text-tertiary);
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: 10px; padding: 2px 8px;
+  }
+  .progress-bar-wrap { margin-top: 2px; background: var(--color-border-tertiary); border-radius: 2px; height: 3px; }
+  .progress-bar-fill { height: 3px; border-radius: 2px; background: #378ADD; transition: width 0.3s; }
+
+  .detail-notes {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    padding: 14px 20px;
+  }
+  .note-card {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 12px;
+    border: 0.5px solid var(--color-border-tertiary);
+  }
+  .note-card .nc-label { font-size: 11px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+  .note-card .nc-val { font-size: 13px; color: var(--color-text-primary); line-height: 1.5; }
+
+  .timeline-mini {
+    padding: 10px 20px 16px;
+  }
+  .tl-track { display: flex; gap: 3px; align-items: center; }
+  .tl-seg {
+    flex: 1; height: 6px; border-radius: 3px;
+    background: var(--color-border-tertiary);
+    position: relative; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .tl-seg.done { background: #378ADD; }
+  .tl-seg.active { background: #27c56a; }
+  .tl-labels { display: flex; justify-content: space-between; margin-top: 4px; }
+  .tl-labels span { font-size: 10px; color: var(--color-text-tertiary); }
+
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 20px; color: var(--color-text-tertiary); gap: 8px;
+  }
+  .empty-state i { font-size: 32px; }
+  .empty-state p { font-size: 13px; }
+</style>
+
+<h2 class="sr-only">Costa Mushroom – Plant M2 Room Management Dashboard</h2>
+
+<div class="root">
+  <div class="top-bar">
+    <div>
+      <div class="plant-id">Costa Mushroom · iZiiApp</div>
+      <div class="plant-name">
+        <i class="ti ti-building-factory-2" aria-hidden="true"></i>
+        Plant M2 — Rooms 33–66
+        <span class="status-dot" title="Active"></span>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="btn-secondary" style="font-size:12px;"><i class="ti ti-filter" style="font-size:13px;vertical-align:-1px;margin-right:4px;" aria-hidden="true"></i>Filter</button>
+      <button class="btn-primary" onclick="sendPrompt('Tạo job mới cho phòng được chọn trong Plant M2')"><i class="ti ti-plus" style="font-size:13px;vertical-align:-1px;margin-right:4px;" aria-hidden="true"></i>New Job ↗</button>
+    </div>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric">
+      <div class="m-label">Total rooms</div>
+      <div class="m-val">33</div>
+      <div class="m-sub">Rooms 33 – 66</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Active jobs</div>
+      <div class="m-val" id="active-jobs-count">12</div>
+      <div class="m-sub">In progress today</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Completed</div>
+      <div class="m-val">8</div>
+      <div class="m-sub">Jobs done today</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Pending handover</div>
+      <div class="m-val">3</div>
+      <div class="m-sub">Ready for harvest</div>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <div class="room-panel">
+      <div class="room-panel-header">
+        Rooms
+        <span style="font-size:12px;color:var(--color-text-secondary);font-weight:400;text-transform:none;letter-spacing:0;">33 / 33 shown</span>
+      </div>
+      <div class="room-filter">
+        <button class="filter-btn active" onclick="filterRooms('all',this)">All</button>
+        <button class="filter-btn" onclick="filterRooms('active',this)">Active</button>
+        <button class="filter-btn" onclick="filterRooms('idle',this)">Idle</button>
+      </div>
+      <div class="room-list" id="room-list"></div>
+    </div>
+
+    <div class="detail-panel" id="detail-panel">
+      <div class="empty-state">
+        <i class="ti ti-door" aria-hidden="true"></i>
+        <p>Select a room to view jobs</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const JOBS = [
+  { id: 'filling',   icon: 'ti-box',             name: 'Filling',         detail: 'New room setup — substrate loading',   phase: 1 },
+  { id: 'airing',    icon: 'ti-wind',             name: 'Airing',          detail: 'Pack up, set floor wet, plastic cover', phase: 2 },
+  { id: 'packupwet', icon: 'ti-stack-2',          name: 'Pack up floor wet', detail: 'Remove floor wet layer',             phase: 3 },
+  { id: 'cleanroom', icon: 'ti-sparkles',         name: 'Clean room',      detail: 'Handover to Harvest team',             phase: 4 },
+  { id: 'watering',  icon: 'ti-droplet',          name: 'Watering',        detail: 'Plan: 2 Side 2L/m² or 1 Side 2L/m²',  phase: 5 },
+  { id: 'cleanbed',  icon: 'ti-bed',              name: 'Set up clean bed', detail: 'Clean bed installation',              phase: 6 },
+  { id: 'prochloraz',icon: 'ti-flask',            name: 'Prochloraz',      detail: 'Rate: 1.3 g/m²',                       phase: 7 },
+  { id: 'packuptree',icon: 'ti-trees',            name: 'Pack up tree',    detail: 'Final tree/substrate pack up',         phase: 8 },
+];
+
+const STAGE_MAP = {
+  filling: { label: 'Filling', cls: 'badge-filling' },
+  airing: { label: 'Airing', cls: 'badge-airing' },
+  cleanroom: { label: 'Clean → Harvest', cls: 'badge-clean' },
+  watering: { label: 'Watering', cls: 'badge-watering' },
+  prochloraz: { label: 'Prochloraz', cls: 'badge-prochloraz' },
+  packuptree: { label: 'Pack up tree', cls: 'badge-harvest' },
+  idle: { label: 'Idle', cls: 'badge-idle' },
+};
+
+function makeRoomData() {
+  const stageKeys = ['filling','airing','cleanroom','watering','prochloraz','packuptree','idle'];
+  const data = [];
+  for (let i = 33; i <= 66; i++) {
+    const stageIdx = (i - 33) % stageKeys.length;
+    const stage = stageKeys[stageIdx];
+    const completedJobs = stageIdx * 1;
+    const jobs = JOBS.map((j, idx) => ({
+      ...j,
+      done: idx < completedJobs,
+      active: idx === completedJobs,
+      assignee: ['Minh T.','Lan N.','Hùng V.','Phúc D.'][idx % 4],
+    }));
+    data.push({
+      num: i,
+      stage,
+      day: `Day ${((i - 33) % 18) + 1}`,
+      cycle: `Cycle ${Math.floor((i-33)/11) + 1}`,
+      area: '112 m²',
+      jobs,
+      completedJobs,
+    });
+  }
+  return data;
+}
+
+const rooms = makeRoomData();
+let selectedRoom = null;
+let currentFilter = 'all';
+
+function filterRooms(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRoomList();
+}
+
+function renderRoomList() {
+  const list = document.getElementById('room-list');
+  let filtered = rooms;
+  if (currentFilter === 'active') filtered = rooms.filter(r => r.stage !== 'idle');
+  if (currentFilter === 'idle') filtered = rooms.filter(r => r.stage === 'idle');
+  list.innerHTML = filtered.map(r => {
+    const sm = STAGE_MAP[r.stage] || STAGE_MAP.idle;
+    const sel = selectedRoom && selectedRoom.num === r.num ? 'selected' : '';
+    return `<div class="room-item ${sel}" onclick="selectRoom(${r.num})">
+      <span class="room-num">${r.num}</span>
+      <div class="room-stage">
+        <div class="stage-name">${sm.label}</div>
+        <div class="stage-day">${r.day} · ${r.cycle}</div>
+      </div>
+      <span class="stage-badge ${sm.cls}">${sm.label}</span>
+    </div>`;
+  }).join('');
+}
+
+function selectRoom(num) {
+  selectedRoom = rooms.find(r => r.num === num);
+  renderRoomList();
+  renderDetail();
+}
+
+function toggleJob(roomNum, jobId) {
+  const room = rooms.find(r => r.num === roomNum);
+  const job = room.jobs.find(j => j.id === jobId);
+  if (job.done) return;
+  job.done = !job.active;
+  job.active = false;
+  const nextIdx = room.jobs.indexOf(job) + 1;
+  if (nextIdx < room.jobs.length) room.jobs[nextIdx].active = true;
+  room.completedJobs = room.jobs.filter(j => j.done).length;
+  selectedRoom = room;
+  renderDetail();
+}
+
+function renderDetail() {
+  const panel = document.getElementById('detail-panel');
+  if (!selectedRoom) {
+    panel.innerHTML = `<div class="empty-state"><i class="ti ti-door" aria-hidden="true"></i><p>Select a room to view jobs</p></div>`;
+    return;
+  }
+  const r = selectedRoom;
+  const sm = STAGE_MAP[r.stage] || STAGE_MAP.idle;
+  const progress = Math.round((r.completedJobs / JOBS.length) * 100);
+  const doneSegs = r.completedJobs;
+
+  const tlSegs = JOBS.map((j, idx) => {
+    let cls = idx < doneSegs ? 'done' : (idx === doneSegs ? 'active' : '');
+    return `<div class="tl-seg ${cls}" title="${j.name}"></div>`;
+  }).join('');
+
+  const jobRows = r.jobs.map((j, idx) => {
+    const checkedCls = j.done ? 'checked' : '';
+    const rowCls = j.active ? 'active' : (j.done ? 'done' : '');
+    return `<div class="job-row ${rowCls}" id="jobrow-${r.num}-${j.id}">
+      <span class="job-seq">${String(idx+1).padStart(2,'0')}</span>
+      <i class="ti ${j.icon} job-icon" aria-hidden="true"></i>
+      <div class="job-info">
+        <div class="job-name">${j.name}</div>
+        <div class="job-detail">${j.detail}</div>
+      </div>
+      <div class="job-status">
+        <span class="job-assign">${j.assignee}</span>
+        <div class="job-check ${checkedCls}" onclick="toggleJob(${r.num},'${j.id}')" role="checkbox" aria-label="Mark ${j.name} complete">
+          <i class="ti ti-check"></i>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="detail-header">
+      <div>
+        <div class="room-title"><i class="ti ti-door" style="font-size:16px;vertical-align:-2px;margin-right:6px;color:var(--color-text-secondary);" aria-hidden="true"></i>Room ${r.num}</div>
+        <div class="room-meta">${r.area} · ${r.day} · ${r.cycle} · <span class="stage-badge ${sm.cls}" style="font-size:11px;">${sm.label}</span></div>
+      </div>
+      <div class="action-btns">
+        <button class="btn-secondary" onclick="sendPrompt('Xem lịch sử jobs của phòng ${r.num} Plant M2')"><i class="ti ti-history" style="font-size:13px;vertical-align:-1px;margin-right:3px;" aria-hidden="true"></i>History ↗</button>
+        <button class="btn-primary" onclick="sendPrompt('Tạo job mới cho phòng ${r.num} Plant M2')"><i class="ti ti-plus" style="font-size:13px;vertical-align:-1px;margin-right:3px;" aria-hidden="true"></i>Add Job ↗</button>
+      </div>
+    </div>
+    <div class="timeline-mini">
+      <div class="section-label" style="margin-bottom:8px;">Job progress — ${progress}% complete (${r.completedJobs}/${JOBS.length})</div>
+      <div class="tl-track">${tlSegs}</div>
+      <div class="tl-labels"><span>Filling</span><span>Pack up</span><span>Watering</span><span>Pack up tree</span></div>
+    </div>
+    <div class="job-pipeline">
+      <div class="section-label">Job pipeline</div>
+      <div class="pipeline">${jobRows}</div>
+    </div>
+    <div class="detail-notes">
+      <div class="note-card">
+        <div class="nc-label"><i class="ti ti-droplet" style="font-size:13px;" aria-hidden="true"></i>Watering plan</div>
+        <div class="nc-val">2 Side — 2 L/m²<br><span style="color:var(--color-text-secondary);font-size:11px;">Alt: 1 Side — 2 L/m²</span></div>
+      </div>
+      <div class="note-card">
+        <div class="nc-label"><i class="ti ti-flask" style="font-size:13px;" aria-hidden="true"></i>Prochloraz rate</div>
+        <div class="nc-val">1.3 g/m²<br><span style="color:var(--color-text-secondary);font-size:11px;">Apply post clean bed setup</span></div>
+      </div>
+      <div class="note-card">
+        <div class="nc-label"><i class="ti ti-users" style="font-size:13px;" aria-hidden="true"></i>Assigned team</div>
+        <div class="nc-val">Minh T. · Lan N.<br><span style="color:var(--color-text-secondary);font-size:11px;">Harvest handover: Hùng V.</span></div>
+      </div>
+      <div class="note-card">
+        <div class="nc-label"><i class="ti ti-link" style="font-size:13px;" aria-hidden="true"></i>Linked project</div>
+        <div class="nc-val" style="display:flex;align-items:center;gap:6px;">
+          <span>M2-Cycle-${r.num % 3 + 1}</span>
+          <button onclick="sendPrompt('Mở Project Task cho phòng ${r.num} Plant M2 Cycle ${r.num % 3 + 1}')" style="font-size:11px;padding:2px 8px;border:0.5px solid var(--color-border-secondary);border-radius:10px;background:transparent;color:var(--color-text-info);cursor:pointer;">View ↗</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+renderRoomList();
+</script>

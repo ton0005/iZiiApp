@@ -5,3 +5,37 @@ C:\flutter\bin\flutter.bat run -d windows
 C:\flutter\bin\flutter.bat analyze
 
 C:\flutter\bin\flutter.bat build apk --debug
+
+Error._throw (c:\flutter\bin\cache\pkg\sky_engine\lib\_internal\vm\lib\errors_patch.dart:27)
+
+Error.throwWithStackTrace (c:\flutter\bin\cache\pkg\sky_engine\lib\core\errors.dart:120)
+
+_rootHandleError.<anonymous closure> (c:\flutter\bin\cache\pkg\sky_engine\lib\async\zone_root.dart:22)
+
+_microtaskLoop (c:\flutter\bin\cache\pkg\sky_engine\lib\async\schedule_microtask.dart:40)
+
+_startMicrotaskLoop (c:\flutter\bin\cache\pkg\sky_engine\lib\async\schedule_microtask.dart:49)
+
+
+
+
+
+I/flutter (15067): [ChatWS] Retrying connection...
+I/flutter (15067): [ChatWS] Connecting to ws://127.0.0.1:8080/chat ...
+I/flutter (15067): [ChatWS] Connected successfully.
+I/flutter (15067): [ChatWS] Error: WebSocketChannelException: SocketException: Connection refused (OS Error: Connection refused, errno = 111), address = 127.0.0.1, port = 50886
+I/flutter (15067): [ChatWS] Connection closed.
+E/flutter (15067): [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: WebSocketChannelException: SocketException: Connection refused (OS Error: Connection refused, errno = 111), address = 127.0.0.1, port = 50886
+
+
+
+I/VRI[MainActivity]@fbf23f1( 4864): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@fbf23f1
+I/VRI[MainActivity]@fbf23f1( 4864): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@fbf23f1
+I/flutter ( 4864): [ChatWS] Connecting to ws://127.0.0.1:8080/chat ...
+I/flutter ( 4864): [ChatWS] Connected successfully.
+I/flutter ( 4864): [SyncService] Đang kết nối tới server: http://127.0.0.1:8080 ...
+I/flutter ( 4864): [ChatWS] Error: WebSocketChannelException: WebSocketException: Connection to 'http://127.0.0.1:8080/chat#' was not upgraded to websocket
+I/flutter ( 4864): [ChatWS] Connection closed.
+I/m.izii.izii_app( 4864): Thread[2,tid=4884,WaitingInMainSignalCatcherLoop,Thread*=0xb400007453e1f7b0,peer=0x2004810,"Signal Catcher"]: reacting to signal 3
+I/m.izii.izii_app( 4864): 
+I/m.izii.izii_app( 4864): Wrote stack traces to tombstoned

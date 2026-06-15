@@ -80,7 +80,7 @@ class _CategoryChipState extends State<CategoryChip>
             boxShadow: sel
                 ? [
                     BoxShadow(
-                      color: IZiiColors.primary.withOpacity(0.35),
+                      color: IZiiColors.primary.withValues(alpha: 0.35),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -93,7 +93,7 @@ class _CategoryChipState extends State<CategoryChip>
               Icon(
                 widget.icon,
                 size: 18,
-                color: sel ? Colors.white : Colors.white.withOpacity(0.55),
+                color: sel ? Colors.white : Colors.white.withValues(alpha: 0.55),
               ),
               const SizedBox(width: 7),
               Text(
@@ -101,7 +101,7 @@ class _CategoryChipState extends State<CategoryChip>
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
-                  color: sel ? Colors.white : Colors.white.withOpacity(0.7),
+                  color: sel ? Colors.white : Colors.white.withValues(alpha: 0.7),
                   letterSpacing: 0.15,
                 ),
               ),

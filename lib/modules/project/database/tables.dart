@@ -7,6 +7,7 @@ class Projects extends Table {
   TextColumn get status => text().withDefault(const Constant('active'))(); // active, completed, archived
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   TextColumn get customFields => text().withDefault(const Constant('{}'))();
+  TextColumn get visibility => text().withDefault(const Constant('private'))(); // private, team, community
 
   @override
   Set<Column> get primaryKey => {id};
@@ -22,6 +23,7 @@ class Tasks extends Table {
   DateTimeColumn get dueDate => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   TextColumn get customFields => text().withDefault(const Constant('{}'))();
+  TextColumn get visibility => text().withDefault(const Constant('private'))(); // private, team, community
 
   @override
   Set<Column> get primaryKey => {id};

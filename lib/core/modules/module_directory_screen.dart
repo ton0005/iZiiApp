@@ -153,6 +153,7 @@ class _ModuleDirectoryScreenState extends State<ModuleDirectoryScreen> {
     if (moduleId == 'izii.project_management') return '/project';
     if (moduleId == 'izii.purchase_management') return '/purchase';
     if (moduleId == 'izii.accountant') return '/accountant';
+    if (moduleId == 'izii.mushrooms') return '/mushrooms';
     return '/';
   }
 
@@ -238,6 +239,8 @@ class _ModuleDirectoryScreenState extends State<ModuleDirectoryScreen> {
         return Icons.shopping_cart_rounded;
       case 'izii.accountant':
         return Icons.account_balance_rounded;
+      case 'izii.mushrooms':
+        return Icons.agriculture_rounded;
       default:
         return Icons.extension_rounded;
     }

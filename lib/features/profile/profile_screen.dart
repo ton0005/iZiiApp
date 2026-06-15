@@ -14,7 +14,8 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? IZiiColors.darkBackground : IZiiColors.lightBackground;
+    final bgColor =
+        isDark ? IZiiColors.darkBackground : IZiiColors.lightBackground;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -104,8 +105,8 @@ class _ProfileHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             IZiiColors.primary,
-            IZiiColors.primary.withOpacity(0.85),
-            IZiiColors.secondary.withOpacity(0.6),
+            IZiiColors.primary.withValues(alpha: 0.85),
+            IZiiColors.secondary.withValues(alpha: 0.6),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -139,7 +140,7 @@ class _ProfileHeader extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Avatar
-              _AvatarWithGradientBorder(initials: 'U')
+              const _AvatarWithGradientBorder(initials: 'U')
                   .animate()
                   .fadeIn(duration: 500.ms)
                   .scale(
@@ -166,12 +167,13 @@ class _ProfileHeader extends StatelessWidget {
 
               // Type badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.18),
+                  color: Colors.white.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.25),
+                    color: Colors.white.withValues(alpha: 0.25),
                     width: 1,
                   ),
                 ),
@@ -190,19 +192,20 @@ class _ProfileHeader extends StatelessWidget {
 
               // KYC badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: IZiiColors.accent.withOpacity(0.2),
+                  color: IZiiColors.accent.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: IZiiColors.accent.withOpacity(0.5),
+                    color: IZiiColors.accent.withValues(alpha: 0.5),
                     width: 1,
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.info_outline_rounded,
                       size: 14,
                       color: IZiiColors.accent,
@@ -210,7 +213,7 @@ class _ProfileHeader extends StatelessWidget {
                     const SizedBox(width: 5),
                     Text(
                       context.tr('profile_kyc_unverified'),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: IZiiColors.accent,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -252,7 +255,7 @@ class _AvatarWithGradientBorder extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: IZiiColors.primary.withOpacity(0.4),
+            color: IZiiColors.primary.withValues(alpha: 0.4),
             blurRadius: 20,
             spreadRadius: 2,
           ),
@@ -297,7 +300,7 @@ class _GlassIconButton extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Material(
-          color: Colors.white.withOpacity(0.15),
+          color: Colors.white.withValues(alpha: 0.15),
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(12),
@@ -307,7 +310,7 @@ class _GlassIconButton extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -331,11 +334,11 @@ class _MenuSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final containerColor = isDark
-        ? IZiiColors.darkSurface.withOpacity(0.5)
+        ? IZiiColors.darkSurface.withValues(alpha: 0.5)
         : IZiiColors.lightSurface;
     final borderColor = isDark
-        ? Colors.white.withOpacity(0.06)
-        : Colors.black.withOpacity(0.05);
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.black.withValues(alpha: 0.05);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -400,6 +403,18 @@ class _MenuSection extends StatelessWidget {
         onTap: () => context.push('/settings/sync'),
       ),
       _MenuData(
+        icon: Icons.share_outlined,
+        title: context.tr('sharing_shared_with_me'),
+        color: const Color(0xFF3B82F6),
+        onTap: () => context.push('/sharing/shared-with-me'),
+      ),
+      _MenuData(
+        icon: Icons.feed_outlined,
+        title: context.tr('sharing_community_feed'),
+        color: const Color(0xFF10B981),
+        onTap: () => context.push('/sharing/community-feed'),
+      ),
+      _MenuData(
         icon: Icons.bar_chart_rounded,
         title: context.tr('profile_menu_reports'),
         color: IZiiColors.secondary,
@@ -442,7 +457,8 @@ class _MenuSection extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           context.tr('profile_menu_logout'),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
         ),
         content: Text(
           context.tr('profile_logout_confirm'),
@@ -463,7 +479,7 @@ class _MenuSection extends StatelessWidget {
             },
             child: Text(
               context.tr('profile_menu_logout'),
-              style: TextStyle(color: IZiiColors.error),
+              style: const TextStyle(color: IZiiColors.error),
             ),
           ),
         ],

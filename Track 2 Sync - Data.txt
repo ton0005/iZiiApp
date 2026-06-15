@@ -1,0 +1,221 @@
+Spec: Track 2 — Selective Share to Network
+
+1. Overview & Vision
+Feature Name: Selective Data Sharing to Network
+Module: Core → Share & Network
+App: iZiiApp
+Problem Statement:
+Currently iZiiApp only syncs data between a user's own devices. There is no mechanism for a user to intentionally share selected business activities or services with other users on the network or the broader community.
+Vision:
+Give each user full control over what they share, with whom, and when — transforming iZiiApp from a personal productivity tool into a collaborative business network where users can share Leads, Deals, and quality Services selectively and securely.
+
+2. Core Concepts
+2.1 Visibility Model
+Every shareable record has a visibility field with 3 levels:
+LevelLabelWho Can SeeExample Use Caseprivate🔒 PrivateOwner onlyPersonal lead notesteam👥 Team / NetworkSpecific users or roles granted permissionShared deal pipeline with sales teamcommunity🌐 CommunityAll iZiiApp users on the networkA great service the user wants to promote
+Default for all new records: private — user must explicitly choose to share.
+2.2 Shareable Modules
+ModuleShareable EntitiesNotesLeads ManagementLead profiles, contact info, lead statusSensitive — team-only recommendedDeal PipelineDeal cards, stage, estimated valuePermission required per dealServicesService listings, pricing, reviewsCommunity sharing enabledProject & TaskProject templates, task checklistsShare as reusable templatesAccountant❌ Not shareableCompliance data — always private
+
+3. Feature Requirements
+3.1 Record-Level Visibility Toggle
+
+Every record detail screen must show a Share / Visibility control:
+
+Icon button in top-right corner of record card (e.g. 🔒 / 👥 / 🌐)
+Tapping opens a Share Settings bottom sheet
+
+
+User selects visibility level + audience (see Section 3.2)
+Change is saved immediately with an audit entry
+
+UI States:
+🔒 Private       → Grey lock icon
+👥 Shared: Team  → Blue people icon + avatars of who can see
+🌐 Community     → Green globe icon + "Visible to all"
+3.2 Audience Selection (for team level)
+When user selects team visibility, they must choose the audience:
+
+Specific Users — search and select individual users by name/email
+By Role — e.g. "All Sales Reps", "All Managers"
+By Group — pre-defined groups created by Admin
+
+Audience selector UI:
+
+Searchable user list with avatar + role badge
+Multi-select with selected users shown as avatar stack on the record card
+Expiry option: "Share until [date]" (optional)
+
+3.3 Module-Level Sync Preference
+At the module level (not just per record), user can set a default sharing policy:
+
+Found in: Core → Settings → Share & Network → Module Defaults
+Options per module:
+
+SettingBehaviourAlways PrivateNew records in this module default to private — never auto-shareAsk Me Each TimePrompt user to choose visibility when creating a new recordDefault to TeamNew records default to team with pre-configured audience
+This is the "user chooses which modules to share" control from the original idea.
+3.4 Community Sharing — Services Feed
+When a Service record is set to community:
+
+It appears in the Community Feed — a discoverable listing visible to all network users
+Feed card shows: Service name, provider name, short description, rating, price range
+Other users can: Save, Enquire, or Share the service listing
+Owner can: Boost the listing (future: paid feature), Edit, or Withdraw from community
+
+Community Feed UI:
+
+Filterable by: category, location, rating, price range
+Sorted by: Most Recent / Most Saved / Nearest
+No algorithm manipulation in v1 — purely chronological with filters
+
+3.5 Permission Control (Admin Layer)
+Admin users can enforce sharing rules across the organisation:
+Admin ControlDescriptionLock module as PrivateForce all records in a module to private — users cannot changeRestrict community sharingDisable community visibility for the entire orgApprove before community postService listings require Admin approval before appearing in feedRevoke shared accessAdmin can remove a user's access to a shared record at any time
+
+4. Data Schema Changes
+4.1 Add visibility to all shareable tables
+sqlALTER TABLE leads          ADD COLUMN visibility TEXT DEFAULT 'private';
+ALTER TABLE deals          ADD COLUMN visibility TEXT DEFAULT 'private';
+ALTER TABLE services       ADD COLUMN visibility TEXT DEFAULT 'private';
+ALTER TABLE project_tasks  ADD COLUMN visibility TEXT DEFAULT 'private';
+4.2 New table: record_sharing_permissions
+sqlCREATE TABLE record_sharing_permissions (
+  id              TEXT PRIMARY KEY,   -- UUID
+  record_type     TEXT NOT NULL,      -- 'lead' | 'deal' | 'service' | 'task'
+  record_id       TEXT NOT NULL,
+  shared_with     TEXT NOT NULL,      -- user_id | role_id | 'community'
+  shared_by       TEXT NOT NULL,      -- user_id of owner
+  permission      TEXT NOT NULL,      -- 'view' | 'edit' | 'comment'
+  expires_at      TEXT,               -- ISO8601 or NULL for no expiry
+  created_at      TEXT NOT NULL,
+  revoked_at      TEXT                -- NULL if still active
+);
+4.3 New table: community_feed
+sqlCREATE TABLE community_feed (
+  id              TEXT PRIMARY KEY,
+  record_type     TEXT NOT NULL,      -- 'service' (v1 only)
+  record_id       TEXT NOT NULL,
+  posted_by       TEXT NOT NULL,      -- user_id
+  status          TEXT NOT NULL,      -- 'pending_approval' | 'live' | 'withdrawn'
+  approved_by     TEXT,               -- admin user_id or NULL
+  approved_at     TEXT,
+  saves_count     INTEGER DEFAULT 0,
+  created_at      TEXT NOT NULL
+);
+4.4 New table: user_share_module_defaults
+sqlCREATE TABLE user_share_module_defaults (
+  user_id         TEXT NOT NULL,
+  module_key      TEXT NOT NULL,      -- 'leads' | 'deals' | 'services' | 'tasks'
+  default_policy  TEXT NOT NULL,      -- 'always_private' | 'ask' | 'default_team'
+  default_audience TEXT,              -- JSON array of user_ids or role_ids
+  PRIMARY KEY (user_id, module_key)
+);
+
+5. API Contracts
+5.1 Update record visibility
+PATCH /api/v1/{record_type}/{record_id}/visibility
+Body: {
+  "visibility": "team",
+  "audience": ["user_id_1", "user_id_2"],
+  "expires_at": null
+}
+Response: { "success": true, "sharing_id": "uuid" }
+5.2 Get shared records for current user
+GET /api/v1/shared-with-me?module=leads&page=1
+Response: {
+  "records": [...],
+  "total": 24,
+  "page": 1
+}
+5.3 Post service to community feed
+POST /api/v1/community/services
+Body: { "service_id": "uuid" }
+Response: {
+  "feed_id": "uuid",
+  "status": "pending_approval"  // or "live" if no approval required
+}
+5.4 Get community feed
+GET /api/v1/community/feed?category=cleaning&sort=recent&page=1
+Response: {
+  "items": [...],
+  "total": 150,
+  "page": 1
+}
+
+6. UI/UX Flow
+6.1 Sharing a Lead (team visibility)
+User opens Lead detail
+  → Taps 🔒 icon (top right)
+  → Bottom sheet opens: "Who can see this Lead?"
+      [🔒 Private] [👥 Team] [─ Community N/A ─]
+  → Selects "Team"
+  → Audience picker opens → search/select users or roles
+  → Optional: set expiry date
+  → Taps "Share" → confirmation toast: "Shared with 3 people"
+  → Lock icon updates to 👥 with avatar stack
+6.2 Sharing a Service to Community
+User opens Service detail
+  → Taps 🔒 icon
+  → Bottom sheet: [🔒 Private] [👥 Team] [🌐 Community]
+  → Selects "Community"
+  → Preview card shown: "This is how it will appear in the feed"
+  → Taps "Post to Community"
+  → If Admin approval required → status: "Pending approval"
+  → If no approval required → status: "Live in community feed"
+6.3 Shared With Me — Inbox
+Core → Shared With Me
+  → List of records shared to this user
+  → Filter by: module, sharer, date
+  → Each row: record type icon | title | shared by | permission badge | expiry
+  → Tap to open record in read-only or edit mode per permission
+
+7. Security & Privacy Rules
+
+A record set to private is never included in any API response to another user — enforced server-side, not just UI-hidden
+Sharing permissions are checked on every API call — no client-side trust
+When a user's account is deactivated, all their team shares are automatically revoked
+Community feed items are anonymisable — user can choose to show or hide their name on community posts
+All sharing actions are written to an immutable audit log (who shared, with whom, when, any revocation)
+
+
+8. Phased Delivery Plan
+PhaseScopeTargetPhase 1Record-level visibility toggle (private/team), audience selector, record_sharing_permissions table, Shared With Me screenMVPPhase 2Module-level default policy settings, Admin lock controls, permission expiryv1.1Phase 3Community Feed for Services, approval workflow, saves/enquiryv1.2Phase 4Community feed for Project Templates, rating system, Boost featurev2.0
+
+9. Expected Deliverables
+
+Visibility toggle UI component (reusable across all modules)
+Audience selector bottom sheet component
+record_sharing_permissions + community_feed + user_share_module_defaults schema migrations
+API contract for all 4 endpoints above
+Shared With Me screen
+Community Feed screen (Phase 3)
+Admin permission control panel (Phase 2)
+Security audit checklist
+Unit tests: visibility enforcement, permission check on API, revocation flow
+
+10. Values-Based Reputation Engine: Heart & Trust Index (HTI - Chỉ số Tâm Tín)
+The generic numeric trust_score is replaced by the Heart & Trust Index (HTI), a multi-dimensional valuation based on Truthfulness (Zhen), Compassion (Shan), and Forbearance (Ren) core moral values.
+
+10.1 Measurement Dimensions:
+- Tín - Trustworthiness (Zhen - 真): Measures transaction consistency (discrepancy between list price and final invoice) and task fulfillment (successful completion of accepted bookings and claimed aid tasks).
+- Tâm - Compassion (Shan - 善): Measures community help and mutual aid task completion, responsiveness to messages, and altruistic co-purchasing pools without marks.
+- Nhẫn - Forbearance (Ren - 忍): Measures conflict resolution (amicable dispute resolutions without escalation) and patience during logistical delays.
+
+10.2 Anti-Gamification / Anti-Farming Safeguards:
+- Diminishing Returns (Trọng số giảm dần): Interaction weight between User A and User B decays exponentially: Weight = (1/2)^(n-1) where n is the transaction count.
+- Web of Trust Weighting: Feedback weight is amplified by the reviewer's own HTI score (up to 3x multiplier).
+- Sentiment Analysis: Peer text feedback is checked for quality tokens (tận tâm, nhiệt tình, nhẫn nại, thành thật) to update Tâm, Tín, or Nhẫn metrics.
+- Proof of Mutual Aid: Volunteer tasks require double-confirmation verification (PIN or geographic check-in) before points are awarded.
+
+10.3 Display Representation:
+- A 3-axis radar chart showing Tín (Integrity), Tâm (Benevolence), and Nhẫn (Patience).
+- Badges: `Đồng hành Tin cậy (Trusted Companion)`, `Sứ giả Thiện tâm (Compassionate Messenger)`, and `Hòa giải Viên Nhẫn nại (Patient Mediator)`.
+
+11. Drift Schema Version 11 Migration Details
+11.1 New Tables:
+- `TrustScores` (user_id, tin_score, tam_score, nhan_score, overall_hti, completed_transactions, mutual_aid_completed, amicable_disputes_resolved, updated_at)
+- `RecordSharingPermissions` (id, record_type, record_id, shared_with, shared_by, permission_level, expires_at, created_at, revoked_at)
+- `CommunityFeeds` (id, record_type, record_id, posted_by, status, approved_by, approved_at, saves_count, created_at)
+- `UserShareModuleDefaults` (user_id, module_key, default_policy, default_audience)
+11.2 Column Extensions:
+- `leads`, `deals`, `service_listings`, `tasks`, and `projects` tables modified to include a `visibility` TEXT column (defaulting to 'private').

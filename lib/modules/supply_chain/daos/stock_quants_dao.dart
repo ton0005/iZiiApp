@@ -7,7 +7,7 @@ part 'stock_quants_dao.g.dart';
 @DriftAccessor(tables: [StockQuants])
 class StockQuantsDao extends DatabaseAccessor<AppDatabase>
     with _$StockQuantsDaoMixin {
-  StockQuantsDao(AppDatabase db) : super(db);
+  StockQuantsDao(super.db);
 
   Future<List<StockQuant>> getAllStockQuants() => select(stockQuants).get();
   Stream<List<StockQuant>> watchAllStockQuants() => select(stockQuants).watch();

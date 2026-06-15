@@ -1,0 +1,223 @@
+Design a Device Identity & Secure P2P Messaging system — each device is cryptographically identified (blockchain-inspired), enabling encrypted device-to-device chat when connected to the same iZiiApp server:
+
+1. Core Concept:
+
+Each device running iZiiApp is assigned a unique cryptographic identity at first launch — a public/private key pair, similar to a blockchain wallet address
+When 2+ devices are connected to the same iZiiApp server, they can discover each other and chat directly — server acts as a relay/broker, not a message reader
+Messages are end-to-end encrypted (E2EE) using each device's public key — only the intended recipient device can decrypt
+This is device-level identity, separate from user-level identity — one user may have multiple trusted devices (phone + tablet + desktop)
+
+
+2. Device Identity Model (Blockchain-Inspired):
+2.1 Device Key Pair Generation (on first launch)
+Device first install
+  → Generate asymmetric key pair locally:
+      Private Key (never leaves device)
+      Public Key  (registered to server)
+  → Derive Device ID: SHA-256 hash of Public Key
+      e.g. DID: "izii-d-a3f8c2...e91b"
+  → Register to server: { device_id, public_key, user_id, device_name, platform }
+  → Server stores public key in Device Registry
+  → Private key stored in device secure enclave (iOS Keychain / Android Keystore / Windows DPAPI)
+2.2 Device Identity Chain (per user)
+
+Each user has a Device Chain — an ordered list of their trusted devices
+Adding a new device requires approval from an existing trusted device (like blockchain consensus)
+If no existing device: first device is trusted by default after user authentication
+
+User: Vinh
+Device Chain:
+  [1] iPhone 15 Pro      DID: izii-d-a3f8c2   ← Genesis device (first registered)
+  [2] iPad Air           DID: izii-d-b7d3e1   ← Approved by device [1]
+  [3] Windows Laptop     DID: izii-d-c9f2a4   ← Approved by device [1] or [2]
+2.3 Device Trust Ledger
+Every trust event is recorded as an immutable log entry (blockchain-inspired):
+json{
+  "event": "device_trusted",
+  "device_id": "izii-d-c9f2a4",
+  "approved_by": "izii-d-a3f8c2",
+  "timestamp": "2025-06-13T08:30:00Z",
+  "signature": "<signed by approving device private key>"
+}
+
+Log is append-only — no entry can be modified or deleted
+If a device is compromised → owner revokes it → revocation recorded in ledger → all other devices notified
+
+
+3. Device Discovery (When on Same Server):
+3.1 Presence Registration
+Device connects to iZiiApp server
+  → Server records: { device_id, user_id, connected_at, last_seen, status }
+  → Server broadcasts to all devices of same user: "Your device [Windows Laptop] is now online"
+  → Server broadcasts to permitted contacts: "[Vinh's iPhone] is online"
+3.2 Device Directory (per server session)
+
+While connected, each device can query: "Which devices are currently online on this server?"
+Response filtered by permission:
+
+Own devices: always visible
+Team members' devices: visible if Track 2 sharing is active
+Community users: visible only if they have opted into discoverability
+
+
+
+Online Devices (same server):
+┌─────────────────────────────────────────────┐
+│ 👤 Vinh (you)                               │
+│   📱 iPhone 15 Pro        🟢 Active now     │
+│   💻 Windows Laptop       🟡 Idle 5min ago  │
+├─────────────────────────────────────────────┤
+│ 👤 Sarah (Sales Team)                       │
+│   📱 Samsung Galaxy S24   🟢 Active now     │
+├─────────────────────────────────────────────┤
+│ 👤 Mike (Site Manager)                      │
+│   📟 iPad Pro             🔴 Last seen 1hr  │
+└─────────────────────────────────────────────┘
+
+4. Encrypted Device-to-Device Messaging:
+4.1 Encryption Protocol
+
+Algorithm: X25519 (ECDH) for key exchange + AES-256-GCM for message encryption
+Flow inspired by Signal Protocol (Double Ratchet) for forward secrecy:
+
+Sender Device (iPhone)                    Recipient Device (Windows)
+      │                                           │
+      │  1. Fetch recipient public key from       │
+      │     server Device Registry                │
+      │                                           │
+      │  2. Generate shared secret:               │
+      │     ECDH(sender_private, recipient_public)│
+      │                                           │
+      │  3. Encrypt message with AES-256-GCM      │
+      │     using shared secret                   │
+      │                                           │
+      │──── encrypted payload ──────────────────▶│
+      │     (server cannot decrypt)               │
+      │                                           │
+      │                          4. Decrypt using │
+      │                  ECDH(recipient_private,  │
+      │                        sender_public)     │
+4.2 Multi-Device Message Delivery
+
+If user has 3 devices, message is encrypted separately for each device using that device's public key
+Server stores encrypted copies per device — cannot read any of them
+When a device comes online → pulls its encrypted messages → decrypts locally
+
+4.3 Message Integrity Verification
+Every message includes a digital signature:
+json{
+  "message_id": "msg-uuid",
+  "conversation_id": "conv-uuid",
+  "sender_device_id": "izii-d-a3f8c2",
+  "encrypted_content": "<AES-256-GCM ciphertext>",
+  "signature": "<ED25519 signature of message hash>",
+  "sent_at": "2025-06-13T08:31:00Z"
+}
+
+Recipient verifies signature using sender's public key before displaying message
+Tampered messages are rejected and flagged
+
+
+5. Data Schema:
+device_registry table (server-side):
+sqlCREATE TABLE device_registry (
+  device_id        TEXT PRIMARY KEY,   -- SHA-256 of public key
+  user_id          TEXT NOT NULL,
+  public_key       TEXT NOT NULL,      -- Base64 encoded public key
+  device_name      TEXT NOT NULL,      -- "Vinh's iPhone 15 Pro"
+  platform         TEXT NOT NULL,      -- 'ios' | 'android' | 'windows' | 'macos'
+  registered_at    TEXT NOT NULL,
+  last_seen_at     TEXT,
+  is_trusted       INTEGER DEFAULT 1,
+  revoked_at       TEXT               -- NULL if active
+);
+device_trust_ledger table (append-only):
+sqlCREATE TABLE device_trust_ledger (
+  id               TEXT PRIMARY KEY,
+  event_type       TEXT NOT NULL,   -- 'device_registered' | 'device_trusted' | 'device_revoked'
+  device_id        TEXT NOT NULL,
+  actor_device_id  TEXT,            -- device that approved/revoked
+  signature        TEXT NOT NULL,   -- ED25519 signature
+  event_at         TEXT NOT NULL
+  -- NO update or delete ever allowed on this table
+);
+encrypted_message_queue table (server-side):
+sqlCREATE TABLE encrypted_message_queue (
+  id                  TEXT PRIMARY KEY,
+  conversation_id     TEXT NOT NULL,
+  sender_device_id    TEXT NOT NULL,
+  recipient_device_id TEXT NOT NULL,
+  encrypted_payload   TEXT NOT NULL,  -- server cannot read this
+  signature           TEXT NOT NULL,
+  sent_at             TEXT NOT NULL,
+  delivered_at        TEXT            -- NULL until device pulls message
+);
+
+6. API Contracts:
+POST /api/v1/devices/register
+Body: { device_id, public_key, device_name, platform }
+→ Registers new device identity
+
+GET  /api/v1/devices/online
+→ Returns list of online devices for permitted contacts
+
+POST /api/v1/devices/{device_id}/trust
+Body: { approving_device_id, signature }
+→ Adds device to trust chain (signed by approving device)
+
+DELETE /api/v1/devices/{device_id}/trust
+Body: { revoking_device_id, signature }
+→ Revokes device from trust chain
+
+POST /api/v1/messages/send
+Body: { conversation_id, recipient_device_ids[], encrypted_payloads{} }
+→ Server stores encrypted copy per recipient device
+
+GET  /api/v1/messages/pending?device_id=xxx
+→ Pull queued encrypted messages for this device
+
+7. Security Model:
+ThreatMitigationServer compromiseServer only stores encrypted ciphertext — cannot read messagesDevice theftPrivate key in secure enclave — not extractable; remote revoke via trust ledgerMan-in-the-middlePublic keys verified via server-signed certificate on registrationReplay attackEach message has unique nonce + timestamp — rejected if replayedImpersonationED25519 signature on every message — verified before displayRogue device addedNew device requires approval signature from existing trusted device
+
+8. UI/UX — Device Management Screen:
+Core → Settings → My Devices:
+┌──────────────────────────────────────────┐
+│  🔐 My Trusted Devices                   │
+├──────────────────────────────────────────┤
+│  📱 iPhone 15 Pro           🟢 This device│
+│  DID: izii-d-a3f8...        Registered today│
+├──────────────────────────────────────────┤
+│  💻 Windows Laptop          🟡 Idle       │
+│  DID: izii-d-c9f2...        Added 2 days ago│
+│                          [Revoke Access] │
+├──────────────────────────────────────────┤
+│  📟 iPad Air                🔴 Offline    │
+│  DID: izii-d-b7d3...        Added 1 week ago│
+│                          [Revoke Access] │
+├──────────────────────────────────────────┤
+│         [+ Approve New Device]           │
+└──────────────────────────────────────────┘
+Approve New Device Flow:
+New device shows QR code containing its public key
+  → Existing trusted device scans QR
+  → Existing device signs approval with its private key
+  → Trust event recorded in ledger
+  → New device is now trusted and can send/receive encrypted messages
+
+9. Relationship to Existing Tracks:
+LayerTrackResponsibilityDevice sync (own data)Track 1Offline-first, Outbox Queue, SQLiteSelective sharing (to others)Track 2Visibility model, permission controlDevice identity & E2EE chatTrack 3 (this feature)Crypto identity, encrypted messaging
+Track 3 sits on top of Track 1 & 2 — uses the same server connection but adds a cryptographic identity and E2EE layer that neither Track 1 nor Track 2 provides.
+
+Phased Delivery Plan
+PhaseScopePhase 1Device key pair generation, Device Registry, basic device discovery on same serverPhase 2E2EE messaging between devices, multi-device delivery, digital signature verificationPhase 3Device Trust Chain, QR-based device approval, Trust Ledger (append-only)Phase 4Device revocation, forward secrecy (Double Ratchet), cross-server federation
+
+Expected Deliverables
+
+Device identity generation spec (key pair + DID derivation)
+Device Registry + Trust Ledger schema
+E2EE encryption protocol spec (X25519 + AES-256-GCM + ED25519)
+Device discovery API + presence system
+QR-based device approval UI flow
+My Devices management screen
+Security threat model document
+Track 3 architecture diagram showing relationship to Track 1 & 2

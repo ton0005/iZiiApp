@@ -4,6 +4,9 @@ import 'package:equatable/equatable.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../../core/database/app_database.dart';
 import '../../../core/sync/sync_service.dart';
+import '../../../core/settings/settings_service.dart';
+
+import '../../../core/sync/sharing_repository.dart';
 
 // Events
 abstract class CrmEvent extends Equatable {
@@ -118,16 +121,35 @@ class CrmRepository {
     return '{}';
   }
 
+  Future<String> _getActiveUserId() async {
+    try {
+      return await SettingsService().getActiveUserId();
+    } catch (_) {
+      return 'default_user';
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getLeads() async {
+    final userId = await _getActiveUserId();
     final query = _db.select(_db.leads).join([
       drift.leftOuterJoin(_db.deals, _db.deals.leadId.equalsExp(_db.leads.id)),
     ]);
     final rows = await query.get();
 
     final Map<String, Map<String, dynamic>> leadsMap = {};
+    final sharingRepo = SharingRepository();
+
     for (final row in rows) {
       final lead = row.readTable(_db.leads);
       final deal = row.readTableOrNull(_db.deals);
+
+      final hasPerm = await sharingRepo.hasPermission(
+        userId: userId,
+        recordType: 'leads',
+        recordId: lead.id,
+        requiredLevel: 'view',
+      );
+      if (!hasPerm) continue;
 
       leadsMap[lead.id] = {
         'id': lead.id,
@@ -175,18 +197,30 @@ class CrmRepository {
   }
 
   Future<List<Map<String, dynamic>>> getDeals() async {
+    final userId = await _getActiveUserId();
     final query = _db.select(_db.deals).join([
       drift.leftOuterJoin(_db.contacts, _db.contacts.id.equalsExp(_db.deals.contactId)),
       drift.leftOuterJoin(_db.leads, _db.leads.id.equalsExp(_db.deals.leadId)),
     ]);
 
     final rows = await query.get();
-    return rows.map((row) {
+    final sharingRepo = SharingRepository();
+    final filtered = <Map<String, dynamic>>[];
+
+    for (final row in rows) {
       final deal = row.readTable(_db.deals);
       final contact = row.readTableOrNull(_db.contacts);
       final lead = row.readTableOrNull(_db.leads);
 
-      return {
+      final hasPerm = await sharingRepo.hasPermission(
+        userId: userId,
+        recordType: 'deals',
+        recordId: deal.id,
+        requiredLevel: 'view',
+      );
+      if (!hasPerm) continue;
+
+      filtered.add({
         'id': deal.id,
         'title': deal.title,
         'amount': deal.amount,
@@ -200,8 +234,9 @@ class CrmRepository {
         'contact_id': deal.contactId,
         'source': deal.source,
         'owner_id': deal.ownerId,
-      };
-    }).toList();
+      });
+    }
+    return filtered;
   }
 
   Future<Map<String, dynamic>?> getDealByLeadId(String leadId) async {

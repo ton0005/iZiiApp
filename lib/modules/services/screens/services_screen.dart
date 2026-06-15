@@ -135,7 +135,7 @@ class _ServicesBodyState extends State<_ServicesBody> {
                         context.tr('ser_intro_subtitle'),
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white.withOpacity(0.65),
+                          color: Colors.white.withValues(alpha: 0.65),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -156,7 +156,7 @@ class _ServicesBodyState extends State<_ServicesBody> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -164,12 +164,12 @@ class _ServicesBodyState extends State<_ServicesBody> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: IZiiColors.primary.withOpacity(0.15),
+                          color: IZiiColors.primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           '${services.length}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: IZiiColors.primary,
@@ -193,7 +193,7 @@ class _ServicesBodyState extends State<_ServicesBody> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.home_repair_service_outlined,
+                        const Icon(Icons.home_repair_service_outlined,
                             size: 96, color: Colors.white24),
                         const SizedBox(height: 20),
                         Text(
@@ -203,7 +203,7 @@ class _ServicesBodyState extends State<_ServicesBody> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18,
-                            color: Colors.white.withOpacity(0.75),
+                            color: Colors.white.withValues(alpha: 0.75),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -215,7 +215,7 @@ class _ServicesBodyState extends State<_ServicesBody> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white.withOpacity(0.55),
+                            color: Colors.white.withValues(alpha: 0.55),
                           ),
                         ),
                       ],
@@ -283,10 +283,10 @@ class _ServicesBodyState extends State<_ServicesBody> {
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: IZiiColors.darkSurface.withOpacity(0.7),
+              color: IZiiColors.darkSurface.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: IZiiColors.darkSurfaceHighlight.withOpacity(0.45),
+                color: IZiiColors.darkSurfaceHighlight.withValues(alpha: 0.45),
                 width: 1,
               ),
             ),
@@ -297,13 +297,14 @@ class _ServicesBodyState extends State<_ServicesBody> {
               decoration: InputDecoration(
                 hintText: context.tr('ser_search_hint'),
                 hintStyle: TextStyle(
-                    color: Colors.white.withOpacity(0.35), fontSize: 14),
+                    color: Colors.white.withValues(alpha: 0.35), fontSize: 14),
                 prefixIcon: Icon(Icons.search_rounded,
-                    color: IZiiColors.primary.withOpacity(0.7), size: 22),
+                    color: IZiiColors.primary.withValues(alpha: 0.7), size: 22),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
                         icon: Icon(Icons.close_rounded,
-                            color: Colors.white.withOpacity(0.5), size: 20),
+                            color: Colors.white.withValues(alpha: 0.5),
+                            size: 20),
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _searchQuery = '');
@@ -340,13 +341,13 @@ class _ServicesBodyState extends State<_ServicesBody> {
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? IZiiColors.primary.withOpacity(0.18)
-                    : IZiiColors.darkSurface.withOpacity(0.65),
+                    ? IZiiColors.primary.withValues(alpha: 0.18)
+                    : IZiiColors.darkSurface.withValues(alpha: 0.65),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected
                       ? IZiiColors.primary
-                      : Colors.white.withOpacity(0.08),
+                      : Colors.white.withValues(alpha: 0.08),
                 ),
               ),
               child: Row(

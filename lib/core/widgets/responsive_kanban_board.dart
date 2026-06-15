@@ -53,10 +53,12 @@ class ResponsiveKanbanBoard<T extends Object> extends StatefulWidget {
   });
 
   @override
-  State<ResponsiveKanbanBoard<T>> createState() => _ResponsiveKanbanBoardState<T>();
+  State<ResponsiveKanbanBoard<T>> createState() =>
+      _ResponsiveKanbanBoardState<T>();
 }
 
-class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanbanBoard<T>> {
+class _ResponsiveKanbanBoardState<T extends Object>
+    extends State<ResponsiveKanbanBoard<T>> {
   late PageController _pageController;
   late ScrollController _horizontalScrollController;
   int _currentMobilePage = 0;
@@ -84,9 +86,11 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
   }
 
   // Auto-scroll logic when dragging a card near screen edges
-  void _handleDragUpdate(DragUpdateDetails details, double screenWidth, KanbanLayoutMode mode) {
+  void _handleDragUpdate(
+      DragUpdateDetails details, double screenWidth, KanbanLayoutMode mode) {
     final now = DateTime.now();
-    if (_lastScrollTime != null && now.difference(_lastScrollTime!) < const Duration(milliseconds: 500)) {
+    if (_lastScrollTime != null &&
+        now.difference(_lastScrollTime!) < const Duration(milliseconds: 500)) {
       return;
     }
 
@@ -117,7 +121,8 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
       if (x < edgeWidth) {
         if (_horizontalScrollController.offset > 0) {
           _lastScrollTime = now;
-          final target = (_horizontalScrollController.offset - 200).clamp(0.0, _horizontalScrollController.position.maxScrollExtent);
+          final target = (_horizontalScrollController.offset - 200)
+              .clamp(0.0, _horizontalScrollController.position.maxScrollExtent);
           _horizontalScrollController.animateTo(
             target,
             duration: const Duration(milliseconds: 250),
@@ -125,9 +130,11 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
           );
         }
       } else if (x > screenWidth - edgeWidth) {
-        if (_horizontalScrollController.offset < _horizontalScrollController.position.maxScrollExtent) {
+        if (_horizontalScrollController.offset <
+            _horizontalScrollController.position.maxScrollExtent) {
           _lastScrollTime = now;
-          final target = (_horizontalScrollController.offset + 200).clamp(0.0, _horizontalScrollController.position.maxScrollExtent);
+          final target = (_horizontalScrollController.offset + 200)
+              .clamp(0.0, _horizontalScrollController.position.maxScrollExtent);
           _horizontalScrollController.animateTo(
             target,
             duration: const Duration(milliseconds: 250),
@@ -190,9 +197,12 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: isSelected ? color.withOpacity(0.15) : Colors.transparent,
+                    color: isSelected
+                        ? color.withValues(alpha: 0.15)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isSelected ? color : Colors.transparent,
@@ -204,15 +214,19 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
                       Container(
                         width: 8,
                         height: 8,
-                        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                        decoration:
+                            BoxDecoration(color: color, shape: BoxShape.circle),
                       ),
                       const SizedBox(width: 6),
                       Text(
                         widget.laneTitle(key, context),
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          color: isSelected ? Theme.of(context).textTheme.bodyLarge?.color : Colors.grey[500],
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
+                          color: isSelected
+                              ? Theme.of(context).textTheme.bodyLarge?.color
+                              : Colors.grey[500],
                         ),
                       ),
                       const SizedBox(width: 4),
@@ -271,7 +285,9 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
                 width: isSelected ? 18.0 : 8.0,
                 height: 8.0,
                 decoration: BoxDecoration(
-                  color: isSelected ? color : Colors.grey[600]?.withOpacity(0.5),
+                  color: isSelected
+                      ? color
+                      : Colors.grey[600]?.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(4),
                 ),
               );
@@ -346,7 +362,8 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
     final isOver = _dragOverLaneKey == laneKey;
 
     return DragTarget<T>(
-      onWillAcceptWithDetails: (details) => widget.itemLane(details.data) != laneKey,
+      onWillAcceptWithDetails: (details) =>
+          widget.itemLane(details.data) != laneKey,
       onAcceptWithDetails: (details) {
         widget.onItemMoved(details.data, laneKey);
         setState(() {
@@ -359,7 +376,8 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
         });
       },
       onMove: (details) {
-        if (_dragOverLaneKey != laneKey && widget.itemLane(details.data) != laneKey) {
+        if (_dragOverLaneKey != laneKey &&
+            widget.itemLane(details.data) != laneKey) {
           setState(() {
             _dragOverLaneKey = laneKey;
           });
@@ -370,11 +388,11 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: isOver
-                ? color.withOpacity(0.08)
-                : Theme.of(context).cardColor.withOpacity(0.25),
+                ? color.withValues(alpha: 0.08)
+                : Theme.of(context).cardColor.withValues(alpha: 0.25),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: isOver ? color : Colors.grey.withOpacity(0.08),
+              color: isOver ? color : Colors.grey.withValues(alpha: 0.08),
               width: isOver ? 2.0 : 1.0,
             ),
           ),
@@ -389,7 +407,7 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
                   height: 4,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [color, color.withOpacity(0.3)],
+                      colors: [color, color.withValues(alpha: 0.3)],
                     ),
                   ),
                 ),
@@ -406,7 +424,8 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
                           }
                         : null,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -415,21 +434,24 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
                               Container(
                                 width: 10,
                                 height: 10,
-                                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                                decoration: BoxDecoration(
+                                    color: color, shape: BoxShape.circle),
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 title,
-                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: color.withOpacity(0.15),
+                                  color: color.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
@@ -444,7 +466,9 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
                               if (mode == KanbanLayoutMode.tablet) ...[
                                 const SizedBox(width: 6),
                                 Icon(
-                                  isCollapsed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                                  isCollapsed
+                                      ? Icons.keyboard_arrow_down
+                                      : Icons.keyboard_arrow_up,
                                   size: 18,
                                   color: Colors.grey[500],
                                 ),
@@ -471,13 +495,16 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
                                     ? MediaQuery.of(context).size.height * 0.60
                                     : MediaQuery.of(context).size.height * 0.70,
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
                           child: items.isEmpty
                               ? Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 32, horizontal: 16),
                                   child: Center(
                                     child: Text(
-                                      widget.emptyLaneHint ?? 'Kéo thả thẻ vào đây',
+                                      widget.emptyLaneHint ??
+                                          'Kéo thả thẻ vào đây',
                                       style: TextStyle(
                                         color: Colors.grey[500],
                                         fontSize: 12,
@@ -521,7 +548,8 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
     required KanbanLayoutMode mode,
   }) {
     final key = widget.itemKey(item);
-    final double cardWidth = mode == KanbanLayoutMode.mobile ? width - 48 : width - 32;
+    final double cardWidth =
+        mode == KanbanLayoutMode.mobile ? width - 48 : width - 32;
 
     // Premium visual drag handle
     final Widget dragHandle = Listener(
@@ -555,7 +583,8 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
           opacity: 0.85,
           child: Transform.scale(
             scale: 0.96,
-            child: widget.cardBuilder(context, item, laneColor, mode, dragHandle),
+            child:
+                widget.cardBuilder(context, item, laneColor, mode, dragHandle),
           ),
         ),
       ),
@@ -574,14 +603,16 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
             _currentlyDraggingId = key;
           });
         },
-        onDragUpdate: (details) => _handleDragUpdate(details, MediaQuery.of(context).size.width, mode),
+        onDragUpdate: (details) =>
+            _handleDragUpdate(details, MediaQuery.of(context).size.width, mode),
         onDragEnd: (_) {
           setState(() {
             _currentlyDraggingId = null;
             _dragOverLaneKey = null;
           });
         },
-        child: card.animate().fadeIn(duration: 250.ms).slideY(begin: 0.05, end: 0),
+        child:
+            card.animate().fadeIn(duration: 250.ms).slideY(begin: 0.05, end: 0),
       );
     } else {
       // Tablet & Desktop support both immediate dragging
@@ -594,14 +625,16 @@ class _ResponsiveKanbanBoardState<T extends Object> extends State<ResponsiveKanb
             _currentlyDraggingId = key;
           });
         },
-        onDragUpdate: (details) => _handleDragUpdate(details, MediaQuery.of(context).size.width, mode),
+        onDragUpdate: (details) =>
+            _handleDragUpdate(details, MediaQuery.of(context).size.width, mode),
         onDragEnd: (_) {
           setState(() {
             _currentlyDraggingId = null;
             _dragOverLaneKey = null;
           });
         },
-        child: card.animate().fadeIn(duration: 250.ms).slideY(begin: 0.05, end: 0),
+        child:
+            card.animate().fadeIn(duration: 250.ms).slideY(begin: 0.05, end: 0),
       );
     }
   }
@@ -655,7 +688,7 @@ class _KanbanHoverCardState extends State<_KanbanHoverCard> {
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
+                      color: Colors.black.withValues(alpha: 0.15),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     )

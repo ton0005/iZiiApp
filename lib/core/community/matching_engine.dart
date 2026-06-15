@@ -2,6 +2,7 @@ import 'dart:math';
 import '../database/app_database.dart';
 import 'models/community_models.dart' as community;
 import 'trust_network_service.dart';
+import '../sync/sharing_repository.dart';
 
 class MatchResult {
   final String providerId;
@@ -32,15 +33,30 @@ class MatchingEngine {
     required String serviceType,
     String? location,
     double? maxBudget,
+    String? visitorId,
   }) async {
     final listings = await _db.select(_db.serviceListings).get();
+    final sharingRepo = SharingRepository();
 
-    // Filter by basic type
-    final matchedListings = listings
-        .where((l) =>
-            l.isAvailable &&
-            l.serviceType.toLowerCase() == serviceType.toLowerCase())
-        .toList();
+    // Filter by availability, service type and visibility permissions
+    final matchedListings = <ServiceListing>[];
+    for (var l in listings) {
+      if (!l.isAvailable) continue;
+      if (l.serviceType.toLowerCase() != serviceType.toLowerCase()) continue;
+
+      if (visitorId != null) {
+        final hasPerm = await sharingRepo.hasPermission(
+          userId: visitorId,
+          recordType: 'services',
+          recordId: l.id,
+          requiredLevel: 'view',
+        );
+        if (!hasPerm) continue;
+      } else {
+        if (l.visibility != 'community') continue;
+      }
+      matchedListings.add(l);
+    }
 
     final results = <MatchResult>[];
     final users = await _db.select(_db.users).get();

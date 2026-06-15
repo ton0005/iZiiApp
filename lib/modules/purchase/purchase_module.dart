@@ -9,7 +9,7 @@ import 'screens/purchase_order_form_screen.dart';
 
 class PurchaseModule implements IZiiModule {
   @override
-  ModuleManifest get manifest => ModuleManifest(
+  ModuleManifest get manifest => const ModuleManifest(
         id: 'izii.purchase_management',
         name: 'Purchasing',
         description: 'Quản lý đơn mua hàng, theo dõi chi tiêu và nhà cung cấp.',
@@ -200,7 +200,7 @@ class _PurchaseDashboardWidgetState extends State<_PurchaseDashboardWidget> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withOpacity(0.12),
+                  color: const Color(0xFF10B981).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

@@ -36,15 +36,20 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.service['name']);
-    _hourlyRateController = TextEditingController(text: widget.service['hourly_rate']?.toString() ?? '');
-    _estimatedHoursController = TextEditingController(text: widget.service['estimated_hours']?.toString() ?? '1');
-    _descController = TextEditingController(text: widget.service['description'] ?? '');
+    _hourlyRateController = TextEditingController(
+        text: widget.service['hourly_rate']?.toString() ?? '');
+    _estimatedHoursController = TextEditingController(
+        text: widget.service['estimated_hours']?.toString() ?? '1');
+    _descController =
+        TextEditingController(text: widget.service['description'] ?? '');
     _category = widget.service['category'] ?? 'other';
     _isActive = widget.service['is_active'] ?? true;
 
-    final customFields = widget.service['custom_fields'] as Map<String, dynamic>? ?? {};
+    final customFields =
+        widget.service['custom_fields'] as Map<String, dynamic>? ?? {};
     for (final entry in customFields.entries) {
-      _customFieldControllers[entry.key] = TextEditingController(text: entry.value?.toString() ?? '');
+      _customFieldControllers[entry.key] =
+          TextEditingController(text: entry.value?.toString() ?? '');
     }
   }
 
@@ -88,7 +93,9 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
       return;
     }
 
-    final rate = double.tryParse(_hourlyRateController.text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+    final rate = double.tryParse(
+            _hourlyRateController.text.replaceAll(RegExp(r'[^0-9.]'), '')) ??
+        0;
     final hours = double.tryParse(_estimatedHoursController.text) ?? 1.0;
 
     final customFields = <String, dynamic>{};
@@ -104,7 +111,9 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
       'category': _category,
       'hourly_rate': rate,
       'estimated_hours': hours,
-      'description': _descController.text.trim().isNotEmpty ? _descController.text.trim() : null,
+      'description': _descController.text.trim().isNotEmpty
+          ? _descController.text.trim()
+          : null,
       'is_active': _isActive,
       'custom_fields': customFields,
     };
@@ -114,7 +123,9 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr('ser_service_updated').replaceAll('{name}', _nameController.text)),
+          content: Text(context
+              .tr('ser_service_updated')
+              .replaceAll('{name}', _nameController.text)),
           backgroundColor: const Color(0xFF10B981),
         ),
       );
@@ -122,7 +133,10 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${context.tr('error')}: $e'), backgroundColor: const Color(0xFFF43F5E), duration: const Duration(seconds: 5)),
+        SnackBar(
+            content: Text('${context.tr('error')}: $e'),
+            backgroundColor: const Color(0xFFF43F5E),
+            duration: const Duration(seconds: 5)),
       );
     }
   }
@@ -134,7 +148,8 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
         title: Text(context.tr('ser_edit_service_title')),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
+            gradient:
+                LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
           ),
         ),
       ),
@@ -145,22 +160,33 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
           children: [
             _buildSectionHeader(context.tr('ser_service_info_section')),
             const SizedBox(height: 12),
-            _buildTextField(_nameController, context.tr('ser_service_name_label').replaceAll(' *', ''), Icons.home_repair_service_rounded),
-            _buildTextField(_descController, context.tr('inv_description'), Icons.description_outlined, maxLines: 2),
+            _buildTextField(
+                _nameController,
+                context.tr('ser_service_name_label').replaceAll(' *', ''),
+                Icons.home_repair_service_rounded),
+            _buildTextField(_descController, context.tr('inv_description'),
+                Icons.description_outlined,
+                maxLines: 2),
 
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: DropdownButtonFormField<String>(
-                value: _category,
-                items: _categories.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(context.tr('ser_cat_${e.key}')))).toList(),
+                initialValue: _category,
+                items: _categories.entries
+                    .map((e) => DropdownMenuItem(
+                        value: e.key,
+                        child: Text(context.tr('ser_cat_${e.key}'))))
+                    .toList(),
                 onChanged: (v) => setState(() => _category = v ?? 'other'),
                 decoration: InputDecoration(
                   labelText: context.tr('ser_service_category_label'),
                   prefixIcon: const Icon(Icons.category_outlined, size: 20),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
+                    borderSide:
+                        BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
                   ),
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surface,
@@ -172,17 +198,28 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
             SwitchListTile(
               value: _isActive,
               onChanged: (v) => setState(() => _isActive = v),
-              title: Text(context.tr('ser_active_status_label'), style: const TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: Text(_isActive ? context.tr('ser_active_status_desc_on') : context.tr('ser_active_status_desc_off')),
-              activeColor: const Color(0xFF10B981),
+              title: Text(context.tr('ser_active_status_label'),
+                  style: const TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: Text(_isActive
+                  ? context.tr('ser_active_status_desc_on')
+                  : context.tr('ser_active_status_desc_off')),
+              activeThumbColor: const Color(0xFF10B981),
               contentPadding: EdgeInsets.zero,
             ),
 
             const SizedBox(height: 8),
-            _buildSectionHeader(context.tr('ser_service_hourly_rate_label_edit').split(' (')[0]),
+            _buildSectionHeader(context
+                .tr('ser_service_hourly_rate_label_edit')
+                .split(' (')[0]),
             const SizedBox(height: 12),
-            _buildTextField(_hourlyRateController, context.tr('ser_service_hourly_rate_label_edit'), Icons.attach_money, keyboardType: TextInputType.number),
-            _buildTextField(_estimatedHoursController, context.tr('ser_service_est_hours_label'), Icons.timer_outlined, keyboardType: TextInputType.number),
+            _buildTextField(
+                _hourlyRateController,
+                context.tr('ser_service_hourly_rate_label_edit'),
+                Icons.attach_money,
+                keyboardType: TextInputType.number),
+            _buildTextField(_estimatedHoursController,
+                context.tr('ser_service_est_hours_label'), Icons.timer_outlined,
+                keyboardType: TextInputType.number),
 
             if (_customFieldControllers.isNotEmpty) ...[
               const SizedBox(height: 16),
@@ -193,9 +230,12 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     children: [
-                      Expanded(child: _buildTextField(entry.value, entry.key, Icons.tune_rounded)),
+                      Expanded(
+                          child: _buildTextField(
+                              entry.value, entry.key, Icons.tune_rounded)),
                       IconButton(
-                        icon: const Icon(Icons.remove_circle_outline, color: Color(0xFFF43F5E)),
+                        icon: const Icon(Icons.remove_circle_outline,
+                            color: Color(0xFFF43F5E)),
                         onPressed: () => _removeCustomField(entry.key),
                       ),
                     ],
@@ -209,16 +249,25 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(flex: 2, child: _buildTextField(_newFieldKeyController, context.tr('inv_field_name'), Icons.vpn_key_outlined)),
+                Expanded(
+                    flex: 2,
+                    child: _buildTextField(_newFieldKeyController,
+                        context.tr('inv_field_name'), Icons.vpn_key_outlined)),
                 const SizedBox(width: 8),
-                Expanded(flex: 3, child: _buildTextField(_newFieldValueController, context.tr('inv_field_value'), Icons.text_fields)),
+                Expanded(
+                    flex: 3,
+                    child: _buildTextField(_newFieldValueController,
+                        context.tr('inv_field_value'), Icons.text_fields)),
                 const SizedBox(width: 4),
                 Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
+                    gradient: const LinearGradient(
+                        colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: IconButton(icon: const Icon(Icons.add_rounded, color: Colors.white), onPressed: _addCustomField),
+                  child: IconButton(
+                      icon: const Icon(Icons.add_rounded, color: Colors.white),
+                      onPressed: _addCustomField),
                 ),
               ],
             ),
@@ -234,25 +283,44 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
   Widget _buildSectionHeader(String title) {
     return Row(
       children: [
-        Container(width: 4, height: 20, decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]), borderRadius: BorderRadius.circular(2))),
+        Container(
+            width: 4,
+            height: 20,
+            decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                    colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
+                borderRadius: BorderRadius.circular(2))),
         const SizedBox(width: 8),
-        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ],
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {TextInputType keyboardType = TextInputType.text, int maxLines = 1}) {
+  Widget _buildTextField(
+      TextEditingController controller, String label, IconData icon,
+      {TextInputType keyboardType = TextInputType.text, int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
-        controller: controller, keyboardType: keyboardType, maxLines: maxLines,
+        controller: controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines,
         decoration: InputDecoration(
-          labelText: label, prefixIcon: Icon(icon, size: 20),
+          labelText: label,
+          prefixIcon: Icon(icon, size: 20),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.3))),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF8B5CF6), width: 2)),
-          filled: true, fillColor: Theme.of(context).colorScheme.surface,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide:
+                  BorderSide(color: Colors.grey.withValues(alpha: 0.3))),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF8B5CF6), width: 2)),
+          filled: true,
+          fillColor: Theme.of(context).colorScheme.surface,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );
@@ -261,18 +329,28 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
   Widget _buildSaveButton() {
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF10B981), Color(0xFF06B6D4)]),
+        gradient: const LinearGradient(
+            colors: [Color(0xFF10B981), Color(0xFF06B6D4)]),
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: const Color(0xFF10B981).withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+              color: const Color(0xFF10B981).withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4))
+        ],
       ),
       child: ElevatedButton.icon(
         onPressed: _save,
         icon: const Icon(Icons.save_alt_rounded, size: 22),
-        label: Text(context.tr('inv_save_changes'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        label: Text(context.tr('inv_save_changes'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent, shadowColor: Colors.transparent, foregroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
     );

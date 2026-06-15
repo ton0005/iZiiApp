@@ -181,7 +181,7 @@ class _LeadFormState extends State<LeadForm> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey.withOpacity(0.35)),
+            borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.35)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -202,7 +202,7 @@ class _LeadFormState extends State<LeadForm> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.withOpacity(0.35)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.35)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(

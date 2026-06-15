@@ -39,7 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _saveApiKey() async {
     await _settingsService.saveGeminiApiKey(_apiKeyController.text);
     setState(() => _isSaved = true);
-    
+
     // Hide notification after 2s
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) setState(() => _isSaved = false);
@@ -50,7 +50,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.tr('settings_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('settings_title'),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -59,7 +60,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             // --- Language Configurations ---
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               elevation: 2,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -68,11 +70,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.language_rounded, color: Color(0xFF10B981)),
+                        const Icon(Icons.language_rounded,
+                            color: Color(0xFF10B981)),
                         const SizedBox(width: 8),
                         Text(
                           context.tr('settings_language'),
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -92,12 +96,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
-                            selected: Localizations.localeOf(context).languageCode == 'vi',
-                            selectedColor: const Color(0xFF10B981).withOpacity(0.25),
+                            selected:
+                                Localizations.localeOf(context).languageCode ==
+                                    'vi',
+                            selectedColor:
+                                const Color(0xFF10B981).withValues(alpha: 0.25),
                             checkmarkColor: const Color(0xFF10B981),
                             onSelected: (selected) {
                               if (selected) {
-                                context.read<AppBloc>().add(const ChangeLocaleEvent(Locale('vi')));
+                                context
+                                    .read<AppBloc>()
+                                    .add(const ChangeLocaleEvent(Locale('vi')));
                               }
                             },
                           ),
@@ -111,12 +120,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
-                            selected: Localizations.localeOf(context).languageCode == 'en',
-                            selectedColor: const Color(0xFF10B981).withOpacity(0.25),
+                            selected:
+                                Localizations.localeOf(context).languageCode ==
+                                    'en',
+                            selectedColor:
+                                const Color(0xFF10B981).withValues(alpha: 0.25),
                             checkmarkColor: const Color(0xFF10B981),
                             onSelected: (selected) {
                               if (selected) {
-                                context.read<AppBloc>().add(const ChangeLocaleEvent(Locale('en')));
+                                context
+                                    .read<AppBloc>()
+                                    .add(const ChangeLocaleEvent(Locale('en')));
                               }
                             },
                           ),
@@ -132,7 +146,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             // --- AI Configurations ---
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               elevation: 2,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -141,11 +156,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.smart_toy_outlined, color: Color(0xFF6366F1)),
+                        const Icon(Icons.smart_toy_outlined,
+                            color: Color(0xFF6366F1)),
                         const SizedBox(width: 8),
                         Text(
                           context.tr('settings_api_config'),
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -173,9 +190,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           backgroundColor: const Color(0xFF6366F1),
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
                         ),
-                        child: Text(context.tr('settings_save_api_key'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(context.tr('settings_save_api_key'),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     ),
                     if (_isSaved) ...[
@@ -183,7 +203,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Center(
                         child: Text(
                           context.tr('settings_save_success'),
-                          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.green, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ]
@@ -191,12 +212,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
 
             // --- Sync Settings ---
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               elevation: 2,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -205,11 +227,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.sync_rounded, color: Color(0xFF06B6D4)),
+                        const Icon(Icons.sync_rounded,
+                            color: Color(0xFF06B6D4)),
                         const SizedBox(width: 8),
                         Text(
                           context.tr('settings_sync_title'),
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -223,12 +247,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.sync_outlined),
-                        label: Text(context.tr('settings_go_to_sync'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                        label: Text(context.tr('settings_go_to_sync'),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           backgroundColor: const Color(0xFF06B6D4),
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
                         ),
                         onPressed: () => context.push('/settings/sync'),
                       ),

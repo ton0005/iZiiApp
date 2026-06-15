@@ -12,53 +12,15 @@ import '../../modules/project/database/tables.dart';
 import '../../modules/purchase/database/tables.dart';
 import '../../modules/accountant/database/tables.dart';
 import '../community/database/tables.dart';
+import '../../modules/mushrooms/database/tables.dart';
+import '../../modules/communication/database/tables.dart';
+
+import 'core_tables.dart';
 
 part 'app_database.g.dart';
 
 // --- Tables ---
 
-class AppSettings extends Table {
-  TextColumn get key => text()();
-  TextColumn get value => text()();
-
-  @override
-  Set<Column> get primaryKey => {key};
-}
-
-class Users extends Table {
-  TextColumn get id => text()(); // UUID
-  TextColumn get name => text()();
-  TextColumn get email => text().nullable()();
-  TextColumn get phone => text().nullable()();
-  TextColumn get type => text()(); // consumer/provider/both
-  TextColumn get kycStatus => text().withDefault(const Constant('none'))();
-  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
-
-  @override
-  Set<Column> get primaryKey => {id};
-}
-
-class ModuleRegistryTable extends Table {
-  TextColumn get id => text()();
-  TextColumn get name => text()();
-  TextColumn get version => text()();
-  BoolColumn get isInstalled => boolean().withDefault(const Constant(false))();
-
-  @override
-  Set<Column> get primaryKey => {id};
-}
-
-class OutboxMutations extends Table {
-  TextColumn get id => text()();
-  TextColumn get targetTable => text()();
-  TextColumn get operation => text()();
-  TextColumn get payload => text()();
-  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
-  TextColumn get status => text().withDefault(const Constant('pending'))(); // pending, synced, error
-
-  @override
-  Set<Column> get primaryKey => {id};
-}
 
 @DriftDatabase(tables: [
   AppSettings,
@@ -87,7 +49,24 @@ class OutboxMutations extends Table {
   TaxRates,
   JournalEntries,
   JournalLines,
-  PayrollEvents
+  PayrollEvents,
+  UserSyncConfigs,
+  SyncAuditLogs,
+  SyncConflictLogs,
+  RecordSharingPermissions,
+  CommunityFeeds,
+  UserShareModuleDefaults,
+  MushroomRooms,
+  MushroomJobs,
+  MushroomJobSafetyConfigs,
+  MushroomSafetyCheckinLogs,
+  ChatConversations,
+  ChatParticipants,
+  ChatMessages,
+  // Track 3: Device Identity & E2EE
+  DeviceRegistryEntries,
+  EncryptedMessageQueue,
+  DeviceTrustLedger
 ])
 class AppDatabase extends _$AppDatabase {
   static final AppDatabase _instance = AppDatabase._internal();
@@ -96,7 +75,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 16;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -105,43 +84,190 @@ class AppDatabase extends _$AppDatabase {
         },
         onUpgrade: (m, from, to) async {
           if (from < 2) {
-            await m.addColumn(leads, leads.customFields);
+            try {
+              await m.addColumn(leads, leads.customFields);
+            } catch (_) {}
           }
           if (from < 3) {
-            await m.addColumn(products, products.customFields);
+            try {
+              await m.addColumn(products, products.customFields);
+            } catch (_) {}
           }
           if (from < 4) {
-            await m.createTable(serviceItems);
-            await m.createTable(serviceBookings);
+            try {
+              await m.createTable(serviceItems);
+            } catch (_) {}
+            try {
+              await m.createTable(serviceBookings);
+            } catch (_) {}
           }
           if (from < 5) {
-            // Add barcode column as nullable text
-            // Note: SQLite doesn't support adding UNIQUE constraints via ALTER TABLE,
-            // so we add it nullable and can enforce uniqueness at application level
-            await m.addColumn(products, products.barcode);
+            try {
+              await m.addColumn(products, products.barcode);
+            } catch (_) {}
           }
           if (from < 6) {
-            await m.createTable(outboxMutations);
+            try {
+              await m.createTable(outboxMutations);
+            } catch (_) {}
           }
           if (from < 7) {
-            await m.createTable(projects);
-            await m.createTable(tasks);
-            await m.createTable(purchaseOrders);
-            await m.createTable(purchaseOrderLines);
+            try {
+              await m.createTable(projects);
+            } catch (_) {}
+            try {
+              await m.createTable(tasks);
+            } catch (_) {}
+            try {
+              await m.createTable(purchaseOrders);
+            } catch (_) {}
+            try {
+              await m.createTable(purchaseOrderLines);
+            } catch (_) {}
           }
           if (from < 8) {
-            await m.addColumn(leads, leads.source);
-            await m.addColumn(leads, leads.ownerId);
-            await m.addColumn(deals, deals.source);
-            await m.addColumn(deals, deals.ownerId);
+            try {
+              await m.addColumn(leads, leads.source);
+            } catch (_) {}
+            try {
+              await m.addColumn(leads, leads.ownerId);
+            } catch (_) {}
+            try {
+              await m.addColumn(deals, deals.source);
+            } catch (_) {}
+            try {
+              await m.addColumn(deals, deals.ownerId);
+            } catch (_) {}
           }
           if (from < 9) {
-            await m.createTable(auContacts);
-            await m.createTable(accounts);
-            await m.createTable(taxRates);
-            await m.createTable(journalEntries);
-            await m.createTable(journalLines);
-            await m.createTable(payrollEvents);
+            try {
+              await m.createTable(auContacts);
+            } catch (_) {}
+            try {
+              await m.createTable(accounts);
+            } catch (_) {}
+            try {
+              await m.createTable(taxRates);
+            } catch (_) {}
+            try {
+              await m.createTable(journalEntries);
+            } catch (_) {}
+            try {
+              await m.createTable(journalLines);
+            } catch (_) {}
+            try {
+              await m.createTable(payrollEvents);
+            } catch (_) {}
+          }
+          if (from < 10) {
+            try {
+              await m.createTable(userSyncConfigs);
+            } catch (_) {}
+            try {
+              await m.createTable(syncAuditLogs);
+            } catch (_) {}
+            try {
+              await m.createTable(syncConflictLogs);
+            } catch (_) {}
+          }
+          if (from < 11) {
+            try {
+              await m.createTable(recordSharingPermissions);
+            } catch (_) {}
+            try {
+              await m.createTable(communityFeeds);
+            } catch (_) {}
+            try {
+              await m.createTable(userShareModuleDefaults);
+            } catch (_) {}
+
+            try {
+              await m.addColumn(leads, leads.visibility);
+            } catch (_) {}
+            try {
+              await m.addColumn(deals, deals.visibility);
+            } catch (_) {}
+            try {
+              await m.addColumn(serviceListings, serviceListings.visibility);
+            } catch (_) {}
+            try {
+              await m.addColumn(tasks, tasks.visibility);
+            } catch (_) {}
+            try {
+              await m.addColumn(projects, projects.visibility);
+            } catch (_) {}
+
+            try {
+              await m.addColumn(trustScores, trustScores.tinScore);
+            } catch (_) {}
+            try {
+              await m.addColumn(trustScores, trustScores.tamScore);
+            } catch (_) {}
+            try {
+              await m.addColumn(trustScores, trustScores.nhanScore);
+            } catch (_) {}
+            try {
+              await m.addColumn(trustScores, trustScores.overallHti);
+            } catch (_) {}
+            try {
+              await m.addColumn(trustScores, trustScores.completedTransactions);
+            } catch (_) {}
+            try {
+              await m.addColumn(trustScores, trustScores.mutualAidCompleted);
+            } catch (_) {}
+            try {
+              await m.addColumn(trustScores, trustScores.amicableDisputesResolved);
+            } catch (_) {}
+            try {
+              await m.addColumn(trustScores, trustScores.updatedAt);
+            } catch (_) {}
+          }
+          if (from < 12) {
+            try {
+              await m.createTable(mushroomRooms);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomJobs);
+            } catch (_) {}
+          }
+          if (from < 13) {
+            try {
+              await m.addColumn(mushroomJobs, mushroomJobs.scheduledAt);
+            } catch (_) {}
+            try {
+              await m.addColumn(mushroomJobs, mushroomJobs.priority);
+            } catch (_) {}
+          }
+          if (from < 14) {
+            try {
+              await m.createTable(mushroomJobSafetyConfigs);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomSafetyCheckinLogs);
+            } catch (_) {}
+          }
+          if (from < 15) {
+            try {
+              await m.createTable(chatConversations);
+            } catch (_) {}
+            try {
+              await m.createTable(chatParticipants);
+            } catch (_) {}
+            try {
+              await m.createTable(chatMessages);
+            } catch (_) {}
+          }
+          // Track 3: Device Identity & E2EE Messaging
+          if (from < 16) {
+            try {
+              await m.createTable(deviceRegistryEntries);
+            } catch (_) {}
+            try {
+              await m.createTable(encryptedMessageQueue);
+            } catch (_) {}
+            try {
+              await m.createTable(deviceTrustLedger);
+            } catch (_) {}
           }
         },
       );

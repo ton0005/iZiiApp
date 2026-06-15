@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import '../../database/app_database.dart';
+import '../../database/core_tables.dart';
 
 class TrustScores extends Table {
   TextColumn get userId => text().references(Users, #id)();
@@ -11,6 +11,16 @@ class TrustScores extends Table {
   DateTimeColumn get memberSince => dateTime().withDefault(currentDateAndTime)();
   TextColumn get level => text().withDefault(const Constant('newcomer'))(); // newcomer, trusted, verified, elite
   BoolColumn get kycVerified => boolean().withDefault(const Constant(false))();
+
+  // Heart & Trust Index (HTI)
+  RealColumn get tinScore => real().withDefault(const Constant(5.0))(); 
+  RealColumn get tamScore => real().withDefault(const Constant(5.0))(); 
+  RealColumn get nhanScore => real().withDefault(const Constant(5.0))(); 
+  RealColumn get overallHti => real().withDefault(const Constant(5.0))(); 
+  IntColumn get completedTransactions => integer().withDefault(const Constant(0))();
+  IntColumn get mutualAidCompleted => integer().withDefault(const Constant(0))();
+  IntColumn get amicableDisputesResolved => integer().withDefault(const Constant(0))();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {userId};
@@ -42,6 +52,7 @@ class ServiceListings extends Table {
   RealColumn get rating => real().withDefault(const Constant(0.0))();
   IntColumn get completedCount => integer().withDefault(const Constant(0))();
   TextColumn get tags => text().nullable()(); // comma separated
+  TextColumn get visibility => text().withDefault(const Constant('private'))(); // private, team, community
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override

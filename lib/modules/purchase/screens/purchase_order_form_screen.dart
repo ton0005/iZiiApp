@@ -57,7 +57,7 @@ class _PurchaseOrderFormScreenState extends State<PurchaseOrderFormScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<dynamic>(
-                    value: selectedProduct,
+                    initialValue: selectedProduct,
                     hint: Text(context.tr('purchase_select_product_hint')),
                     items: [
                       ...products.map((p) => DropdownMenuItem(
@@ -245,9 +245,9 @@ class _PurchaseOrderFormScreenState extends State<PurchaseOrderFormScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.05),
+                        color: Colors.grey.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.withOpacity(0.15)),
+                        border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
                       ),
                       child: Text(
                         context.tr('inv_no_products'),

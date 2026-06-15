@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:drift/drift.dart' as drift;
 import 'package:uuid/uuid.dart';
 import '../../../core/database/app_database.dart';
 import '../repository.dart';

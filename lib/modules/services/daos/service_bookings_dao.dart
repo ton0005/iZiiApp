@@ -7,22 +7,28 @@ part 'service_bookings_dao.g.dart';
 @DriftAccessor(tables: [ServiceBookings])
 class ServiceBookingsDao extends DatabaseAccessor<AppDatabase>
     with _$ServiceBookingsDaoMixin {
-  ServiceBookingsDao(AppDatabase db) : super(db);
+  ServiceBookingsDao(super.db);
 
-  Future<List<ServiceBooking>> getAllBookings() =>
-      (select(serviceBookings)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).get();
+  Future<List<ServiceBooking>> getAllBookings() => (select(serviceBookings)
+        ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+      .get();
 
-  Stream<List<ServiceBooking>> watchAllBookings() =>
-      (select(serviceBookings)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
+  Stream<List<ServiceBooking>> watchAllBookings() => (select(serviceBookings)
+        ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+      .watch();
 
   Future<List<ServiceBooking>> getBookingsByStatus(String status) =>
-      (select(serviceBookings)..where((tbl) => tbl.status.equals(status))).get();
+      (select(serviceBookings)..where((tbl) => tbl.status.equals(status)))
+          .get();
 
   Future<List<ServiceBooking>> getBookingsByServiceId(String serviceItemId) =>
-      (select(serviceBookings)..where((tbl) => tbl.serviceItemId.equals(serviceItemId))).get();
+      (select(serviceBookings)
+            ..where((tbl) => tbl.serviceItemId.equals(serviceItemId)))
+          .get();
 
   Future<ServiceBooking?> getBookingById(String id) =>
-      (select(serviceBookings)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+      (select(serviceBookings)..where((tbl) => tbl.id.equals(id)))
+          .getSingleOrNull();
 
   Future<void> insertBooking(ServiceBookingsCompanion entry) =>
       into(serviceBookings).insert(entry);

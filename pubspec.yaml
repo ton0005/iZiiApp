@@ -46,6 +46,7 @@ dependencies:
 
   # Auth & Security
   flutter_secure_storage: ^10.3.0
+  cryptography: ^2.7.0             # X25519, AES-256-GCM, ED25519, SHA-256
 
   # Location
   geolocator: ^14.0.2

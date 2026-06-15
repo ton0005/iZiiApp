@@ -6,6 +6,7 @@ class SettingsService {
   static const String _syncToken = 'sync_token';
   static const String _lastSyncTimestamp = 'last_sync_timestamp';
   static const String _languageCode = 'selected_language_code';
+  static const String _activeUserId = 'active_user_id';
 
   Future<void> saveLanguage(String code) async {
     final prefs = await SharedPreferences.getInstance();
@@ -34,7 +35,7 @@ class SettingsService {
 
   Future<String> getSyncServerUrl() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_syncServerUrl) ?? 'http://127.0.0.1:8080';
+    return prefs.getString(_syncServerUrl) ?? 'http://172.22.16.1:8080';
   }
 
   Future<void> saveSyncToken(String token) async {
@@ -55,5 +56,15 @@ class SettingsService {
   Future<String?> getLastSyncTimestamp() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_lastSyncTimestamp);
+  }
+
+  Future<void> saveActiveUserId(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_activeUserId, userId);
+  }
+
+  Future<String> getActiveUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_activeUserId) ?? 'default_user';
   }
 }

@@ -74,7 +74,8 @@ class _AccountantDashboardWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.account_balance_rounded, color: Color(0xFF06B6D4), size: 20),
+              const Icon(Icons.account_balance_rounded,
+                  color: Color(0xFF06B6D4), size: 20),
               const SizedBox(width: 8),
               Text(
                 context.tr('module_izii.accountant_name'),
@@ -109,19 +110,21 @@ class _AccountantDashboardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildShortcutButton(BuildContext context, String label, String route) {
+  Widget _buildShortcutButton(
+      BuildContext context, String label, String route) {
     return InkWell(
       onTap: () => context.push(route),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.06),
+          color: Colors.white.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Text(
           label,
-          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
         ),
       ),
     );

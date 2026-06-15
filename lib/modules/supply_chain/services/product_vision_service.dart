@@ -41,7 +41,7 @@ class ProductVisionService {
       apiKey: apiKey,
     );
 
-    final prompt = '''Phân tích hình ảnh sản phẩm này và trả về thông tin dưới dạng JSON thuần túy (không có markdown, không có ```json```).
+    const prompt = '''Phân tích hình ảnh sản phẩm này và trả về thông tin dưới dạng JSON thuần túy (không có markdown, không có ```json```).
 
 Trả về ĐÚNG định dạng sau:
 {"name": "Tên sản phẩm đầy đủ", "description": "Mô tả ngắn gọn về sản phẩm", "suggested_price": 0, "category": "Danh mục", "brand": "Thương hiệu", "specs": "Thông số kỹ thuật chính"}

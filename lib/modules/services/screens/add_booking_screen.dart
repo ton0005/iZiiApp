@@ -190,7 +190,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: DropdownButtonFormField<String>(
-                        value: _selectedService?['id'],
+                        initialValue: _selectedService?['id'],
                         hint: Text(context.tr('ser_select_service_section')),
                         items: _availableServices.map((s) {
                           return DropdownMenuItem<String>(

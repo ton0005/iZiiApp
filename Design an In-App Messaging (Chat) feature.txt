@@ -1,0 +1,482 @@
+================================================================================
+IZIIAPP SOFTWARE ARCHITECTURE DESIGN DOCUMENT (SADD)
+Feature: In-App Messaging (Chat) & Real-Time Presence System
+Target Path: lib/modules/communication/
+Author: Antigravity AI Architect
+Date: 2026-06-13
+================================================================================
+
+This document outlines the end-to-end technical design, database schemas, network protocols, 
+state management architecture, and UI/UX layout for the in-app messaging (chat) and real-time 
+presence system. It is fully integrated with the Track 2 Selective Share to Network layer of iZiiApp.
+
+---
+
+## 1. Executive Summary & Core Goals
+
+The iZiiApp Chat feature provides members active on the shared network with a low-latency, context-aware, 
+and secure messaging environment. 
+
+### Core Goals:
+1. **Real-Time Delivery**: Sub-100ms message delivery when online, leveraging WebSockets with fallback to REST polling.
+2. **Offline Resilience**: Queue messages in SQLite using the Outbox pattern; auto-retry transmission on network state changes.
+3. **Context Awareness**: Link discussions directly to records (Leads, Deals, Jobs, Services) to centralize communication.
+4. **Presence Integrity**: Dynamically calculate availability based on Track 2 network sync status rather than simple app foregrounding.
+5. **Track 2 Compliance**: Enforce scoping, row-level security, and explicit sharing permissions identical to the underlying sharing layer.
+
+---
+
+## 2. Shared Network & Track 2 Sync Integration
+
+The chat system is not a standalone isolated component; it relies heavily on the `Track 2 Sharing Layer`:
+
+```
++─────────────────────────────────────────────────────────────+
+|                     Track 2 Sync Layer                      |
+|  - Sync Configs       - Outbox Mutations   - Sync Conflict  |
++──────────────────────────────┬──────────────────────────────+
+                               │ Uses sharing states
+                               ▼
++─────────────────────────────────────────────────────────────+
+|                       Presence Engine                       |
+|  🟢 Synced   |  🟡 Paused   |  🔴 Offline  |  ⚫ Private     |
++──────────────────────────────┬──────────────────────────────+
+                               │ Restricts interaction
+                               ▼
++─────────────────────────────────────────────────────────────+
+|                        Chat Module                          |
+|  - DMs                - Group Chats        - Record-Linked  |
++─────────────────────────────────────────────────────────────+
+```
+
+### Key Integration Points:
+1. **Access Control**: A user can only initiate DMs with:
+   - Users with whom they share at least one active record (verified via the `RecordSharingPermissions` table).
+   - Members of their defined teams/groups.
+2. **Record-Linked Chats Visibility**: Record-linked chats (e.g., chat inside a Job) inherit the permissions of the parent record.
+   - If User A does not have access to Job #4012, they cannot read, search, or listen to the chat thread for Job #4012.
+   - When a record is shared into a chat bubble, the UI checks the recipient's permissions via `RecordSharingPermissions` and prompts the user to grant access if missing.
+
+---
+
+## 3. Presence & Availability States
+
+A member's presence is calculated via their Sync Manager and User Settings:
+
+| Status Icon | Presence State | Condition / Definition | Send Behavior |
+| :--- | :--- | :--- | :--- |
+| 🟢 | **Online & Synced** | App is active AND WebSocket is connected AND Sync is running (sync is not paused for modules). | Real-time delivery via WebSocket. |
+| 🟡 | **Online, Sync Paused** | App is open but the user has manually paused syncing for modules in Settings. | Delivery via WebSocket. Message notifications are shown, but local DB updates are delayed until sync resumes. |
+| 🔴 | **Offline** | WebSocket disconnected AND no network connectivity. | Message is queued in the sender's local outbox. Delivered automatically when connection resumes. |
+| ⚫ | **Private Mode** | User has set their active modules or app status to "Private Mode" in Settings. | Appears offline to others. Inbound messages are queued on the server and delivered when Private Mode is turned off. |
+
+---
+
+## 4. Drift Database Schema (Schema Version 15)
+
+To support Chat, three new tables are registered. Additionally, the Outbox mutations are leveraged to handle offline messages.
+
+### 4.1 SQL Schema Definitions
+```sql
+-- Conversations Table
+CREATE TABLE chat_conversations (
+  id               TEXT PRIMARY KEY NOT NULL,
+  type             TEXT NOT NULL,               -- 'direct' | 'record_linked' | 'group'
+  record_type      TEXT,                        -- 'lead' | 'deal' | 'job' | 'service' | NULL
+  record_id        TEXT,                        -- UUID or NULL
+  created_by       TEXT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+  created_at       TEXT NOT NULL,               -- ISO8601 Timestamp
+  last_message_at  TEXT                         -- ISO8601 Timestamp
+);
+
+-- Participants Table
+CREATE TABLE chat_participants (
+  conversation_id  TEXT NOT NULL REFERENCES chat_conversations(id) ON DELETE CASCADE,
+  user_id          TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  joined_at        TEXT NOT NULL,               -- ISO8601 Timestamp
+  muted            INTEGER DEFAULT 0,           -- 0 = False, 1 = True
+  last_read_at     TEXT,                        -- ISO8601 Timestamp
+  PRIMARY KEY (conversation_id, user_id)
+);
+
+-- Messages Table
+CREATE TABLE chat_messages (
+  id               TEXT PRIMARY KEY NOT NULL,
+  conversation_id  TEXT NOT NULL REFERENCES chat_conversations(id) ON DELETE CASCADE,
+  sender_id        TEXT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+  type             TEXT NOT NULL,               -- 'text' | 'file' | 'record_link' | 'location' | 'sos'
+  content          TEXT NOT NULL,               -- JSON payload containing message detail
+  sent_at          TEXT NOT NULL,               -- ISO8601 Timestamp
+  delivered_at     TEXT,                        -- ISO8601 Timestamp (Null if sent but not delivered)
+  read_at          TEXT,                        -- ISO8601 Timestamp (Null if not read)
+  is_deleted       INTEGER DEFAULT 0            -- 0 = False, 1 = True
+);
+```
+
+### 4.2 Drift Table Classes (`lib/modules/communication/database/tables.dart`)
+```dart
+import 'package:drift/drift.dart';
+import '../../../core/database/app_database.dart';
+
+@DataClassName('ChatConversation')
+class ChatConversations extends Table {
+  TextColumn get id => text()(); // UUID
+  TextColumn get type => text()(); // 'direct', 'record_linked', 'group'
+  TextColumn get recordType => text().nullable()(); // 'lead', 'deal', 'job', 'service'
+  TextColumn get recordId => text().nullable()(); // Linked UUID
+  TextColumn get createdBy => text().references(Users, #id)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get lastMessageAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('ChatParticipant')
+class ChatParticipants extends Table {
+  TextColumn get conversationId => text().references(ChatConversations, #id)();
+  TextColumn get userId => text().references(Users, #id)();
+  DateTimeColumn get joinedAt => dateTime().withDefault(currentDateAndTime)();
+  BoolColumn get muted => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get lastReadAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {conversationId, userId};
+}
+
+@DataClassName('ChatMessage')
+class ChatMessages extends Table {
+  TextColumn get id => text()(); // UUID
+  TextColumn get conversationId => text().references(ChatConversations, #id)();
+  TextColumn get senderId => text().references(Users, #id)();
+  TextColumn get type => text()(); // 'text', 'file', 'record_link', 'location', 'sos'
+  TextColumn get content => text()(); // JSON string matching the message payload schema
+  DateTimeColumn get sentAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deliveredAt => dateTime().nullable()();
+  DateTimeColumn get readAt => dateTime().nullable()();
+  BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+```
+
+---
+
+## 5. WebSocket Protocol & Event Contracts
+
+The WebSocket service communicates over `wss://<sync_server>/chat`. It uses structured JSON payloads. All messages include an `event` header.
+
+### 5.1 Send Message Event
+Sent by the client when initiating or sending a message:
+```json
+{
+  "event": "send_message",
+  "data": {
+    "message_id": "8a38a7c2-9014-411a-8bb7-d8677c77c07b",
+    "conversation_id": "c1a01103-62ef-46e3-ae34-2e90f23db01e",
+    "type": "text",
+    "content": {
+      "text": "Hello, Sarah! Can you check the details of Lead #1024?",
+      "metadata": {}
+    },
+    "sent_at": "2026-06-13T07:22:21.000Z"
+  }
+}
+```
+
+### 5.2 Server Broadcast (Message Delivery)
+Broadcasted by the server to all participants of the conversation who are currently online:
+```json
+{
+  "event": "message_received",
+  "data": {
+    "message_id": "8a38a7c2-9014-411a-8bb7-d8677c77c07b",
+    "conversation_id": "c1a01103-62ef-46e3-ae34-2e90f23db01e",
+    "sender_id": "user_abc123",
+    "type": "text",
+    "content": {
+      "text": "Hello, Sarah! Can you check the details of Lead #1024?",
+      "metadata": {}
+    },
+    "sent_at": "2026-06-13T07:22:21.000Z"
+  }
+}
+```
+
+### 5.3 Delivery Receipts & Read Receipts
+Receipts propagate through the network to update bubble ticks (single tick, double tick, blue tick):
+```json
+// Sent to server when a client receives a message in background/foreground
+{
+  "event": "msg_delivered",
+  "data": {
+    "message_id": "8a38a7c2-9014-411a-8bb7-d8677c77c07b",
+    "conversation_id": "c1a01103-62ef-46e3-ae34-2e90f23db01e",
+    "delivered_at": "2026-06-13T07:22:22.105Z"
+  }
+}
+
+// Sent to server when the user opens the conversation containing the message
+{
+  "event": "msg_read",
+  "data": {
+    "message_id": "8a38a7c2-9014-411a-8bb7-d8677c77c07b",
+    "conversation_id": "c1a01103-62ef-46e3-ae34-2e90f23db01e",
+    "read_at": "2026-06-13T07:22:25.402Z"
+  }
+}
+```
+
+### 5.4 Typing State Broadcast
+Fired when user begins typing (throttled at 2-second intervals):
+```json
+{
+  "event": "typing_state",
+  "data": {
+    "conversation_id": "c1a01103-62ef-46e3-ae34-2e90f23db01e",
+    "user_id": "user_xyz789",
+    "is_typing": true
+  }
+}
+```
+
+### 5.5 Presence Heartbeat & Broadcast
+Clients ping the server every 30 seconds. The server recalculates presence based on sync states and broadcasts changes:
+```json
+// Heartbeat Ping
+{
+  "event": "heartbeat",
+  "data": {
+    "user_id": "user_xyz789",
+    "sync_status": "synced" // 'synced' | 'paused' | 'private'
+  }
+}
+
+// Server Broadcast to contacts
+{
+  "event": "presence_update",
+  "data": {
+    "user_id": "user_xyz789",
+    "presence": "online_synced", // 'online_synced' | 'sync_paused' | 'offline' | 'private'
+    "last_seen_at": "2026-06-13T07:22:30.000Z"
+  }
+}
+```
+
+---
+
+## 6. Offline Queue & Outbox Pattern Flow
+
+For high-risk and remote work scenarios, offline messaging capability is critical. If a connection drops, the outbox engine takes over:
+
+```
+[User Types Msg] ──> [Save to Local DB as ChatMessage]
+                           │
+                           ▼
+                 [Check Network Status]
+                /                     \
+        (Online)                       (Offline)
+           /                                 \
+          ▼                                   ▼
+ [Send via WebSocket]             [Create Outbox Mutation record]
+          │                       [Status = 'pending']
+          │                                   │
+          │                        (Network Restored)
+          │                                   │
+          │                                   ▼
+          │                       [Sync Engine picks up record]
+          │                       [POSTs/Sends message to Server]
+          │                                   │
+          ▼                                   ▼
+ [Update delivered_at] <─────────── [Update Local DB & Outbox status]
+```
+
+### Detailed Flow Steps:
+1. **Local Commit**: Any message sent is immediately committed to the local `chat_messages` table with `delivered_at` set to `null`.
+2. **Connectivity Dispatch**:
+   - **If Online**: Send immediately over WebSocket. Once the server responds with a receipt, update `delivered_at` locally.
+   - **If Offline**: Write a record to the `OutboxMutations` table:
+     - `targetTable`: `'chat_messages'`
+     - `operation`: `'insert'`
+     - `payload`: The serialized JSON representation of the `ChatMessage`.
+3. **Outbox Synchronization**: When the app detects that connectivity is restored, the `SyncEngine` queries pending mutations. It sends the queued messages sequentially, updating local records on success.
+
+---
+
+## 7. BLoC State Management Architecture
+
+The state of the chat system is managed via a dedicated BLoC layer: `ChatBloc`.
+
+### 7.1 Chat Events
+- `LoadConversations`: Fetches all active chats from local database sorted by `lastMessageAt`.
+- `LoadMessages(String conversationId)`: Loads paginated messages for a selected conversation thread.
+- `SendMessage(String conversationId, String text, String type)`: Enqueues a message, commits to local DB, and pushes to WebSocket/Outbox.
+- `ReceiveMessage(ChatMessage message)`: Fired when an incoming broadcast is received over WebSocket.
+- `UpdateMessageStatus(String messageId, String status, DateTime timestamp)`: Updates delivered/read statuses.
+- `UpdateUserPresence(String userId, String presence)`: Updates presence cache map in the memory state.
+- `ToggleTyping(String conversationId, bool isTyping)`: Dispatches typing indicator to server.
+
+### 7.2 Chat States
+```dart
+class ChatState {
+  final List<ChatConversation> conversations;
+  final Map<String, List<ChatMessage>> messagesByConversation;
+  final Map<String, String> userPresenceMap; // Map<UserId, PresenceState>
+  final Map<String, List<String>> typingUsersMap; // Map<ConversationId, List<UserName>>
+  final bool isLoading;
+  final String? error;
+
+  ChatState({
+    this.conversations = const [],
+    this.messagesByConversation = const {},
+    this.userPresenceMap = const {},
+    this.typingUsersMap = const {},
+    this.isLoading = false,
+    this.error,
+  });
+
+  ChatState copyWith({
+    List<ChatConversation>? conversations,
+    Map<String, List<ChatMessage>>? messagesByConversation,
+    Map<String, String>? userPresenceMap,
+    Map<String, List<String>>? typingUsersMap,
+    bool? isLoading,
+    String? error,
+  }) {
+    return ChatState(
+      conversations: conversations ?? this.conversations,
+      messagesByConversation: messagesByConversation ?? this.messagesByConversation,
+      userPresenceMap: userPresenceMap ?? this.userPresenceMap,
+      typingUsersMap: typingUsersMap ?? this.typingUsersMap,
+      isLoading: isLoading ?? this.isLoading,
+      error: error,
+    );
+  }
+}
+```
+
+---
+
+## 8. UI/UX Design Specifications
+
+The user interface adheres to iZiiApp's premium dark design system (glassmorphism surfaces, smooth gradients, Outfitter/Inter typography).
+
+### 8.1 Reusable Presence Avatar (`lib/modules/communication/widgets/presence_avatar.dart`)
+Displays a user avatar along with their current status badge:
+- **🟢 Online**: Active color emerald `Color(0xFF10B981)`.
+- **🟡 Paused**: Warning color amber `Color(0xFFF59E0B)`.
+- **🔴 Offline**: Inactive gray `Color(0xFF94A3B8)`.
+- **⚫ Private**: Deep dark slate indicator.
+
+```
+       +-------+
+      /  Avatar \
+     |   Image   |
+      \  [U.D]  /
+       +-------+ [🟢] <-- Small badge in bottom-right corner
+```
+
+### 8.2 Chat Inbox Screen (`lib/modules/communication/screens/chat_inbox_screen.dart`)
+- **Header**: Title "Chat & Collaboration" with a search bar at the top.
+- **Presence Bar**: A horizontal scrollable list of recent online contacts.
+- **Conversation List**:
+  - Tapping opens the thread.
+  - Displays participant name, last message snippet, timestamp, and unread counts in an interactive, gradient-colored badge.
+  - Slide action to Archive or Mute.
+
+### 8.3 Conversation Screen (`lib/modules/communication/screens/conversation_screen.dart`)
+- **Header**: Active member details, presence status (e.g., "Sarah 🟢 Online"), and a button to view context if linked.
+- **Chat Feed**:
+  - Message bubble layouts aligned to the right (user) and left (recipient).
+  - Outbox status indicators (clock icon for sending, single gray tick for sent, double gray tick for delivered, double blue tick for read).
+  - Real-time typing bubble showing animated dots.
+- **Input Bar**:
+  - Rich text editor with attachments icon (clip).
+  - Record link shortcut: Allows sharing a Lead or Job directly into the message queue.
+  - SOS Escalation button (for lone worker emergency alerts).
+
+### 8.4 Record-Linked Comments Component (`lib/modules/communication/widgets/record_chat_tab.dart`)
+Instead of a separate page, this component is embedded within existing module detail screens (e.g., inside the Lead Details or Job Details page) as a tab.
+
+```
++───────────────────────────────────────────────────+
+| [ Details ]      [ Activity ]     *[ Comments (3) ]*
++───────────────────────────────────────────────────+
+| 👤 Sarah (Admin)   10 mins ago                    |
+| "@John, I've confirmed with the client. Ready to |
+| dispatch."                                        |
+|                                                   |
+| 👤 John (Tech)     8 mins ago                     |
+| "Copy that. Starting Job #2041 now."              |
++───────────────────────────────────────────────────+
+| [ Write comment...                      ] [ Send ]|
++───────────────────────────────────────────────────+
+```
+
+---
+
+## 9. SOS Integration & Solo Safety Alarm Linkage
+
+When a Lone Worker is working a Solo Job and triggers an SOS alert, the Chat engine intercepts the event:
+1. **Automated Message Generation**: A system message is sent to the shared team/group channel.
+   - **Type**: `'sos'`
+   - **Content**:
+     ```json
+     {
+       "alert": "SOS Triggered by Alone Worker!",
+       "worker_name": "Nguyen Van An",
+       "job_id": "job_99a01f",
+       "gps": {"lat": 10.776, "lng": 106.701},
+       "battery": "85%"
+     }
+     ```
+2. **Supervisor UX Interruption**: Receives a full-screen, non-dismissible red flashing alert within the app with high-priority alarm sound.
+
+---
+
+## 10. Privacy & Administrative Rules
+
+1. **End-to-End Privacy**: Direct Messages (DMs) are encrypted in transit using TLS and stored securely. Only the participating devices can read DM contents.
+2. **Compliance Logs**: Group chats and record-linked threads are visible to administrators for auditing purposes. Audit trails record only metadata (sender, timestamp, type, volume) for DMs.
+3. **Message Deletion**: Users can delete a message they sent within a **10-minute window**. Deleted messages are replaced locally and on the server with a "Message deleted" placeholder.
+
+---
+
+## 11. Phased Implementation Blueprint
+
+```
++─────────────────────────────────────────────────────────────────────────────+
+| PHASE 1: Direct Messaging & Presence Engine                                 |
+| - Create communication module skeleton                                      |
+| - Implement SQLite/Drift migrations (Schema 15)                             |
+| - Set up WebSocket connection engine & local outbox fallback                |
+| - Develop Inbox Screen & DM Conversation Screen                             |
++─────────────────────────────────────────────────────────────────────────────+
+| PHASE 2: Record-Linked Conversations & Context                              |
+| - Implement Record-Linked tab UI component                                  |
+| - Add context sharing helper (Lead/Deal/Job JSON serialization in chat)     |
+| - Integrate dynamic permission lookup based on shared records               |
++─────────────────────────────────────────────────────────────────────────────+
+| PHASE 3: Group Chats & Solo Safety Alarm Integration                        |
+| - Add Group conversation management schemas & routing                       |
+| - Connect Solo Safety Alarm SOS triggers to automatically dispatch to group |
++─────────────────────────────────────────────────────────────────────────────+
+| PHASE 4: Rich Attachments & Advanced UX                                     |
+| - Integrate file sharing and storage protocols                              |
+| - Add location pins and quick replies                                       |
++─────────────────────────────────────────────────────────────────────────────+
+```
+
+### Proposed Files to Create/Modify:
+- `lib/core/database/app_database.dart` - Modify: Register new Drift tables and migration.
+- `lib/modules/communication/database/tables.dart` - New: Database tables.
+- `lib/modules/communication/models/chat_models.dart` - New: Chat and WebSocket data models.
+- `lib/modules/communication/services/chat_websocket_service.dart` - New: WebSocket listener and heartbeat.
+- `lib/modules/communication/repository/chat_repository.dart` - New: Local SQLite reader/writer.
+- `lib/modules/communication/bloc/chat_bloc.dart` - New: State management for chat.
+- `lib/modules/communication/screens/chat_inbox_screen.dart` - New: Inbox listing page.
+- `lib/modules/communication/screens/conversation_screen.dart` - New: Dialogue thread page.
+- `lib/modules/communication/widgets/presence_avatar.dart` - New: Avatar status badge.
+- `lib/modules/communication/widgets/record_chat_tab.dart` - New: Record-linked comment block.
+- `lib/core/localization/translations/en.dart` & `vi.dart` - Modify: Add English and Vietnamese localization tokens.

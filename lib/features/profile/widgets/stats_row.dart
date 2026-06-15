@@ -43,11 +43,11 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final surfaceColor = isDark
-        ? IZiiColors.darkSurface.withOpacity(0.7)
-        : IZiiColors.lightSurface.withOpacity(0.85);
+        ? IZiiColors.darkSurface.withValues(alpha: 0.7)
+        : IZiiColors.lightSurface.withValues(alpha: 0.85);
     final borderColor = isDark
-        ? Colors.white.withOpacity(0.08)
-        : Colors.black.withOpacity(0.06);
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
     final textColor = isDark ? Colors.white : Colors.black87;
     final subtextColor = isDark ? Colors.white60 : Colors.black54;
 
@@ -63,7 +63,7 @@ class _StatCard extends StatelessWidget {
             border: Border.all(color: borderColor, width: 1),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -75,7 +75,7 @@ class _StatCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: IZiiColors.primary.withOpacity(0.12),
+                  color: IZiiColors.primary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

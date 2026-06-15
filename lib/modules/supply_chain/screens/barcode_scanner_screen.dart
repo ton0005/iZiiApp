@@ -159,7 +159,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 blurRadius: 16,
                 spreadRadius: 4,
               )
@@ -176,8 +176,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: exists
-                          ? const Color(0xFF10B981).withOpacity(0.1)
-                          : const Color(0xFF6366F1).withOpacity(0.1),
+                          ? const Color(0xFF10B981).withValues(alpha: 0.1)
+                          : const Color(0xFF6366F1).withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -219,7 +219,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
               if (exists) ...[
                 const SizedBox(height: 8),
                 Text(
-                  context.tr('inv_price_label').replaceAll('{price}', '${_formatPrice(price)} VNĐ'),
+                  context
+                      .tr('inv_price_label')
+                      .replaceAll('{price}', '${_formatPrice(price)} VNĐ'),
                   style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF10B981),
@@ -271,7 +273,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                               borderRadius: BorderRadius.circular(14)),
                         ),
                         onPressed: onAction,
-                        child: Text(exists ? context.tr('edit') : context.tr('inv_add_product')),
+                        child: Text(exists
+                            ? context.tr('edit')
+                            : context.tr('inv_add_product')),
                       ),
                     ),
                   ),
@@ -307,7 +311,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
         ),
         title: Text(
           context.tr('inv_barcode_scanner_title'),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -340,7 +345,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
           // 2. Dark Overlay with cutout hole
           ColorFiltered(
             colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.6),
+              Colors.black.withValues(alpha: 0.6),
               BlendMode.srcOut,
             ),
             child: Stack(
@@ -394,7 +399,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.red.withOpacity(0.5),
+                                color: Colors.red.withValues(alpha: 0.5),
                                 blurRadius: 4,
                                 spreadRadius: 1,
                               )
@@ -417,7 +422,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.white10),
               ),

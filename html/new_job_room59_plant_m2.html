@@ -1,0 +1,273 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 20px; }
+.form-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+.fc-header { padding: 14px 18px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; justify-content: space-between; }
+.fc-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
+.fc-title i { font-size: 16px; color: var(--color-text-secondary); }
+.room-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #E6F1FB; color: #0C447C; font-weight: 500; }
+.fc-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); }
+label span { color: var(--color-text-danger); margin-left: 2px; }
+input, select, textarea { font-family: var(--font-sans); font-size: 13px; color: var(--color-text-primary); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 8px 10px; width: 100%; outline: none; }
+input:focus, select:focus, textarea:focus { border-color: #378ADD; box-shadow: 0 0 0 2px #E6F1FB; }
+textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+.job-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.job-type-card {
+  padding: 9px 12px; border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+  cursor: pointer; transition: all 0.12s;
+  display: flex; align-items: center; gap: 8px;
+}
+.job-type-card:hover { border-color: #378ADD; background: #E6F1FB; }
+.job-type-card.selected { border: 1.5px solid #378ADD; background: #E6F1FB; }
+.job-type-card i { font-size: 16px; color: var(--color-text-secondary); }
+.job-type-card.selected i { color: #185FA5; }
+.jtc-label { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.jtc-sub { font-size: 11px; color: var(--color-text-secondary); margin-top: 1px; }
+.job-type-card.selected .jtc-label { color: #0C447C; }
+.assignee-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.assignee-chip {
+  font-size: 12px; padding: 4px 12px; border-radius: 20px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+  cursor: pointer; color: var(--color-text-secondary); transition: all 0.12s;
+  display: flex; align-items: center; gap: 5px;
+}
+.assignee-chip i { font-size: 12px; }
+.assignee-chip.selected { background: #EAF3DE; border-color: #3B6D11; color: #27500A; }
+.priority-row { display: flex; gap: 8px; }
+.prio-btn {
+  flex: 1; padding: 6px 10px; border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-secondary);
+  background: transparent; font-size: 12px; cursor: pointer;
+  color: var(--color-text-secondary); display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.prio-btn.sel-low { background: #EAF3DE; border-color: #3B6D11; color: #27500A; }
+.prio-btn.sel-normal { background: #E6F1FB; border-color: #185FA5; color: #0C447C; }
+.prio-btn.sel-high { background: #FAEEDA; border-color: #854F0B; color: #633806; }
+.prio-btn.sel-urgent { background: #FCEBEB; border-color: #A32D2D; color: #791F1F; }
+.watering-sub { display: none; flex-direction: column; gap: 10px; }
+.watering-sub.show { display: flex; }
+.prochloraz-sub { display: none; flex-direction: column; gap: 10px; }
+.prochloraz-sub.show { display: flex; }
+.rate-display { font-size: 13px; font-weight: 500; color: var(--color-text-primary); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 8px 12px; }
+.fc-footer { padding: 12px 18px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; justify-content: space-between; }
+.btn-cancel { font-size: 13px; padding: 8px 16px; background: transparent; color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; }
+.btn-submit { font-size: 13px; padding: 8px 20px; background: #E6F1FB; color: #0C447C; border: none; border-radius: var(--border-radius-md); cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+.btn-submit:hover { background: #B5D4F4; }
+.divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 2px 0; }
+.link-project-row { display: flex; align-items: center; gap: 10px; }
+.link-project-row input { flex: 1; }
+.lp-badge { font-size: 11px; padding: 3px 9px; border-radius: 10px; background: #EEEDFE; color: #3C3489; white-space: nowrap; }
+</style>
+
+<h2 class="sr-only">Create new job for Room 59 – Plant M2</h2>
+
+<div class="wrap">
+  <div class="form-card">
+    <div class="fc-header">
+      <div class="fc-title">
+        <i class="ti ti-square-plus" aria-hidden="true"></i>
+        New job
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="room-badge"><i class="ti ti-door" style="font-size:11px;vertical-align:-1px;margin-right:3px;" aria-hidden="true"></i>Room 59 · Plant M2</span>
+        <span style="font-size:11px;color:var(--color-text-tertiary);">Cycle 3 · Day 9</span>
+      </div>
+    </div>
+
+    <div class="fc-body">
+      <div class="field">
+        <label>Job type <span>*</span></label>
+        <div class="job-type-grid" id="job-type-grid">
+          <div class="job-type-card selected" data-job="filling" onclick="selectJobType(this,'filling')">
+            <i class="ti ti-box" aria-hidden="true"></i>
+            <div><div class="jtc-label">Filling</div><div class="jtc-sub">New room setup</div></div>
+          </div>
+          <div class="job-type-card" data-job="airing" onclick="selectJobType(this,'airing')">
+            <i class="ti ti-wind" aria-hidden="true"></i>
+            <div><div class="jtc-label">Airing</div><div class="jtc-sub">Pack up · floor wet · plastic</div></div>
+          </div>
+          <div class="job-type-card" data-job="packupwet" onclick="selectJobType(this,'packupwet')">
+            <i class="ti ti-stack-2" aria-hidden="true"></i>
+            <div><div class="jtc-label">Pack up floor wet</div><div class="jtc-sub">Remove floor wet layer</div></div>
+          </div>
+          <div class="job-type-card" data-job="cleanroom" onclick="selectJobType(this,'cleanroom')">
+            <i class="ti ti-sparkles" aria-hidden="true"></i>
+            <div><div class="jtc-label">Clean room</div><div class="jtc-sub">Handover → Harvest</div></div>
+          </div>
+          <div class="job-type-card" data-job="watering" onclick="selectJobType(this,'watering')">
+            <i class="ti ti-droplet" aria-hidden="true"></i>
+            <div><div class="jtc-label">Watering</div><div class="jtc-sub">2 L/m² per side plan</div></div>
+          </div>
+          <div class="job-type-card" data-job="cleanbed" onclick="selectJobType(this,'cleanbed')">
+            <i class="ti ti-bed" aria-hidden="true"></i>
+            <div><div class="jtc-label">Set up clean bed</div><div class="jtc-sub">Clean bed installation</div></div>
+          </div>
+          <div class="job-type-card" data-job="prochloraz" onclick="selectJobType(this,'prochloraz')">
+            <i class="ti ti-flask" aria-hidden="true"></i>
+            <div><div class="jtc-label">Prochloraz</div><div class="jtc-sub">1.3 g/m² default rate</div></div>
+          </div>
+          <div class="job-type-card" data-job="packuptree" onclick="selectJobType(this,'packuptree')">
+            <i class="ti ti-trees" aria-hidden="true"></i>
+            <div><div class="jtc-label">Pack up tree</div><div class="jtc-sub">Final substrate pack up</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="watering-sub" id="watering-sub">
+        <hr class="divider">
+        <div class="field-row">
+          <div class="field">
+            <label>Watering plan</label>
+            <select id="water-plan">
+              <option value="2side">2 Side — 2 L/m²</option>
+              <option value="1side">1 Side — 2 L/m²</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Volume (L/m²)</label>
+            <input type="number" id="water-vol" value="2" min="0.5" max="10" step="0.5">
+          </div>
+        </div>
+      </div>
+
+      <div class="prochloraz-sub" id="prochloraz-sub">
+        <hr class="divider">
+        <div class="field-row">
+          <div class="field">
+            <label>Application rate (g/m²)</label>
+            <input type="number" id="prochloraz-rate" value="1.3" min="0.5" max="5" step="0.1" oninput="updateRate()">
+          </div>
+          <div class="field">
+            <label>Area (m²)</label>
+            <input type="number" id="prochloraz-area" value="112" min="1" step="1" oninput="updateRate()">
+          </div>
+        </div>
+        <div class="field">
+          <label>Total amount needed</label>
+          <div class="rate-display" id="rate-total">145.6 g total for 112 m²</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field-row">
+        <div class="field">
+          <label>Scheduled date <span>*</span></label>
+          <input type="date" id="job-date" value="2026-06-13">
+        </div>
+        <div class="field">
+          <label>Start time</label>
+          <input type="time" id="job-time" value="07:00">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Assign to</label>
+        <div class="assignee-row" id="assignee-row">
+          <div class="assignee-chip selected" onclick="toggleAssignee(this)"><i class="ti ti-user" aria-hidden="true"></i>Minh T.</div>
+          <div class="assignee-chip" onclick="toggleAssignee(this)"><i class="ti ti-user" aria-hidden="true"></i>Lan N.</div>
+          <div class="assignee-chip" onclick="toggleAssignee(this)"><i class="ti ti-user" aria-hidden="true"></i>Hùng V.</div>
+          <div class="assignee-chip" onclick="toggleAssignee(this)"><i class="ti ti-user" aria-hidden="true"></i>Phúc D.</div>
+          <div class="assignee-chip" onclick="toggleAssignee(this)"><i class="ti ti-user" aria-hidden="true"></i>Thu H.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Priority</label>
+        <div class="priority-row" id="priority-row">
+          <button class="prio-btn" onclick="selectPriority(this,'low','sel-low')"><i class="ti ti-arrow-down" style="font-size:13px;" aria-hidden="true"></i>Low</button>
+          <button class="prio-btn sel-normal" onclick="selectPriority(this,'normal','sel-normal')"><i class="ti ti-minus" style="font-size:13px;" aria-hidden="true"></i>Normal</button>
+          <button class="prio-btn" onclick="selectPriority(this,'high','sel-high')"><i class="ti ti-arrow-up" style="font-size:13px;" aria-hidden="true"></i>High</button>
+          <button class="prio-btn" onclick="selectPriority(this,'urgent','sel-urgent')"><i class="ti ti-alert-triangle" style="font-size:13px;" aria-hidden="true"></i>Urgent</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Link to project / task</label>
+        <div class="link-project-row">
+          <input type="text" id="link-project" placeholder="e.g. M2-Cycle-3" value="M2-Cycle-3">
+          <span class="lp-badge"><i class="ti ti-link" style="font-size:11px;vertical-align:-1px;margin-right:3px;" aria-hidden="true"></i>Project & Task</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Notes</label>
+        <textarea id="job-notes" placeholder="Additional instructions, observations, or requirements..."></textarea>
+      </div>
+    </div>
+
+    <div class="fc-footer">
+      <button class="btn-cancel" onclick="sendPrompt('Huỷ tạo job, quay lại dashboard Plant M2')">Cancel</button>
+      <button class="btn-submit" onclick="submitJob()">
+        <i class="ti ti-check" style="font-size:14px;" aria-hidden="true"></i>
+        Create job ↗
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+let selectedJob = 'filling';
+let selectedPriorityClass = 'sel-normal';
+
+function selectJobType(el, job) {
+  document.querySelectorAll('.job-type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedJob = job;
+  document.getElementById('watering-sub').className = 'watering-sub' + (job === 'watering' ? ' show' : '');
+  document.getElementById('prochloraz-sub').className = 'prochloraz-sub' + (job === 'prochloraz' ? ' show' : '');
+}
+
+function toggleAssignee(el) {
+  el.classList.toggle('selected');
+}
+
+function selectPriority(el, val, cls) {
+  document.querySelectorAll('.prio-btn').forEach(b => {
+    b.className = 'prio-btn';
+  });
+  el.classList.add(cls);
+  selectedPriorityClass = cls;
+}
+
+function updateRate() {
+  const rate = parseFloat(document.getElementById('prochloraz-rate').value) || 1.3;
+  const area = parseFloat(document.getElementById('prochloraz-area').value) || 112;
+  const total = (rate * area).toFixed(1);
+  document.getElementById('rate-total').textContent = total + ' g total for ' + Math.round(area) + ' m²';
+}
+
+function submitJob() {
+  const jobNames = {
+    filling:'Filling', airing:'Airing', packupwet:'Pack up floor wet',
+    cleanroom:'Clean room', watering:'Watering', cleanbed:'Set up clean bed',
+    prochloraz:'Prochloraz', packuptree:'Pack up tree'
+  };
+  const assignees = Array.from(document.querySelectorAll('.assignee-chip.selected')).map(c => c.textContent.trim()).join(', ') || 'Unassigned';
+  const date = document.getElementById('job-date').value;
+  const time = document.getElementById('job-time').value;
+  const notes = document.getElementById('job-notes').value;
+  const project = document.getElementById('link-project').value;
+  const jobName = jobNames[selectedJob] || selectedJob;
+  let extra = '';
+  if (selectedJob === 'watering') {
+    const plan = document.getElementById('water-plan').value;
+    const vol = document.getElementById('water-vol').value;
+    extra = ` | Plan: ${plan === '2side' ? '2 Side' : plan === '1side' ? '1 Side' : 'Custom'} — ${vol} L/m²`;
+  }
+  if (selectedJob === 'prochloraz') {
+    const rate = document.getElementById('prochloraz-rate').value;
+    const area = document.getElementById('prochloraz-area').value;
+    extra = ` | Rate: ${rate} g/m² · ${area} m²`;
+  }
+  sendPrompt(`Tạo job "${jobName}" cho Phòng 59 Plant M2: ngày ${date} ${time}, assign: ${assignees}, project: ${project}${extra}${notes ? ', ghi chú: ' + notes : ''}`);
+}
+</script>

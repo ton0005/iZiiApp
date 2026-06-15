@@ -187,10 +187,10 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: IZiiColors.darkSurface.withOpacity(0.6),
+                            color: IZiiColors.darkSurface.withValues(alpha: 0.6),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: IZiiColors.darkSurfaceHighlight.withOpacity(0.2),
+                              color: IZiiColors.darkSurfaceHighlight.withValues(alpha: 0.2),
                             ),
                           ),
                           child: Column(
@@ -211,7 +211,7 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                                 child: InputDecorator(
                                   decoration: InputDecoration(
                                     labelText: context.tr('acc_entry_date'),
-                                    labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                                    labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                                     border: InputBorder.none,
                                   ),
                                   child: Row(
@@ -233,7 +233,7 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                                 style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   labelText: context.tr('acc_reference'),
-                                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                                  labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                                   border: InputBorder.none,
                                 ),
                               ),
@@ -244,7 +244,7 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                                 style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   labelText: context.tr('acc_narration'),
-                                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                                  labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                                   border: InputBorder.none,
                                 ),
                               ),
@@ -289,10 +289,10 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                               margin: const EdgeInsets.only(bottom: 12),
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: IZiiColors.darkSurface.withOpacity(0.3),
+                                color: IZiiColors.darkSurface.withValues(alpha: 0.3),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.08),
+                                  color: Colors.white.withValues(alpha: 0.08),
                                 ),
                               ),
                               child: Column(
@@ -304,7 +304,7 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                                       Text(
                                         'Line ${idx + 1}',
                                         style: TextStyle(
-                                          color: Colors.white.withOpacity(0.4),
+                                          color: Colors.white.withValues(alpha: 0.4),
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -319,14 +319,14 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                                   ),
                                   // Account dropdown
                                   DropdownButtonFormField<String>(
-                                    value: line['account_id'],
+                                    initialValue: line['account_id'],
                                     dropdownColor: IZiiColors.darkSurface,
                                     style: const TextStyle(color: Colors.white),
                                     isExpanded: true,
                                     decoration: InputDecoration(
                                       labelText: context.tr('acc_category'),
                                       labelStyle:
-                                          TextStyle(color: Colors.white.withOpacity(0.4)),
+                                          TextStyle(color: Colors.white.withValues(alpha: 0.4)),
                                       border: InputBorder.none,
                                     ),
                                     items: accounts.map((acc) {
@@ -358,7 +358,7 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                                           decoration: InputDecoration(
                                             labelText: context.tr('acc_debit'),
                                             labelStyle: TextStyle(
-                                                color: Colors.white.withOpacity(0.4)),
+                                                color: Colors.white.withValues(alpha: 0.4)),
                                             prefixText: '\$ ',
                                             prefixStyle: const TextStyle(color: Colors.white),
                                           ),
@@ -386,7 +386,7 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                                           decoration: InputDecoration(
                                             labelText: context.tr('acc_credit'),
                                             labelStyle: TextStyle(
-                                                color: Colors.white.withOpacity(0.4)),
+                                                color: Colors.white.withValues(alpha: 0.4)),
                                             prefixText: '\$ ',
                                             prefixStyle: const TextStyle(color: Colors.white),
                                           ),
@@ -410,13 +410,13 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                                       // GST Code dropdown
                                       Expanded(
                                         child: DropdownButtonFormField<String>(
-                                          value: line['gst_tax_code'],
+                                          initialValue: line['gst_tax_code'],
                                           dropdownColor: IZiiColors.darkSurface,
                                           style: const TextStyle(color: Colors.white),
                                           decoration: InputDecoration(
                                             labelText: context.tr('acc_gst_tax_code'),
                                             labelStyle: TextStyle(
-                                                color: Colors.white.withOpacity(0.4)),
+                                                color: Colors.white.withValues(alpha: 0.4)),
                                             border: InputBorder.none,
                                           ),
                                           items: ['GST', 'FRE', 'ITS', 'EXM']
@@ -442,7 +442,7 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                                           decoration: InputDecoration(
                                             labelText: context.tr('acc_gst_amount'),
                                             labelStyle: TextStyle(
-                                                color: Colors.white.withOpacity(0.4)),
+                                                color: Colors.white.withValues(alpha: 0.4)),
                                             border: InputBorder.none,
                                           ),
                                           child: Text(
@@ -472,10 +472,10 @@ class _AddJournalEntryScreenState extends State<AddJournalEntryScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       decoration: BoxDecoration(
-                        color: IZiiColors.darkSurface.withOpacity(0.8),
+                        color: IZiiColors.darkSurface.withValues(alpha: 0.8),
                         border: Border(
                           top: BorderSide(
-                            color: IZiiColors.darkSurfaceHighlight.withOpacity(0.3),
+                            color: IZiiColors.darkSurfaceHighlight.withValues(alpha: 0.3),
                           ),
                         ),
                       ),

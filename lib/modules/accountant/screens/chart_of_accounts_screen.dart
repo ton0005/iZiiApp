@@ -30,18 +30,19 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
 
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.6),
+      barrierColor: Colors.black.withValues(alpha: 0.6),
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setState) {
             return BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: AlertDialog(
-                backgroundColor: IZiiColors.darkSurface.withOpacity(0.9),
+                backgroundColor: IZiiColors.darkSurface.withValues(alpha: 0.9),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
                   side: BorderSide(
-                    color: IZiiColors.darkSurfaceHighlight.withOpacity(0.4),
+                    color:
+                        IZiiColors.darkSurfaceHighlight.withValues(alpha: 0.4),
                     width: 1,
                   ),
                 ),
@@ -63,11 +64,14 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                         TextFormField(
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
-                            labelText: context.tr('acc_code') + ' (e.g. 1-1100)',
-                            labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                            labelText:
+                                '${context.tr('acc_code')} (e.g. 1-1100)',
+                            labelStyle: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.5)),
                           ),
-                          validator: (value) =>
-                              (value == null || value.isEmpty) ? 'Required' : null,
+                          validator: (value) => (value == null || value.isEmpty)
+                              ? 'Required'
+                              : null,
                           onSaved: (val) => code = val ?? '',
                         ),
                         const SizedBox(height: 12),
@@ -76,23 +80,33 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: context.tr('acc_name'),
-                            labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                            labelStyle: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.5)),
                           ),
-                          validator: (value) =>
-                              (value == null || value.isEmpty) ? 'Required' : null,
+                          validator: (value) => (value == null || value.isEmpty)
+                              ? 'Required'
+                              : null,
                           onSaved: (val) => name = val ?? '',
                         ),
                         const SizedBox(height: 12),
                         // Category Dropdown
                         DropdownButtonFormField<String>(
-                          value: category,
+                          initialValue: category,
                           dropdownColor: IZiiColors.darkSurface,
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: context.tr('acc_category'),
-                            labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                            labelStyle: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.5)),
                           ),
-                          items: ['Asset', 'Liability', 'Equity', 'Revenue', 'COGS', 'Expense']
+                          items: [
+                            'Asset',
+                            'Liability',
+                            'Equity',
+                            'Revenue',
+                            'COGS',
+                            'Expense'
+                          ]
                               .map((cat) => DropdownMenuItem(
                                     value: cat,
                                     child: Text(cat),
@@ -105,12 +119,13 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                         const SizedBox(height: 12),
                         // Tax Code Dropdown
                         DropdownButtonFormField<String>(
-                          value: gstTaxCode,
+                          initialValue: gstTaxCode,
                           dropdownColor: IZiiColors.darkSurface,
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: context.tr('acc_gst_tax_code'),
-                            labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                            labelStyle: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.5)),
                           ),
                           items: ['GST', 'FRE', 'ITS', 'EXM']
                               .map((code) => DropdownMenuItem(
@@ -127,12 +142,13 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                         TextFormField(
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
-                            labelText: context.tr('acc_balance') + ' (AUD)',
-                            labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                            labelText: '${context.tr('acc_balance')} (AUD)',
+                            labelStyle: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.5)),
                           ),
                           keyboardType: TextInputType.number,
-                          onSaved: (val) =>
-                              initialBalance = double.tryParse(val ?? '') ?? 0.0,
+                          onSaved: (val) => initialBalance =
+                              double.tryParse(val ?? '') ?? 0.0,
                         ),
                       ],
                     ),
@@ -143,7 +159,8 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                     onPressed: () => Navigator.pop(dialogContext),
                     child: Text(
                       context.tr('cancel'),
-                      style: TextStyle(color: Colors.white.withOpacity(0.6)),
+                      style:
+                          TextStyle(color: Colors.white.withValues(alpha: 0.6)),
                     ),
                   ),
                   ElevatedButton(
@@ -198,7 +215,8 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          icon:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -206,7 +224,8 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
         backgroundColor: IZiiColors.primary,
         onPressed: () => _showAddAccountDialog(context),
         icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(context.tr('acc_add_account'), style: const TextStyle(color: Colors.white)),
+        label: Text(context.tr('acc_add_account'),
+            style: const TextStyle(color: Colors.white)),
       ).animate().scale(delay: 200.ms, duration: 400.ms),
       body: BlocConsumer<AccountantBloc, AccountantState>(
         listener: (context, state) {
@@ -217,7 +236,9 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                 backgroundColor: IZiiColors.success,
               ),
             );
-            context.read<AccountantBloc>().add(const ClearAccountantStatusEvent());
+            context
+                .read<AccountantBloc>()
+                .add(const ClearAccountantStatusEvent());
           }
           if (state.error != null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -226,7 +247,9 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                 backgroundColor: IZiiColors.error,
               ),
             );
-            context.read<AccountantBloc>().add(const ClearAccountantStatusEvent());
+            context
+                .read<AccountantBloc>()
+                .add(const ClearAccountantStatusEvent());
           }
         },
         builder: (context, state) {
@@ -243,7 +266,14 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
             grouped.putIfAbsent(cat, () => []).add(acc);
           }
 
-          final categories = ['Asset', 'Liability', 'Equity', 'Revenue', 'COGS', 'Expense'];
+          final categories = [
+            'Asset',
+            'Liability',
+            'Equity',
+            'Revenue',
+            'COGS',
+            'Expense'
+          ];
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -256,10 +286,11 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: IZiiColors.darkSurface.withOpacity(0.6),
+                  color: IZiiColors.darkSurface.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: IZiiColors.darkSurfaceHighlight.withOpacity(0.2),
+                    color:
+                        IZiiColors.darkSurfaceHighlight.withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -278,14 +309,15 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: IZiiColors.primary.withOpacity(0.15),
+                          color: IZiiColors.primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           '${list.length} accounts',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             color: IZiiColors.primary,
                             fontWeight: FontWeight.w600,
@@ -302,20 +334,22 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                       itemBuilder: (context, itemIdx) {
                         final acc = list[itemIdx];
                         final double bal = (acc['balance'] as num).toDouble();
-                        
+
                         return Container(
                           decoration: BoxDecoration(
                             border: Border(
                               top: BorderSide(
-                                color: IZiiColors.darkSurfaceHighlight.withOpacity(0.1),
+                                color: IZiiColors.darkSurfaceHighlight
+                                    .withValues(alpha: 0.1),
                               ),
                             ),
                           ),
                           child: ListTile(
                             leading: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.08),
+                                color: Colors.white.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -341,7 +375,7 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                                   style: TextStyle(
                                     color: acc['gst_tax_code'] == 'GST'
                                         ? IZiiColors.accent
-                                        : Colors.white.withOpacity(0.3),
+                                        : Colors.white.withValues(alpha: 0.3),
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -352,7 +386,8 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                               '\$${bal.toStringAsFixed(2)}',
                               style: TextStyle(
                                 fontFamily: 'Outfit',
-                                color: bal >= 0 ? Colors.white : IZiiColors.error,
+                                color:
+                                    bal >= 0 ? Colors.white : IZiiColors.error,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -362,7 +397,10 @@ class _ChartOfAccountsScreenState extends State<ChartOfAccountsScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(delay: (idx * 50).ms, duration: 400.ms).slideY(begin: 0.05, end: 0);
+              )
+                  .animate()
+                  .fadeIn(delay: (idx * 50).ms, duration: 400.ms)
+                  .slideY(begin: 0.05, end: 0);
             },
           );
         },

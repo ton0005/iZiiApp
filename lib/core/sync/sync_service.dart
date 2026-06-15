@@ -6,6 +6,7 @@ import 'package:drift/drift.dart';
 import '../database/app_database.dart';
 import '../settings/settings_service.dart';
 import 'outbox_queue.dart';
+import 'sync_config_repository.dart';
 
 class SyncService {
   static final SyncService _instance = SyncService._internal();
@@ -31,17 +32,25 @@ class SyncService {
 
   bool get isSyncing => _isSyncing;
 
+  Future<String> _getActiveUserId() async {
+    try {
+      return await _settingsService.getActiveUserId();
+    } catch (_) {
+      return 'default_user';
+    }
+  }
+
   void initialize() {
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen((results) {
       if (!results.contains(ConnectivityResult.none)) {
         _log('Kết nối mạng được thiết lập. Tự động đồng bộ...');
-        triggerSync();
+        triggerSync(isManual: false);
       } else {
         _log('Thiết bị mất kết nối mạng. Chế độ Ngoại tuyến (Offline).');
       }
     });
 
-    _periodicTimer = Timer.periodic(const Duration(minutes: 3), (_) => triggerSync());
+    _periodicTimer = Timer.periodic(const Duration(minutes: 3), (_) => triggerSync(isManual: false));
     _log('Sync Service đã được khởi tạo.');
   }
 
@@ -58,7 +67,7 @@ class SyncService {
     }
   }
 
-  Future<bool> triggerSync() async {
+  Future<bool> triggerSync({bool isManual = false}) async {
     if (_isSyncing) return false;
     _isSyncing = true;
 
@@ -69,47 +78,87 @@ class SyncService {
 
       _log('Đang kết nối tới server: $url ...');
 
+      final userId = await _getActiveUserId();
+      final syncConfigRepo = SyncConfigRepository();
+      final configs = await syncConfigRepo.getConfigsForUser(userId);
+      final configMap = {for (var c in configs) c.moduleKey: c};
+
       // ── PUSH: gửi các mutations lên server ──
       final mutations = await _outbox.getPendingMutations();
       if (mutations.isEmpty) {
         _log('Không có thay đổi nào cần đồng bộ lên server.');
       } else {
-        _log('Đang gửi ${mutations.length} thay đổi lên server...');
+        final filteredMutations = <Map<String, dynamic>>[];
         for (var m in mutations) {
-          _log('   📦 ${m['table']} → ${m['operation']}');
+          final tableName = m['table'] as String;
+          final moduleKey = SyncConfigRepository.tableToModuleMap[tableName];
+          
+          if (moduleKey == null) {
+            filteredMutations.add(m);
+            continue;
+          }
+
+          final config = configMap[moduleKey];
+          if (config == null || !config.isEnabled) {
+            continue; // Skip disabled modules
+          }
+
+          if (!isManual && config.syncGranularity == 'manual') {
+            continue; // Skip manual-only modules in background sync
+          }
+
+          if (config.syncGranularity == 'selective' && config.selectiveEntities != null) {
+            try {
+              final selective = List<String>.from(jsonDecode(config.selectiveEntities!));
+              if (!selective.contains(tableName)) {
+                continue; // Skip disabled sub-entities
+              }
+            } catch (_) {}
+          }
+
+          filteredMutations.add(m);
         }
 
-        final payload = mutations.map((m) => {
-          'id': m['id'],
-          'table': m['table'],
-          'operation': m['operation'],
-          'data': m['data'],
-          'timestamp': m['timestamp'],
-        }).toList();
-
-        final response = await _dio.post(
-          '$url/sync/push',
-          data: {'mutations': payload},
-          options: Options(headers: {
-            if (token.isNotEmpty) 'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          }),
-        );
-
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          _log('✅ PUSH thành công! Server đã nhận ${mutations.length} thay đổi.');
-          for (var mutation in mutations) {
-            await _outbox.markAsSynced(mutation['id']);
-          }
-          await _outbox.clearSynced();
+        if (filteredMutations.isEmpty) {
+          _log('Không có thay đổi nào thuộc các module được bật cần đồng bộ.');
         } else {
-          _log('❌ Server phản hồi lỗi: HTTP ${response.statusCode}');
-          return false;
+          _log('Đang gửi ${filteredMutations.length} thay đổi lên server...');
+          for (var m in filteredMutations) {
+            _log('   📦 ${m['table']} → ${m['operation']}');
+          }
+
+          final payload = filteredMutations.map((m) => {
+            'id': m['id'],
+            'table': m['table'],
+            'operation': m['operation'],
+            'data': m['data'],
+            'timestamp': m['timestamp'],
+          }).toList();
+
+          final response = await _dio.post(
+            '$url/sync/push',
+            data: {'mutations': payload},
+            options: Options(headers: {
+              if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            }),
+          );
+
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            _log('✅ PUSH thành công! Server đã nhận ${filteredMutations.length} thay đổi.');
+            for (var mutation in filteredMutations) {
+              await _outbox.markAsSynced(mutation['id']);
+            }
+            await _outbox.clearSynced();
+          } else {
+            _log('❌ Server phản hồi lỗi: HTTP ${response.statusCode}');
+            return false;
+          }
         }
       }
 
       // ── PULL: kéo dữ liệu mới từ server về ──
-      await _pullServerChanges(url, token, lastSync);
+      await _pullServerChanges(url, token, lastSync, configMap, isManual);
 
       await _settingsService.saveLastSyncTimestamp(DateTime.now().toIso8601String());
       _log('🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!');
@@ -125,8 +174,6 @@ class SyncService {
       } else {
         _log('   → ${e.message}');
       }
-      _log('💡 Gợi ý: Nếu dùng USB, hãy đảm bảo đã chạy "adb reverse tcp:8080 tcp:8080"');
-      _log('   và Server URL đang là http://127.0.0.1:8080');
       return false;
     } catch (e) {
       _log('❌ Lỗi đồng bộ không xác định: $e');
@@ -136,7 +183,13 @@ class SyncService {
     }
   }
 
-  Future<void> _pullServerChanges(String url, String token, String? lastSync) async {
+  Future<void> _pullServerChanges(
+    String url,
+    String token,
+    String? lastSync,
+    Map<String, UserSyncConfig> configMap,
+    bool isManual,
+  ) async {
     _log('Đang kiểm tra cập nhật mới từ Server...');
     try {
       final response = await _dio.get(
@@ -155,7 +208,7 @@ class SyncService {
             _log('Không có cập nhật mới từ Server.');
             return;
           }
-          _log('📥 Nhận được ${updatesList.length} cập nhật từ Server. Đang ghi vào database...');
+          _log('📥 Nhận được ${updatesList.length} cập nhật từ Server. Đang lọc và áp dụng...');
 
           int applied = 0;
           int skipped = 0;
@@ -164,7 +217,7 @@ class SyncService {
               final updateMap = update is Map<String, dynamic>
                   ? update
                   : Map<String, dynamic>.from(update as Map);
-              final wasApplied = await _applyServerUpdate(updateMap);
+              final wasApplied = await _applyServerUpdate(updateMap, configMap, isManual);
               if (wasApplied) {
                 applied++;
               } else {
@@ -175,7 +228,7 @@ class SyncService {
               _log('   ⚠️ Lỗi áp dụng 1 cập nhật: $e');
             }
           }
-          _log('✅ Đã ghi $applied bản ghi vào database local (bỏ qua $skipped).');
+          _log('✅ Đã ghi $applied bản ghi vào database local (bỏ qua/lọc $skipped).');
         } else {
           _log('Không có cập nhật mới từ Server.');
         }
@@ -186,12 +239,36 @@ class SyncService {
   }
 
   /// Apply a single server update to the local database (upsert)
-  Future<bool> _applyServerUpdate(Map<String, dynamic> update) async {
+  Future<bool> _applyServerUpdate(
+    Map<String, dynamic> update,
+    Map<String, UserSyncConfig> configMap,
+    bool isManual,
+  ) async {
     final table = update['table'] as String?;
     final operation = update['operation'] as String?;
     final rawData = update['data'];
 
     if (table == null || rawData == null) return false;
+
+    // Filter incoming updates by module status
+    final moduleKey = SyncConfigRepository.tableToModuleMap[table];
+    if (moduleKey != null) {
+      final config = configMap[moduleKey];
+      if (config == null || !config.isEnabled) {
+        return false;
+      }
+      if (!isManual && config.syncGranularity == 'manual') {
+        return false;
+      }
+      if (config.syncGranularity == 'selective' && config.selectiveEntities != null) {
+        try {
+          final selective = List<String>.from(jsonDecode(config.selectiveEntities!));
+          if (!selective.contains(table)) {
+            return false;
+          }
+        } catch (_) {}
+      }
+    }
 
     final data = rawData is Map<String, dynamic>
         ? rawData
@@ -220,6 +297,12 @@ class SyncService {
         return _upsertPurchaseOrder(data);
       case 'purchase_order_lines':
         return _upsertPurchaseOrderLine(data);
+      case 'chat_conversations':
+        return _upsertChatConversation(data);
+      case 'chat_participants':
+        return _upsertChatParticipant(data);
+      case 'chat_messages':
+        return _upsertChatMessage(data);
       default:
         _log('   ⚠️ Bảng "$table" chưa được hỗ trợ đồng bộ PULL.');
         return false;
@@ -484,6 +567,70 @@ class SyncService {
             : Value(DateTime.now()),
       ),
     );
+    return true;
+  }
+
+  Future<bool> _upsertChatConversation(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.chatConversations).insertOnConflictUpdate(
+      ChatConversationsCompanion(
+        id: Value(id),
+        type: Value(data['type'] as String? ?? 'direct'),
+        recordType: Value(data['record_type'] as String?),
+        recordId: Value(data['record_id'] as String?),
+        createdBy: Value(data['created_by'] as String? ?? ''),
+        createdAt: data['created_at'] != null
+            ? Value(DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now())
+            : Value(DateTime.now()),
+        lastMessageAt: data['last_message_at'] != null
+            ? Value(DateTime.tryParse(data['last_message_at'].toString()) ?? DateTime.now())
+            : Value(DateTime.now()),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertChatParticipant(Map<String, dynamic> data) async {
+    final convoId = data['conversation_id'] as String?;
+    final userId = data['user_id'] as String?;
+    if (convoId == null || userId == null) return false;
+    await _db.into(_db.chatParticipants).insertOnConflictUpdate(
+      ChatParticipant(
+        conversationId: convoId,
+        userId: userId,
+        joinedAt: data['joined_at'] != null
+            ? DateTime.tryParse(data['joined_at'].toString()) ?? DateTime.now()
+            : DateTime.now(),
+        muted: data['muted'] as bool? ?? false,
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertChatMessage(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    
+    final chatMsg = ChatMessage(
+      id: id,
+      conversationId: data['conversation_id'] as String? ?? '',
+      senderId: data['sender_id'] as String? ?? '',
+      type: data['type'] as String? ?? 'text',
+      content: data['content'] is String ? data['content'] as String : jsonEncode(data['content'] ?? {}),
+      sentAt: data['sent_at'] != null
+          ? DateTime.tryParse(data['sent_at'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      deliveredAt: data['delivered_at'] != null
+          ? DateTime.tryParse(data['delivered_at'].toString())
+          : null,
+      readAt: data['read_at'] != null
+          ? DateTime.tryParse(data['read_at'].toString())
+          : null,
+      isDeleted: data['is_deleted'] as bool? ?? false,
+    );
+    
+    await _db.into(_db.chatMessages).insertOnConflictUpdate(chatMsg);
     return true;
   }
 

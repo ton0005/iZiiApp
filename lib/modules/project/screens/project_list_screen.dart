@@ -20,10 +20,12 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
       create: (context) => ProjectBloc()..add(LoadProjectsEvent()),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(context.tr('project_list_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(context.tr('project_list_title'),
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           flexibleSpace: Container(
             decoration: const BoxDecoration(
-              gradient: LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF06B6D4)]),
+              gradient: LinearGradient(
+                  colors: [Color(0xFF6366F1), Color(0xFF06B6D4)]),
             ),
           ),
         ),
@@ -34,7 +36,8 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
             }
 
             if (state.error != null) {
-              return Center(child: Text('${context.tr('error')}: ${state.error}'));
+              return Center(
+                  child: Text('${context.tr('error')}: ${state.error}'));
             }
 
             if (state.projects.isEmpty) {
@@ -42,15 +45,20 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.assignment_outlined, size: 80, color: Colors.grey[400]),
+                    Icon(Icons.assignment_outlined,
+                        size: 80, color: Colors.grey[400]),
                     const SizedBox(height: 16),
-                    Text(context.tr('project_no_projects'), style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+                    Text(context.tr('project_no_projects'),
+                        style:
+                            TextStyle(fontSize: 16, color: Colors.grey[600])),
                     const SizedBox(height: 8),
                     ElevatedButton.icon(
                       onPressed: () => _showAddProjectDialog(context),
                       icon: const Icon(Icons.add),
                       label: Text(context.tr('project_add_btn')),
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6366F1), foregroundColor: Colors.white),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6366F1),
+                          foregroundColor: Colors.white),
                     ),
                   ],
                 ),
@@ -64,12 +72,14 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                 final project = state.projects[index];
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                   elevation: 2,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () {
-                      context.push('/project/tasks?projectId=${project['id']}&projectName=${Uri.encodeComponent(project['name'])}');
+                      context.push(
+                          '/project/tasks?projectId=${project['id']}&projectName=${Uri.encodeComponent(project['name'])}');
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -78,10 +88,12 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6366F1).withOpacity(0.1),
+                              color: const Color(0xFF6366F1)
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.folder_open_rounded, color: Color(0xFF6366F1), size: 28),
+                            child: const Icon(Icons.folder_open_rounded,
+                                color: Color(0xFF6366F1), size: 28),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -90,13 +102,17 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                               children: [
                                 Text(
                                   project['name'] ?? '',
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                if (project['description'] != null && project['description'].isNotEmpty) ...[
+                                if (project['description'] != null &&
+                                    project['description'].isNotEmpty) ...[
                                   const SizedBox(height: 4),
                                   Text(
                                     project['description'],
-                                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey[600]),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -109,22 +125,23 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                       ),
                     ),
                   ),
-                ).animate().fadeIn(delay: (index * 50).ms).slideX(begin: 0.05, end: 0);
+                )
+                    .animate()
+                    .fadeIn(delay: (index * 50).ms)
+                    .slideX(begin: 0.05, end: 0);
               },
             );
           },
         ),
-        floatingActionButton: Builder(
-          builder: (context) {
-            return FloatingActionButton(
-              heroTag: 'add_project',
-              onPressed: () => _showAddProjectDialog(context),
-              backgroundColor: const Color(0xFF6366F1),
-              foregroundColor: Colors.white,
-              child: const Icon(Icons.add),
-            );
-          }
-        ),
+        floatingActionButton: Builder(builder: (context) {
+          return FloatingActionButton(
+            heroTag: 'add_project',
+            onPressed: () => _showAddProjectDialog(context),
+            backgroundColor: const Color(0xFF6366F1),
+            foregroundColor: Colors.white,
+            child: const Icon(Icons.add),
+          );
+        }),
       ),
     );
   }
@@ -160,12 +177,14 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogCtx), child: Text(context.tr('cancel'))),
+          TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(context.tr('cancel'))),
           ElevatedButton(
             onPressed: () {
               final name = nameController.text.trim();
               if (name.isEmpty) return;
-              
+
               bloc.add(AddProjectEvent({
                 'id': const Uuid().v4(),
                 'name': name,
@@ -174,7 +193,9 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
               }));
               Navigator.pop(dialogCtx);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6366F1), foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6366F1),
+                foregroundColor: Colors.white),
             child: Text(context.tr('save')),
           ),
         ],

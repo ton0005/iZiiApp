@@ -78,7 +78,9 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
       return;
     }
 
-    final rate = double.tryParse(_hourlyRateController.text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+    final rate = double.tryParse(
+            _hourlyRateController.text.replaceAll(RegExp(r'[^0-9.]'), '')) ??
+        0;
     final hours = double.tryParse(_estimatedHoursController.text) ?? 1.0;
 
     final customFields = <String, dynamic>{};
@@ -94,7 +96,9 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
       'category': _category,
       'hourly_rate': rate,
       'estimated_hours': hours,
-      'description': _descController.text.trim().isNotEmpty ? _descController.text.trim() : null,
+      'description': _descController.text.trim().isNotEmpty
+          ? _descController.text.trim()
+          : null,
       'custom_fields': customFields,
     };
 
@@ -103,7 +107,9 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr('ser_service_added').replaceAll('{name}', _nameController.text)),
+          content: Text(context
+              .tr('ser_service_added')
+              .replaceAll('{name}', _nameController.text)),
           backgroundColor: const Color(0xFF10B981),
         ),
       );
@@ -133,7 +139,8 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
         title: Text(context.tr('ser_add_service_title')),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
+            gradient:
+                LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
           ),
         ),
       ),
@@ -144,29 +151,39 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
           children: [
             _buildSectionHeader(context.tr('ser_service_info_section')),
             const SizedBox(height: 12),
-            _buildTextField(_nameController, context.tr('ser_service_name_label'), Icons.home_repair_service_rounded),
-            _buildTextField(_descController, context.tr('inv_description'), Icons.description_outlined, maxLines: 2),
+            _buildTextField(
+                _nameController,
+                context.tr('ser_service_name_label'),
+                Icons.home_repair_service_rounded),
+            _buildTextField(_descController, context.tr('inv_description'),
+                Icons.description_outlined,
+                maxLines: 2),
 
             // Category dropdown
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: DropdownButtonFormField<String>(
-                value: _category,
+                initialValue: _category,
                 items: _categories.entries
-                    .map((e) => DropdownMenuItem(value: e.key, child: Text(context.tr('ser_cat_${e.key}'))))
+                    .map((e) => DropdownMenuItem(
+                        value: e.key,
+                        child: Text(context.tr('ser_cat_${e.key}'))))
                     .toList(),
                 onChanged: (v) => setState(() => _category = v ?? 'other'),
                 decoration: InputDecoration(
                   labelText: context.tr('ser_service_category_label'),
                   prefixIcon: const Icon(Icons.category_outlined, size: 20),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
+                    borderSide:
+                        BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF8B5CF6), width: 2),
+                    borderSide:
+                        const BorderSide(color: Color(0xFF8B5CF6), width: 2),
                   ),
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surface,
@@ -175,10 +192,16 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
             ),
 
             const SizedBox(height: 8),
-            _buildSectionHeader(context.tr('ser_service_hourly_rate_label_edit').split(' (')[0]),
+            _buildSectionHeader(context
+                .tr('ser_service_hourly_rate_label_edit')
+                .split(' (')[0]),
             const SizedBox(height: 12),
-            _buildTextField(_hourlyRateController, context.tr('ser_service_hourly_rate_label'), Icons.attach_money, keyboardType: TextInputType.number),
-            _buildTextField(_estimatedHoursController, context.tr('ser_service_est_hours_label'), Icons.timer_outlined, keyboardType: TextInputType.number),
+            _buildTextField(_hourlyRateController,
+                context.tr('ser_service_hourly_rate_label'), Icons.attach_money,
+                keyboardType: TextInputType.number),
+            _buildTextField(_estimatedHoursController,
+                context.tr('ser_service_est_hours_label'), Icons.timer_outlined,
+                keyboardType: TextInputType.number),
 
             // Custom fields
             if (_customFieldControllers.isNotEmpty) ...[
@@ -190,9 +213,12 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     children: [
-                      Expanded(child: _buildTextField(entry.value, entry.key, Icons.tune_rounded)),
+                      Expanded(
+                          child: _buildTextField(
+                              entry.value, entry.key, Icons.tune_rounded)),
                       IconButton(
-                        icon: const Icon(Icons.remove_circle_outline, color: Color(0xFFF43F5E)),
+                        icon: const Icon(Icons.remove_circle_outline,
+                            color: Color(0xFFF43F5E)),
                         onPressed: () => _removeCustomField(entry.key),
                       ),
                     ],
@@ -206,13 +232,20 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(flex: 2, child: _buildTextField(_newFieldKeyController, context.tr('inv_field_name'), Icons.vpn_key_outlined)),
+                Expanded(
+                    flex: 2,
+                    child: _buildTextField(_newFieldKeyController,
+                        context.tr('inv_field_name'), Icons.vpn_key_outlined)),
                 const SizedBox(width: 8),
-                Expanded(flex: 3, child: _buildTextField(_newFieldValueController, context.tr('inv_field_value'), Icons.text_fields)),
+                Expanded(
+                    flex: 3,
+                    child: _buildTextField(_newFieldValueController,
+                        context.tr('inv_field_value'), Icons.text_fields)),
                 const SizedBox(width: 4),
                 Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
+                    gradient: const LinearGradient(
+                        colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: IconButton(
@@ -235,19 +268,24 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
     return Row(
       children: [
         Container(
-          width: 4, height: 20,
+          width: 4,
+          height: 20,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
+            gradient: const LinearGradient(
+                colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
             borderRadius: BorderRadius.circular(2),
           ),
         ),
         const SizedBox(width: 8),
-        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ],
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {TextInputType keyboardType = TextInputType.text, int maxLines = 1}) {
+  Widget _buildTextField(
+      TextEditingController controller, String label, IconData icon,
+      {TextInputType keyboardType = TextInputType.text, int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
@@ -268,7 +306,8 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
           ),
           filled: true,
           fillColor: Theme.of(context).colorScheme.surface,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );
@@ -277,22 +316,28 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
   Widget _buildSaveButton() {
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
+        gradient: const LinearGradient(
+            colors: [Color(0xFF8B5CF6), Color(0xFF06B6D4)]),
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: const Color(0xFF8B5CF6).withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4)),
+          BoxShadow(
+              color: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4)),
         ],
       ),
       child: ElevatedButton.icon(
         onPressed: _save,
         icon: const Icon(Icons.save_alt_rounded, size: 22),
-        label: Text(context.tr('ser_service_save_btn'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        label: Text(context.tr('ser_service_save_btn'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
     );

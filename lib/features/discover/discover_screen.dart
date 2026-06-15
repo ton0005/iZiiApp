@@ -274,7 +274,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Khám phá',
                             style: TextStyle(
                               fontSize: 30,
@@ -296,7 +296,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             'Tìm dịch vụ phù hợp nhất cho bạn',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white.withValues(alpha: 0.5),
                               fontWeight: FontWeight.w400,
                             ),
                           ).animate().fadeIn(
@@ -335,7 +335,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withValues(alpha: 0.85),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -343,12 +343,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: IZiiColors.primary.withOpacity(0.15),
+                        color: IZiiColors.primary.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         '${_filteredProviders.length}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: IZiiColors.primary,
@@ -413,10 +413,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: IZiiColors.darkSurface.withOpacity(0.7),
+              color: IZiiColors.darkSurface.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: IZiiColors.darkSurfaceHighlight.withOpacity(0.5),
+                color: IZiiColors.darkSurfaceHighlight.withValues(alpha: 0.5),
                 width: 1,
               ),
             ),
@@ -427,13 +427,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               decoration: InputDecoration(
                 hintText: 'Tìm kiếm dịch vụ, thợ...',
                 hintStyle: TextStyle(
-                    color: Colors.white.withOpacity(0.35), fontSize: 14),
+                    color: Colors.white.withValues(alpha: 0.35), fontSize: 14),
                 prefixIcon: Icon(Icons.search_rounded,
-                    color: IZiiColors.primary.withOpacity(0.7), size: 22),
+                    color: IZiiColors.primary.withValues(alpha: 0.7), size: 22),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
                         icon: Icon(Icons.close_rounded,
-                            color: Colors.white.withOpacity(0.4), size: 20),
+                            color: Colors.white.withValues(alpha: 0.4), size: 20),
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _searchQuery = '');
@@ -703,8 +703,8 @@ class _EmptyState extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: [
-                    IZiiColors.primary.withOpacity(0.15),
-                    IZiiColors.secondary.withOpacity(0.08),
+                    IZiiColors.primary.withValues(alpha: 0.15),
+                    IZiiColors.secondary.withValues(alpha: 0.08),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -713,7 +713,7 @@ class _EmptyState extends StatelessWidget {
               child: Icon(
                 Icons.search_off_rounded,
                 size: 44,
-                color: IZiiColors.primary.withOpacity(0.5),
+                color: IZiiColors.primary.withValues(alpha: 0.5),
               ),
             ).animate(onPlay: (c) => c.repeat(reverse: true)).scaleXY(
                 begin: 1.0,
@@ -743,7 +743,7 @@ class _EmptyState extends StatelessWidget {
                   : 'Hãy chọn một danh mục để bắt đầu tìm kiếm dịch vụ.',
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.white.withOpacity(0.45),
+                color: Colors.white.withValues(alpha: 0.45),
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -770,7 +770,7 @@ class _LoadingIndicator extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
+        const SizedBox(
           width: 40,
           height: 40,
           child: CircularProgressIndicator(
@@ -783,7 +783,7 @@ class _LoadingIndicator extends StatelessWidget {
           'Đang tìm kiếm...',
           style: TextStyle(
             fontSize: 13,
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
             fontWeight: FontWeight.w500,
           ),
         ),

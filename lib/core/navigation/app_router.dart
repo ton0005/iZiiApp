@@ -24,6 +24,7 @@ import '../../modules/accountant/screens/chart_of_accounts_screen.dart';
 import '../../modules/accountant/screens/add_journal_entry_screen.dart';
 import '../../modules/accountant/screens/financial_reports_screen.dart';
 import '../../modules/accountant/screens/payroll_payrun_screen.dart';
+import '../../modules/mushrooms/mushrooms_module.dart';
 import '../modules/module_dashboard_screen.dart';
 import '../modules/module_directory_screen.dart';
 import '../modules/module_registry.dart';
@@ -35,6 +36,11 @@ import '../../features/profile/profile_screen.dart';
 import '../../features/discover/discover_screen.dart';
 import 'scaffold_with_nav.dart';
 import '../sync/screens/sync_screen.dart';
+import '../../features/sharing/shared_with_me_screen.dart';
+import '../../features/sharing/community_feed_screen.dart';
+import '../../modules/communication/bloc/chat_bloc.dart' as comm;
+import '../../modules/communication/screens/chat_inbox_screen.dart';
+import '../../modules/communication/screens/conversation_screen.dart';
 
 AgentToolRegistry _buildToolRegistry() {
   final registry = AgentToolRegistry();
@@ -51,6 +57,9 @@ AgentToolRegistry _buildToolRegistry() {
     registry.registerTool(t);
   }
   for (final t in PurchaseModule().agentTools) {
+    registry.registerTool(t);
+  }
+  for (final t in MushroomsModule().agentTools) {
     registry.registerTool(t);
   }
   return registry;
@@ -216,6 +225,14 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/settings/sync',
       builder: (context, state) => const SyncScreen(),
+    ),
+    GoRoute(
+      path: '/sharing/shared-with-me',
+      builder: (context, state) => const SharedWithMeScreen(),
+    ),
+    GoRoute(
+      path: '/sharing/community-feed',
+      builder: (context, state) => const CommunityFeedScreen(),
     ),
     // Services module routes
     GoRoute(
@@ -416,6 +433,31 @@ final appRouter = GoRouter(
           );
         },
       ),
+    ),
+    GoRoute(
+      path: '/mushrooms',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.mushrooms'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          final module = _moduleRegistry.getModule('izii.mushrooms') as MushroomsModule;
+          return module.routes['/mushrooms']!(context);
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/chat/inbox',
+      builder: (context, state) => const ChatInboxScreen(),
+    ),
+    GoRoute(
+      path: '/chat/conversation/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return ConversationScreen(conversationId: id);
+      },
     ),
   ],
 );

@@ -66,7 +66,8 @@ class TrustScoreWidget extends StatelessWidget {
                 painter: _TrustRingPainter(
                   progress: value,
                   ringColor: levelColor,
-                  trackColor: IZiiColors.darkSurfaceHighlight.withOpacity(0.4),
+                  trackColor:
+                      IZiiColors.darkSurfaceHighlight.withValues(alpha: 0.4),
                   strokeWidth: 10,
                 ),
                 child: Center(
@@ -101,9 +102,10 @@ class TrustScoreWidget extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
-            color: levelColor.withOpacity(0.15),
+            color: levelColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: levelColor.withOpacity(0.4), width: 1),
+            border:
+                Border.all(color: levelColor.withValues(alpha: 0.4), width: 1),
           ),
           child: Text(
             levelLabel,
@@ -153,7 +155,7 @@ class _TrustRingPainter extends CustomPainter {
         startAngle: -pi / 2,
         endAngle: 3 * pi / 2,
         colors: [
-          ringColor.withOpacity(0.6),
+          ringColor.withValues(alpha: 0.6),
           ringColor,
         ],
       ).createShader(Rect.fromCircle(center: center, radius: radius))
@@ -180,7 +182,7 @@ class _TrustRingPainter extends CustomPainter {
         dotCenter,
         strokeWidth * 0.65,
         Paint()
-          ..color = ringColor.withOpacity(0.35)
+          ..color = ringColor.withValues(alpha: 0.35)
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
       );
       canvas.drawCircle(

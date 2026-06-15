@@ -143,7 +143,7 @@ class AiAgentService {
     }
 
     try {
-      List<ToolCall> toolCalls = [];
+      final List<ToolCall> toolCalls = [];
 
       final responseText =
           await _geminiProvider!.sendMessage(text, (toolName, args) async {

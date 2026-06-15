@@ -24,8 +24,8 @@ class ProfileMenuItem extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black87;
     final dividerColor = isDark
-        ? Colors.white.withOpacity(0.06)
-        : Colors.black.withOpacity(0.06);
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.black.withValues(alpha: 0.06);
     final effectiveIconColor = iconColor ?? IZiiColors.primary;
 
     return Column(
@@ -36,8 +36,8 @@ class ProfileMenuItem extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(12),
-            splashColor: IZiiColors.primary.withOpacity(0.08),
-            highlightColor: IZiiColors.primary.withOpacity(0.04),
+            splashColor: IZiiColors.primary.withValues(alpha: 0.08),
+            highlightColor: IZiiColors.primary.withValues(alpha: 0.04),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               child: Row(
@@ -46,7 +46,7 @@ class ProfileMenuItem extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: effectiveIconColor.withOpacity(0.1),
+                      color: effectiveIconColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(

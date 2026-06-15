@@ -6,7 +6,7 @@ part 'leads_dao.g.dart';
 
 @DriftAccessor(tables: [Leads, Contacts])
 class LeadsDao extends DatabaseAccessor<AppDatabase> with _$LeadsDaoMixin {
-  LeadsDao(AppDatabase db) : super(db);
+  LeadsDao(super.db);
 
   Future<List<Lead>> getAllLeads() => select(leads).get();
   Stream<List<Lead>> watchAllLeads() => select(leads).watch();

@@ -9,7 +9,7 @@ import 'screens/task_board_screen.dart';
 
 class ProjectModule implements IZiiModule {
   @override
-  ModuleManifest get manifest => ModuleManifest(
+  ModuleManifest get manifest => const ModuleManifest(
         id: 'izii.project_management',
         name: 'Project & Tasks',
         description: 'Quản lý dự án, Kanban board và công việc hiệu quả.',
@@ -238,7 +238,7 @@ class _ProjectDashboardWidgetState extends State<_ProjectDashboardWidget> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                    color: const Color(0xFF6366F1).withOpacity(0.12),
+                    color: const Color(0xFF6366F1).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8)),
                 child: Text('$percent% Done',
                     style: const TextStyle(

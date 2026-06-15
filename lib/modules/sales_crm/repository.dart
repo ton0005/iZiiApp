@@ -4,7 +4,6 @@ import 'package:izii_app/core/database/app_database.dart';
 import 'daos/contacts_dao.dart';
 import 'daos/leads_dao.dart';
 import 'daos/deals_dao.dart';
-import 'package:izii_app/modules/sales_crm/database/tables.dart';
 
 class SalesCrmRepository {
   final AppDatabase db;

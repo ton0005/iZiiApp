@@ -81,7 +81,7 @@ class ProviderCard extends StatelessWidget {
           return const Icon(Icons.star_half_rounded, size: 14, color: Color(0xFFF59E0B));
         }
         return Icon(Icons.star_outline_rounded,
-            size: 14, color: Colors.white.withOpacity(0.2));
+            size: 14, color: Colors.white.withValues(alpha: 0.2));
       }),
     );
   }
@@ -93,15 +93,15 @@ class ProviderCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: IZiiColors.darkSurface.withOpacity(0.85),
+        color: IZiiColors.darkSurface.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: IZiiColors.darkSurfaceHighlight.withOpacity(0.6),
+          color: IZiiColors.darkSurfaceHighlight.withValues(alpha: 0.6),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withValues(alpha: 0.25),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -112,8 +112,8 @@ class ProviderCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          splashColor: IZiiColors.primary.withOpacity(0.08),
-          highlightColor: IZiiColors.primary.withOpacity(0.04),
+          splashColor: IZiiColors.primary.withValues(alpha: 0.08),
+          highlightColor: IZiiColors.primary.withValues(alpha: 0.04),
           onTap: () {}, // placeholder
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -165,7 +165,7 @@ class ProviderCard extends StatelessWidget {
                         service,
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                           height: 1.3,
                         ),
                         maxLines: 1,
@@ -190,14 +190,14 @@ class ProviderCard extends StatelessWidget {
                           const SizedBox(width: 14),
                           Icon(Icons.location_on_outlined,
                               size: 14,
-                              color: IZiiColors.secondary.withOpacity(0.8)),
+                              color: IZiiColors.secondary.withValues(alpha: 0.8)),
                           const SizedBox(width: 3),
                           Text(
                             '${distance.toStringAsFixed(1)} km',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: Colors.white.withOpacity(0.55),
+                              color: Colors.white.withValues(alpha: 0.55),
                             ),
                           ),
                         ],
@@ -269,13 +269,13 @@ class _Avatar extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
-          colors: [color, color.withOpacity(0.6)],
+          colors: [color, color.withValues(alpha: 0.6)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -312,9 +312,9 @@ class _TrustBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.35), width: 0.8),
+        border: Border.all(color: color.withValues(alpha: 0.35), width: 0.8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -352,13 +352,13 @@ class _InfoPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: color.withOpacity(0.8)),
+          Icon(icon, size: 12, color: color.withValues(alpha: 0.8)),
           const SizedBox(width: 4),
           Text(
             text,
@@ -393,7 +393,7 @@ class _ContactButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
-                color: IZiiColors.primary.withOpacity(0.3),
+                color: IZiiColors.primary.withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               ),

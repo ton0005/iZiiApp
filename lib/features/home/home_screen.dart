@@ -7,6 +7,7 @@ import '../../core/theme/izii_colors.dart';
 import '../../modules/sales_crm/bloc/crm_bloc.dart';
 import '../../modules/services/repository.dart';
 import '../../modules/supply_chain/repository.dart';
+import '../../core/localization/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -50,7 +51,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'iZiiApp',
+                    context.tr('home_app_name'),
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 20,
@@ -115,7 +116,7 @@ class HomeScreen extends StatelessWidget {
                           size: 22),
                       const SizedBox(width: 12),
                       Text(
-                        'What services you need?',
+                        context.tr('home_search_hint'),
                         style: TextStyle(
                           color: isDark
                               ? Colors.white.withValues(alpha: 0.4)
@@ -135,7 +136,7 @@ class HomeScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
               child: Text(
-                'Make it iZii',
+                context.tr('home_quick_actions_title'),
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
@@ -151,15 +152,23 @@ class HomeScreen extends StatelessWidget {
               children: [
                 _QuickAction(
                   icon: Icons.smart_toy_rounded,
-                  label: 'Chat AI',
+                  label: context.tr('home_action_chat_ai'),
                   gradient: const LinearGradient(
                     colors: [IZiiColors.primary, Color(0xFF818CF8)],
                   ),
                   onTap: () => context.go('/chat'),
                 ),
                 _QuickAction(
+                  icon: Icons.chat_bubble_outline_rounded,
+                  label: context.tr('home_action_direct_chat'),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF8B5CF6), Color(0xFFC084FC)],
+                  ),
+                  onTap: () => context.push('/chat/inbox'),
+                ),
+                _QuickAction(
                   icon: Icons.handyman_rounded,
-                  label: 'Services',
+                  label: context.tr('home_action_services'),
                   gradient: const LinearGradient(
                     colors: [IZiiColors.secondary, Color(0xFF22D3EE)],
                   ),
@@ -167,7 +176,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 _QuickAction(
                   icon: Icons.people_rounded,
-                  label: 'Opportunities',
+                  label: context.tr('home_action_opportunities'),
                   gradient: const LinearGradient(
                     colors: [IZiiColors.success, Color(0xFF34D399)],
                   ),
@@ -175,7 +184,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 _QuickAction(
                   icon: Icons.inventory_2_rounded,
-                  label: 'Inventory',
+                  label: context.tr('home_action_inventory'),
                   gradient: const LinearGradient(
                     colors: [IZiiColors.accent, Color(0xFFFBBF24)],
                   ),
@@ -183,7 +192,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 _QuickAction(
                   icon: Icons.apps_rounded,
-                  label: 'iZii Store',
+                  label: context.tr('home_action_izii_store'),
                   gradient: const LinearGradient(
                     colors: [Color(0xFF4F46E5), Color(0xFF8B5CF6)],
                   ),
@@ -191,39 +200,39 @@ class HomeScreen extends StatelessWidget {
                 ),
                 _QuickAction(
                   icon: Icons.person_add_rounded,
-                  label: 'Invite Friends',
+                  label: context.tr('home_action_invite_friends'),
                   gradient: const LinearGradient(
                     colors: [IZiiColors.error, Color(0xFFFB7185)],
                   ),
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                           content: Text(
-                              'Invite Friends feature will be available soon!')),
+                              context.tr('home_action_invite_coming_soon'))),
                     );
                   },
                 ),
                 _QuickAction(
                   icon: Icons.receipt_long_rounded,
-                  label: 'Orders',
+                  label: context.tr('home_action_orders'),
                   gradient: const LinearGradient(
                     colors: [Color(0xFF8B5CF6), Color(0xFFA78BFA)],
                   ),
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Orders!')),
+                      SnackBar(content: Text(context.tr('home_action_orders'))),
                     );
                   },
                 ),
                 _QuickAction(
                   icon: Icons.bar_chart_rounded,
-                  label: 'Reports',
+                  label: context.tr('home_action_reports'),
                   gradient: const LinearGradient(
                     colors: [Color(0xFFEC4899), Color(0xFFF472B6)],
                   ),
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Reports!')),
+                      SnackBar(content: Text(context.tr('home_action_reports'))),
                     );
                   },
                 ),
@@ -238,7 +247,7 @@ class HomeScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    'Module Business',
+                    context.tr('home_module_business_title'),
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
@@ -254,7 +263,7 @@ class HomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '$moduleCount already installed',
+                      context.tr('home_module_installed_count').replaceAll('{count}', '$moduleCount'),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -292,7 +301,7 @@ class HomeScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
               child: Text(
-                'Action feed',
+                context.tr('home_action_feed_title'),
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
@@ -305,7 +314,7 @@ class HomeScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: FutureBuilder<List<_HomeActionFeedEntry>>(
-                future: _loadRecentActions(),
+                future: _loadRecentActions(context.tr),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
                     return Padding(
@@ -313,15 +322,15 @@ class HomeScreen extends StatelessWidget {
                       child: Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            SizedBox(
+                          children: [
+                            const SizedBox(
                               width: 18,
                               height: 18,
                               child:
                                   CircularProgressIndicator(strokeWidth: 2.5),
                             ),
-                            SizedBox(width: 12),
-                            Text('Đang tải hoạt động...'),
+                            const SizedBox(width: 12),
+                            Text(context.tr('home_feed_loading')),
                           ],
                         ),
                       ),
@@ -334,7 +343,7 @@ class HomeScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 24),
                       child: Center(
                         child: Text(
-                          'Chưa có hành động mới.',
+                          context.tr('home_feed_empty'),
                           style: TextStyle(
                             color: isDark ? Colors.white54 : Colors.black54,
                           ),
@@ -365,7 +374,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-Future<List<_HomeActionFeedEntry>> _loadRecentActions() async {
+Future<List<_HomeActionFeedEntry>> _loadRecentActions(String Function(String) tr) async {
   final leads = await CrmRepository().getLeads();
   final products = await SupplyChainRepository().getProductsWithStock();
   final serviceItems = await ServicesRepository().getServiceItems();
@@ -378,8 +387,8 @@ Future<List<_HomeActionFeedEntry>> _loadRecentActions() async {
     entries.add(_HomeActionFeedEntry(
       icon: Icons.person_add_rounded,
       iconColor: IZiiColors.success,
-      title: 'Lead mới: ${lead['title']}',
-      subtitle: '${lead['name']} • ${_formatRelativeTime(createdAt)}',
+      title: tr('home_feed_new_lead').replaceAll('{name}', '${lead['title']}'),
+      subtitle: '${lead['name']} • ${_formatRelativeTime(createdAt, tr)}',
       createdAt: createdAt,
     ));
   }
@@ -389,8 +398,8 @@ Future<List<_HomeActionFeedEntry>> _loadRecentActions() async {
     entries.add(_HomeActionFeedEntry(
       icon: Icons.inventory_rounded,
       iconColor: IZiiColors.accent,
-      title: 'Thêm sản phẩm: ${product['name']}',
-      subtitle: 'Kho: ${product['stock']} • ${_formatRelativeTime(createdAt)}',
+      title: tr('home_feed_new_product').replaceAll('{name}', '${product['name']}'),
+      subtitle: '${tr('home_feed_stock_label').replaceAll('{count}', '${product['stock']}')} • ${_formatRelativeTime(createdAt, tr)}',
       createdAt: createdAt,
     ));
   }
@@ -400,8 +409,8 @@ Future<List<_HomeActionFeedEntry>> _loadRecentActions() async {
     entries.add(_HomeActionFeedEntry(
       icon: Icons.handyman_rounded,
       iconColor: const Color(0xFF22D3EE),
-      title: 'Dịch vụ mới: ${service['name']}',
-      subtitle: '${service['category']} • ${_formatRelativeTime(createdAt)}',
+      title: tr('home_feed_new_service').replaceAll('{name}', '${service['name']}'),
+      subtitle: '${service['category']} • ${_formatRelativeTime(createdAt, tr)}',
       createdAt: createdAt,
     ));
   }
@@ -411,9 +420,9 @@ Future<List<_HomeActionFeedEntry>> _loadRecentActions() async {
     entries.add(_HomeActionFeedEntry(
       icon: Icons.home_repair_service_rounded,
       iconColor: IZiiColors.primary,
-      title: 'Đặt lịch: ${booking['service_name']}',
+      title: tr('home_feed_new_booking').replaceAll('{name}', '${booking['service_name']}'),
       subtitle:
-          '${booking['customer_name']} • ${_formatRelativeTime(createdAt)}',
+          '${booking['customer_name']} • ${_formatRelativeTime(createdAt, tr)}',
       createdAt: createdAt,
     ));
   }
@@ -432,22 +441,22 @@ DateTime _parseCreatedAt(dynamic value) {
   return DateTime.now();
 }
 
-String _formatRelativeTime(DateTime dateTime) {
+String _formatRelativeTime(DateTime dateTime, String Function(String) tr) {
   final now = DateTime.now();
   final diff = now.difference(dateTime);
   final time = _formatTime(dateTime);
 
   if (diff.inMinutes < 60) {
-    return 'Hôm nay, $time';
+    return tr('home_time_today').replaceAll('{time}', time);
   }
   if (diff.inHours < 24) {
-    return 'Hôm nay, $time';
+    return tr('home_time_today').replaceAll('{time}', time);
   }
   if (diff.inHours < 48) {
-    return 'Hôm qua, $time';
+    return tr('home_time_yesterday').replaceAll('{time}', time);
   }
   if (diff.inDays < 7) {
-    return 'Cách ${diff.inDays} ngày, $time';
+    return tr('home_time_days_ago').replaceAll('{days}', '${diff.inDays}').replaceAll('{time}', time);
   }
   return '${dateTime.day}/${dateTime.month} $time';
 }
@@ -626,6 +635,8 @@ IconData _iconForModule(String moduleId) {
       return Icons.shopping_cart_rounded;
     case 'izii.accountant':
       return Icons.account_balance_rounded;
+    case 'izii.mushrooms':
+      return Icons.agriculture_rounded;
     default:
       return Icons.extension_rounded;
   }
@@ -645,6 +656,8 @@ Color _colorForModule(String moduleId) {
       return IZiiColors.success;
     case 'izii.accountant':
       return const Color(0xFF06B6D4);
+    case 'izii.mushrooms':
+      return const Color(0xFF10B981);
     default:
       return IZiiColors.primary;
   }
@@ -664,6 +677,8 @@ String _routeForModule(String moduleId) {
       return '/purchase';
     case 'izii.accountant':
       return '/accountant';
+    case 'izii.mushrooms':
+      return '/mushrooms';
     default:
       return '/';
   }

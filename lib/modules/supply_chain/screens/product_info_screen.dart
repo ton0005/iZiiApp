@@ -199,7 +199,8 @@ ${context.tr('inv_description')}: ${customFields['description'] ?? '-'}''';
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF22C55E).withOpacity(0.12),
+                          color:
+                              const Color(0xFF22C55E).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -222,7 +223,8 @@ ${context.tr('inv_description')}: ${customFields['description'] ?? '-'}''';
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0284C7).withOpacity(0.12),
+                          color:
+                              const Color(0xFF0284C7).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -265,7 +267,7 @@ ${context.tr('inv_description')}: ${customFields['description'] ?? '-'}''';
             const SizedBox(height: 24),
             Text(
               context.tr('inv_detailed_info'),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF0F172A),
@@ -280,7 +282,7 @@ ${context.tr('inv_description')}: ${customFields['description'] ?? '-'}''';
                 border: Border.all(color: const Color(0xFFE2E8F0)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 18,
                     offset: const Offset(0, 8),
                   ),
@@ -361,7 +363,7 @@ class _InfoBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -369,7 +371,7 @@ class _InfoBadge extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.18),
+              color: color.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 18),

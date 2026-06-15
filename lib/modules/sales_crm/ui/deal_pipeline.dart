@@ -9,7 +9,12 @@ import '../screens/edit_lead_screen.dart';
 class DealPipelineScreen extends StatelessWidget {
   const DealPipelineScreen({super.key});
 
-  static const _stages = ['proposal', 'negotiation', 'closed_won', 'closed_lost'];
+  static const _stages = [
+    'proposal',
+    'negotiation',
+    'closed_won',
+    'closed_lost'
+  ];
 
   static const _stageColors = {
     'proposal': Color(0xFF3B82F6), // Blue
@@ -26,7 +31,8 @@ class DealPipelineScreen extends StatelessWidget {
         builder: (context) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(context.tr('crm_deal_pipeline_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(context.tr('crm_deal_pipeline_title'),
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               flexibleSpace: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -79,18 +85,23 @@ class DealPipelineScreen extends StatelessWidget {
                   itemLane: (deal) => deal['stage']?.toString() ?? 'proposal',
                   emptyLaneHint: context.tr('crm_deal_pipeline_drag_hint'),
                   onItemMoved: (deal, newStage) {
-                    context.read<CrmBloc>().add(UpdateDealStageEvent(deal['id'], newStage));
+                    context
+                        .read<CrmBloc>()
+                        .add(UpdateDealStageEvent(deal['id'], newStage));
                     final stageTitle = _getStageLabel(newStage, context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(context.tr('crm_deal_pipeline_updated').replaceAll('{stage}', stageTitle)),
+                        content: Text(context
+                            .tr('crm_deal_pipeline_updated')
+                            .replaceAll('{stage}', stageTitle)),
                         backgroundColor: _stageColors[newStage] ?? Colors.grey,
                         duration: const Duration(seconds: 2),
                       ),
                     );
                   },
                   cardBuilder: (ctx, deal, laneColor, mode, dragHandle) {
-                    return _buildDealCard(ctx, deal, laneColor, mode, dragHandle);
+                    return _buildDealCard(
+                        ctx, deal, laneColor, mode, dragHandle);
                   },
                 );
               },
@@ -138,10 +149,10 @@ class DealPipelineScreen extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Colors.grey.withOpacity(0.08)),
+          side: BorderSide(color: Colors.grey.withValues(alpha: 0.08)),
         ),
         elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.1),
+        shadowColor: Colors.black.withValues(alpha: 0.1),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Column(
@@ -153,7 +164,8 @@ class DealPipelineScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       deal['title'] ?? '',
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -167,7 +179,8 @@ class DealPipelineScreen extends StatelessWidget {
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      deal['contact_name'] ?? context.tr('crm_deal_unknown_contact'),
+                      deal['contact_name'] ??
+                          context.tr('crm_deal_unknown_contact'),
                       style: TextStyle(color: Colors.grey[600], fontSize: 13),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -177,7 +190,8 @@ class DealPipelineScreen extends StatelessWidget {
               const SizedBox(height: 6),
               Row(
                 children: [
-                  Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey[500]),
+                  Icon(Icons.calendar_today_outlined,
+                      size: 14, color: Colors.grey[500]),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -209,7 +223,8 @@ class DealPipelineScreen extends StatelessWidget {
                   },
                   child: Row(
                     children: [
-                      const Icon(Icons.link_rounded, size: 14, color: Color(0xFF6366F1)),
+                      const Icon(Icons.link_rounded,
+                          size: 14, color: Color(0xFF6366F1)),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(

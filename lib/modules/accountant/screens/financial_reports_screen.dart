@@ -23,7 +23,7 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    
+
     // Set to current Australian Financial Year by default (if today is June 8, 2026, the current FY is July 1, 2025 - June 30, 2026)
     final now = DateTime.now();
     if (now.month >= 7) {
@@ -33,13 +33,17 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
       _startDate = DateTime(now.year - 1, 7, 1);
       _endDate = DateTime(now.year, 6, 30);
     }
-    
+
     _loadReports();
   }
 
   void _loadReports() {
-    context.read<AccountantBloc>().add(LoadFinancialReportsEvent(_startDate, _endDate));
-    context.read<AccountantBloc>().add(LoadBasReportEvent(_startDate, _endDate));
+    context
+        .read<AccountantBloc>()
+        .add(LoadFinancialReportsEvent(_startDate, _endDate));
+    context
+        .read<AccountantBloc>()
+        .add(LoadBasReportEvent(_startDate, _endDate));
   }
 
   @override
@@ -57,12 +61,13 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: ColorScheme.dark(
+            colorScheme: const ColorScheme.dark(
               primary: IZiiColors.primary,
               surface: IZiiColors.darkSurface,
               onSurface: Colors.white,
             ),
-            dialogBackgroundColor: IZiiColors.darkBackground,
+            dialogTheme:
+                DialogThemeData(backgroundColor: IZiiColors.darkBackground),
           ),
           child: child!,
         );
@@ -98,7 +103,8 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          icon:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -128,10 +134,12 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
           }
 
           final Map<String, dynamic> pAndL = state.financialReports != null
-              ? Map<String, dynamic>.from(state.financialReports!['profit_and_loss'] as Map)
+              ? Map<String, dynamic>.from(
+                  state.financialReports!['profit_and_loss'] as Map)
               : const {};
           final Map<String, dynamic> bs = state.financialReports != null
-              ? Map<String, dynamic>.from(state.financialReports!['balance_sheet'] as Map)
+              ? Map<String, dynamic>.from(
+                  state.financialReports!['balance_sheet'] as Map)
               : const {};
           final Map<String, dynamic> bas = state.basReport != null
               ? Map<String, dynamic>.from(state.basReport!)
@@ -142,14 +150,17 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
               // Date Range Indicator
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                color: Colors.white.withOpacity(0.02),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                color: Colors.white.withValues(alpha: 0.02),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Reporting Period',
-                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13),
+                      style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          fontSize: 13),
                     ),
                     Text(
                       '${_formatDate(_startDate)} - ${_formatDate(_endDate)}',
@@ -182,11 +193,13 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
     );
   }
 
-  Widget _buildRow(String name, double amount, {bool isHeader = false, bool isSubtotal = false}) {
+  Widget _buildRow(String name, double amount,
+      {bool isHeader = false, bool isSubtotal = false}) {
     final style = TextStyle(
       color: Colors.white,
       fontSize: isHeader ? 16 : 14,
-      fontWeight: (isHeader || isSubtotal) ? FontWeight.bold : FontWeight.normal,
+      fontWeight:
+          (isHeader || isSubtotal) ? FontWeight.bold : FontWeight.normal,
     );
 
     return Padding(
@@ -210,7 +223,9 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
 
   Widget _buildProfitAndLossTab(Map<String, dynamic> pAndL) {
     if (pAndL.isEmpty) {
-      return const Center(child: Text('No data for selected period', style: TextStyle(color: Colors.white38)));
+      return const Center(
+          child: Text('No data for selected period',
+              style: TextStyle(color: Colors.white38)));
     }
 
     final double netProfit = (pAndL['net_profit'] as num?)?.toDouble() ?? 0.0;
@@ -219,24 +234,48 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
       padding: const EdgeInsets.all(20),
       children: [
         // Total Revenue
-        Text('REVENUE', style: TextStyle(color: IZiiColors.primary, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+        const Text('REVENUE',
+            style: TextStyle(
+                color: IZiiColors.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1)),
         const Divider(color: Colors.white12),
-        ...((pAndL['revenue'] as List? ?? []).map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
-        _buildRow(context.tr('acc_total_revenue'), (pAndL['total_revenue'] as num?)?.toDouble() ?? 0.0, isSubtotal: true),
+        ...((pAndL['revenue'] as List? ?? [])
+            .map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
+        _buildRow(context.tr('acc_total_revenue'),
+            (pAndL['total_revenue'] as num?)?.toDouble() ?? 0.0,
+            isSubtotal: true),
         const SizedBox(height: 24),
 
         // Cost of Goods Sold
-        Text('COST OF GOODS SOLD', style: TextStyle(color: IZiiColors.accent, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+        const Text('COST OF GOODS SOLD',
+            style: TextStyle(
+                color: IZiiColors.accent,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1)),
         const Divider(color: Colors.white12),
-        ...((pAndL['cogs'] as List? ?? []).map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
-        _buildRow(context.tr('acc_total_cogs'), (pAndL['total_cogs'] as num?)?.toDouble() ?? 0.0, isSubtotal: true),
+        ...((pAndL['cogs'] as List? ?? [])
+            .map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
+        _buildRow(context.tr('acc_total_cogs'),
+            (pAndL['total_cogs'] as num?)?.toDouble() ?? 0.0,
+            isSubtotal: true),
         const SizedBox(height: 24),
 
         // Expenses
-        Text('EXPENSES', style: TextStyle(color: IZiiColors.error, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+        const Text('EXPENSES',
+            style: TextStyle(
+                color: IZiiColors.error,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1)),
         const Divider(color: Colors.white12),
-        ...((pAndL['expense'] as List? ?? []).map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
-        _buildRow(context.tr('acc_total_expense'), (pAndL['total_expense'] as num?)?.toDouble() ?? 0.0, isSubtotal: true),
+        ...((pAndL['expense'] as List? ?? [])
+            .map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
+        _buildRow(context.tr('acc_total_expense'),
+            (pAndL['total_expense'] as num?)?.toDouble() ?? 0.0,
+            isSubtotal: true),
         const SizedBox(height: 32),
 
         // Net Profit Header Card
@@ -244,11 +283,13 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: netProfit >= 0
-                ? IZiiColors.success.withOpacity(0.12)
-                : IZiiColors.error.withOpacity(0.12),
+                ? IZiiColors.success.withValues(alpha: 0.12)
+                : IZiiColors.error.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: netProfit >= 0 ? IZiiColors.success.withOpacity(0.3) : IZiiColors.error.withOpacity(0.3),
+              color: netProfit >= 0
+                  ? IZiiColors.success.withValues(alpha: 0.3)
+                  : IZiiColors.error.withValues(alpha: 0.3),
             ),
           ),
           child: Row(
@@ -256,7 +297,10 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
             children: [
               Text(
                 context.tr('acc_net_profit'),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
               ),
               Text(
                 '${netProfit < 0 ? '-' : ''}\$${netProfit.abs().toStringAsFixed(2)}',
@@ -276,31 +320,57 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
 
   Widget _buildBalanceSheetTab(Map<String, dynamic> bs) {
     if (bs.isEmpty) {
-      return const Center(child: Text('No data as of end date', style: TextStyle(color: Colors.white38)));
+      return const Center(
+          child: Text('No data as of end date',
+              style: TextStyle(color: Colors.white38)));
     }
 
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
         // Assets
-        Text('ASSETS', style: TextStyle(color: IZiiColors.secondary, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+        const Text('ASSETS',
+            style: TextStyle(
+                color: IZiiColors.secondary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1)),
         const Divider(color: Colors.white12),
-        ...((bs['assets'] as List? ?? []).map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
-        _buildRow(context.tr('acc_total_assets'), (bs['total_assets'] as num?)?.toDouble() ?? 0.0, isSubtotal: true),
+        ...((bs['assets'] as List? ?? [])
+            .map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
+        _buildRow(context.tr('acc_total_assets'),
+            (bs['total_assets'] as num?)?.toDouble() ?? 0.0,
+            isSubtotal: true),
         const SizedBox(height: 24),
 
         // Liabilities
-        Text('LIABILITIES', style: TextStyle(color: IZiiColors.accent, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+        const Text('LIABILITIES',
+            style: TextStyle(
+                color: IZiiColors.accent,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1)),
         const Divider(color: Colors.white12),
-        ...((bs['liabilities'] as List? ?? []).map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
-        _buildRow(context.tr('acc_total_liabilities'), (bs['total_liabilities'] as num?)?.toDouble() ?? 0.0, isSubtotal: true),
+        ...((bs['liabilities'] as List? ?? [])
+            .map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
+        _buildRow(context.tr('acc_total_liabilities'),
+            (bs['total_liabilities'] as num?)?.toDouble() ?? 0.0,
+            isSubtotal: true),
         const SizedBox(height: 24),
 
         // Equity
-        Text('EQUITY', style: TextStyle(color: IZiiColors.primary, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+        const Text('EQUITY',
+            style: TextStyle(
+                color: IZiiColors.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1)),
         const Divider(color: Colors.white12),
-        ...((bs['equity'] as List? ?? []).map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
-        _buildRow(context.tr('acc_total_equity'), (bs['total_equity'] as num?)?.toDouble() ?? 0.0, isSubtotal: true),
+        ...((bs['equity'] as List? ?? [])
+            .map((e) => _buildRow(e['name'], (e['amount'] as num).toDouble()))),
+        _buildRow(context.tr('acc_total_equity'),
+            (bs['total_equity'] as num?)?.toDouble() ?? 0.0,
+            isSubtotal: true),
         const SizedBox(height: 32),
 
         // Balance Verification Check
@@ -308,21 +378,29 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              (bs['total_assets'] as double) == (bs['total_liabilities'] as double) + (bs['total_equity'] as double)
+              (bs['total_assets'] as double) ==
+                      (bs['total_liabilities'] as double) +
+                          (bs['total_equity'] as double)
                   ? Icons.check_circle_outline_rounded
                   : Icons.warning_amber_rounded,
-              color: (bs['total_assets'] as double) == (bs['total_liabilities'] as double) + (bs['total_equity'] as double)
+              color: (bs['total_assets'] as double) ==
+                      (bs['total_liabilities'] as double) +
+                          (bs['total_equity'] as double)
                   ? IZiiColors.success
                   : IZiiColors.error,
               size: 20,
             ),
             const SizedBox(width: 8),
             Text(
-              (bs['total_assets'] as double) == (bs['total_liabilities'] as double) + (bs['total_equity'] as double)
+              (bs['total_assets'] as double) ==
+                      (bs['total_liabilities'] as double) +
+                          (bs['total_equity'] as double)
                   ? 'Ledger is in perfect balance'
                   : 'Out of balance warning',
               style: TextStyle(
-                color: (bs['total_assets'] as double) == (bs['total_liabilities'] as double) + (bs['total_equity'] as double)
+                color: (bs['total_assets'] as double) ==
+                        (bs['total_liabilities'] as double) +
+                            (bs['total_equity'] as double)
                     ? IZiiColors.success
                     : IZiiColors.error,
                 fontWeight: FontWeight.bold,
@@ -346,12 +424,15 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.06),
+                  color: Colors.white.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   code,
-                  style: const TextStyle(color: IZiiColors.accent, fontWeight: FontWeight.bold, fontSize: 11),
+                  style: const TextStyle(
+                      color: IZiiColors.accent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11),
                 ),
               ),
               const SizedBox(width: 10),
@@ -360,7 +441,8 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
           ),
           Text(
             '\$${value.toStringAsFixed(2)}',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -369,7 +451,9 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
 
   Widget _buildBasTab(Map<String, dynamic> bas) {
     if (bas.isEmpty) {
-      return const Center(child: Text('No data for selected period', style: TextStyle(color: Colors.white38)));
+      return const Center(
+          child: Text('No data for selected period',
+              style: TextStyle(color: Colors.white38)));
     }
 
     final double netDue = (bas['net_due'] as num?)?.toDouble() ?? 0.0;
@@ -378,36 +462,63 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
       padding: const EdgeInsets.all(20),
       children: [
         // GST Sales section
-        Text('GOODS & SERVICES TAX - SALES', style: TextStyle(color: IZiiColors.primary, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+        const Text('GOODS & SERVICES TAX - SALES',
+            style: TextStyle(
+                color: IZiiColors.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1)),
         const Divider(color: Colors.white12),
-        _buildBasLabelVal(context.tr('acc_bas_total_sales'), 'G1', (bas['G1'] as num).toDouble()),
-        _buildBasLabelVal(context.tr('acc_bas_gst_free_sales'), 'G3', (bas['G3'] as num).toDouble()),
+        _buildBasLabelVal(context.tr('acc_bas_total_sales'), 'G1',
+            (bas['G1'] as num).toDouble()),
+        _buildBasLabelVal(context.tr('acc_bas_gst_free_sales'), 'G3',
+            (bas['G3'] as num).toDouble()),
         const SizedBox(height: 16),
 
         // GST Purchases section
-        Text('GOODS & SERVICES TAX - PURCHASES', style: TextStyle(color: IZiiColors.secondary, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+        const Text('GOODS & SERVICES TAX - PURCHASES',
+            style: TextStyle(
+                color: IZiiColors.secondary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1)),
         const Divider(color: Colors.white12),
-        _buildBasLabelVal(context.tr('acc_bas_capital_purchases'), 'G10', (bas['G10'] as num).toDouble()),
-        _buildBasLabelVal(context.tr('acc_bas_non_capital_purchases'), 'G11', (bas['G11'] as num).toDouble()),
+        _buildBasLabelVal(context.tr('acc_bas_capital_purchases'), 'G10',
+            (bas['G10'] as num).toDouble()),
+        _buildBasLabelVal(context.tr('acc_bas_non_capital_purchases'), 'G11',
+            (bas['G11'] as num).toDouble()),
         const SizedBox(height: 16),
 
         // Net GST summary
-        Text('ATO SUMMARY LABELS', style: TextStyle(color: IZiiColors.accent, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+        const Text('ATO SUMMARY LABELS',
+            style: TextStyle(
+                color: IZiiColors.accent,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1)),
         const Divider(color: Colors.white12),
-        _buildBasLabelVal(context.tr('acc_bas_gst_collected'), '1A', (bas['1A'] as num).toDouble()),
-        _buildBasLabelVal(context.tr('acc_bas_gst_paid'), '1B', (bas['1B'] as num).toDouble()),
-        _buildBasLabelVal(context.tr('acc_bas_wages'), 'W1', (bas['W1'] as num).toDouble()),
-        _buildBasLabelVal(context.tr('acc_bas_payg_withheld'), 'W2', (bas['W2'] as num).toDouble()),
+        _buildBasLabelVal(context.tr('acc_bas_gst_collected'), '1A',
+            (bas['1A'] as num).toDouble()),
+        _buildBasLabelVal(context.tr('acc_bas_gst_paid'), '1B',
+            (bas['1B'] as num).toDouble()),
+        _buildBasLabelVal(
+            context.tr('acc_bas_wages'), 'W1', (bas['W1'] as num).toDouble()),
+        _buildBasLabelVal(context.tr('acc_bas_payg_withheld'), 'W2',
+            (bas['W2'] as num).toDouble()),
         const SizedBox(height: 24),
 
         // BAS Due / Refund Card
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: netDue >= 0 ? IZiiColors.error.withOpacity(0.12) : IZiiColors.success.withOpacity(0.12),
+            color: netDue >= 0
+                ? IZiiColors.error.withValues(alpha: 0.12)
+                : IZiiColors.success.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: netDue >= 0 ? IZiiColors.error.withOpacity(0.3) : IZiiColors.success.withOpacity(0.3),
+              color: netDue >= 0
+                  ? IZiiColors.error.withValues(alpha: 0.3)
+                  : IZiiColors.success.withValues(alpha: 0.3),
             ),
           ),
           child: Row(
@@ -415,7 +526,10 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
             children: [
               Text(
                 context.tr('acc_bas_net_due'),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
               ),
               Text(
                 '${netDue < 0 ? '-' : ''}\$${netDue.abs().toStringAsFixed(2)}',

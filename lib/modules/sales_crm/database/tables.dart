@@ -25,6 +25,7 @@ class Leads extends Table {
   TextColumn get source => text().withDefault(const Constant('direct'))(); // direct, website, referral, campaign
   TextColumn get ownerId => text().nullable()(); // assigned sales rep
   TextColumn get customFields => text().withDefault(const Constant('{}'))();
+  TextColumn get visibility => text().withDefault(const Constant('private'))(); // private, team, community
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -41,6 +42,7 @@ class Deals extends Table {
       'proposal'))(); // proposal, negotiation, closed_won, closed_lost
   TextColumn get source => text().withDefault(const Constant('direct'))(); // direct, website, referral, campaign
   TextColumn get ownerId => text().nullable()(); // assigned sales rep
+  TextColumn get visibility => text().withDefault(const Constant('private'))(); // private, team, community
   DateTimeColumn get expectedCloseDate => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
