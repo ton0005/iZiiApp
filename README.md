@@ -1,4 +1,4 @@
-# izii_app
+# iZiiApp
 
 A new Flutter project.
 
