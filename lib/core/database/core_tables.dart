@@ -126,3 +126,16 @@ class UserShareModuleDefaults extends Table {
   @override
   Set<Column> get primaryKey => {userId, moduleKey};
 }
+
+class LocalBlePeers extends Table {
+  TextColumn get deviceId => text()();
+  TextColumn get deviceName => text()();
+  TextColumn get publicKey => text()(); // Base64 X25519 public key
+  TextColumn get signingPublicKey => text()(); // Base64 ED25519 public key
+  DateTimeColumn get lastSeenAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get rssi => integer()();
+
+  @override
+  Set<Column> get primaryKey => {deviceId};
+}
+

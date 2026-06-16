@@ -67,4 +67,14 @@ class SettingsService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_activeUserId) ?? 'default_user';
   }
+
+  Future<void> saveBleP2PEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('ble_p2p_enabled', value);
+  }
+
+  Future<bool> getBleP2PEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('ble_p2p_enabled') ?? true;
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'settings_service.dart';
 import '../bloc/app_bloc.dart';
 import '../localization/app_localizations.dart';
+import '../device_identity/ble_device_discovery_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,11 +17,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _apiKeyController = TextEditingController();
   final _settingsService = SettingsService();
   bool _isSaved = false;
+  bool _isBleEnabled = true;
 
   @override
   void initState() {
     super.initState();
     _loadApiKey();
+    _loadBleSettings();
+  }
+
+  Future<void> _loadBleSettings() async {
+    final enabled = await _settingsService.getBleP2PEnabled();
+    setState(() => _isBleEnabled = enabled);
   }
 
   @override
@@ -259,6 +267,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         onPressed: () => context.push('/settings/sync'),
                       ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // --- Bluetooth P2P Settings ---
+            Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.bluetooth_rounded,
+                            color: Color(0xFF6366F1)),
+                        SizedBox(width: 8),
+                        Text(
+                          'Kết nối P2P Bluetooth',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Cho phép thiết bị khác phát hiện và gửi tin nhắn bảo mật ngang hàng (P2P) qua Bluetooth khi ngoại tuyến.',
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                    const SizedBox(height: 16),
+                    SwitchListTile(
+                      title: const Text(
+                        'Kích hoạt Bluetooth Chat P2P',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+                      value: _isBleEnabled,
+                      activeColor: const Color(0xFF6366F1),
+                      onChanged: (bool value) async {
+                        setState(() {
+                          _isBleEnabled = value;
+                        });
+                        await _settingsService.saveBleP2PEnabled(value);
+                        if (value) {
+                          await BleDeviceDiscoveryService().startAdvertising();
+                        } else {
+                          await BleDeviceDiscoveryService().stopAdvertising();
+                        }
+                      },
+                      contentPadding: EdgeInsets.zero,
                     ),
                   ],
                 ),

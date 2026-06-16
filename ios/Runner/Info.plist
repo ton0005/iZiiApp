@@ -68,5 +68,10 @@
 	</array>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Ứng dụng cần truy cập micro để sử dụng tính năng Chat bằng giọng nói.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Ứng dụng cần sử dụng Bluetooth để nhắn tin và đồng bộ dữ liệu P2P ngoại tuyến.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Ứng dụng cần sử dụng Bluetooth để quảng bá dịch vụ nhắn tin P2P ngoại tuyến.</string>
 </dict>
 </plist>
+

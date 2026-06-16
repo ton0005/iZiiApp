@@ -238,6 +238,20 @@ class SyncService {
     }
   }
 
+  /// Public wrapper to apply updates from offline sync channels (e.g. BLE P2P).
+  Future<bool> applySyncUpdate(Map<String, dynamic> update) async {
+    try {
+      final userId = await _getActiveUserId();
+      final syncConfigRepo = SyncConfigRepository();
+      final configs = await syncConfigRepo.getConfigsForUser(userId);
+      final configMap = {for (var c in configs) c.moduleKey: c};
+      return await _applyServerUpdate(update, configMap, true);
+    } catch (e) {
+      _log('⚠️ Lỗi áp dụng cập nhật P2P: $e');
+      return false;
+    }
+  }
+
   /// Apply a single server update to the local database (upsert)
   Future<bool> _applyServerUpdate(
     Map<String, dynamic> update,

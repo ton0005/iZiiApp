@@ -19177,6 +19177,363 @@ class DeviceTrustLedgerCompanion
   }
 }
 
+class $LocalBlePeersTable extends LocalBlePeers
+    with TableInfo<$LocalBlePeersTable, LocalBlePeer> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalBlePeersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _deviceIdMeta =
+      const VerificationMeta('deviceId');
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+      'device_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _deviceNameMeta =
+      const VerificationMeta('deviceName');
+  @override
+  late final GeneratedColumn<String> deviceName = GeneratedColumn<String>(
+      'device_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _publicKeyMeta =
+      const VerificationMeta('publicKey');
+  @override
+  late final GeneratedColumn<String> publicKey = GeneratedColumn<String>(
+      'public_key', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _signingPublicKeyMeta =
+      const VerificationMeta('signingPublicKey');
+  @override
+  late final GeneratedColumn<String> signingPublicKey = GeneratedColumn<String>(
+      'signing_public_key', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _lastSeenAtMeta =
+      const VerificationMeta('lastSeenAt');
+  @override
+  late final GeneratedColumn<DateTime> lastSeenAt = GeneratedColumn<DateTime>(
+      'last_seen_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _rssiMeta = const VerificationMeta('rssi');
+  @override
+  late final GeneratedColumn<int> rssi = GeneratedColumn<int>(
+      'rssi', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [deviceId, deviceName, publicKey, signingPublicKey, lastSeenAt, rssi];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_ble_peers';
+  @override
+  VerificationContext validateIntegrity(Insertable<LocalBlePeer> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('device_id')) {
+      context.handle(_deviceIdMeta,
+          deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta));
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('device_name')) {
+      context.handle(
+          _deviceNameMeta,
+          deviceName.isAcceptableOrUnknown(
+              data['device_name']!, _deviceNameMeta));
+    } else if (isInserting) {
+      context.missing(_deviceNameMeta);
+    }
+    if (data.containsKey('public_key')) {
+      context.handle(_publicKeyMeta,
+          publicKey.isAcceptableOrUnknown(data['public_key']!, _publicKeyMeta));
+    } else if (isInserting) {
+      context.missing(_publicKeyMeta);
+    }
+    if (data.containsKey('signing_public_key')) {
+      context.handle(
+          _signingPublicKeyMeta,
+          signingPublicKey.isAcceptableOrUnknown(
+              data['signing_public_key']!, _signingPublicKeyMeta));
+    } else if (isInserting) {
+      context.missing(_signingPublicKeyMeta);
+    }
+    if (data.containsKey('last_seen_at')) {
+      context.handle(
+          _lastSeenAtMeta,
+          lastSeenAt.isAcceptableOrUnknown(
+              data['last_seen_at']!, _lastSeenAtMeta));
+    }
+    if (data.containsKey('rssi')) {
+      context.handle(
+          _rssiMeta, rssi.isAcceptableOrUnknown(data['rssi']!, _rssiMeta));
+    } else if (isInserting) {
+      context.missing(_rssiMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {deviceId};
+  @override
+  LocalBlePeer map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalBlePeer(
+      deviceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}device_id'])!,
+      deviceName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}device_name'])!,
+      publicKey: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}public_key'])!,
+      signingPublicKey: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}signing_public_key'])!,
+      lastSeenAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_seen_at'])!,
+      rssi: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}rssi'])!,
+    );
+  }
+
+  @override
+  $LocalBlePeersTable createAlias(String alias) {
+    return $LocalBlePeersTable(attachedDatabase, alias);
+  }
+}
+
+class LocalBlePeer extends DataClass implements Insertable<LocalBlePeer> {
+  final String deviceId;
+  final String deviceName;
+  final String publicKey;
+  final String signingPublicKey;
+  final DateTime lastSeenAt;
+  final int rssi;
+  const LocalBlePeer(
+      {required this.deviceId,
+      required this.deviceName,
+      required this.publicKey,
+      required this.signingPublicKey,
+      required this.lastSeenAt,
+      required this.rssi});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['device_id'] = Variable<String>(deviceId);
+    map['device_name'] = Variable<String>(deviceName);
+    map['public_key'] = Variable<String>(publicKey);
+    map['signing_public_key'] = Variable<String>(signingPublicKey);
+    map['last_seen_at'] = Variable<DateTime>(lastSeenAt);
+    map['rssi'] = Variable<int>(rssi);
+    return map;
+  }
+
+  LocalBlePeersCompanion toCompanion(bool nullToAbsent) {
+    return LocalBlePeersCompanion(
+      deviceId: Value(deviceId),
+      deviceName: Value(deviceName),
+      publicKey: Value(publicKey),
+      signingPublicKey: Value(signingPublicKey),
+      lastSeenAt: Value(lastSeenAt),
+      rssi: Value(rssi),
+    );
+  }
+
+  factory LocalBlePeer.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalBlePeer(
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      deviceName: serializer.fromJson<String>(json['deviceName']),
+      publicKey: serializer.fromJson<String>(json['publicKey']),
+      signingPublicKey: serializer.fromJson<String>(json['signingPublicKey']),
+      lastSeenAt: serializer.fromJson<DateTime>(json['lastSeenAt']),
+      rssi: serializer.fromJson<int>(json['rssi']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'deviceId': serializer.toJson<String>(deviceId),
+      'deviceName': serializer.toJson<String>(deviceName),
+      'publicKey': serializer.toJson<String>(publicKey),
+      'signingPublicKey': serializer.toJson<String>(signingPublicKey),
+      'lastSeenAt': serializer.toJson<DateTime>(lastSeenAt),
+      'rssi': serializer.toJson<int>(rssi),
+    };
+  }
+
+  LocalBlePeer copyWith(
+          {String? deviceId,
+          String? deviceName,
+          String? publicKey,
+          String? signingPublicKey,
+          DateTime? lastSeenAt,
+          int? rssi}) =>
+      LocalBlePeer(
+        deviceId: deviceId ?? this.deviceId,
+        deviceName: deviceName ?? this.deviceName,
+        publicKey: publicKey ?? this.publicKey,
+        signingPublicKey: signingPublicKey ?? this.signingPublicKey,
+        lastSeenAt: lastSeenAt ?? this.lastSeenAt,
+        rssi: rssi ?? this.rssi,
+      );
+  LocalBlePeer copyWithCompanion(LocalBlePeersCompanion data) {
+    return LocalBlePeer(
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      deviceName:
+          data.deviceName.present ? data.deviceName.value : this.deviceName,
+      publicKey: data.publicKey.present ? data.publicKey.value : this.publicKey,
+      signingPublicKey: data.signingPublicKey.present
+          ? data.signingPublicKey.value
+          : this.signingPublicKey,
+      lastSeenAt:
+          data.lastSeenAt.present ? data.lastSeenAt.value : this.lastSeenAt,
+      rssi: data.rssi.present ? data.rssi.value : this.rssi,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalBlePeer(')
+          ..write('deviceId: $deviceId, ')
+          ..write('deviceName: $deviceName, ')
+          ..write('publicKey: $publicKey, ')
+          ..write('signingPublicKey: $signingPublicKey, ')
+          ..write('lastSeenAt: $lastSeenAt, ')
+          ..write('rssi: $rssi')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      deviceId, deviceName, publicKey, signingPublicKey, lastSeenAt, rssi);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalBlePeer &&
+          other.deviceId == this.deviceId &&
+          other.deviceName == this.deviceName &&
+          other.publicKey == this.publicKey &&
+          other.signingPublicKey == this.signingPublicKey &&
+          other.lastSeenAt == this.lastSeenAt &&
+          other.rssi == this.rssi);
+}
+
+class LocalBlePeersCompanion extends UpdateCompanion<LocalBlePeer> {
+  final Value<String> deviceId;
+  final Value<String> deviceName;
+  final Value<String> publicKey;
+  final Value<String> signingPublicKey;
+  final Value<DateTime> lastSeenAt;
+  final Value<int> rssi;
+  final Value<int> rowid;
+  const LocalBlePeersCompanion({
+    this.deviceId = const Value.absent(),
+    this.deviceName = const Value.absent(),
+    this.publicKey = const Value.absent(),
+    this.signingPublicKey = const Value.absent(),
+    this.lastSeenAt = const Value.absent(),
+    this.rssi = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalBlePeersCompanion.insert({
+    required String deviceId,
+    required String deviceName,
+    required String publicKey,
+    required String signingPublicKey,
+    this.lastSeenAt = const Value.absent(),
+    required int rssi,
+    this.rowid = const Value.absent(),
+  })  : deviceId = Value(deviceId),
+        deviceName = Value(deviceName),
+        publicKey = Value(publicKey),
+        signingPublicKey = Value(signingPublicKey),
+        rssi = Value(rssi);
+  static Insertable<LocalBlePeer> custom({
+    Expression<String>? deviceId,
+    Expression<String>? deviceName,
+    Expression<String>? publicKey,
+    Expression<String>? signingPublicKey,
+    Expression<DateTime>? lastSeenAt,
+    Expression<int>? rssi,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (deviceId != null) 'device_id': deviceId,
+      if (deviceName != null) 'device_name': deviceName,
+      if (publicKey != null) 'public_key': publicKey,
+      if (signingPublicKey != null) 'signing_public_key': signingPublicKey,
+      if (lastSeenAt != null) 'last_seen_at': lastSeenAt,
+      if (rssi != null) 'rssi': rssi,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalBlePeersCompanion copyWith(
+      {Value<String>? deviceId,
+      Value<String>? deviceName,
+      Value<String>? publicKey,
+      Value<String>? signingPublicKey,
+      Value<DateTime>? lastSeenAt,
+      Value<int>? rssi,
+      Value<int>? rowid}) {
+    return LocalBlePeersCompanion(
+      deviceId: deviceId ?? this.deviceId,
+      deviceName: deviceName ?? this.deviceName,
+      publicKey: publicKey ?? this.publicKey,
+      signingPublicKey: signingPublicKey ?? this.signingPublicKey,
+      lastSeenAt: lastSeenAt ?? this.lastSeenAt,
+      rssi: rssi ?? this.rssi,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (deviceName.present) {
+      map['device_name'] = Variable<String>(deviceName.value);
+    }
+    if (publicKey.present) {
+      map['public_key'] = Variable<String>(publicKey.value);
+    }
+    if (signingPublicKey.present) {
+      map['signing_public_key'] = Variable<String>(signingPublicKey.value);
+    }
+    if (lastSeenAt.present) {
+      map['last_seen_at'] = Variable<DateTime>(lastSeenAt.value);
+    }
+    if (rssi.present) {
+      map['rssi'] = Variable<int>(rssi.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalBlePeersCompanion(')
+          ..write('deviceId: $deviceId, ')
+          ..write('deviceName: $deviceName, ')
+          ..write('publicKey: $publicKey, ')
+          ..write('signingPublicKey: $signingPublicKey, ')
+          ..write('lastSeenAt: $lastSeenAt, ')
+          ..write('rssi: $rssi, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -19239,6 +19596,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $EncryptedMessageQueueTable(this);
   late final $DeviceTrustLedgerTable deviceTrustLedger =
       $DeviceTrustLedgerTable(this);
+  late final $LocalBlePeersTable localBlePeers = $LocalBlePeersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -19286,7 +19644,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         chatMessages,
         deviceRegistryEntries,
         encryptedMessageQueue,
-        deviceTrustLedger
+        deviceTrustLedger,
+        localBlePeers
       ];
 }
 
@@ -28840,6 +29199,196 @@ typedef $$DeviceTrustLedgerTableProcessedTableManager = ProcessedTableManager<
     ),
     DeviceTrustLedgerData,
     PrefetchHooks Function()>;
+typedef $$LocalBlePeersTableCreateCompanionBuilder = LocalBlePeersCompanion
+    Function({
+  required String deviceId,
+  required String deviceName,
+  required String publicKey,
+  required String signingPublicKey,
+  Value<DateTime> lastSeenAt,
+  required int rssi,
+  Value<int> rowid,
+});
+typedef $$LocalBlePeersTableUpdateCompanionBuilder = LocalBlePeersCompanion
+    Function({
+  Value<String> deviceId,
+  Value<String> deviceName,
+  Value<String> publicKey,
+  Value<String> signingPublicKey,
+  Value<DateTime> lastSeenAt,
+  Value<int> rssi,
+  Value<int> rowid,
+});
+
+class $$LocalBlePeersTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalBlePeersTable> {
+  $$LocalBlePeersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deviceName => $composableBuilder(
+      column: $table.deviceName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get publicKey => $composableBuilder(
+      column: $table.publicKey, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get signingPublicKey => $composableBuilder(
+      column: $table.signingPublicKey,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastSeenAt => $composableBuilder(
+      column: $table.lastSeenAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get rssi => $composableBuilder(
+      column: $table.rssi, builder: (column) => ColumnFilters(column));
+}
+
+class $$LocalBlePeersTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalBlePeersTable> {
+  $$LocalBlePeersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deviceName => $composableBuilder(
+      column: $table.deviceName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get publicKey => $composableBuilder(
+      column: $table.publicKey, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get signingPublicKey => $composableBuilder(
+      column: $table.signingPublicKey,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastSeenAt => $composableBuilder(
+      column: $table.lastSeenAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get rssi => $composableBuilder(
+      column: $table.rssi, builder: (column) => ColumnOrderings(column));
+}
+
+class $$LocalBlePeersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalBlePeersTable> {
+  $$LocalBlePeersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get deviceId =>
+      $composableBuilder(column: $table.deviceId, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceName => $composableBuilder(
+      column: $table.deviceName, builder: (column) => column);
+
+  GeneratedColumn<String> get publicKey =>
+      $composableBuilder(column: $table.publicKey, builder: (column) => column);
+
+  GeneratedColumn<String> get signingPublicKey => $composableBuilder(
+      column: $table.signingPublicKey, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSeenAt => $composableBuilder(
+      column: $table.lastSeenAt, builder: (column) => column);
+
+  GeneratedColumn<int> get rssi =>
+      $composableBuilder(column: $table.rssi, builder: (column) => column);
+}
+
+class $$LocalBlePeersTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $LocalBlePeersTable,
+    LocalBlePeer,
+    $$LocalBlePeersTableFilterComposer,
+    $$LocalBlePeersTableOrderingComposer,
+    $$LocalBlePeersTableAnnotationComposer,
+    $$LocalBlePeersTableCreateCompanionBuilder,
+    $$LocalBlePeersTableUpdateCompanionBuilder,
+    (
+      LocalBlePeer,
+      BaseReferences<_$AppDatabase, $LocalBlePeersTable, LocalBlePeer>
+    ),
+    LocalBlePeer,
+    PrefetchHooks Function()> {
+  $$LocalBlePeersTableTableManager(_$AppDatabase db, $LocalBlePeersTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalBlePeersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalBlePeersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalBlePeersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> deviceId = const Value.absent(),
+            Value<String> deviceName = const Value.absent(),
+            Value<String> publicKey = const Value.absent(),
+            Value<String> signingPublicKey = const Value.absent(),
+            Value<DateTime> lastSeenAt = const Value.absent(),
+            Value<int> rssi = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              LocalBlePeersCompanion(
+            deviceId: deviceId,
+            deviceName: deviceName,
+            publicKey: publicKey,
+            signingPublicKey: signingPublicKey,
+            lastSeenAt: lastSeenAt,
+            rssi: rssi,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String deviceId,
+            required String deviceName,
+            required String publicKey,
+            required String signingPublicKey,
+            Value<DateTime> lastSeenAt = const Value.absent(),
+            required int rssi,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              LocalBlePeersCompanion.insert(
+            deviceId: deviceId,
+            deviceName: deviceName,
+            publicKey: publicKey,
+            signingPublicKey: signingPublicKey,
+            lastSeenAt: lastSeenAt,
+            rssi: rssi,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$LocalBlePeersTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $LocalBlePeersTable,
+    LocalBlePeer,
+    $$LocalBlePeersTableFilterComposer,
+    $$LocalBlePeersTableOrderingComposer,
+    $$LocalBlePeersTableAnnotationComposer,
+    $$LocalBlePeersTableCreateCompanionBuilder,
+    $$LocalBlePeersTableUpdateCompanionBuilder,
+    (
+      LocalBlePeer,
+      BaseReferences<_$AppDatabase, $LocalBlePeersTable, LocalBlePeer>
+    ),
+    LocalBlePeer,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -28934,4 +29483,6 @@ class $AppDatabaseManager {
       $$EncryptedMessageQueueTableTableManager(_db, _db.encryptedMessageQueue);
   $$DeviceTrustLedgerTableTableManager get deviceTrustLedger =>
       $$DeviceTrustLedgerTableTableManager(_db, _db.deviceTrustLedger);
+  $$LocalBlePeersTableTableManager get localBlePeers =>
+      $$LocalBlePeersTableTableManager(_db, _db.localBlePeers);
 }

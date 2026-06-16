@@ -66,7 +66,8 @@ part 'app_database.g.dart';
   // Track 3: Device Identity & E2EE
   DeviceRegistryEntries,
   EncryptedMessageQueue,
-  DeviceTrustLedger
+  DeviceTrustLedger,
+  LocalBlePeers
 ])
 class AppDatabase extends _$AppDatabase {
   static final AppDatabase _instance = AppDatabase._internal();
@@ -75,7 +76,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 16;
+  int get schemaVersion => 17;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -267,6 +268,20 @@ class AppDatabase extends _$AppDatabase {
             } catch (_) {}
             try {
               await m.createTable(deviceTrustLedger);
+            } catch (_) {}
+          }
+          if (from < 17) {
+            try {
+              await customStatement('''
+                CREATE TABLE IF NOT EXISTS local_ble_peers (
+                  device_id TEXT NOT NULL PRIMARY KEY,
+                  device_name TEXT NOT NULL,
+                  public_key TEXT NOT NULL,
+                  signing_public_key TEXT NOT NULL,
+                  last_seen_at TEXT NOT NULL,
+                  rssi INTEGER NOT NULL
+                );
+              ''');
             } catch (_) {}
           }
         },

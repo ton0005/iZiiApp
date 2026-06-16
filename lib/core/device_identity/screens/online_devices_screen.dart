@@ -8,9 +8,17 @@ import '../device_identity_models.dart';
 
 /// Device discovery screen — shows all online devices grouped by user.
 /// Accessible from the Chat inbox via the "Online Devices" button.
-class OnlineDevicesScreen extends StatelessWidget {
+import '../ble_device_discovery_service.dart';
+import '../../database/app_database.dart';
+
+class OnlineDevicesScreen extends StatefulWidget {
   const OnlineDevicesScreen({super.key});
 
+  @override
+  State<OnlineDevicesScreen> createState() => _OnlineDevicesScreenState();
+}
+
+class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTickerProviderStateMixin {
   // ── Colors (matching project theme) ──
   static const _surfaceDark = Color(0xFF0F172A);
   static const _surfaceCard = Color(0xFF1E293B);
@@ -22,6 +30,27 @@ class OnlineDevicesScreen extends StatelessWidget {
   static const _textPrimary = Color(0xFFF8FAFC);
   static const _textSecondary = Color(0xFF94A3B8);
 
+  late TabController _tabController;
+  final BleDeviceDiscoveryService _bleDiscovery = BleDeviceDiscoveryService();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    
+    // Automatically start scanning and advertising when the screen opens
+    _bleDiscovery.startScanning();
+    _bleDiscovery.startAdvertising();
+  }
+
+  @override
+  void dispose() {
+    _bleDiscovery.stopScanning();
+    _bleDiscovery.stopAdvertising();
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -32,42 +61,236 @@ class OnlineDevicesScreen extends StatelessWidget {
           backgroundColor: _surfaceDark,
           elevation: 0,
           title: Text(
-            '📡 Thiết bị trực tuyến',
+            '📡 Thiết bị kết nối',
             style: GoogleFonts.outfit(
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: _textPrimary,
             ),
           ),
+          bottom: TabBar(
+            controller: _tabController,
+            indicatorColor: _secondary,
+            labelColor: _textPrimary,
+            unselectedLabelColor: _textSecondary,
+            tabs: const [
+              Tab(text: 'Trực tuyến (Server)'),
+              Tab(text: 'Ngoại tuyến (Bluetooth)'),
+            ],
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh_rounded, color: _secondary),
               onPressed: () {
-                // Reload online devices
-                context.read<DeviceDiscoveryBloc>().add(DiscoverOnlineDevicesEvent());
+                if (_tabController.index == 0) {
+                  context.read<DeviceDiscoveryBloc>().add(DiscoverOnlineDevicesEvent());
+                } else {
+                  _bleDiscovery.stopScanning();
+                  _bleDiscovery.startScanning();
+                }
               },
               tooltip: 'Làm mới',
             ),
           ],
         ),
-        body: BlocBuilder<DeviceDiscoveryBloc, DeviceDiscoveryState>(
-          builder: (context, state) {
-            if (state.status == DeviceDiscoveryStatus.loading && state.onlineDevices.isEmpty) {
-              return const Center(
-                child: CircularProgressIndicator(color: _primary),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            // Tab 1: Server-based Online Devices
+            BlocBuilder<DeviceDiscoveryBloc, DeviceDiscoveryState>(
+              builder: (context, state) {
+                if (state.status == DeviceDiscoveryStatus.loading && state.onlineDevices.isEmpty) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: _primary),
+                  );
+                }
+
+                if (state.errorMessage != null && state.onlineDevices.isEmpty) {
+                  return _buildErrorState(context, state.errorMessage!);
+                }
+
+                if (state.onlineDevices.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                return _buildDeviceList(context, state);
+              },
+            ),
+
+            // Tab 2: BLE Nearby Devices
+            StreamBuilder<List<LocalBlePeer>>(
+              stream: _bleDiscovery.nearbyPeersStream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return _buildBleEmptyState();
+                }
+                return _buildBlePeersList(context, snapshot.data!);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBleEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: _surfaceCard,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: _surfaceLight, width: 1),
+            ),
+            child: const Icon(
+              Icons.bluetooth_searching_rounded,
+              size: 48,
+              color: _secondary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Đang quét Bluetooth...',
+            style: GoogleFonts.outfit(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: _textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Đảm bảo rằng Bluetooth đã bật\nvà thiết bị khác cũng đang chạy iZiiApp.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: _textSecondary,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 400.ms);
+  }
+
+  Widget _buildBlePeersList(BuildContext context, List<LocalBlePeer> peers) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: peers.length,
+      itemBuilder: (context, index) {
+        final peer = peers[index];
+        return _buildBlePeerCard(context, peer)
+            .animate()
+            .fadeIn(delay: (100 * index).ms, duration: 300.ms)
+            .slideY(begin: 0.1, end: 0);
+      },
+    );
+  }
+
+  Widget _buildBlePeerCard(BuildContext context, LocalBlePeer peer) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: _surfaceCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _secondary.withOpacity(0.3),
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () async {
+            // Trigger connection & Noise Handshake authentication
+            final success = await _bleDiscovery.connectAndAuthenticate(peer.deviceId);
+            if (success) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Xác thực bảo mật thành công với ${peer.deviceName}!'),
+                  backgroundColor: _success,
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Không thể kết nối bảo mật tới ${peer.deviceName}.'),
+                  backgroundColor: Colors.redAccent,
+                ),
               );
             }
-
-            if (state.errorMessage != null && state.onlineDevices.isEmpty) {
-              return _buildErrorState(context, state.errorMessage!);
-            }
-
-            if (state.onlineDevices.isEmpty) {
-              return _buildEmptyState();
-            }
-
-            return _buildDeviceList(context, state);
           },
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Platform icon placeholder
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: _secondary.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Text('📱', style: TextStyle(fontSize: 22)),
+                  ),
+                ),
+                const SizedBox(width: 14),
+
+                // Peer Device info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        peer.deviceName,
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: _textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'RSSI: ${peer.rssi} dBm',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: _textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Action button
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _secondary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Kết nối P2P',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -109,23 +332,6 @@ class OnlineDevicesScreen extends StatelessWidget {
               fontSize: 14,
               color: _textSecondary,
               height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 32),
-          OutlinedButton.icon(
-            onPressed: null, // Placeholder
-            icon: const Icon(Icons.qr_code_scanner_rounded, size: 18),
-            label: Text(
-              'Quét mã QR để thêm thiết bị',
-              style: GoogleFonts.inter(fontSize: 14),
-            ),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: _textSecondary,
-              side: const BorderSide(color: _surfaceLight),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
           ),
         ],
@@ -173,7 +379,6 @@ class OnlineDevicesScreen extends StatelessWidget {
   }
 
   Widget _buildDeviceList(BuildContext context, DeviceDiscoveryState state) {
-    // Group devices by userId
     final Map<String, List<RemoteDevice>> grouped = {};
     for (final device in state.onlineDevices) {
       grouped.putIfAbsent(device.userId, () => []).add(device);
@@ -198,7 +403,6 @@ class OnlineDevicesScreen extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // User section header
               Padding(
                 padding: EdgeInsets.only(left: 4, bottom: 8, top: index > 0 ? 16 : 0),
                 child: Row(
@@ -248,8 +452,6 @@ class OnlineDevicesScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Device cards
               ...devices.asMap().entries.map((entry) {
                 final i = entry.key;
                 final device = entry.value;
@@ -297,7 +499,6 @@ class OnlineDevicesScreen extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            // Navigate to conversation with this device's user
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -314,7 +515,6 @@ class OnlineDevicesScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Platform icon
                 Container(
                   width: 44,
                   height: 44,
@@ -327,8 +527,6 @@ class OnlineDevicesScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 14),
-
-                // Device info
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,8 +551,6 @@ class OnlineDevicesScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                // Status + Send button
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -418,11 +614,9 @@ class OnlineDevicesScreen extends StatelessWidget {
   String _getPlatformIcon(String platform) {
     switch (platform.toLowerCase()) {
       case 'ios':
-        return '📱';
       case 'android':
         return '📱';
       case 'windows':
-        return '💻';
       case 'macos':
         return '💻';
       case 'linux':
