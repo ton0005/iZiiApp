@@ -72,6 +72,11 @@
 	<string>Ứng dụng cần sử dụng Bluetooth để nhắn tin và đồng bộ dữ liệu P2P ngoại tuyến.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Ứng dụng cần sử dụng Bluetooth để quảng bá dịch vụ nhắn tin P2P ngoại tuyến.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+	</array>
 </dict>
 </plist>
 

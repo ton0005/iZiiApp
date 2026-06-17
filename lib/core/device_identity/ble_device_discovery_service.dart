@@ -83,13 +83,12 @@ class BleDeviceDiscoveryService {
 
     try {
       await FlutterBluePlus.startScan(
-        withServices: [Guid(serviceUuid)],
         timeout: const Duration(seconds: 15),
       );
 
       _scanSubscription = FlutterBluePlus.scanResults.listen((results) async {
         for (ScanResult r in results) {
-          if (r.advertisementData.serviceUuids.contains(Guid(serviceUuid))) {
+          if (r.advertisementData.serviceUuids.contains(Guid(serviceUuid)) || r.advertisementData.localName.startsWith('iZii')) {
             await _handleDiscoveredDevice(r);
           }
         }

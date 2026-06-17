@@ -24,6 +24,10 @@ class DeviceIdentity {
   /// Timestamp when this identity was first generated.
   final DateTime registeredAt;
 
+  /// Short human-readable fingerprint derived from the public key.
+  /// Format: first 8 hex chars of SHA-256(publicKey) in uppercase, e.g. "A3F2B91C".
+  final String fingerprint;
+
   const DeviceIdentity({
     required this.deviceId,
     required this.publicKeyBase64,
@@ -31,6 +35,7 @@ class DeviceIdentity {
     required this.deviceName,
     required this.platform,
     required this.registeredAt,
+    this.fingerprint = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -41,6 +46,7 @@ class DeviceIdentity {
       'device_name': deviceName,
       'platform': platform,
       'registered_at': registeredAt.toIso8601String(),
+      'fingerprint': fingerprint,
     };
   }
 
@@ -52,6 +58,7 @@ class DeviceIdentity {
       deviceName: map['device_name'] as String,
       platform: map['platform'] as String,
       registeredAt: DateTime.parse(map['registered_at'] as String),
+      fingerprint: map['fingerprint'] as String? ?? '',
     );
   }
 
@@ -62,7 +69,7 @@ class DeviceIdentity {
 
   @override
   String toString() =>
-      'DeviceIdentity(deviceId: $deviceId, deviceName: $deviceName, platform: $platform)';
+      'DeviceIdentity(deviceId: $deviceId, deviceName: $deviceName, platform: $platform, fingerprint: $fingerprint)';
 }
 
 /// A device belonging to another user (or the same user on a different machine)
@@ -80,6 +87,9 @@ class RemoteDevice {
   final bool isRevoked;
   final DevicePresenceStatus status;
 
+  /// Short human-readable fingerprint for device identification.
+  final String fingerprint;
+
   const RemoteDevice({
     required this.deviceId,
     required this.userId,
@@ -92,6 +102,7 @@ class RemoteDevice {
     this.isTrusted = false,
     this.isRevoked = false,
     this.status = DevicePresenceStatus.offline,
+    this.fingerprint = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -107,20 +118,36 @@ class RemoteDevice {
       'is_trusted': isTrusted,
       'is_revoked': isRevoked,
       'status': status.name,
+      'fingerprint': fingerprint,
     };
   }
 
+  /// Null-safe factory that handles missing fields gracefully.
+  /// This prevents crashes when the server response doesn't include all fields.
   factory RemoteDevice.fromMap(Map<String, dynamic> map) {
+    // Parse registered_at safely — server may return empty string or null
+    DateTime registeredAt;
+    final registeredAtRaw = map['registered_at'];
+    if (registeredAtRaw != null && registeredAtRaw.toString().isNotEmpty) {
+      try {
+        registeredAt = DateTime.parse(registeredAtRaw.toString());
+      } catch (_) {
+        registeredAt = DateTime.now();
+      }
+    } else {
+      registeredAt = DateTime.now();
+    }
+
     return RemoteDevice(
-      deviceId: map['device_id'] as String,
-      userId: map['user_id'] as String,
-      publicKeyBase64: map['public_key_base64'] as String,
-      signingPublicKeyBase64: map['signing_public_key_base64'] as String,
-      deviceName: map['device_name'] as String,
-      platform: map['platform'] as String,
-      registeredAt: DateTime.parse(map['registered_at'] as String),
+      deviceId: map['device_id'] as String? ?? '',
+      userId: map['user_id'] as String? ?? '',
+      publicKeyBase64: map['public_key_base64'] as String? ?? '',
+      signingPublicKeyBase64: map['signing_public_key_base64'] as String? ?? '',
+      deviceName: map['device_name'] as String? ?? 'Unknown Device',
+      platform: map['platform'] as String? ?? 'unknown',
+      registeredAt: registeredAt,
       lastSeenAt: map['last_seen_at'] != null
-          ? DateTime.parse(map['last_seen_at'] as String)
+          ? DateTime.tryParse(map['last_seen_at'].toString())
           : null,
       isTrusted: map['is_trusted'] as bool? ?? false,
       isRevoked: map['is_revoked'] as bool? ?? false,
@@ -128,6 +155,7 @@ class RemoteDevice {
         (e) => e.name == (map['status'] as String? ?? 'offline'),
         orElse: () => DevicePresenceStatus.offline,
       ),
+      fingerprint: map['fingerprint'] as String? ?? '',
     );
   }
 
@@ -148,6 +176,7 @@ class RemoteDevice {
     bool? isTrusted,
     bool? isRevoked,
     DevicePresenceStatus? status,
+    String? fingerprint,
   }) {
     return RemoteDevice(
       deviceId: deviceId ?? this.deviceId,
@@ -162,12 +191,13 @@ class RemoteDevice {
       isTrusted: isTrusted ?? this.isTrusted,
       isRevoked: isRevoked ?? this.isRevoked,
       status: status ?? this.status,
+      fingerprint: fingerprint ?? this.fingerprint,
     );
   }
 
   @override
   String toString() =>
-      'RemoteDevice(deviceId: $deviceId, userId: $userId, deviceName: $deviceName, status: ${status.name})';
+      'RemoteDevice(deviceId: $deviceId, userId: $userId, deviceName: $deviceName, status: ${status.name}, fingerprint: $fingerprint)';
 }
 
 /// An AES-256-GCM encrypted payload together with its ED25519 authentication

@@ -748,7 +748,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
               controller: _urlController,
               decoration: InputDecoration(
                 labelText: 'Địa chỉ Server URL',
-                hintText: 'http://172.22.16.1:8080',
+                hintText: 'http://10.146.147.160:8080',
                 prefixIcon: const Icon(Icons.link_rounded),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),

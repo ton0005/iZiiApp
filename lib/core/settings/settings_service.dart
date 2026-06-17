@@ -35,7 +35,7 @@ class SettingsService {
 
   Future<String> getSyncServerUrl() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_syncServerUrl) ?? 'http://172.22.16.1:8080';
+    return prefs.getString(_syncServerUrl) ?? 'http://10.146.147.160:8080';
   }
 
   Future<void> saveSyncToken(String token) async {

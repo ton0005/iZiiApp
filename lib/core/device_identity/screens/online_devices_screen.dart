@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../device_discovery_bloc.dart';
 import '../device_identity_models.dart';
+import '../crypto_service.dart';
+import 'dart:convert';
 
 /// Device discovery screen — shows all online devices grouped by user.
 /// Accessible from the Chat inbox via the "Online Devices" button.
@@ -247,13 +249,27 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        peer.deviceName,
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: _textPrimary,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              peer.deviceName,
+                              style: GoogleFonts.inter(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: _textPrimary,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (peer.publicKey.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            DeviceFingerprintBadge(
+                              publicKeyBase64: peer.publicKey,
+                              color: _secondary,
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 3),
                       Text(
@@ -531,13 +547,39 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        device.deviceName,
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: _textPrimary,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              device.deviceName,
+                              style: GoogleFonts.inter(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: _textPrimary,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (device.fingerprint.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: _secondary.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: _secondary.withOpacity(0.3)),
+                              ),
+                              child: Text(
+                                device.fingerprint,
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: _secondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 3),
                       Text(
@@ -624,5 +666,57 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
       default:
         return '📟';
     }
+  }
+}
+
+class DeviceFingerprintBadge extends StatelessWidget {
+  final String publicKeyBase64;
+  final Color color;
+
+  const DeviceFingerprintBadge({
+    super.key,
+    required this.publicKeyBase64,
+    required this.color,
+  });
+
+  Future<String> _getFingerprint() async {
+    if (publicKeyBase64.isEmpty) return '';
+    final bytes = utf8.encode(publicKeyBase64);
+    final hashBytes = await CryptoService().sha256Hash(bytes);
+    final hexString = hashBytes
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join();
+    return hexString.substring(0, 8).toUpperCase();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (publicKeyBase64.isEmpty) return const SizedBox.shrink();
+    return FutureBuilder<String>(
+      future: _getFingerprint(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData &&
+            snapshot.data!.isNotEmpty) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: color.withOpacity(0.3)),
+            ),
+            child: Text(
+              snapshot.data!,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
   }
 }

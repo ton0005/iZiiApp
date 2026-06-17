@@ -123,8 +123,14 @@ class DeviceDiscoveryService {
   Future<List<RemoteDevice>> getOnlineDevices() async {
     try {
       final baseUrl = await _settingsService.getSyncServerUrl();
+      final identity = await _identityService.getOrCreateIdentity();
 
-      final response = await _dio.get('$baseUrl/api/v1/devices/online');
+      final response = await _dio.get(
+        '$baseUrl/api/v1/devices/online',
+        queryParameters: {
+          'exclude_device_id': identity.deviceId,
+        },
+      );
 
       if (response.statusCode == 200 && response.data != null) {
         final list = response.data['devices'] as List<dynamic>? ?? [];

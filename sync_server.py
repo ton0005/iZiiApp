@@ -196,10 +196,17 @@ class SyncMockHandler(BaseHTTPRequestHandler):
 
         device_id = body.get('device_id')
         user_id = body.get('user_id')
-        public_key = body.get('public_key')
-        signing_public_key = body.get('signing_public_key')
+        public_key = body.get('public_key') or body.get('public_key_base64')
+        signing_public_key = body.get('signing_public_key') or body.get('signing_public_key_base64')
         device_name = body.get('device_name', 'Unknown Device')
         platform = body.get('platform', 'unknown')
+
+        # Generate a short human-readable fingerprint from the public key
+        import hashlib
+        fingerprint = ''
+        if public_key:
+            fp_hash = hashlib.sha256(public_key.encode()).hexdigest()
+            fingerprint = fp_hash[:8].upper()
 
         if not device_id or not user_id or not public_key:
             self._write_json({
@@ -215,6 +222,7 @@ class SyncMockHandler(BaseHTTPRequestHandler):
             'signing_public_key': signing_public_key,
             'device_name': device_name,
             'platform': platform,
+            'fingerprint': fingerprint,
             'registered_at': now,
             'last_seen_at': now,
         }
@@ -253,6 +261,7 @@ class SyncMockHandler(BaseHTTPRequestHandler):
 
     def _handle_devices_online(self, params):
         user_id_filter = params.get('user_id', [None])[0]
+        exclude_device_id = params.get('exclude_device_id', [None])[0]
         now = datetime.now()
         online_threshold = timedelta(seconds=45)
         idle_threshold = timedelta(minutes=2)
@@ -261,6 +270,10 @@ class SyncMockHandler(BaseHTTPRequestHandler):
         for dev in device_registry.values():
             # optional user_id filter
             if user_id_filter and dev.get('user_id') != user_id_filter:
+                continue
+
+            # self-exclusion
+            if exclude_device_id and dev.get('device_id') == exclude_device_id:
                 continue
 
             try:
@@ -282,6 +295,10 @@ class SyncMockHandler(BaseHTTPRequestHandler):
                 'user_id': dev['user_id'],
                 'device_name': dev['device_name'],
                 'platform': dev['platform'],
+                'public_key_base64': dev.get('public_key', ''),
+                'signing_public_key_base64': dev.get('signing_public_key', ''),
+                'registered_at': dev.get('registered_at', ''),
+                'fingerprint': dev.get('fingerprint', ''),
                 'last_seen_at': dev['last_seen_at'],
                 'status': status,
             })

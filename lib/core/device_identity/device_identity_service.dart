@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'crypto_service.dart';
 import 'device_identity_models.dart';
+import '../settings/settings_service.dart';
 
 /// High-level device identity manager.
 ///
@@ -111,13 +112,18 @@ class DeviceIdentityService {
       _cachedX25519PrivateKey = _crypto.bytesToBase64(x25519PrivBytes);
       _cachedEd25519PrivateKey = _crypto.bytesToBase64(ed25519PrivBytes);
 
+      final pubKeyB64 = _crypto.bytesToBase64(x25519PubBytes);
+      final sigPubKeyB64 = _crypto.bytesToBase64(ed25519PubBytes);
+      final fingerprint = await _deriveFingerprint(pubKeyB64);
+
       _cachedIdentity = DeviceIdentity(
         deviceId: deviceId,
-        publicKeyBase64: _crypto.bytesToBase64(x25519PubBytes),
-        signingPublicKeyBase64: _crypto.bytesToBase64(ed25519PubBytes),
+        publicKeyBase64: pubKeyB64,
+        signingPublicKeyBase64: sigPubKeyB64,
         deviceName: deviceName,
         platform: platformStr,
         registeredAt: registeredAt,
+        fingerprint: fingerprint,
       );
 
       print('[DeviceIdentity] Created identity: $deviceId ($deviceName)');
@@ -133,13 +139,16 @@ class DeviceIdentityService {
 
       final tsStr = DateTime.now().millisecondsSinceEpoch.toRadixString(36);
       final tempId = 'izii-d-temp-$tsStr';
+      final dummyPubB64 = _crypto.bytesToBase64(dummyPub);
+      final fingerprint = await _deriveFingerprint(dummyPubB64);
       final fallbackIdentity = DeviceIdentity(
         deviceId: tempId,
-        publicKeyBase64: _crypto.bytesToBase64(dummyPub),
-        signingPublicKeyBase64: _crypto.bytesToBase64(dummyPub),
+        publicKeyBase64: dummyPubB64,
+        signingPublicKeyBase64: dummyPubB64,
         deviceName: 'iZii-Fallback-Device',
         platform: getPlatformString(),
         registeredAt: DateTime.now(),
+        fingerprint: fingerprint,
       );
       _cachedIdentity = fallbackIdentity;
       return fallbackIdentity;
@@ -171,6 +180,8 @@ class DeviceIdentityService {
           ? DateTime.parse(registeredAtStr)
           : DateTime.now();
 
+      final fingerprint = await _deriveFingerprint(publicKeyB64);
+
       print('[DeviceIdentity] Loaded existing identity: $deviceId');
       return DeviceIdentity(
         deviceId: deviceId,
@@ -179,6 +190,7 @@ class DeviceIdentityService {
         deviceName: deviceName,
         platform: getPlatformString(),
         registeredAt: registeredAt,
+        fingerprint: fingerprint,
       );
     } catch (e) {
       print('[DeviceIdentity] Error reading storage: $e. Resetting...');
@@ -200,6 +212,15 @@ class DeviceIdentityService {
     _cachedIdentity = null;
     _cachedX25519PrivateKey = null;
     _cachedEd25519PrivateKey = null;
+  }
+
+  Future<String> _deriveFingerprint(String publicKeyBase64) async {
+    final bytes = utf8.encode(publicKeyBase64);
+    final hashBytes = await _crypto.sha256Hash(bytes);
+    final hexString = hashBytes
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join();
+    return hexString.substring(0, 8).toUpperCase();
   }
 
   // ── Platform helpers ─────────────────────────────────────────────────────
@@ -370,10 +391,11 @@ class DeviceIdentityService {
   /// Currently returns the local device itself as the primary device.
   Future<List<RemoteDevice>> getMyDevices() async {
     final identity = await getOrCreateIdentity();
+    final userId = await SettingsService().getActiveUserId();
     return [
       RemoteDevice(
         deviceId: identity.deviceId,
-        userId: 'current_user',
+        userId: userId,
         publicKeyBase64: identity.publicKeyBase64,
         signingPublicKeyBase64: identity.signingPublicKeyBase64,
         deviceName: identity.deviceName,
@@ -381,6 +403,7 @@ class DeviceIdentityService {
         registeredAt: identity.registeredAt,
         status: DevicePresenceStatus.online,
         isTrusted: true,
+        fingerprint: identity.fingerprint,
       ),
     ];
   }
