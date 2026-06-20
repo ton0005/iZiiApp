@@ -148,12 +148,26 @@ class BleDeviceDiscoveryService {
         '[BleDiscovery] Discovered peer: $deviceName ($deviceId) RSSI: ${result.rssi}');
   }
 
+  String _getDeviceAddressFromId(String deviceId) {
+    if (!deviceId.startsWith('izii-d-ble-')) return deviceId;
+    final clean = deviceId.replaceFirst('izii-d-ble-', '');
+    if (clean.length == 12) {
+      final List<String> parts = [];
+      for (int i = 0; i < 12; i += 2) {
+        parts.add(clean.substring(i, i + 2).toUpperCase());
+      }
+      return parts.join(':');
+    }
+    return clean;
+  }
+
   /// Connects to a remote peer and performs the Noise XX Handshake.
-  Future<bool> connectAndAuthenticate(String deviceAddress) async {
-    final device = BluetoothDevice.fromId(deviceAddress);
+  Future<bool> connectAndAuthenticate(String deviceId) async {
+    final realAddress = _getDeviceAddressFromId(deviceId);
+    final device = BluetoothDevice.fromId(realAddress);
 
     try {
-      print('[BleDiscovery] Connecting to BLE device: $deviceAddress...');
+      print('[BleDiscovery] Connecting to BLE device: $realAddress (ID: $deviceId)...');
       await device.connect(timeout: const Duration(seconds: 10));
 
       print('[BleDiscovery] Connected. Discovering services...');
@@ -178,21 +192,22 @@ class BleDeviceDiscoveryService {
 
       print('[BleDiscovery] Starting Noise Handshake...');
       final initiator =
-          'ble-${deviceAddress.replaceAll(':', '').toLowerCase()}';
+          'ble-${realAddress.replaceAll(':', '').toLowerCase()}';
 
-      // Step 1: Write Message 1 (Initiator Ephemeral Public Key)
-      final msg1 = await _handshakeService.initiateHandshake(initiator);
-      await p2pChar.write(msg1);
-
-      // Step 2: Subscribe and wait for Message 2 response
-      await p2pChar.setNotifyValue(true);
-
+      // Step 1: Subscribe to notifications FIRST to avoid race conditions
       final Completer<List<int>> responseCompleter = Completer<List<int>>();
       final subscription = p2pChar.onValueReceived.listen((bytes) {
         if (!responseCompleter.isCompleted) {
           responseCompleter.complete(bytes);
         }
       });
+
+      // Enable notifications on characteristic
+      await p2pChar.setNotifyValue(true);
+
+      // Step 2: Write Message 1 (Initiator Ephemeral Public Key)
+      final msg1 = await _handshakeService.initiateHandshake(initiator);
+      await p2pChar.write(msg1);
 
       // Wait for Message 2
       final msg2 =
@@ -208,20 +223,16 @@ class BleDeviceDiscoveryService {
 
       await p2pChar.write(msg3);
       print(
-          '[BleDiscovery] Noise Handshake established successfully with $deviceAddress.');
+          '[BleDiscovery] Noise Handshake established successfully with $realAddress.');
 
       // Handshake established. Retrieve peer keys and update registry
-      final state = _handshakeService.getSessionKeys(initiator);
-      if (state != null) {
-        // Query target device identity details if handshake exposed them
-        // Update LocalBlePeers table with actual Public Key from handshake
-        final String peerDeviceId =
-            'izii-d-ble-${deviceAddress.replaceAll(':', '').toLowerCase()}';
+      final session = _handshakeService.getSessionKeys(initiator);
+      if (session != null && session.remoteStaticPublicKey != null) {
+        // Update LocalBlePeers table with actual static public key from handshake
         await (_db.update(_db.localBlePeers)
-              ..where((t) => t.deviceId.equals(peerDeviceId)))
+              ..where((t) => t.deviceId.equals(deviceId)))
             .write(LocalBlePeersCompanion(
-          publicKey: Value(base64Encode(
-              msg2.sublist(32, 64))), // Extracted static X25519 public key
+          publicKey: Value(base64Encode(session.remoteStaticPublicKey!)),
         ));
       }
 

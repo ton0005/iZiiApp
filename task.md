@@ -28,5 +28,6 @@
   - [x] Hiện thực parser frame WebSocket (unmasking, text, ping, close) và relay tin nhắn
 - [x] Task 9: Khắc Phục Lỗi Unhandled Exception Ở Flutter Client
   - [x] Thêm `.catchError` trên `_channel!.sink.done` trong `ChatWebSocketService`
-- [ ] Task 10: Kiểm Trại Xác Thực Đồng Bộ Thực Tế
-  - [ ] Chạy kiểm thử kết nối và đồng bộ dữ liệu giữa các máy
+- [x] Task 10: Kiểm Tra Xác Thực Đồng Bộ Thực Tế & Hotfixes
+  - [x] Giải quyết điều hướng nhắn tin cho user online từ Server List
+  - [x] Khắc phục lỗi kết nối Bluetooth P2P (reconstruct MAC/UUID, subscribe race, public key decryption)

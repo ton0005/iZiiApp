@@ -266,6 +266,7 @@ class NoiseHandshakeState {
     return NoiseSessionKeys(
       encryptKey: role == NoiseRole.initiator ? c1 : c2,
       decryptKey: role == NoiseRole.initiator ? c2 : c1,
+      remoteStaticPublicKey: remoteStaticPublicKey,
     );
   }
 
@@ -315,6 +316,7 @@ class NoiseHandshakeState {
 class NoiseSessionKeys {
   final List<int> encryptKey;
   final List<int> decryptKey;
+  final List<int>? remoteStaticPublicKey;
   
   // Track message counter for nonce rotation in active chat session
   int encryptCounter = 0;
@@ -323,6 +325,7 @@ class NoiseSessionKeys {
   NoiseSessionKeys({
     required this.encryptKey,
     required this.decryptKey,
+    this.remoteStaticPublicKey,
   });
 
   /// Encrypt payload using current counter as nonce

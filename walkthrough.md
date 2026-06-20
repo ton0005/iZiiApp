@@ -186,3 +186,20 @@ Do cơ sở dữ liệu trên server được lưu trong bộ nhớ tạm thời
 3.  Vào màn hình **Đồng bộ dữ liệu** -> Nhấn **Đồng bộ ngay (Sync Now)** để thực thi PUSH mutation lên máy chủ (xem log trên màn hình hoặc server để xác nhận đã gửi).
 4.  Trên các thiết bị khác (MacBook Air/Windows), nhấn **Đồng bộ ngay (Sync Now)** hoặc chờ 5 giây để tiến trình tự động PULL cập nhật từ server xuống database local.
 
+---
+
+## Các bản vá lỗi bổ sung (Hotfixes):
+
+### 1. Gửi tin nhắn cho User trực tuyến từ Server List
+*   **Vấn đề**: Trước đây, nút "Gửi tin nhắn" trên màn hình "Thiết bị kết nối (Trực tuyến)" chỉ hiển thị thông báo SnackBar mô phỏng.
+*   **Giải pháp**: Cập nhật phương thức `onTap` của thẻ thiết bị để:
+    1. Gửi sự kiện `OpenDirectChatWithUserEvent(otherUserId)` đến `ChatBloc` để khởi tạo/nạp cuộc hội thoại.
+    2. Lấy `currentUserId` từ cài đặt và sắp xếp ID để tạo mã cuộc hội thoại duy nhất: `direct_${id1}_${id2}`.
+    3. Sử dụng `GoRouter` để chuyển hướng trực tiếp người dùng tới phòng chat thực tế qua route `/chat/conversation/$convoId`.
+
+### 2. Sửa lỗi kết nối bảo mật Bluetooth P2P (Noise Handshake)
+*   **Khôi phục Địa chỉ Bluetooth chuẩn**: Sửa hàm `connectAndAuthenticate` trong [ble_device_discovery_service.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/core/device_identity/ble_device_discovery_service.dart) để tự động dịch chuỗi Device ID nội bộ (`izii-d-ble-xxxxxxxxxxxx`) về địa chỉ MAC (`XX:XX:XX:XX:XX:XX`) hoặc UUID chuẩn của hệ điều hành trước khi gọi `BluetoothDevice.fromId`.
+*   **Khắc phục Race Condition**: Đổi thứ tự thực thi: Đăng ký lắng nghe sự kiện phản hồi `onValueReceived.listen` và bật `setNotifyValue(true)` **trước** khi ghi Message 1. Việc này ngăn việc phản hồi nhanh của peer bị mất trong khi client chưa kịp lắng nghe.
+*   **Lưu khóa Public Key giải mã chuẩn**: Cập nhật `NoiseHandshakeService` để đóng gói khóa công khai tĩnh `remoteStaticPublicKey` (đã giải mã) vào `NoiseSessionKeys` trả về sau khi hoàn tất handshake. Từ đó `BleDeviceDiscoveryService` lấy và ghi nhận đúng khoá công khai sạch vào cơ sở dữ liệu `local_ble_peers`.
+
+

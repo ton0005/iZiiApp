@@ -12,6 +12,9 @@ import 'dart:convert';
 /// Accessible from the Chat inbox via the "Online Devices" button.
 import '../ble_device_discovery_service.dart';
 import '../../database/app_database.dart';
+import '../../settings/settings_service.dart';
+import '../../../modules/communication/bloc/chat_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class OnlineDevicesScreen extends StatefulWidget {
   const OnlineDevicesScreen({super.key});
@@ -530,19 +533,20 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Đang mở hội thoại với ${device.deviceName}...',
-                  style: GoogleFonts.inter(),
-                ),
-                backgroundColor: _surfaceCard,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
-            );
+          onTap: () async {
+            final otherUserId = device.userId;
+            
+            try {
+              context.read<ChatBloc>().add(OpenDirectChatWithUserEvent(otherUserId));
+            } catch (_) {}
+
+            final currentUserId = await SettingsService().getActiveUserId();
+            final ids = [currentUserId, otherUserId]..sort();
+            final convoId = 'direct_${ids[0]}_${ids[1]}';
+            
+            if (context.mounted) {
+              context.push('/chat/conversation/$convoId');
+            }
           },
           child: Padding(
             padding: const EdgeInsets.all(16),
