@@ -28,7 +28,8 @@ class _CoachMarksState extends State<CoachMarks> {
 
   Future<void> _checkStatus() async {
     final prefs = await SharedPreferences.getInstance();
-    final alreadyShown = prefs.getBool('coach_mark_${widget.featureKey}') ?? false;
+    final alreadyShown =
+        prefs.getBool('coach_mark_${widget.featureKey}') ?? false;
     if (!alreadyShown && mounted) {
       setState(() {
         _shouldShow = true;
@@ -66,7 +67,7 @@ class _CoachMarksState extends State<CoachMarks> {
                 color: Colors.black.withValues(alpha: 0.75),
               ),
             ),
-            
+
             // Tooltip UI
             Center(
               child: Material(
@@ -91,9 +92,12 @@ class _CoachMarksState extends State<CoachMarks> {
                       Container(
                         width: 56,
                         height: 56,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [ChatTheme.bgBubbleMineDark, ChatTheme.accentDark],
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              ChatTheme.bgBubbleMineDark,
+                              ChatTheme.accentDark
+                            ],
                           ),
                           shape: BoxShape.circle,
                         ),

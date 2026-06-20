@@ -1,0 +1,19 @@
+
+2
+[DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+[ChatWS] Error: WebSocketChannelException: SocketException: The semaphore timeout period has expired (OS Error: The semaphore timeout period has expired, errno = 121), address = 10.146.147.160, port = 63505
+[ChatWS] Connection closed.
+
+_startMicrotaskLoop (c:\flutter\bin\cache\pkg\sky_engine\lib\async\schedule_microtask.dart:44)
+
+Exception has occurred.
+UnsupportedError (Unsupported operation: flutter_blue_plus is unsupported on this platform)
+
+#0      FlutterBluePlusPlatform.instance (package:flutter_blue_plus_platform_interface/flutter_blue_plus_platform_interface.dart:21:7)
+#1      FlutterBluePlus._initFlutterBluePlus (package:flutter_blue_plus/src/flutter_blue_plus.dart:429:29)
+#2      FlutterBluePlus._invokePlatform (package:flutter_blue_plus/src/flutter_blue_plus.dart:557:13)
+<asynchronous suspension>
+#3      FlutterBluePlus.isSupported (package:flutter_blue_plus/src/flutter_blue_plus.dart:58:7)
+<asynchronous suspension>
+#4      BleDeviceDiscoveryService.startScanning (package:izii_app/core/device_identity/ble_device_discovery_service.dart:76:9)
+<asynchronous suspension>

@@ -66,8 +66,8 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen>
               surface: IZiiColors.darkSurface,
               onSurface: Colors.white,
             ),
-            dialogTheme:
-                DialogThemeData(backgroundColor: IZiiColors.darkBackground),
+            dialogTheme: const DialogThemeData(
+                backgroundColor: IZiiColors.darkBackground),
           ),
           child: child!,
         );

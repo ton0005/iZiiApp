@@ -287,8 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.bluetooth_rounded,
-                            color: Color(0xFF6366F1)),
+                        Icon(Icons.bluetooth_rounded, color: Color(0xFF6366F1)),
                         SizedBox(width: 8),
                         Text(
                           'Kết nối P2P Bluetooth',
@@ -306,10 +305,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SwitchListTile(
                       title: const Text(
                         'Kích hoạt Bluetooth Chat P2P',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                       value: _isBleEnabled,
-                      activeColor: const Color(0xFF6366F1),
+                      activeThumbColor: const Color(0xFF6366F1),
                       onChanged: (bool value) async {
                         setState(() {
                           _isBleEnabled = value;

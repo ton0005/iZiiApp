@@ -20,7 +20,8 @@ class OnlineDevicesScreen extends StatefulWidget {
   State<OnlineDevicesScreen> createState() => _OnlineDevicesScreenState();
 }
 
-class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTickerProviderStateMixin {
+class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
+    with SingleTickerProviderStateMixin {
   // ── Colors (matching project theme) ──
   static const _surfaceDark = Color(0xFF0F172A);
   static const _surfaceCard = Color(0xFF1E293B);
@@ -39,7 +40,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
     // Automatically start scanning and advertising when the screen opens
     _bleDiscovery.startScanning();
     _bleDiscovery.startAdvertising();
@@ -85,7 +86,9 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
               icon: const Icon(Icons.refresh_rounded, color: _secondary),
               onPressed: () {
                 if (_tabController.index == 0) {
-                  context.read<DeviceDiscoveryBloc>().add(DiscoverOnlineDevicesEvent());
+                  context
+                      .read<DeviceDiscoveryBloc>()
+                      .add(DiscoverOnlineDevicesEvent());
                 } else {
                   _bleDiscovery.stopScanning();
                   _bleDiscovery.startScanning();
@@ -101,7 +104,8 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
             // Tab 1: Server-based Online Devices
             BlocBuilder<DeviceDiscoveryBloc, DeviceDiscoveryState>(
               builder: (context, state) {
-                if (state.status == DeviceDiscoveryStatus.loading && state.onlineDevices.isEmpty) {
+                if (state.status == DeviceDiscoveryStatus.loading &&
+                    state.onlineDevices.isEmpty) {
                   return const Center(
                     child: CircularProgressIndicator(color: _primary),
                   );
@@ -199,7 +203,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
         color: _surfaceCard,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _secondary.withOpacity(0.3),
+          color: _secondary.withValues(alpha: 0.3),
         ),
       ),
       child: Material(
@@ -209,18 +213,21 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
           borderRadius: BorderRadius.circular(16),
           onTap: () async {
             // Trigger connection & Noise Handshake authentication
-            final success = await _bleDiscovery.connectAndAuthenticate(peer.deviceId);
+            final success =
+                await _bleDiscovery.connectAndAuthenticate(peer.deviceId);
             if (success) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Xác thực bảo mật thành công với ${peer.deviceName}!'),
+                  content: Text(
+                      'Xác thực bảo mật thành công với ${peer.deviceName}!'),
                   backgroundColor: _success,
                 ),
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Không thể kết nối bảo mật tới ${peer.deviceName}.'),
+                  content:
+                      Text('Không thể kết nối bảo mật tới ${peer.deviceName}.'),
                   backgroundColor: Colors.redAccent,
                 ),
               );
@@ -235,7 +242,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: _secondary.withOpacity(0.12),
+                    color: _secondary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Center(
@@ -288,7 +295,8 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: _secondary,
                         borderRadius: BorderRadius.circular(8),
@@ -360,7 +368,8 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 48, color: Color(0xFFF43F5E)),
+          const Icon(Icons.error_outline_rounded,
+              size: 48, color: Color(0xFFF43F5E)),
           const SizedBox(height: 16),
           Text(
             'Không thể tải danh sách thiết bị',
@@ -379,14 +388,17 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () {
-              context.read<DeviceDiscoveryBloc>().add(DiscoverOnlineDevicesEvent());
+              context
+                  .read<DeviceDiscoveryBloc>()
+                  .add(DiscoverOnlineDevicesEvent());
             },
             icon: const Icon(Icons.refresh_rounded, size: 18),
             label: const Text('Thử lại'),
             style: ElevatedButton.styleFrom(
               backgroundColor: _primary,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
           ),
         ],
@@ -420,7 +432,8 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 4, bottom: 8, top: index > 0 ? 16 : 0),
+                padding: EdgeInsets.only(
+                    left: 4, bottom: 8, top: index > 0 ? 16 : 0),
                 child: Row(
                   children: [
                     Container(
@@ -451,9 +464,10 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: _success.withOpacity(0.15),
+                        color: _success.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -473,7 +487,9 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                 final device = entry.value;
                 return _buildDeviceCard(context, device)
                     .animate()
-                    .fadeIn(delay: (100 * (index * devices.length + i)).ms, duration: 300.ms)
+                    .fadeIn(
+                        delay: (100 * (index * devices.length + i)).ms,
+                        duration: 300.ms)
                     .slideY(begin: 0.1, end: 0);
               }),
             ],
@@ -505,8 +521,8 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: device.status == DevicePresenceStatus.online
-              ? _success.withOpacity(0.3)
-              : _surfaceLight.withOpacity(0.5),
+              ? _success.withValues(alpha: 0.3)
+              : _surfaceLight.withValues(alpha: 0.5),
         ),
       ),
       child: Material(
@@ -523,7 +539,8 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                 ),
                 backgroundColor: _surfaceCard,
                 behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             );
           },
@@ -535,11 +552,12 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: _primary.withOpacity(0.12),
+                    color: _primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
-                    child: Text(platformIcon, style: const TextStyle(fontSize: 22)),
+                    child: Text(platformIcon,
+                        style: const TextStyle(fontSize: 22)),
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -563,11 +581,13 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                           if (device.fingerprint.isNotEmpty) ...[
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: _secondary.withOpacity(0.15),
+                                color: _secondary.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: _secondary.withOpacity(0.3)),
+                                border: Border.all(
+                                    color: _secondary.withValues(alpha: 0.3)),
                               ),
                               child: Text(
                                 device.fingerprint,
@@ -607,7 +627,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: statusDot.withOpacity(0.5),
+                                color: statusDot.withValues(alpha: 0.5),
                                 blurRadius: 6,
                                 spreadRadius: 1,
                               ),
@@ -627,7 +647,8 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen> with SingleTi
                     ),
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [_primary, _secondary],
@@ -683,9 +704,8 @@ class DeviceFingerprintBadge extends StatelessWidget {
     if (publicKeyBase64.isEmpty) return '';
     final bytes = utf8.encode(publicKeyBase64);
     final hashBytes = await CryptoService().sha256Hash(bytes);
-    final hexString = hashBytes
-        .map((b) => b.toRadixString(16).padLeft(2, '0'))
-        .join();
+    final hexString =
+        hashBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
     return hexString.substring(0, 8).toUpperCase();
   }
 
@@ -701,9 +721,9 @@ class DeviceFingerprintBadge extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: color.withOpacity(0.3)),
+              border: Border.all(color: color.withValues(alpha: 0.3)),
             ),
             child: Text(
               snapshot.data!,

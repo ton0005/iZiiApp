@@ -38,7 +38,6 @@ import 'scaffold_with_nav.dart';
 import '../sync/screens/sync_screen.dart';
 import '../../features/sharing/shared_with_me_screen.dart';
 import '../../features/sharing/community_feed_screen.dart';
-import '../../modules/communication/bloc/chat_bloc.dart' as comm;
 import '../../modules/communication/screens/chat_inbox_screen.dart';
 import '../../modules/communication/screens/conversation_screen.dart';
 
@@ -180,7 +179,7 @@ final appRouter = GoRouter(
           if (deal != null) {
             return DealDetailScreen(deal: deal);
           }
-          
+
           final dealId = state.uri.queryParameters['dealId'] ?? '';
           return FutureBuilder<List<Map<String, dynamic>>>(
             future: CrmRepository().getDeals(),
@@ -284,7 +283,8 @@ final appRouter = GoRouter(
             return const Scaffold(
                 body: Center(child: CircularProgressIndicator()));
           }
-          return const ModuleDashboardScreen(moduleId: 'izii.project_management');
+          return const ModuleDashboardScreen(
+              moduleId: 'izii.project_management');
         },
       ),
     ),
@@ -311,8 +311,10 @@ final appRouter = GoRouter(
                 body: Center(child: CircularProgressIndicator()));
           }
           final projectId = state.uri.queryParameters['projectId'] ?? '';
-          final projectName = state.uri.queryParameters['projectName'] ?? 'Tasks';
-          return TaskBoardScreen(projectId: projectId, projectName: projectName);
+          final projectName =
+              state.uri.queryParameters['projectName'] ?? 'Tasks';
+          return TaskBoardScreen(
+              projectId: projectId, projectName: projectName);
         },
       ),
     ),
@@ -326,7 +328,8 @@ final appRouter = GoRouter(
             return const Scaffold(
                 body: Center(child: CircularProgressIndicator()));
           }
-          return const ModuleDashboardScreen(moduleId: 'izii.purchase_management');
+          return const ModuleDashboardScreen(
+              moduleId: 'izii.purchase_management');
         },
       ),
     ),
@@ -443,7 +446,8 @@ final appRouter = GoRouter(
             return const Scaffold(
                 body: Center(child: CircularProgressIndicator()));
           }
-          final module = _moduleRegistry.getModule('izii.mushrooms') as MushroomsModule;
+          final module =
+              _moduleRegistry.getModule('izii.mushrooms') as MushroomsModule;
           return module.routes['/mushrooms']!(context);
         },
       ),

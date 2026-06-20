@@ -145,3 +145,44 @@ Tôi đã tích hợp `SyncService().queueMutation(...)` trực tiếp vào tầ
 - **Sales & CRM**: Đồng bộ khi tạo/sửa leads, cập nhật trạng thái leads và stages của deals.
 - **Supply Chain (Kho)**: Tự động queue khi thêm sản phẩm mới (`addProductWithStock`) và chỉnh sửa sản phẩm (`updateProductWithStock`).
 - **Services (Dịch vụ)**: Tự động queue khi thêm mới/cập nhật dịch vụ (`addServiceItem`, `updateServiceItem`), và khi đặt lịch/cập nhật trạng thái lịch hẹn (`addBooking`, `updateBookingStatus`).
+
+---
+
+# Cập Nhật WebSocket Server & Khắc Phục Lỗi Đồng Bộ
+
+Tôi đã thực hiện nâng cấp lớn cho Sync Server (Python) và iZiiApp (Flutter) để sửa lỗi nâng cấp giao thức WebSocket và hỗ trợ đồng bộ dữ liệu mượt mà giữa MacBook Air, Samsung A36 và Windows.
+
+## Những thay đổi chính:
+
+### 1. Nâng cấp Sync Server sang chế độ Đa Luồng & Hỗ trợ WebSocket
+*   **Kiến trúc Đa luồng (`ThreadedHTTPServer`)**: Thay thế HTTP Server đơn luồng truyền thống bằng server đa luồng kế thừa từ `socketserver.ThreadingMixIn` để duy trì kết nối WebSocket lâu dài mà không gây nghẽn hoặc đứng server khi xử lý các API HTTP thông thường.
+*   **Giao thức WebSocket (RFC 6455)**:
+    *   Thêm route `/chat` để tự động phát hiện và thực hiện quá trình bắt tay nâng cấp giao thức (Switching Protocols 101) bằng mã hóa SHA-1 + Base64 khóa `Sec-WebSocket-Key`.
+    *   Hỗ trợ đọc và giải mã các khung truyền (frame parsing) từ client (bóc tách Masking Key).
+    *   Hỗ trợ phản hồi các gói tin Ping/Pong và Close.
+*   **Trình chuyển tiếp thời gian thực (Relay Broker)**: Duy trì danh sách Client Socket trực tuyến (`ws_clients`) để tự động truyền (broadcast) các sự kiện thời gian thực (trạng thái gõ phím typing, xác nhận đã đọc/nhận tin nhắn, cập nhật trạng thái thiết bị).
+
+### 2. Sửa lỗi Unhandled Exception ở Flutter Client
+*   **Gom lỗi Asynchronous**: Bổ sung xử lý `.catchError` trên `_channel!.sink.done` trong [chat_websocket_service.dart](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/modules/communication/services/chat_websocket_service.dart) để tránh lỗi bất đồng bộ khi bắt tay thất bại bùng phát thành `Unhandled Exception` trên Dart VM, giúp kết nối lại một cách trơn tru và không làm đứng vòng lặp của Bloc.
+
+## Hướng dẫn Kiểm tra & Xác thực (Verification):
+
+### Bước 1: Chạy Server trên MacBook Air
+1. Khởi động lại server trên Terminal của MacBook Air:
+   ```bash
+   python sync_server.py
+   ```
+2. Xác nhận thông báo in ra có hỗ trợ WebSocket: `WS   /chat                        WebSocket Chat relay`.
+
+### Bước 2: Cấu hình Server URL trên các thiết bị client
+Để các thiết bị liên lạc được với nhau, chúng phải trỏ về **cùng một IP máy chủ**:
+1.  **Samsung A36 & Windows**: Vào **Cài đặt** -> **Đồng bộ dữ liệu** -> Nhập API Server URL là: `http://10.146.147.160:8080` rồi bấm **Lưu cấu hình**.
+2.  **MacBook Air Client**: Có thể cấu hình là `http://10.146.147.160:8080` hoặc `http://127.0.0.1:8080` rồi bấm **Lưu cấu hình**.
+
+### Bước 3: Đồng bộ thử nghiệm
+Do cơ sở dữ liệu trên server được lưu trong bộ nhớ tạm thời (in-memory) và sẽ bị xoá sạch mỗi khi restart server, các bản ghi cũ của các thiết bị có thể đã được đánh dấu trạng thái `'synced'` nên sẽ không tự động gửi lại. Để kích hoạt đồng bộ mới:
+1.  Trên một thiết bị bất kỳ (ví dụ: Samsung A36), hãy tạo một **Lead hoặc Deal mới** hoặc đổi trạng thái một Leads hiện có.
+2.  Thao tác này sẽ ghi một mutation mới vào bảng `outbox_mutations`.
+3.  Vào màn hình **Đồng bộ dữ liệu** -> Nhấn **Đồng bộ ngay (Sync Now)** để thực thi PUSH mutation lên máy chủ (xem log trên màn hình hoặc server để xác nhận đã gửi).
+4.  Trên các thiết bị khác (MacBook Air/Windows), nhấn **Đồng bộ ngay (Sync Now)** hoặc chờ 5 giây để tiến trình tự động PULL cập nhật từ server xuống database local.
+

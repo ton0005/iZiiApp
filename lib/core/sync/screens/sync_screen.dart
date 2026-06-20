@@ -672,8 +672,9 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                             onChanged: (isAlwaysOn || isLocked)
                                 ? null
                                 : (val) {
-                                    if (val != null)
+                                    if (val != null) {
                                       _updateGranularity(config, val);
+                                    }
                                   },
                           ),
                         ],

@@ -76,7 +76,8 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.supervised_user_circle_rounded, color: Colors.orange),
+            icon: const Icon(Icons.supervised_user_circle_rounded,
+                color: Colors.orange),
             tooltip: 'Đổi tài khoản Test',
             onPressed: () => _showTestProfileSwitcher(context),
           ),
@@ -122,7 +123,10 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
             ],
           ),
         ),
-        VerticalDivider(width: 1, color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.grey.shade300),
+        VerticalDivider(
+            width: 1,
+            color:
+                isDark ? ChatTheme.bgBubbleTheirsDark : Colors.grey.shade300),
         Expanded(
           child: _selectedConversationId != null
               ? ConversationScreen(
@@ -154,8 +158,11 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
             ],
           ),
         ),
-        VerticalDivider(width: 1, color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.grey.shade300),
-        
+        VerticalDivider(
+            width: 1,
+            color:
+                isDark ? ChatTheme.bgBubbleTheirsDark : Colors.grey.shade300),
+
         // Middle Panel: Conversation Screen
         Expanded(
           child: _selectedConversationId != null
@@ -166,8 +173,11 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                 )
               : _buildEmptyDetailState(isDark),
         ),
-        VerticalDivider(width: 1, color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.grey.shade300),
-        
+        VerticalDivider(
+            width: 1,
+            color:
+                isDark ? ChatTheme.bgBubbleTheirsDark : Colors.grey.shade300),
+
         // Right Panel: Record Details context placeholder
         SizedBox(
           width: width * 0.25,
@@ -195,11 +205,13 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
               _searchQuery = value.toLowerCase();
             });
           },
-          style: TextStyle(color: ChatTheme.getTextPrimary(isDark), fontSize: 16),
+          style:
+              TextStyle(color: ChatTheme.getTextPrimary(isDark), fontSize: 16),
           decoration: InputDecoration(
             hintText: context.tr('chat_search_hint'),
             hintStyle: TextStyle(color: ChatTheme.getTextMuted(isDark)),
-            prefixIcon: Icon(Icons.search_rounded, color: ChatTheme.getTextMuted(isDark)),
+            prefixIcon: Icon(Icons.search_rounded,
+                color: ChatTheme.getTextMuted(isDark)),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(vertical: 12),
           ),
@@ -241,12 +253,17 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                 itemCount: filteredContacts.length,
                 itemBuilder: (context, index) {
                   final contact = filteredContacts[index];
-                  final presence = state.userPresenceMap[contact.id] ?? ChatPresenceState.offline;
+                  final presence = state.userPresenceMap[contact.id] ??
+                      ChatPresenceState.offline;
 
                   return GestureDetector(
                     onTap: () {
-                      context.read<ChatBloc>().add(OpenDirectChatWithUserEvent(contact.id));
-                      final currentUserId = state.currentUserId ?? context.read<ChatBloc>().currentUserId ?? 'default_user';
+                      context
+                          .read<ChatBloc>()
+                          .add(OpenDirectChatWithUserEvent(contact.id));
+                      final currentUserId = state.currentUserId ??
+                          context.read<ChatBloc>().currentUserId ??
+                          'default_user';
                       final ids = [currentUserId, contact.id]..sort();
                       final convoId = 'direct_${ids[0]}_${ids[1]}';
                       final screenWidth = MediaQuery.of(context).size.width;
@@ -308,12 +325,15 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                 Icon(
                   Icons.chat_bubble_outline_rounded,
                   size: 64,
-                  color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.grey.shade300,
+                  color: isDark
+                      ? ChatTheme.bgBubbleTheirsDark
+                      : Colors.grey.shade300,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   context.tr('chat_no_conversations'),
-                  style: TextStyle(color: ChatTheme.getTextMuted(isDark), fontSize: 16),
+                  style: TextStyle(
+                      color: ChatTheme.getTextMuted(isDark), fontSize: 16),
                 ),
               ],
             ),
@@ -335,7 +355,9 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
 
                 final detail = snapshot.data!;
                 final companionName = detail['name'] as String;
-                final companionPresence = state.userPresenceMap[detail['id'] as String] ?? ChatPresenceState.offline;
+                final companionPresence =
+                    state.userPresenceMap[detail['id'] as String] ??
+                        ChatPresenceState.offline;
                 final lastSnippet = detail['last_message'] as String;
                 final timeStr = detail['time'] as String;
                 final unreadCount = detail['unread_count'] as int;
@@ -357,7 +379,10 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                         SizedBox(width: 8),
                         Text(
                           'Delete',
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 15),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 15),
                         ),
                       ],
                     ),
@@ -368,31 +393,41 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                   child: Card(
                     color: _selectedConversationId == convo.id
                         ? ChatTheme.getAccent(isDark).withValues(alpha: 0.15)
-                        : (isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white),
+                        : (isDark
+                            ? ChatTheme.bgBubbleTheirsDark
+                            : Colors.white),
                     elevation: 0,
-                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                       side: BorderSide(
                         color: _selectedConversationId == convo.id
                             ? ChatTheme.getAccent(isDark)
-                            : (isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+                            : (isDark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade200),
                         width: _selectedConversationId == convo.id ? 2.0 : 1.0,
                       ),
                     ),
                     child: ListTile(
                       onTap: () {
                         if (isMobile) {
-                          context.read<ChatBloc>().add(OpenConversationEvent(convo.id));
+                          context
+                              .read<ChatBloc>()
+                              .add(OpenConversationEvent(convo.id));
                           context.push('/chat/conversation/${convo.id}');
                         } else {
                           setState(() {
                             _selectedConversationId = convo.id;
                           });
-                          context.read<ChatBloc>().add(OpenConversationEvent(convo.id));
+                          context
+                              .read<ChatBloc>()
+                              .add(OpenConversationEvent(convo.id));
                         }
                       },
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       leading: PresenceAvatar(
                         name: companionName,
                         presence: companionPresence,
@@ -439,7 +474,8 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                             ),
                             if (unreadCount > 0)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: ChatTheme.getDanger(isDark),
                                   shape: BoxShape.circle,
@@ -480,7 +516,8 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
           const SizedBox(height: 16),
           Text(
             'Select a conversation to start chatting.',
-            style: TextStyle(fontSize: 16, color: ChatTheme.getTextMuted(isDark)),
+            style:
+                TextStyle(fontSize: 16, color: ChatTheme.getTextMuted(isDark)),
           ),
         ],
       ),
@@ -508,12 +545,15 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
               decoration: BoxDecoration(
                 color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+                border: Border.all(
+                    color:
+                        isDark ? Colors.grey.shade800 : Colors.grey.shade200),
               ),
               child: Center(
                 child: Text(
                   'No linked job or lead selected.',
-                  style: TextStyle(color: ChatTheme.getTextMuted(isDark), fontSize: 14),
+                  style: TextStyle(
+                      color: ChatTheme.getTextMuted(isDark), fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -524,25 +564,28 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
     );
   }
 
-  Future<Map<String, dynamic>?> _getConvoDetail(BuildContext context, dynamic convo) async {
+  Future<Map<String, dynamic>?> _getConvoDetail(
+      BuildContext context, dynamic convo) async {
     final chatBloc = context.read<ChatBloc>();
     final currentUserId = chatBloc.currentUserId ?? '';
 
-    final companion = await chatBloc.chatRepository.getCompanion(convo.id, currentUserId);
+    final companion =
+        await chatBloc.chatRepository.getCompanion(convo.id, currentUserId);
     final lastMsg = await chatBloc.chatRepository.getLatestMessage(convo.id);
 
-    String name = convo.type == 'record_linked'
+    final String name = convo.type == 'record_linked'
         ? '${convo.recordType.toString().toUpperCase()} - ${convo.recordId.toString().substring(0, 4)}'
         : (companion?.name ?? 'Companion');
 
-    String id = companion?.id ?? '';
+    final String id = companion?.id ?? '';
     String lastSnippet = '';
     String timeStr = '';
     int unreadCount = 0;
 
     if (lastMsg != null) {
       try {
-        final decoded = Map<String, dynamic>.from(jsonDecode(lastMsg.content) as Map);
+        final decoded =
+            Map<String, dynamic>.from(jsonDecode(lastMsg.content) as Map);
         lastSnippet = decoded['text'] as String? ?? '';
       } catch (_) {
         lastSnippet = lastMsg.content;
@@ -556,7 +599,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
       } else {
         timeStr = DateFormat('h:mm a').format(sentLocal);
       }
-      
+
       if (lastMsg.senderId != currentUserId && lastMsg.readAt == null) {
         unreadCount = 1; // Basic unread count calculator
       }
@@ -577,19 +620,22 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
     final chatBloc = context.read<ChatBloc>();
     final db = chatBloc.db;
     final users = await db.select(db.users).get();
-    final currentUserId = chatBloc.state.currentUserId ?? chatBloc.currentUserId;
+    final currentUserId =
+        chatBloc.state.currentUserId ?? chatBloc.currentUserId;
 
     if (!context.mounted) return;
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: ChatTheme.getBgBubbleTheirs(Theme.of(ctx).brightness == Brightness.dark),
+        backgroundColor: ChatTheme.getBgBubbleTheirs(
+            Theme.of(ctx).brightness == Brightness.dark),
         title: Text(
           'Chọn tài khoản Test',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: ChatTheme.getTextPrimary(Theme.of(ctx).brightness == Brightness.dark),
+            color: ChatTheme.getTextPrimary(
+                Theme.of(ctx).brightness == Brightness.dark),
           ),
         ),
         content: SizedBox(
@@ -603,7 +649,9 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
               final isDark = Theme.of(context).brightness == Brightness.dark;
               return ListTile(
                 leading: Icon(
-                  isCurrent ? Icons.check_circle_rounded : Icons.account_circle_rounded,
+                  isCurrent
+                      ? Icons.check_circle_rounded
+                      : Icons.account_circle_rounded,
                   color: isCurrent ? const Color(0xFF10B981) : Colors.grey,
                 ),
                 title: Text(
@@ -613,7 +661,8 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                     color: ChatTheme.getTextPrimary(isDark),
                   ),
                 ),
-                subtitle: Text('ID: ${user.id}', style: TextStyle(color: ChatTheme.getTextMuted(isDark))),
+                subtitle: Text('ID: ${user.id}',
+                    style: TextStyle(color: ChatTheme.getTextMuted(isDark))),
                 onTap: () {
                   Navigator.pop(ctx);
                   chatBloc.add(SwitchUserEvent(user.id));
@@ -645,9 +694,12 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                     break;
                   }
                 }
-                if (currentUserId == 'user_an_nguyen') currentName = 'Nguyễn Văn An';
-                if (currentUserId == 'user_huong_vo') currentName = 'Võ Thị Hương';
-                if (currentUserId == 'user_bich_tran') currentName = 'Trần Thị Bích';
+                if (currentUserId == 'user_an_nguyen')
+                  currentName = 'Nguyễn Văn An';
+                if (currentUserId == 'user_huong_vo')
+                  currentName = 'Võ Thị Hương';
+                if (currentUserId == 'user_bich_tran')
+                  currentName = 'Trần Thị Bích';
 
                 return Text(
                   'Đóng vai: $currentName',
@@ -664,11 +716,13 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
             style: TextButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             ),
             icon: const Icon(Icons.swap_horiz_rounded, size: 16),
-            label: const Text('Đổi Vai Test', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            label: const Text('Đổi Vai Test',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             onPressed: () => _showTestProfileSwitcher(context),
           ),
         ],

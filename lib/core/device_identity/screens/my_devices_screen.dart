@@ -212,8 +212,8 @@ class _MyDevicesView extends StatelessWidget {
               color: _kPrimary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(24),
             ),
-            child: const Icon(Icons.devices_rounded,
-                color: _kPrimary, size: 40),
+            child:
+                const Icon(Icons.devices_rounded, color: _kPrimary, size: 40),
           ),
           const SizedBox(height: 20),
           Text(
@@ -278,8 +278,7 @@ class _MyDevicesView extends StatelessWidget {
                       letterSpacing: 1.2,
                     ),
                   ),
-                ).animate()
-                    .fadeIn(duration: 300.ms, delay: 200.ms),
+                ).animate().fadeIn(duration: 300.ms, delay: 200.ms),
               ),
 
               // ── Current Device Card ──
@@ -329,8 +328,7 @@ class _MyDevicesView extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ).animate()
-                      .fadeIn(duration: 300.ms, delay: 450.ms),
+                  ).animate().fadeIn(duration: 300.ms, delay: 450.ms),
                 ),
 
               // ── Other Device Cards ──
@@ -478,7 +476,8 @@ class _MyDevicesView extends StatelessWidget {
           ),
         ),
       ),
-    ).animate()
+    )
+        .animate()
         .fadeIn(duration: 400.ms, delay: 700.ms)
         .slideY(begin: 0.2, end: 0);
   }
@@ -572,11 +571,13 @@ class _CurrentDeviceCard extends StatelessWidget {
                         if (device.fingerprint.isNotEmpty) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: _kSuccess.withOpacity(0.15),
+                              color: _kSuccess.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: _kSuccess.withOpacity(0.3)),
+                              border: Border.all(
+                                  color: _kSuccess.withValues(alpha: 0.3)),
                             ),
                             child: Text(
                               device.fingerprint,
@@ -604,8 +605,8 @@ class _CurrentDeviceCard extends StatelessWidget {
               ),
               // "This device" badge
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: _kSuccess.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
@@ -638,19 +639,20 @@ class _CurrentDeviceCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _InfoChip(
+              const _InfoChip(
                 icon: '🟢',
                 label: 'Trực tuyến',
                 color: _kSuccess,
               ),
-              _InfoChip(
+              const _InfoChip(
                 icon: '🔑',
                 label: 'Tin cậy',
                 color: _kPrimary,
               ),
               _InfoChip(
                 icon: '📅',
-                label: 'Đăng ký: ${DateFormat('dd/MM/yyyy').format(device.registeredAt)}',
+                label:
+                    'Đăng ký: ${DateFormat('dd/MM/yyyy').format(device.registeredAt)}',
                 color: Colors.white38,
               ),
             ],
@@ -741,11 +743,13 @@ class _DeviceCard extends StatelessWidget {
                         if (device.fingerprint.isNotEmpty) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: _kPrimary.withOpacity(0.15),
+                              color: _kPrimary.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: _kPrimary.withOpacity(0.3)),
+                              border: Border.all(
+                                  color: _kPrimary.withValues(alpha: 0.3)),
                             ),
                             child: Text(
                               device.fingerprint,
@@ -772,8 +776,8 @@ class _DeviceCard extends StatelessWidget {
               ),
               // Status indicator
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
@@ -841,8 +845,8 @@ class _DeviceCard extends StatelessWidget {
                   style: TextButton.styleFrom(
                     foregroundColor: _kError.withValues(alpha: 0.5),
                     disabledForegroundColor: Colors.white24,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                       side: BorderSide(

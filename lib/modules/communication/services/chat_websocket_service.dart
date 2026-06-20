@@ -46,10 +46,20 @@ class ChatWebSocketService {
       print('[ChatWS] Connecting to $wsUrl ...');
       _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
       
+      // Intercept asynchronous sink errors to prevent Unhandled Exception crashes
+      _channel!.sink.done.catchError((error) {
+        print('[ChatWS] WebSocket sink error: $error');
+      });
+      
+      // Wait for connection to be ready before marking as connected
+      // This throws an exception if the WebSocket upgrade handshake fails
+      await _channel!.ready;
+      
       _isConnected = true;
       _isConnecting = false;
       _connectionStateController.add(true);
       print('[ChatWS] Connected successfully.');
+
 
       // Start listening to messages
       _channel!.stream.listen(

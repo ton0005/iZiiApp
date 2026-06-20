@@ -1,5 +1,9 @@
 import json
 import uuid
+import base64
+import hashlib
+import threading
+from socketserver import ThreadingMixIn
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from datetime import datetime, timedelta
@@ -20,6 +24,87 @@ device_registry = {}
 message_queue = []
 # append-only trust events (for Phase 3)
 trust_ledger = []
+
+# Thread-safe active WebSocket clients
+ws_clients = []
+ws_clients_lock = threading.Lock()
+
+
+# ── WebSocket Helper Functions ──────────────────────────────────────────
+
+def recv_exactly(sock, n):
+    data = bytearray()
+    while len(data) < n:
+        try:
+            packet = sock.recv(n - len(data))
+            if not packet:
+                return None
+            data.extend(packet)
+        except Exception:
+            return None
+    return data
+
+def recv_frame(sock):
+    header = recv_exactly(sock, 2)
+    if not header:
+        return None, None
+        
+    fin = (header[0] & 0x80) != 0
+    opcode = header[0] & 0x0f
+    masked = (header[1] & 0x80) != 0
+    payload_len = header[1] & 0x7f
+    
+    if payload_len == 126:
+        len_bytes = recv_exactly(sock, 2)
+        if not len_bytes:
+            return None, None
+        payload_len = int.from_bytes(len_bytes, byteorder='big')
+    elif payload_len == 127:
+        len_bytes = recv_exactly(sock, 8)
+        if not len_bytes:
+            return None, None
+        payload_len = int.from_bytes(len_bytes, byteorder='big')
+        
+    if masked:
+        mask_key = recv_exactly(sock, 4)
+        if not mask_key:
+            return None, None
+            
+    payload = recv_exactly(sock, payload_len)
+    if payload is None:
+        return None, None
+        
+    if masked:
+        unmasked = bytearray(payload_len)
+        for i in range(payload_len):
+            unmasked[i] = payload[i] ^ mask_key[i % 4]
+        payload = unmasked
+        
+    return opcode, payload
+
+def send_frame(sock, text):
+    data = text.encode('utf-8')
+    payload_len = len(data)
+    
+    header = bytearray()
+    # fin = 1, rsv = 0, opcode = 1 (text frame)
+    header.append(0x81)
+    
+    if payload_len < 126:
+        header.append(payload_len)
+    elif payload_len < 65536:
+        header.append(126)
+        header.extend(payload_len.to_bytes(2, byteorder='big'))
+    else:
+        header.append(127)
+        header.extend(payload_len.to_bytes(8, byteorder='big'))
+        
+    header.extend(data)
+    sock.sendall(header)
+
+
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    daemon_threads = True
 
 
 class SyncMockHandler(BaseHTTPRequestHandler):
@@ -111,6 +196,10 @@ class SyncMockHandler(BaseHTTPRequestHandler):
         # ── Track 3: Device Key Lookup  (/api/v1/devices/{id}/key)
         elif path.startswith('/api/v1/devices/') and path.endswith('/key'):
             self._handle_device_key_lookup(path)
+
+        # ── Track 3: WebSocket Upgrade ─────────────────────────────
+        elif path == '/chat':
+            self._handle_websocket_upgrade()
 
         else:
             self._write_json({'error': 'Not Found'}, 404)
@@ -429,18 +518,87 @@ class SyncMockHandler(BaseHTTPRequestHandler):
             'acknowledged': acked_count,
         })
 
+    # ══════════════════════════════════════════════════════════════
+    #  Track 3 — WebSocket handler (RFC 6455)
+    # ══════════════════════════════════════════════════════════════
+
+    def _handle_websocket_upgrade(self):
+        upgrade = self.headers.get('Upgrade', '').lower()
+        if 'websocket' not in upgrade:
+            self._write_json({'error': 'Expected websocket upgrade'}, 400)
+            return
+
+        key = self.headers.get('Sec-WebSocket-Key')
+        if not key:
+            self._write_json({'error': 'Missing Sec-WebSocket-Key'}, 400)
+            return
+
+        guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+        accept = base64.b64encode(hashlib.sha1((key + guid).encode('utf-8')).digest()).decode('utf-8')
+
+        self.send_response(101, 'Switching Protocols')
+        self.send_header('Upgrade', 'websocket')
+        self.send_header('Connection', 'Upgrade')
+        self.send_header('Sec-WebSocket-Accept', accept)
+        self.end_headers()
+
+        sock = self.request
+        sock.settimeout(60.0)
+
+        # Register client socket
+        global ws_clients
+        with ws_clients_lock:
+            ws_clients.append(sock)
+
+        print(f"\n🔌 [WS] Client connected. Active clients: {len(ws_clients)}")
+
+        try:
+            while True:
+                opcode, data = recv_frame(sock)
+                if opcode is None:
+                    break
+                if opcode == 8:  # Close frame
+                    break
+                if opcode == 9:  # Ping
+                    # Reply with Pong
+                    pong = bytearray([0x8a, 0])
+                    sock.sendall(pong)
+                    continue
+                if opcode == 10:  # Pong
+                    continue
+                if opcode == 1:  # Text frame
+                    message_text = data.decode('utf-8')
+                    print(f"💬 [WS] Broadcast: {message_text[:120]}")
+                    
+                    # Relay to all other clients
+                    with ws_clients_lock:
+                        for client in list(ws_clients):
+                            if client is not sock:
+                                try:
+                                    send_frame(client, message_text)
+                                except Exception:
+                                    if client in ws_clients:
+                                        ws_clients.remove(client)
+        except Exception as e:
+            pass
+        finally:
+            with ws_clients_lock:
+                if sock in ws_clients:
+                    ws_clients.remove(sock)
+            print(f"🔌 [WS] Client disconnected. Active clients: {len(ws_clients)}")
+
 
 # ══════════════════════════════════════════════════════════════════
 #  Server startup
-# ══════════════════════════════════════════════════════════════════
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def run(server_class=HTTPServer, handler_class=SyncMockHandler, port=8080):
+def run(server_class=ThreadedHTTPServer, handler_class=SyncMockHandler, port=8080):
     server_address = ('0.0.0.0', port)
     httpd = server_class(server_address, handler_class)
 
     print()
     print("╔══════════════════════════════════════════════════════════════╗")
-    print("║      🚀 iZiiApp Sync + E2EE Server — Track 1 & 3          ║")
+    print("║   🚀 Threaded iZiiApp Sync + E2EE Server — Track 1 & 3       ║")
     print("╠══════════════════════════════════════════════════════════════╣")
     print(f"║  🌐 Local:   http://127.0.0.1:{port:<26}║")
     print(f"║  📡 WiFi:    http://<IP_máy_tính>:{port:<21}║")
@@ -456,10 +614,11 @@ def run(server_class=HTTPServer, handler_class=SyncMockHandler, port=8080):
     print("║     GET  /api/v1/devices/online       Online devices       ║")
     print("║     GET  /api/v1/devices/{id}/key     Public key lookup    ║")
     print("╠══════════════════════════════════════════════════════════════╣")
-    print("║  📨 Track 3 — E2EE Messaging (relay only)                  ║")
+    print("║  📨 Track 3 — E2EE Messaging (relay + WS support)          ║")
     print("║     POST /api/v1/messages/send        Send encrypted msg   ║")
     print("║     GET  /api/v1/messages/pending     Fetch pending msgs   ║")
     print("║     POST /api/v1/messages/ack         Acknowledge delivery ║")
+    print("║     WS   /chat                        WebSocket Chat relay ║")
     print("╠══════════════════════════════════════════════════════════════╣")
     print("║  ⚠️  Server is a RELAY ONLY — it CANNOT decrypt messages    ║")
     print("║  🛑 Press Ctrl + C to stop the server                      ║")

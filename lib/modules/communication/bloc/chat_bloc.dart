@@ -108,7 +108,8 @@ class ChatState extends Equatable {
   final String? activeConversationId;
   final String? currentUserId;
   final Map<String, ChatPresenceState> userPresenceMap;
-  final Map<String, List<String>> typingUsersMap; // Map<ConversationId, List<UserId>>
+  final Map<String, List<String>>
+      typingUsersMap; // Map<ConversationId, List<UserId>>
   final bool isLoading;
   final bool isWsConnected;
   final String? error;
@@ -204,18 +205,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   Future<void> _init() async {
     try {
-      final defaultUserId = 'default_user';
+      const defaultUserId = 'default_user';
       await _db.into(_db.users).insert(
-        User(
-          id: defaultUserId,
-          name: 'Tôi (Demo User)',
-          type: 'both',
-          kycStatus: 'verified',
-          createdAt: DateTime.now(),
-        ),
-        mode: InsertMode.insertOrIgnore,
-      );
-      
+            User(
+              id: defaultUserId,
+              name: 'Tôi (Demo User)',
+              type: 'both',
+              kycStatus: 'verified',
+              createdAt: DateTime.now(),
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+
       final mockContacts = [
         User(
           id: 'user_an_nguyen',
@@ -234,7 +235,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           type: 'provider',
           kycStatus: 'verified',
           createdAt: DateTime.now(),
-          ),
+        ),
         User(
           id: 'user_bich_tran',
           name: 'Trần Thị Bích',
@@ -248,7 +249,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       for (var mock in mockContacts) {
         await _db.into(_db.users).insert(mock, mode: InsertMode.insertOrIgnore);
       }
-      
+
       final activeUserId = await SettingsService().getActiveUserId();
       add(SwitchUserEvent(activeUserId));
     } catch (_) {}
@@ -276,13 +277,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     if (_currentUserId == null) return;
-    
+
     // Trigger background sync to push local messages and pull new messages
     SyncService().triggerSync();
 
     emit(state.copyWith(isLoading: true));
     try {
-      final conversations = await _chatRepository.getConversations(_currentUserId!);
+      final conversations =
+          await _chatRepository.getConversations(_currentUserId!);
       emit(state.copyWith(conversations: conversations, isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
@@ -300,7 +302,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     emit(state.copyWith(isLoading: true));
     try {
-      final contacts = await _chatRepository.getReachableContacts(_currentUserId!);
+      final contacts =
+          await _chatRepository.getReachableContacts(_currentUserId!);
       emit(state.copyWith(contacts: contacts, isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
@@ -311,11 +314,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     OpenConversationEvent event,
     Emitter<ChatState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, activeConversationId: event.conversationId));
+    emit(state.copyWith(
+        isLoading: true, activeConversationId: event.conversationId));
     try {
       final messages = await _chatRepository.getMessages(event.conversationId);
       emit(state.copyWith(activeMessages: messages, isLoading: false));
-      
+
       // Update read receipts
       if (_currentUserId != null && messages.isNotEmpty) {
         final lastMsg = messages.last;
@@ -328,7 +332,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               'read_at': DateTime.now().toIso8601String(),
             },
           ));
-          await _chatRepository.updateMessageStatus(lastMsg.id, readAt: DateTime.now());
+          await _chatRepository.updateMessageStatus(lastMsg.id,
+              readAt: DateTime.now());
         }
       }
     } catch (e) {
@@ -360,14 +365,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     if (_currentUserId == null) return;
 
     // Auto-detect E2EE capability: if the companion has online devices, encrypt!
-    final companion = await _chatRepository.getCompanion(event.conversationId, _currentUserId!);
+    final companion = await _chatRepository.getCompanion(
+        event.conversationId, _currentUserId!);
     if (companion != null) {
       try {
         final discoveryService = DeviceDiscoveryService();
         final onlineDevices = await discoveryService.getOnlineDevices();
-        final companionDevices = onlineDevices
-            .where((d) => d.userId == companion.id)
-            .toList();
+        final companionDevices =
+            onlineDevices.where((d) => d.userId == companion.id).toList();
 
         if (companionDevices.isNotEmpty) {
           add(SendEncryptedMessageEvent(
@@ -404,7 +409,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     // Update state to include new message
     if (state.activeConversationId == event.conversationId) {
-      final updatedList = List<ChatMessage>.from(state.activeMessages)..add(chatMsg);
+      final updatedList = List<ChatMessage>.from(state.activeMessages)
+        ..add(chatMsg);
       emit(state.copyWith(activeMessages: updatedList));
     }
 
@@ -466,7 +472,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         );
 
         await _chatRepository.saveMessage(chatMsg);
-        
+
         // Notify server that it's delivered
         if (senderId != _currentUserId) {
           _wsService.sendEvent(ChatWebSocketEvent(
@@ -481,9 +487,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
         // Add to active message stream if currently open
         if (state.activeConversationId == convoId) {
-          final updatedList = List<ChatMessage>.from(state.activeMessages)..add(chatMsg);
+          final updatedList = List<ChatMessage>.from(state.activeMessages)
+            ..add(chatMsg);
           emit(state.copyWith(activeMessages: updatedList));
-          
+
           // Mark read automatically since user has it open
           if (senderId != _currentUserId) {
             _wsService.sendEvent(ChatWebSocketEvent(
@@ -494,7 +501,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                 'read_at': DateTime.now().toIso8601String(),
               },
             ));
-            await _chatRepository.updateMessageStatus(msgId, readAt: DateTime.now());
+            await _chatRepository.updateMessageStatus(msgId,
+                readAt: DateTime.now());
           }
         }
         add(LoadConversationsEvent());
@@ -503,7 +511,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       case 'msg_delivered':
         final msgId = data['message_id'] as String;
         final deliveredAt = DateTime.parse(data['delivered_at'] as String);
-        await _chatRepository.updateMessageStatus(msgId, deliveredAt: deliveredAt);
+        await _chatRepository.updateMessageStatus(msgId,
+            deliveredAt: deliveredAt);
         _updateActiveMessageStatus(msgId, deliveredAt: deliveredAt, emit: emit);
         break;
 
@@ -518,9 +527,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         final userId = data['user_id'] as String;
         final presenceStr = data['presence'] as String;
         final presence = ChatPresenceStateExtension.fromString(presenceStr);
-        
-        final updatedPresenceMap = Map<String, ChatPresenceState>.from(state.userPresenceMap)
-          ..[userId] = presence;
+
+        final updatedPresenceMap =
+            Map<String, ChatPresenceState>.from(state.userPresenceMap)
+              ..[userId] = presence;
         emit(state.copyWith(userPresenceMap: updatedPresenceMap));
         break;
 
@@ -529,7 +539,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         final userId = data['user_id'] as String;
         final isTyping = data['is_typing'] as bool;
 
-        final currentTyping = List<String>.from(state.typingUsersMap[convoId] ?? []);
+        final currentTyping =
+            List<String>.from(state.typingUsersMap[convoId] ?? []);
         if (isTyping) {
           if (!currentTyping.contains(userId)) {
             currentTyping.add(userId);
@@ -538,8 +549,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           currentTyping.remove(userId);
         }
 
-        final updatedTypingMap = Map<String, List<String>>.from(state.typingUsersMap)
-          ..[convoId] = currentTyping;
+        final updatedTypingMap =
+            Map<String, List<String>>.from(state.typingUsersMap)
+              ..[convoId] = currentTyping;
         emit(state.copyWith(typingUsersMap: updatedTypingMap));
         break;
     }
@@ -586,21 +598,21 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   Future<void> _onSwitchUser(
-      SwitchUserEvent event,
-      Emitter<ChatState> emit,
-    ) async {
-      await SettingsService().saveActiveUserId(event.userId);
-      _currentUserId = event.userId;
-      _wsService.disconnect();
-      _wsService.setUserId(event.userId);
-      _wsService.connect();
+    SwitchUserEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    await SettingsService().saveActiveUserId(event.userId);
+    _currentUserId = event.userId;
+    _wsService.disconnect();
+    _wsService.setUserId(event.userId);
+    _wsService.connect();
 
-      emit(state.copyWith(currentUserId: event.userId));
+    emit(state.copyWith(currentUserId: event.userId));
 
-      // Trigger reload
-      add(LoadConversationsEvent());
-      add(LoadContactsEvent());
-    }
+    // Trigger reload
+    add(LoadConversationsEvent());
+    add(LoadContactsEvent());
+  }
 
   @override
   Future<void> close() {
@@ -631,7 +643,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       final discoveryService = DeviceDiscoveryService();
       final myIdentity = await identityService.getOrCreateIdentity();
 
-      final companion = await _chatRepository.getCompanion(event.conversationId, _currentUserId!);
+      final companion = await _chatRepository.getCompanion(
+          event.conversationId, _currentUserId!);
       if (companion == null) {
         add(SendMessageEvent(
           conversationId: event.conversationId,
@@ -643,7 +656,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // Get online devices for the companion user (excluding our own)
       final onlineDevices = await discoveryService.getOnlineDevices();
       final recipientDevices = onlineDevices
-          .where((d) => d.userId == companion.id && d.deviceId != myIdentity.deviceId)
+          .where((d) =>
+              d.userId == companion.id && d.deviceId != myIdentity.deviceId)
           .toList();
 
       if (recipientDevices.isEmpty) {
@@ -697,12 +711,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       await _chatRepository.saveMessage(chatMsg);
 
       if (state.activeConversationId == event.conversationId) {
-        final updatedList = List<ChatMessage>.from(state.activeMessages)..add(chatMsg);
+        final updatedList = List<ChatMessage>.from(state.activeMessages)
+          ..add(chatMsg);
         emit(state.copyWith(activeMessages: updatedList));
       }
       add(LoadConversationsEvent());
 
-      print('[E2EE] Sent encrypted message to ${recipientDevices.length} devices');
+      print(
+          '[E2EE] Sent encrypted message to ${recipientDevices.length} devices');
     } catch (e) {
       print('[E2EE] Error sending encrypted message: $e');
       // Fallback to regular send
@@ -741,7 +757,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           final sentAt = DateTime.parse(msgMap['sent_at'] as String);
 
           // Get sender's public key
-          final senderDevice = await discoveryService.getDeviceInfo(senderDeviceId);
+          final senderDevice =
+              await discoveryService.getDeviceInfo(senderDeviceId);
           if (senderDevice == null) {
             print('[E2EE] Unknown sender device: $senderDeviceId, skipping');
             continue;
@@ -777,12 +794,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
           // Update UI if this conversation is active
           if (state.activeConversationId == conversationId) {
-            final updatedList = List<ChatMessage>.from(state.activeMessages)..add(chatMsg);
+            final updatedList = List<ChatMessage>.from(state.activeMessages)
+              ..add(chatMsg);
             emit(state.copyWith(activeMessages: updatedList));
           }
 
           messageIdsToAck.add(msgId);
-          print('[E2EE] Decrypted message from $senderDeviceId: ${plaintext.length} chars');
+          print(
+              '[E2EE] Decrypted message from $senderDeviceId: ${plaintext.length} chars');
         } catch (e) {
           print('[E2EE] Error decrypting message: $e');
         }

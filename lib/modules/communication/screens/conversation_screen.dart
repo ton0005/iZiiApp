@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/database/app_database.dart';
@@ -18,7 +17,8 @@ import '../theme/chat_theme.dart';
 
 class ConversationScreen extends StatefulWidget {
   final String conversationId;
-  final bool embedded; // Hides AppBar back navigation when embedded in Split View
+  final bool
+      embedded; // Hides AppBar back navigation when embedded in Split View
 
   const ConversationScreen({
     super.key,
@@ -37,7 +37,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   bool _isTyping = false;
   bool _showScrollToBottom = false;
   bool _showQuickReplyTray = false;
-  
+
   // Accessibility Font size options state
   ChatFontSizeOption _fontSizeOption = ChatFontSizeOption.medium;
 
@@ -59,10 +59,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   void _scrollListener() {
     if (!_scrollController.hasClients) return;
-    
+
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
-    
+
     // Show scroll to bottom button if scrolled up by more than 200px
     if (maxScroll - currentScroll > 200.0) {
       if (!_showScrollToBottom) {
@@ -92,17 +92,23 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void _onTextChanged(String text) {
     if (text.isEmpty && _isTyping) {
       _isTyping = false;
-      context.read<ChatBloc>().add(SendTypingStateEvent(widget.conversationId, false));
+      context
+          .read<ChatBloc>()
+          .add(SendTypingStateEvent(widget.conversationId, false));
     } else if (text.isNotEmpty && !_isTyping) {
       _isTyping = true;
-      context.read<ChatBloc>().add(SendTypingStateEvent(widget.conversationId, true));
+      context
+          .read<ChatBloc>()
+          .add(SendTypingStateEvent(widget.conversationId, true));
     }
 
     _typingTimer?.cancel();
     _typingTimer = Timer(const Duration(seconds: 2), () {
       if (_isTyping) {
         _isTyping = false;
-        context.read<ChatBloc>().add(SendTypingStateEvent(widget.conversationId, false));
+        context
+            .read<ChatBloc>()
+            .add(SendTypingStateEvent(widget.conversationId, false));
       }
     });
   }
@@ -115,7 +121,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
           conversationId: widget.conversationId,
           text: text,
         ));
-    
+
     if (quickReply == null) {
       _messageController.clear();
       _onTextChanged('');
@@ -139,23 +145,29 @@ class _ConversationScreenState extends State<ConversationScreen> {
           elevation: 1,
           titleSpacing: widget.embedded ? 16 : 0,
           title: FutureBuilder<User?>(
-            future: chatBloc.chatRepository.getCompanion(widget.conversationId, currentUserId),
+            future: chatBloc.chatRepository
+                .getCompanion(widget.conversationId, currentUserId),
             builder: (context, companionSnapshot) {
               if (!companionSnapshot.hasData) {
                 return const SizedBox();
               }
               final companion = companionSnapshot.data!;
-              
+
               return FutureBuilder<List<RemoteDevice>>(
                 future: DeviceDiscoveryService().getOnlineDevices(),
                 builder: (context, onlineSnapshot) {
                   final onlineDevices = onlineSnapshot.data ?? [];
-                  final isE2ee = onlineDevices.any((d) => d.userId == companion.id);
+                  final isE2ee =
+                      onlineDevices.any((d) => d.userId == companion.id);
 
                   return BlocBuilder<ChatBloc, ChatState>(
                     builder: (context, state) {
-                      final presence = state.userPresenceMap[companion.id] ?? ChatPresenceState.offline;
-                      final isTyping = state.typingUsersMap[widget.conversationId]?.contains(companion.id) ?? false;
+                      final presence = state.userPresenceMap[companion.id] ??
+                          ChatPresenceState.offline;
+                      final isTyping = state
+                              .typingUsersMap[widget.conversationId]
+                              ?.contains(companion.id) ??
+                          false;
 
                       return Row(
                         children: [
@@ -186,7 +198,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                                         child: Icon(
                                           Icons.lock_outline_rounded,
                                           size: 15,
-                                          color: Color(0xFF10B981), // Emerald green
+                                          color: Color(
+                                              0xFF10B981), // Emerald green
                                         ),
                                       ),
                                     ],
@@ -194,13 +207,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  isTyping 
+                                  isTyping
                                       ? context.tr('chat_is_typing')
                                       : _getPresenceText(context, presence),
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: isTyping 
-                                        ? ChatTheme.getOnline(isDark) 
+                                    color: isTyping
+                                        ? ChatTheme.getOnline(isDark)
                                         : ChatTheme.getTextMuted(isDark),
                                   ),
                                 ),
@@ -218,14 +231,16 @@ class _ConversationScreenState extends State<ConversationScreen> {
           actions: [
             // Voice call button helper
             IconButton(
-              icon: Icon(Icons.phone_rounded, color: ChatTheme.getAccent(isDark)),
+              icon:
+                  Icon(Icons.phone_rounded, color: ChatTheme.getAccent(isDark)),
               onPressed: () {
                 // Call companion logic
               },
             ),
             // Font Size Selection Menu
             PopupMenuButton<ChatFontSizeOption>(
-              icon: Icon(Icons.text_fields_rounded, color: ChatTheme.getAccent(isDark)),
+              icon: Icon(Icons.text_fields_rounded,
+                  color: ChatTheme.getAccent(isDark)),
               onSelected: (option) {
                 setState(() {
                   _fontSizeOption = option;
@@ -234,19 +249,31 @@ class _ConversationScreenState extends State<ConversationScreen> {
               itemBuilder: (context) => [
                 PopupMenuItem(
                   value: ChatFontSizeOption.small,
-                  child: Text('A A Small text (14px)', style: TextStyle(fontSize: ChatTheme.getFontSize(ChatFontSizeOption.small))),
+                  child: Text('A A Small text (14px)',
+                      style: TextStyle(
+                          fontSize:
+                              ChatTheme.getFontSize(ChatFontSizeOption.small))),
                 ),
                 PopupMenuItem(
                   value: ChatFontSizeOption.medium,
-                  child: Text('A A Normal text (16px)', style: TextStyle(fontSize: ChatTheme.getFontSize(ChatFontSizeOption.medium))),
+                  child: Text('A A Normal text (16px)',
+                      style: TextStyle(
+                          fontSize: ChatTheme.getFontSize(
+                              ChatFontSizeOption.medium))),
                 ),
                 PopupMenuItem(
                   value: ChatFontSizeOption.large,
-                  child: Text('A A Large text (18px)', style: TextStyle(fontSize: ChatTheme.getFontSize(ChatFontSizeOption.large))),
+                  child: Text('A A Large text (18px)',
+                      style: TextStyle(
+                          fontSize:
+                              ChatTheme.getFontSize(ChatFontSizeOption.large))),
                 ),
                 PopupMenuItem(
                   value: ChatFontSizeOption.extraLarge,
-                  child: Text('A A Extra Large (20px)', style: TextStyle(fontSize: ChatTheme.getFontSize(ChatFontSizeOption.extraLarge))),
+                  child: Text('A A Extra Large (20px)',
+                      style: TextStyle(
+                          fontSize: ChatTheme.getFontSize(
+                              ChatFontSizeOption.extraLarge))),
                 ),
               ],
             ),
@@ -271,26 +298,31 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         return Center(
                           child: Text(
                             context.tr('chat_no_messages_yet'),
-                            style: TextStyle(color: ChatTheme.getTextMuted(isDark), fontSize: 16),
+                            style: TextStyle(
+                                color: ChatTheme.getTextMuted(isDark),
+                                fontSize: 16),
                           ),
                         );
                       }
 
                       return ListView.builder(
                         controller: _scrollController,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                         itemCount: state.activeMessages.length,
                         itemBuilder: (context, index) {
                           final message = state.activeMessages[index];
                           final isMe = message.senderId == currentUserId;
-                          
+
                           // Group messages by day
                           bool showDateSeparator = false;
                           if (index == 0) {
                             showDateSeparator = true;
                           } else {
                             final prevMessage = state.activeMessages[index - 1];
-                            final diff = message.sentAt.difference(prevMessage.sentAt).inDays;
+                            final diff = message.sentAt
+                                .difference(prevMessage.sentAt)
+                                .inDays;
                             if (diff.abs() > 0) {
                               showDateSeparator = true;
                             }
@@ -298,8 +330,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
                           return Column(
                             children: [
-                              if (showDateSeparator) _buildDateSeparator(message.sentAt, isDark),
-                              _buildMessageBubble(context, message, isMe, isDark),
+                              if (showDateSeparator)
+                                _buildDateSeparator(message.sentAt, isDark),
+                              _buildMessageBubble(
+                                  context, message, isMe, isDark),
                             ],
                           );
                         },
@@ -335,7 +369,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 child: FloatingActionButton(
                   mini: true,
                   backgroundColor: ChatTheme.getAccent(isDark),
-                  child: const Icon(Icons.arrow_downward_rounded, color: Colors.white),
+                  child: const Icon(Icons.arrow_downward_rounded,
+                      color: Colors.white),
                   onPressed: () {
                     _scrollToBottom();
                     setState(() {
@@ -379,10 +414,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
-  Widget _buildMessageBubble(BuildContext context, ChatMessage message, bool isMe, bool isDark) {
+  Widget _buildMessageBubble(
+      BuildContext context, ChatMessage message, bool isMe, bool isDark) {
     String messageText = '';
     try {
-      final contentMap = Map<String, dynamic>.from(jsonDecode(message.content) as Map);
+      final contentMap =
+          Map<String, dynamic>.from(jsonDecode(message.content) as Map);
       messageText = contentMap['text'] as String? ?? '';
     } catch (_) {
       messageText = message.content;
@@ -394,7 +431,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
-        onLongPress: () => _showMessageActionSheet(context, messageText, message.id, isMe),
+        onLongPress: () =>
+            _showMessageActionSheet(context, messageText, message.id, isMe),
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 6),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -402,12 +440,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
             maxWidth: MediaQuery.of(context).size.width * 0.75,
           ),
           decoration: BoxDecoration(
-            color: isMe 
-                ? ChatTheme.getBgBubbleMine(isDark) 
+            color: isMe
+                ? ChatTheme.getBgBubbleMine(isDark)
                 : ChatTheme.getBgBubbleTheirs(isDark),
             border: Border.all(
-              color: isMe 
-                  ? Colors.transparent 
+              color: isMe
+                  ? Colors.transparent
                   : (isDark ? Colors.grey.shade800 : Colors.grey.shade300),
             ),
             borderRadius: BorderRadius.only(
@@ -436,7 +474,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     sentTime,
                     style: TextStyle(
                       fontSize: 11,
-                      color: isMe ? Colors.white.withValues(alpha: 0.75) : ChatTheme.getTextMuted(isDark),
+                      color: isMe
+                          ? Colors.white.withValues(alpha: 0.75)
+                          : ChatTheme.getTextMuted(isDark),
                     ),
                   ),
                   if (isMe) ...[
@@ -454,9 +494,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   Widget _buildStatusTick(ChatMessage message) {
     if (message.readAt != null) {
-      return const Icon(Icons.done_all_rounded, size: 14, color: Colors.cyanAccent);
+      return const Icon(Icons.done_all_rounded,
+          size: 14, color: Colors.cyanAccent);
     } else if (message.deliveredAt != null) {
-      return const Icon(Icons.done_all_rounded, size: 14, color: Colors.white70);
+      return const Icon(Icons.done_all_rounded,
+          size: 14, color: Colors.white70);
     } else {
       return const Icon(Icons.done_rounded, size: 14, color: Colors.white70);
     }
@@ -507,7 +549,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 // Quick reply toggle button (⚡)
                 IconButton(
                   icon: Icon(
-                    _showQuickReplyTray ? Icons.bolt_rounded : Icons.offline_bolt_outlined,
+                    _showQuickReplyTray
+                        ? Icons.bolt_rounded
+                        : Icons.offline_bolt_outlined,
                     color: ChatTheme.getAccent(isDark),
                   ),
                   onPressed: () {
@@ -516,23 +560,28 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     });
                   },
                 ),
-                
+
                 // Attachment Button (📎)
                 IconButton(
-                  icon: Icon(Icons.attach_file_rounded, color: ChatTheme.getTextMuted(isDark)),
+                  icon: Icon(Icons.attach_file_rounded,
+                      color: ChatTheme.getTextMuted(isDark)),
                   onPressed: () {
                     // Attachment logic
                   },
                 ),
-                
+
                 // Text Message input field
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isDark ? ChatTheme.bgPrimaryDark : Colors.grey.shade100,
+                      color: isDark
+                          ? ChatTheme.bgPrimaryDark
+                          : Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                        color: isDark
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade300,
                       ),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -544,18 +593,23 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             onChanged: _onTextChanged,
                             maxLines: 3,
                             minLines: 1,
-                            style: TextStyle(fontSize: 16, color: ChatTheme.getTextPrimary(isDark)),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: ChatTheme.getTextPrimary(isDark)),
                             decoration: InputDecoration(
                               hintText: context.tr('chat_type_message'),
-                              hintStyle: TextStyle(color: ChatTheme.getTextMuted(isDark)),
+                              hintStyle: TextStyle(
+                                  color: ChatTheme.getTextMuted(isDark)),
                               border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 10),
                             ),
                           ),
                         ),
                         // Emoji Button (😊)
                         IconButton(
-                          icon: Icon(Icons.sentiment_satisfied_alt_rounded, color: ChatTheme.getTextMuted(isDark)),
+                          icon: Icon(Icons.sentiment_satisfied_alt_rounded,
+                              color: ChatTheme.getTextMuted(isDark)),
                           onPressed: () {
                             // Emoji tray action
                           },
@@ -565,7 +619,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                
+
                 // Send or Voice Action Button
                 ValueListenableBuilder<TextEditingValue>(
                   valueListenable: _messageController,
@@ -580,13 +634,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
                           color: Colors.white,
                           size: 18,
                         ),
-                        onPressed: hasText 
-                            ? _sendMessage 
+                        onPressed: hasText
+                            ? _sendMessage
                             : () {
                                 // Voice message recorder trigger placeholder
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Voice recording... (Hold to Record alternative)'),
+                                    content: Text(
+                                        'Voice recording... (Hold to Record alternative)'),
                                     duration: Duration(seconds: 1),
                                   ),
                                 );
@@ -603,7 +658,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
-  void _showMessageActionSheet(BuildContext context, String text, String messageId, bool isMe) {
+  void _showMessageActionSheet(
+      BuildContext context, String text, String messageId, bool isMe) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
@@ -617,8 +673,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.copy_rounded, color: ChatTheme.getAccent(isDark)),
-                title: const Text('Copy message', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                leading: Icon(Icons.copy_rounded,
+                    color: ChatTheme.getAccent(isDark)),
+                title: const Text('Copy message',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: text));
                   Navigator.pop(context);
@@ -626,18 +685,29 @@ class _ConversationScreenState extends State<ConversationScreen> {
               ),
               if (isMe)
                 ListTile(
-                  leading: Icon(Icons.delete_forever_rounded, color: ChatTheme.getDanger(isDark)),
-                  title: const Text('Delete message', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  leading: Icon(Icons.delete_forever_rounded,
+                      color: ChatTheme.getDanger(isDark)),
+                  title: const Text('Delete message',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   onTap: () {
                     // Soft delete logic
-                    context.read<ChatBloc>().chatRepository.deleteMessage(messageId);
-                    context.read<ChatBloc>().add(OpenConversationEvent(widget.conversationId));
+                    context
+                        .read<ChatBloc>()
+                        .chatRepository
+                        .deleteMessage(messageId);
+                    context
+                        .read<ChatBloc>()
+                        .add(OpenConversationEvent(widget.conversationId));
                     Navigator.pop(context);
                   },
                 ),
               ListTile(
-                leading: Icon(Icons.reply_rounded, color: ChatTheme.getAccent(isDark)),
-                title: const Text('Reply to message', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                leading: Icon(Icons.reply_rounded,
+                    color: ChatTheme.getAccent(isDark)),
+                title: const Text('Reply to message',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 onTap: () {
                   Navigator.pop(context);
                 },

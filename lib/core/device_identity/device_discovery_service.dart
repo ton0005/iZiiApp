@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 
-import '../database/app_database.dart';
 import '../settings/settings_service.dart';
 import 'device_identity_models.dart';
 import 'device_identity_service.dart';
@@ -204,7 +203,8 @@ class DeviceDiscoveryService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        _log('✅ Encrypted message sent to ${recipientDeviceIds.length} device(s)');
+        _log(
+            '✅ Encrypted message sent to ${recipientDeviceIds.length} device(s)');
         return true;
       }
 
@@ -234,9 +234,7 @@ class DeviceDiscoveryService {
 
       if (response.statusCode == 200 && response.data != null) {
         final list = response.data['messages'] as List<dynamic>? ?? [];
-        return list
-            .map((m) => Map<String, dynamic>.from(m as Map))
-            .toList();
+        return list.map((m) => Map<String, dynamic>.from(m as Map)).toList();
       }
       return [];
     } on DioException catch (e) {

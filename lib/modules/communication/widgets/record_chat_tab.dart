@@ -46,15 +46,17 @@ class _RecordChatTabState extends State<RecordChatTab> {
   Future<void> _initConversation() async {
     final chatBloc = context.read<ChatBloc>();
     final currentUserId = chatBloc.currentUserId ?? '';
-    
+
     try {
-      final convo = await chatBloc.chatRepository.getOrCreateRecordLinkedConversation(
+      final convo =
+          await chatBloc.chatRepository.getOrCreateRecordLinkedConversation(
         currentUserId: currentUserId,
         recordType: widget.recordType,
         recordId: widget.recordId,
-        participantUserIds: {...widget.participantUserIds, currentUserId}.toList(),
+        participantUserIds:
+            {...widget.participantUserIds, currentUserId}.toList(),
       );
-      
+
       if (mounted) {
         setState(() {
           _conversationId = convo.id;
@@ -79,7 +81,7 @@ class _RecordChatTabState extends State<RecordChatTab> {
           conversationId: _conversationId!,
           text: text,
         ));
-    
+
     _commentController.clear();
     FocusScope.of(context).unfocus();
   }
@@ -87,7 +89,7 @@ class _RecordChatTabState extends State<RecordChatTab> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     if (_initializing) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -114,7 +116,8 @@ class _RecordChatTabState extends State<RecordChatTab> {
                   child: Text(
                     context.tr('chat_no_comments_yet'),
                     style: TextStyle(
-                      color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                      color:
+                          isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                     ),
                   ),
                 );
@@ -126,20 +129,22 @@ class _RecordChatTabState extends State<RecordChatTab> {
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   final msg = messages[index];
-                  
+
                   return FutureBuilder<User?>(
                     future: _getUser(context, msg.senderId),
                     builder: (context, snapshot) {
                       final userName = snapshot.data?.name ?? 'User';
                       String commentText = '';
                       try {
-                        final contentMap = Map<String, dynamic>.from(jsonDecode(msg.content) as Map);
+                        final contentMap = Map<String, dynamic>.from(
+                            jsonDecode(msg.content) as Map);
                         commentText = contentMap['text'] as String? ?? '';
                       } catch (_) {
                         commentText = msg.content;
                       }
 
-                      final timeStr = DateFormat('dd/MM HH:mm').format(msg.sentAt.toLocal());
+                      final timeStr = DateFormat('dd/MM HH:mm')
+                          .format(msg.sentAt.toLocal());
 
                       return Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
@@ -148,10 +153,15 @@ class _RecordChatTabState extends State<RecordChatTab> {
                           children: [
                             CircleAvatar(
                               radius: 18,
-                              backgroundColor: IZiiColors.primary.withOpacity(0.15),
+                              backgroundColor:
+                                  IZiiColors.primary.withValues(alpha: 0.15),
                               child: Text(
-                                userName.isNotEmpty ? userName[0].toUpperCase() : '?',
-                                style: const TextStyle(fontWeight: FontWeight.bold, color: IZiiColors.primary),
+                                userName.isNotEmpty
+                                    ? userName[0].toUpperCase()
+                                    : '?',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: IZiiColors.primary),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -160,15 +170,20 @@ class _RecordChatTabState extends State<RecordChatTab> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         userName,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13),
                                       ),
                                       Text(
                                         timeStr,
-                                        style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey.shade500),
                                       ),
                                     ],
                                   ),
@@ -176,7 +191,9 @@ class _RecordChatTabState extends State<RecordChatTab> {
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: isDark ? IZiiColors.darkSurface : Colors.grey.shade100,
+                                      color: isDark
+                                          ? IZiiColors.darkSurface
+                                          : Colors.grey.shade100,
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
@@ -205,7 +222,9 @@ class _RecordChatTabState extends State<RecordChatTab> {
             color: isDark ? IZiiColors.darkSurface : Colors.white,
             border: Border(
               top: BorderSide(
-                color: isDark ? IZiiColors.darkSurfaceHighlight : Colors.grey.shade200,
+                color: isDark
+                    ? IZiiColors.darkSurfaceHighlight
+                    : Colors.grey.shade200,
               ),
             ),
           ),
@@ -214,7 +233,9 @@ class _RecordChatTabState extends State<RecordChatTab> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isDark ? IZiiColors.darkBackground : Colors.grey.shade100,
+                    color: isDark
+                        ? IZiiColors.darkBackground
+                        : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -243,7 +264,8 @@ class _RecordChatTabState extends State<RecordChatTab> {
   Future<User?> _getUser(BuildContext context, String userId) async {
     final chatBloc = context.read<ChatBloc>();
     try {
-      final query = chatBloc.db.select(chatBloc.db.users)..where((u) => u.id.equals(userId));
+      final query = chatBloc.db.select(chatBloc.db.users)
+        ..where((u) => u.id.equals(userId));
       return await query.getSingleOrNull();
     } catch (_) {
       return null;

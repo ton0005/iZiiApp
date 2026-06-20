@@ -80,7 +80,8 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
           listener: (context, state) {
             if (state.error != null) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${context.tr('error')}: ${state.error}')),
+                SnackBar(
+                    content: Text('${context.tr('error')}: ${state.error}')),
               );
             }
             if (state.alarmActive) {
@@ -89,7 +90,8 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                 HapticFeedback.vibrate();
                 SystemSound.play(SystemSoundType.alert);
                 // Start playing every 1.5 seconds for persistent alarm effect
-                _alarmAudioTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+                _alarmAudioTimer =
+                    Timer.periodic(const Duration(milliseconds: 1500), (timer) {
                   HapticFeedback.vibrate();
                   SystemSound.play(SystemSoundType.alert);
                 });
@@ -100,21 +102,28 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                   context: context,
                   barrierDismissible: false,
                   builder: (ctx) => AlertDialog(
-                    icon: const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 48),
-                    title: Text(context.tr('mushrooms_alarm_title'), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                    icon: const Icon(Icons.warning_amber_rounded,
+                        color: Colors.red, size: 48),
+                    title: Text(context.tr('mushrooms_alarm_title'),
+                        style: const TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold)),
                     content: Text(
                       context.tr('mushrooms_alarm_content'),
                       textAlign: TextAlign.center,
                     ),
                     actions: [
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red),
                         onPressed: () {
                           Navigator.pop(ctx);
                           _isAlarmDialogOpen = false;
-                          context.read<MushroomsBloc>().add(DismissActiveAlarmsEvent());
+                          context
+                              .read<MushroomsBloc>()
+                              .add(DismissActiveAlarmsEvent());
                         },
-                        child: Text(context.tr('mushrooms_alarm_dismiss'), style: const TextStyle(color: Colors.white)),
+                        child: Text(context.tr('mushrooms_alarm_dismiss'),
+                            style: const TextStyle(color: Colors.white)),
                       )
                     ],
                   ),
@@ -166,12 +175,21 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStatItem(context.tr('mushrooms_total_rooms'), '${state.rooms.length}',
-                          Icons.warehouse_rounded, Colors.blue),
-                      _buildStatItem(context.tr('mushrooms_active_rooms'), '$activeRoomsCount',
-                          Icons.play_circle_outline_rounded, Colors.green),
-                      _buildStatItem(context.tr('mushrooms_idle_rooms'), '$idleRoomsCount',
-                          Icons.pause_circle_outline_rounded, Colors.grey),
+                      _buildStatItem(
+                          context.tr('mushrooms_total_rooms'),
+                          '${state.rooms.length}',
+                          Icons.warehouse_rounded,
+                          Colors.blue),
+                      _buildStatItem(
+                          context.tr('mushrooms_active_rooms'),
+                          '$activeRoomsCount',
+                          Icons.play_circle_outline_rounded,
+                          Colors.green),
+                      _buildStatItem(
+                          context.tr('mushrooms_idle_rooms'),
+                          '$idleRoomsCount',
+                          Icons.pause_circle_outline_rounded,
+                          Colors.grey),
                     ],
                   ),
                 ),
@@ -188,13 +206,19 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                           child: Row(
                             children: [
                               _buildFilterChip(
-                                  context.tr('mushrooms_filter_all'), 'all', Icons.grid_view_rounded),
+                                  context.tr('mushrooms_filter_all'),
+                                  'all',
+                                  Icons.grid_view_rounded),
                               const SizedBox(width: 8),
-                              _buildFilterChip(context.tr('mushrooms_filter_active'), 'active',
+                              _buildFilterChip(
+                                  context.tr('mushrooms_filter_active'),
+                                  'active',
                                   Icons.play_arrow_rounded),
                               const SizedBox(width: 8),
                               _buildFilterChip(
-                                  context.tr('mushrooms_filter_idle'), 'idle', Icons.pause_rounded),
+                                  context.tr('mushrooms_filter_idle'),
+                                  'idle',
+                                  Icons.pause_rounded),
                             ],
                           ),
                         ),
@@ -296,9 +320,9 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                 color: statusColor,
                                                 fontSize: 9,
                                                 fontWeight: FontWeight.bold,
-                                                ),
                                               ),
                                             ),
+                                          ),
                                         ],
                                       ),
                                       const SizedBox(height: 8),
@@ -313,7 +337,12 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                 color: Colors.grey),
                                             const SizedBox(width: 4),
                                             Text(
-                                              context.tr('mushrooms_day_in_cycle').replaceAll('{day}', room['day_in_cycle'].toString()),
+                                              context
+                                                  .tr('mushrooms_day_in_cycle')
+                                                  .replaceAll(
+                                                      '{day}',
+                                                      room['day_in_cycle']
+                                                          .toString()),
                                               style: const TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.grey),
@@ -323,12 +352,14 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                         if (currentStage == 'special_solo')
                                           Row(
                                             children: [
-                                              const Icon(Icons.warning_amber_rounded,
+                                              const Icon(
+                                                  Icons.warning_amber_rounded,
                                                   size: 14,
                                                   color: Colors.orange),
                                               const SizedBox(width: 4),
                                               Text(
-                                                context.tr('mushrooms_has_solo_job'),
+                                                context.tr(
+                                                    'mushrooms_has_solo_job'),
                                                 style: const TextStyle(
                                                     fontSize: 11,
                                                     color: Colors.orange,
@@ -339,13 +370,16 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                           )
                                         else
                                           Text(
-                                            context.tr('mushrooms_running_cycle'),
+                                            context
+                                                .tr('mushrooms_running_cycle'),
                                             style: const TextStyle(
                                                 fontSize: 11,
                                                 color: Colors.grey),
                                           ),
                                       ] else ...[
-                                        Text(context.tr('mushrooms_ready_for_cycle'),
+                                        Text(
+                                            context.tr(
+                                                'mushrooms_ready_for_cycle'),
                                             style: const TextStyle(
                                                 fontSize: 12,
                                                 color: Colors.grey,
@@ -482,7 +516,8 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                 Navigator.pop(ctx);
               }
             },
-            child: Text(ctx.tr('mushrooms_add'), style: const TextStyle(color: Colors.white)),
+            child: Text(ctx.tr('mushrooms_add'),
+                style: const TextStyle(color: Colors.white)),
           )
         ],
       ),
@@ -579,7 +614,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
           _selectedRoomId = rooms.first['id'] as String;
         }
 
-        double prochlorazTotal = _prochlorazRate * _prochlorazArea;
+        final double prochlorazTotal = _prochlorazRate * _prochlorazArea;
 
         return AlertDialog(
           backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
@@ -608,8 +643,8 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
 
                 // Job Type selection
                 Text(context.tr('mushrooms_dialog_select_job_type'),
-                    style:
-                        const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 13)),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
                   initialValue: _selectedJobType,
@@ -668,11 +703,14 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                         border: const OutlineInputBorder()),
                     items: [
                       DropdownMenuItem(
-                          value: '2side', child: Text(context.tr('mushrooms_watering_2side'))),
+                          value: '2side',
+                          child: Text(context.tr('mushrooms_watering_2side'))),
                       DropdownMenuItem(
-                          value: '1side', child: Text(context.tr('mushrooms_watering_1side'))),
+                          value: '1side',
+                          child: Text(context.tr('mushrooms_watering_1side'))),
                       DropdownMenuItem(
-                          value: 'custom', child: Text(context.tr('mushrooms_custom'))),
+                          value: 'custom',
+                          child: Text(context.tr('mushrooms_custom'))),
                     ],
                     onChanged: (val) =>
                         setState(() => _wateringPlan = val ?? '2side'),
@@ -681,7 +719,8 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                   TextFormField(
                     initialValue: _wateringVol.toString(),
                     decoration: InputDecoration(
-                        labelText: context.tr('mushrooms_dialog_watering_volume'),
+                        labelText:
+                            context.tr('mushrooms_dialog_watering_volume'),
                         border: const OutlineInputBorder()),
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
@@ -695,7 +734,8 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                   TextFormField(
                     initialValue: _prochlorazRate.toString(),
                     decoration: InputDecoration(
-                        labelText: context.tr('mushrooms_dialog_prochloraz_rate'),
+                        labelText:
+                            context.tr('mushrooms_dialog_prochloraz_rate'),
                         border: const OutlineInputBorder()),
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
@@ -706,7 +746,8 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                   TextFormField(
                     initialValue: _prochlorazArea.toString(),
                     decoration: InputDecoration(
-                        labelText: context.tr('mushrooms_dialog_prochloraz_area'),
+                        labelText:
+                            context.tr('mushrooms_dialog_prochloraz_area'),
                         border: const OutlineInputBorder()),
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
@@ -723,7 +764,10 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      context.tr('mushrooms_dialog_prochloraz_total').replaceAll('{total}', prochlorazTotal.toStringAsFixed(1)),
+                      context
+                          .tr('mushrooms_dialog_prochloraz_total')
+                          .replaceAll(
+                              '{total}', prochlorazTotal.toStringAsFixed(1)),
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 12),
                     ),
@@ -735,7 +779,8 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                   TextFormField(
                     initialValue: _soloTimeLimit.toString(),
                     decoration: InputDecoration(
-                        labelText: context.tr('mushrooms_dialog_solo_time_limit'),
+                        labelText:
+                            context.tr('mushrooms_dialog_solo_time_limit'),
                         border: const OutlineInputBorder()),
                     keyboardType: TextInputType.number,
                     onChanged: (val) => setState(
@@ -786,18 +831,26 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
 
                 // Priority Row
                 Text(context.tr('mushrooms_dialog_priority'),
-                    style:
-                        const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 13)),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    _buildPriorityButton(context.tr('mushrooms_priority_low'), 'low', Colors.green),
+                    _buildPriorityButton(context.tr('mushrooms_priority_low'),
+                        'low', Colors.green),
                     const SizedBox(width: 4),
-                    _buildPriorityButton(context.tr('mushrooms_priority_normal'), 'normal', Colors.blue),
+                    _buildPriorityButton(
+                        context.tr('mushrooms_priority_normal'),
+                        'normal',
+                        Colors.blue),
                     const SizedBox(width: 4),
-                    _buildPriorityButton(context.tr('mushrooms_priority_high'), 'high', Colors.orange),
+                    _buildPriorityButton(context.tr('mushrooms_priority_high'),
+                        'high', Colors.orange),
                     const SizedBox(width: 4),
-                    _buildPriorityButton(context.tr('mushrooms_priority_urgent'), 'urgent', Colors.red),
+                    _buildPriorityButton(
+                        context.tr('mushrooms_priority_urgent'),
+                        'urgent',
+                        Colors.red),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -815,7 +868,8 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                 TextFormField(
                   controller: _notesController,
                   decoration: InputDecoration(
-                      labelText: context.tr('mushrooms_dialog_notes'), border: const OutlineInputBorder()),
+                      labelText: context.tr('mushrooms_dialog_notes'),
+                      border: const OutlineInputBorder()),
                   maxLines: 2,
                 ),
               ],
@@ -846,7 +900,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
 
                   String? planDetails;
                   if (_selectedJobType == 'watering') {
-                    planDetails = '$_wateringPlan — ${_wateringVol} L/m²';
+                    planDetails = '$_wateringPlan — $_wateringVol L/m²';
                   }
 
                   String? prochlorazRate;
@@ -953,7 +1007,8 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
           final jobs = state.selectedRoomJobs;
           final soloJobs = jobs
               .where((j) =>
-                  j['job_type'] == 'special_solo' && j['status'] == 'in_progress')
+                  j['job_type'] == 'special_solo' &&
+                  j['status'] == 'in_progress')
               .toList();
           for (var sj in soloJobs) {
             final limit = sj['time_limit_minutes'] as int;
@@ -1114,9 +1169,10 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
       builder: (dialogContext) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final priority = job['priority'] ?? 'normal';
-        final assignee = job['assignee'] != null && job['assignee'].toString().isNotEmpty
-            ? job['assignee']
-            : dialogContext.tr('mushrooms_sheet_unassigned');
+        final assignee =
+            job['assignee'] != null && job['assignee'].toString().isNotEmpty
+                ? job['assignee']
+                : dialogContext.tr('mushrooms_sheet_unassigned');
         final notes = job['plan_details'] ?? job['prochloraz_rate'] ?? '';
         final linkedTaskId = job['linked_task_id'] ?? '';
 
@@ -1128,9 +1184,11 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${dialogContext.tr('mushrooms_sheet_assignee')}: $assignee'),
+              Text(
+                  '${dialogContext.tr('mushrooms_sheet_assignee')}: $assignee'),
               const SizedBox(height: 8),
-              Text('${dialogContext.tr('mushrooms_sheet_priority')}: ${priority.toString().toUpperCase()}'),
+              Text(
+                  '${dialogContext.tr('mushrooms_sheet_priority')}: ${priority.toString().toUpperCase()}'),
               const SizedBox(height: 8),
               if (job['scheduled_at'] != null)
                 Text(
@@ -1156,7 +1214,8 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
             if (linkedTaskId.toString().isNotEmpty)
               TextButton.icon(
                 icon: const Icon(Icons.launch_rounded, size: 14),
-                label: Text(dialogContext.tr('mushrooms_sheet_view_linked_task')),
+                label:
+                    Text(dialogContext.tr('mushrooms_sheet_view_linked_task')),
                 onPressed: () {
                   Navigator.pop(dialogContext);
                   Navigator.pop(context);
@@ -1415,14 +1474,14 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildKanbanColumn(
-              context.tr('mushrooms_kanban_todo'), todoJobs, const Color(0xFF64748B), 'todo'),
-          _buildKanbanColumn(context.tr('mushrooms_kanban_in_progress'), inProgressJobs,
-              const Color(0xFF3B82F6), 'in_progress'),
-          _buildKanbanColumn(
-              context.tr('mushrooms_kanban_review'), reviewJobs, const Color(0xFFF59E0B), 'review'),
-          _buildKanbanColumn(
-              context.tr('mushrooms_kanban_completed'), completedJobs, const Color(0xFF10B981), 'completed'),
+          _buildKanbanColumn(context.tr('mushrooms_kanban_todo'), todoJobs,
+              const Color(0xFF64748B), 'todo'),
+          _buildKanbanColumn(context.tr('mushrooms_kanban_in_progress'),
+              inProgressJobs, const Color(0xFF3B82F6), 'in_progress'),
+          _buildKanbanColumn(context.tr('mushrooms_kanban_review'), reviewJobs,
+              const Color(0xFFF59E0B), 'review'),
+          _buildKanbanColumn(context.tr('mushrooms_kanban_completed'),
+              completedJobs, const Color(0xFF10B981), 'completed'),
         ],
       ),
     );
@@ -1484,16 +1543,24 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(context.tr('mushrooms_sheet_task').replaceAll('{task}', sj['name']),
+                  Text(
+                      context
+                          .tr('mushrooms_sheet_task')
+                          .replaceAll('{task}', sj['name']),
                       style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text(context.tr('mushrooms_sheet_worker').replaceAll('{worker}', sj['assignee']),
+                  Text(
+                      context
+                          .tr('mushrooms_sheet_worker')
+                          .replaceAll('{worker}', sj['assignee']),
                       style: const TextStyle(fontSize: 13)),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        context.tr('mushrooms_sheet_countdown').replaceAll('{time}', formattedTime),
+                        context
+                            .tr('mushrooms_sheet_countdown')
+                            .replaceAll('{time}', formattedTime),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -1668,17 +1735,20 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (job['plan_details'].toString().isNotEmpty)
-              Text('${context.tr('mushrooms_dialog_watering_plan')}: ${job['plan_details']}',
+              Text(
+                  '${context.tr('mushrooms_dialog_watering_plan')}: ${job['plan_details']}',
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w600)),
             if (job['prochloraz_rate'].toString().isNotEmpty)
-              Text('${context.tr('mushrooms_dialog_prochloraz_rate')}: ${job['prochloraz_rate']}',
+              Text(
+                  '${context.tr('mushrooms_dialog_prochloraz_rate')}: ${job['prochloraz_rate']}',
                   style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.blueAccent)),
             if (job['assignee'].toString().isNotEmpty)
-              Text('${context.tr('mushrooms_sheet_assignee')}: ${job['assignee']}',
+              Text(
+                  '${context.tr('mushrooms_sheet_assignee')}: ${job['assignee']}',
                   style: const TextStyle(fontSize: 12)),
           ],
         ),
