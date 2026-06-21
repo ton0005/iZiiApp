@@ -188,6 +188,7 @@ class DeviceDiscoveryService {
   }) async {
     try {
       final baseUrl = await _settingsService.getSyncServerUrl();
+      final identity = await _identityService.getOrCreateIdentity();
 
       final payloadMaps = payloadsPerDevice.map(
         (deviceId, payload) => MapEntry(deviceId, payload.toMap()),
@@ -197,6 +198,7 @@ class DeviceDiscoveryService {
         '$baseUrl/api/v1/messages/send',
         data: {
           'conversation_id': conversationId,
+          'sender_device_id': identity.deviceId,
           'recipient_device_ids': recipientDeviceIds,
           'payloads': payloadMaps,
         },

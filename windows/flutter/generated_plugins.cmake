@@ -3,9 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  ble_peripheral
   connectivity_plus
   file_selector_windows
-  flutter_ble_peripheral
   flutter_secure_storage_windows
   geolocator_windows
   permission_handler_windows

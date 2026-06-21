@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
+import 'dart:typed_data';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart'
+    hide CharacteristicProperties;
+import 'package:ble_peripheral/ble_peripheral.dart';
 import 'package:drift/drift.dart';
 import '../database/app_database.dart';
 import 'device_identity_service.dart';
@@ -27,6 +29,7 @@ class BleDeviceDiscoveryService {
 
   bool _isScanning = false;
   bool _isAdvertising = false;
+  bool _isBlePeripheralInitialized = false;
 
   StreamSubscription? _scanSubscription;
   final _nearbyPeersController =
@@ -37,6 +40,107 @@ class BleDeviceDiscoveryService {
   bool get isScanning => _isScanning;
   bool get isAdvertising => _isAdvertising;
 
+  Future<void> _ensureInitialized() async {
+    if (_isBlePeripheralInitialized) return;
+    try {
+      await BlePeripheral.initialize();
+      _isBlePeripheralInitialized = true;
+      print('[BleDiscovery] BlePeripheral initialized successfully.');
+    } catch (e) {
+      print('[BleDiscovery] Failed to initialize BlePeripheral: $e');
+    }
+  }
+
+  Future<void> _setupGattServer() async {
+    await _ensureInitialized();
+    try {
+      await BlePeripheral.clearServices();
+
+      final bleService = BleService(
+        uuid: serviceUuid,
+        primary: true,
+        characteristics: [
+          BleCharacteristic(
+            uuid: charUuid,
+            properties: [
+              CharacteristicProperties.write.index,
+              CharacteristicProperties.notify.index,
+            ],
+            permissions: [
+              AttributePermissions.writeable.index,
+            ],
+          ),
+        ],
+      );
+
+      await BlePeripheral.addService(bleService);
+      
+      BlePeripheral.setWriteRequestCallback(_handleWriteRequest);
+      BlePeripheral.setAdvertisingStatusUpdateCallback((advertising, error) {
+        _isAdvertising = advertising;
+        print('[BleDiscovery] Advertising status update: advertising=$advertising, error=$error');
+      });
+      
+      print('[BleDiscovery] GATT Server configured with service: $serviceUuid');
+    } catch (e) {
+      print('[BleDiscovery] Failed to setup GATT Server: $e');
+    }
+  }
+
+  WriteRequestResult? _handleWriteRequest(
+    String deviceId,
+    String characteristicId,
+    int offset,
+    Uint8List? value,
+  ) {
+    if (characteristicId != charUuid || value == null || value.isEmpty) {
+      return WriteRequestResult(status: 0);
+    }
+
+    print('[BleDiscovery] GATT Write received from $deviceId, length: ${value.length}');
+    _processIncomingHandshake(deviceId, value);
+
+    return WriteRequestResult(status: 0);
+  }
+
+  Future<void> _processIncomingHandshake(String remoteDeviceId, Uint8List payload) async {
+    try {
+      print('[BleDiscovery] Processing incoming Noise handshake message (length: ${payload.length})...');
+      
+      final msg2 = await _handshakeService.processHandshakeMessage(remoteDeviceId, payload);
+      
+      if (msg2 != null) {
+        print('[BleDiscovery] Message 1 processed. Sending Message 2 to $remoteDeviceId...');
+        await BlePeripheral.updateCharacteristic(
+          characteristicId: charUuid,
+          value: Uint8List.fromList(msg2),
+          deviceId: remoteDeviceId,
+        );
+      } else {
+        final session = _handshakeService.getSessionKeys(remoteDeviceId);
+        if (session != null && session.remoteStaticPublicKey != null) {
+          print('[BleDiscovery] Noise Handshake established as Responder with $remoteDeviceId.');
+          
+          final dbDeviceId = 'izii-d-ble-${remoteDeviceId.replaceAll(':', '').replaceAll('-', '').toLowerCase()}';
+          
+          final companion = LocalBlePeersCompanion(
+            deviceId: Value(dbDeviceId),
+            deviceName: Value('iZii Peer ($remoteDeviceId)'),
+            publicKey: Value(base64Encode(session.remoteStaticPublicKey!)),
+            lastSeenAt: Value(DateTime.now()),
+          );
+          
+          await _db.into(_db.localBlePeers).insertOnConflictUpdate(companion);
+          print('[BleDiscovery] Saved peer static public key to database: $dbDeviceId');
+        } else {
+          print('[BleDiscovery] Noise Handshake processing completed, no session established yet.');
+        }
+      }
+    } catch (e) {
+      print('[BleDiscovery] Error processing handshake in GATT write: $e');
+    }
+  }
+
   /// Starts advertising this device's iZii BLE P2P Service.
   /// Works on Android/iOS (Peripheral role).
   Future<void> startAdvertising() async {
@@ -45,13 +149,12 @@ class BleDeviceDiscoveryService {
     try {
       final identity = await _identityService.getOrCreateIdentity();
 
-      final AdvertiseData advertiseData = AdvertiseData(
-        serviceUuid: serviceUuid,
-        localName: identity.deviceName,
-        includeDeviceName: true,
-      );
+      await _setupGattServer();
 
-      await FlutterBlePeripheral().start(advertiseData: advertiseData);
+      await BlePeripheral.startAdvertising(
+        services: [serviceUuid],
+        localName: identity.deviceName,
+      );
       _isAdvertising = true;
       print(
           '[BleDiscovery] Started BLE Advertising. Service UUID: $serviceUuid');
@@ -64,7 +167,7 @@ class BleDeviceDiscoveryService {
   Future<void> stopAdvertising() async {
     if (!_isAdvertising) return;
     try {
-      await FlutterBlePeripheral().stop();
+      await BlePeripheral.stopAdvertising();
       _isAdvertising = false;
       print('[BleDiscovery] Stopped BLE Advertising.');
     } catch (e) {
