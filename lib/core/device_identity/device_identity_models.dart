@@ -228,20 +228,20 @@ class EncryptedPayload {
 
   Map<String, dynamic> toMap() {
     return {
-      'ciphertext_base64': ciphertextBase64,
-      'nonce_base64': nonceBase64,
+      'ciphertext': ciphertextBase64,
+      'nonce': nonceBase64,
       'sender_device_id': senderDeviceId,
-      'signature_base64': signatureBase64,
+      'signature': signatureBase64,
       'sent_at': sentAt.toIso8601String(),
     };
   }
 
   factory EncryptedPayload.fromMap(Map<String, dynamic> map) {
     return EncryptedPayload(
-      ciphertextBase64: map['ciphertext_base64'] as String,
-      nonceBase64: map['nonce_base64'] as String,
+      ciphertextBase64: (map['ciphertext'] ?? map['ciphertext_base64']) as String,
+      nonceBase64: (map['nonce'] ?? map['nonce_base64']) as String,
       senderDeviceId: map['sender_device_id'] as String,
-      signatureBase64: map['signature_base64'] as String,
+      signatureBase64: (map['signature'] ?? map['signature_base64']) as String,
       sentAt: DateTime.parse(map['sent_at'] as String),
     );
   }

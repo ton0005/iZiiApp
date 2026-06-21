@@ -554,6 +554,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               ..[convoId] = currentTyping;
         emit(state.copyWith(typingUsersMap: updatedTypingMap));
         break;
+
+      case 'e2ee_message':
+        // A new encrypted message is available — pull immediately
+        add(PullEncryptedMessagesEvent());
+        break;
     }
   }
 
@@ -679,22 +684,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         payloadsPerDevice[device.deviceId] = payload;
       }
 
-      // Build the envelope for server relay
-      final envelopePayloads = <String, Map<String, String>>{};
-      for (final entry in payloadsPerDevice.entries) {
-        envelopePayloads[entry.key] = {
-          'ciphertext': entry.value.ciphertextBase64,
-          'nonce': entry.value.nonceBase64,
-          'signature': entry.value.signatureBase64,
-        };
-      }
-
       // Send via server relay
       await discoveryService.sendEncryptedMessage(
         conversationId: event.conversationId,
         recipientDeviceIds: recipientDevices.map((d) => d.deviceId).toList(),
         payloadsPerDevice: payloadsPerDevice,
       );
+
+      // Notify receiver via WebSocket to pull immediately
+      if (_wsService.isConnected) {
+        _wsService.sendEvent(ChatWebSocketEvent(
+          event: 'e2ee_message',
+          data: {
+            'conversation_id': event.conversationId,
+            'sender_device_id': myIdentity.deviceId,
+          },
+        ));
+      }
 
       // Save plaintext locally for sender's own message list
       final messageId = const Uuid().v4();
