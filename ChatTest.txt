@@ -1,118 +1,597 @@
-Connecting to VM Service at ws://127.0.0.1:61698/l7f1V1ycLZA=/ws
-Connected to the VM Service.
-flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [ChatWS] Connected successfully.
-flutter: [SyncService] 📥 Nhận được 1 cập nhật từ Server. Đang lọc và áp dụng...
-flutter: [SyncService]    🔄 service_items → insert: id=81ef6660-cea1-42de-9035-1f9e720e4bf2
-flutter: [SyncService] ✅ Đã ghi 1 bản ghi vào database local (bỏ qua/lọc 0).
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
-flutter: [BleDiscovery] Error starting scan: PlatformException(startScan, bluetooth must be turned on. (CBManagerStateUnknown), null, null)
-2
-flutter: [DeviceIdentity] Loaded existing identity: izii-d-45966290
-flutter: [BleDiscovery] BlePeripheral initialized successfully.
-BluetoothState: CBManagerState(rawValue: 5)
-flutter: [DeviceDiscovery] ✅ Device registered: izii-d-45966290
-flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [BleDiscovery] Failed to setup GATT Server: Service addition timed out
-flutter: [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-91
-flutter: [ChatWS] Sent event: typing_state
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-45
-flutter: [ChatWS] Sent event: typing_state
-flutter: [DeviceDiscovery] 📤 Sending E2EE to http://10.146.147.160:8080/api/v1/messages/send
-flutter: [DeviceDiscovery]    conversation_id: direct_user_an_nguyen_user_huong_vo
-flutter: [DeviceDiscovery] ❌ Error sending message: RangeError (end): Invalid value: Not in inclusive range 0..15: 16
-flutter: [ChatWS] Sent event: e2ee_message
-flutter: [E2EE] Sent encrypted message to 1 devices
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [ChatWS] Received event: heartbeat
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [BleDiscovery] Stopped BLE Advertising.
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [ChatWS] Sent event: heartbeat
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [ChatWS] Received event: heartbeat
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
-flutter: [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
-flutter: [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
-flutter: [BleDiscovery] Advertising status update: advertising=true, error=null
-2
-flutter: [BleDiscovery] Discovered peer: Trúc’s iPad (2) (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -50
-flutter: [BleDiscovery] Discovered peer: iZii-ios-mqm4y98h (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -51
-flutter: [DeviceDiscovery] ✅ Device registered: izii-d-45966290
-flutter: [DeviceDiscovery] Heartbeat stopped
-flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
-8
-flutter: [BleDiscovery] Discovered peer: iZii-ios-mqm4y98h (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -51
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-7
-flutter: [BleDiscovery] Discovered peer: iZii-ios-mqm4y98h (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -51
-3
-flutter: [ChatWS] Sent event: typing_state
-flutter: [BleDiscovery] Discovered peer: iZii-ios-mqm4y98h (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -51
-flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
-flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
-flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
-flutter: [SyncService] Không có cập nhật mới từ Server.
-flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
-flutter: [ChatWS] Sent event: heartbeat
-flutter: [ChatWS] Sent eve
+║  📂 Track 1 — Sync Engine                                  ║
+
+║     POST /sync/push          Push mutations                ║
+
+║     GET  /sync/pull          Pull updates (?since=)        ║
+
+║     GET  /sync/status        Server status                 ║
+
+╠══════════════════════════════════════════════════════════════╣
+
+║  🔐 Track 3 — Device Identity                              ║
+
+║     POST /api/v1/devices/register     Register device      ║
+
+║     POST /api/v1/devices/heartbeat    Heartbeat            ║
+
+║     GET  /api/v1/devices/online       Online devices       ║
+
+║     GET  /api/v1/devices/{id}/key     Public key lookup    ║
+
+╠══════════════════════════════════════════════════════════════╣
+
+║  📨 Track 3 — E2EE Messaging (relay + WS support)          ║
+
+║     POST /api/v1/messages/send        Send encrypted msg   ║
+
+║     GET  /api/v1/messages/pending     Fetch pending msgs   ║
+
+║     POST /api/v1/messages/ack         Acknowledge delivery ║
+
+║     WS   /chat                        WebSocket Chat relay ║
+
+╠══════════════════════════════════════════════════════════════╣
+
+║  ⚠️  Server is a RELAY ONLY — it CANNOT decrypt messages    ║
+
+║  🛑 Press Ctrl + C to stop the server                      ║
+
+╚══════════════════════════════════════════════════════════════╝
+
+
+
+
+
+🔌 [WS] Client connected. Active clients: 1
+
+💬 [WS] Broadcast: {"event":"presence_update","data":{"user_id":"user_bich_tran","presence":"online_synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T00:52:13.139591
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:23.609917
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:28.698568
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔌 [WS] Client connected. Active clients: 2
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T07:31:38.140672
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"presence_update","data":{"user_id":"user_huong_vo","presence":"online_synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:33.464346
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:35.810973
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔐 [DEVICE] Registered: iZii-android-mqdkq9s0 (android) DID: izii-d-b29880be...
+
+   👤 User: user_huong_vo
+
+   🔑 Public key: L9IO4HO22LgOGdLg+cPRdea/Op2sZCza...
+
+   📋 Total registered devices: 1
+
+
+
+📡 [ONLINE] Queried online devices → 0 active
+
+
+
+🔐 [DEVICE] Registered: iZii-ios-mqm4y98h (ios) DID: izii-d-f5d0d7b4...
+
+   👤 User: user_bich_tran
+
+   🔑 Public key: nkGGCK3B5l+cprFpnlI0O3AzMtrW2EHa...
+
+   📋 Total registered devices: 2
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:38.482793
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:40.598299
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:43.450187
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:45.516921
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:48.490980
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:50.535320
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:53.469598
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔐 [DEVICE] Registered: iZii-android-mqdkq9s0 (android) DID: izii-d-b29880be...
+
+   👤 User: user_huong_vo
+
+   🔑 Public key: L9IO4HO22LgOGdLg+cPRdea/Op2sZCza...
+
+   📋 Total registered devices: 2
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:55.466587
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:53:58.467560
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:00.635339
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_huong_vo","sync_status":"synced"}}
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:03.589309
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:05.556302
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📨 [E2EE] Message from izii-d-b29880be → 1 devices (encrypted, server CANNOT read)
+
+   💬 Conversation: direct_user_bich_tran_user_huong_vo
+
+   📬 Envelopes created: 1
+
+   📦 Total messages in queue: 1
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+💬 [WS] Broadcast: {"event":"e2ee_message","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","sender_device_id":"izii-d-b2988
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:10.581967
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:08.601022
+
+   📦 Gửi 0/0 bản ghi
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:12.812062
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📨 [E2EE] Message from izii-d-b29880be → 1 devices (encrypted, server CANNOT read)
+
+   💬 Conversation: direct_user_bich_tran_user_huong_vo
+
+   📬 Envelopes created: 1
+
+   📦 Total messages in queue: 2
+
+💬 [WS] Broadcast: {"event":"e2ee_message","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","sender_device_id":"izii-d-b2988
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:15.515648
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 2 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 2 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:13.821572
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:18.244731
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_bich_tran","is_t
+
+
+
+📬 [PENDING] 2 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:18.569380
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:20.548020
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_bich_tran","is_t
+
+
+
+📬 [PENDING] 2 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:23.468792
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📨 [E2EE] Message from izii-d-f5d0d7b4 → 1 devices (encrypted, server CANNOT read)
+
+   💬 Conversation: direct_user_bich_tran_user_huong_vo
+
+   📬 Envelopes created: 1
+
+   📦 Total messages in queue: 3
+
+💬 [WS] Broadcast: {"event":"e2ee_message","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","sender_device_id":"izii-d-f5d0d
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:28.449957
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqm4y98h DID: izii-d-f5d0d7b4...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:25.553271
+
+   📦 Gửi 0/0 bản ghi
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqm4y98h DID: izii-d-f5d0d7b4...
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 2 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T11:54:29.804378
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...

@@ -415,10 +415,14 @@ class SyncMockHandler(BaseHTTPRequestHandler):
 
         self._write_json({
             'device_id': dev['device_id'],
-            'public_key': dev['public_key'],
-            'signing_public_key': dev.get('signing_public_key'),
+            'user_id': dev.get('user_id', ''),
+            'public_key_base64': dev.get('public_key', ''),
+            'signing_public_key_base64': dev.get('signing_public_key', ''),
             'device_name': dev['device_name'],
             'platform': dev['platform'],
+            'registered_at': dev.get('registered_at', ''),
+            'fingerprint': dev.get('fingerprint', ''),
+            'last_seen_at': dev.get('last_seen_at', ''),
         })
 
     # ══════════════════════════════════════════════════════════════
