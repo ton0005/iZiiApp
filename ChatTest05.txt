@@ -1,0 +1,499 @@
+PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:32.168452
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:33.422242
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:37.183220
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:38.441135
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:42.186782
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:47.081591
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:43.440413
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔐 [DEVICE] Registered: iZii-android-mqp9cpj6 (android) DID: izii-d-27fd1f53...
+
+   👤 User: user_huong_vo
+
+   🔑 X25519 Pub: YtS/DoRV9BwfM4PIWHDfMfnFhW4jfGHp...
+
+   🔑 Ed25519 Pub: RxQteYAHQ/f9EwauA4M+QDuiBFU7w37m...
+
+   📋 Total registered devices: 2
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:47.716634
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:48.460101
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:52.080161
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:53.345895
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔐 [DEVICE] Registered: iZii-ios-mqm4y98h (ios) DID: izii-d-f5d0d7b4...
+
+   👤 User: user_bich_tran
+
+   🔑 X25519 Pub: nkGGCK3B5l+cprFpnlI0O3AzMtrW2EHa...
+
+   🔑 Ed25519 Pub: HY9uykmxmcX+KOE3PePBJR9boOfkmGDJ...
+
+   📋 Total registered devices: 2
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:57.113501
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:26:58.455340
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_huong_vo","sync_status":"synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:02.232742
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:03.375890
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_bich_tran","is_t
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:08.147756
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:08.398776
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_bich_tran","is_t
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_bich_tran","is_t
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:12.176260
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_bich_tran","is_t
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-27fd1f53...
+
+   🕐 Lọc từ: 2026-06-22T23:27:13.348723
+
+
+
+📨 [E2EE] Message from izii-d-f5d0d7b4 → 1 devices (encrypted, server CANNOT read)
+
+   📦 Gửi 0/1 bản ghi
+
+   💬 Conversation: direct_user_bich_tran_user_huong_vo
+
+   📬 Envelopes created: 1
+
+   📦 Total messages in queue: 1
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"e2ee_message","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","sender_device_id":"izii-d-f5d0d
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqm4y98h DID: izii-d-f5d0d7b4...
+
+   X25519 Pub: nkGGCK3B5l+cprFpnlI0...
+
+   Ed25519 Pub: HY9uykmxmcX+KOE3PePB...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:17.088692
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-27fd1f53...
+
+
+
+✅ [ACK] Acknowledged 1/1 message(s)
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqm4y98h DID: izii-d-f5d0d7b4...
+
+   X25519 Pub: nkGGCK3B5l+cprFpnlI0...
+
+   Ed25519 Pub: HY9uykmxmcX+KOE3PePB...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:18.460646
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+✅ [ACK] Acknowledged 0/1 message(s)
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:18.382291
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:20.499180
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:22.079733
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:23.374742
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:27.144515
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📨 [E2EE] Message from izii-d-27fd1f53 → 1 devices (encrypted, server CANNOT read)
+
+   💬 Conversation: direct_user_bich_tran_user_huong_vo
+
+   📬 Envelopes created: 1
+
+   📦 Total messages in queue: 2
+
+💬 [WS] Broadcast: {"event":"e2ee_message","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","sender_device_id":"izii-d-27fd1
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:28.407388
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:33.398390
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_huong_vo","sync_status":"synced"}}
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:32.100625
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:33.499399
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:37.082549
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:38.435453
+
+   📦 Gửi 0/1 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:27:42.213869
+
+   📦 Gửi 0/1 bản ghi

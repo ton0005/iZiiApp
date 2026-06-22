@@ -336,6 +336,9 @@ class SyncService {
           : jsonEncode(data['custom_fields']);
     }
 
+    final activeUserId = await _getActiveUserId();
+    final ownerId = data['owner_id'] as String? ?? activeUserId;
+
     await _db.into(_db.leads).insertOnConflictUpdate(
       LeadsCompanion(
         id: Value(id),
@@ -345,7 +348,7 @@ class SyncService {
         expectedRevenue: Value((data['expected_revenue'] as num?)?.toDouble() ?? 0.0),
         notes: Value(data['name'] as String?),
         source: Value(data['source'] as String? ?? 'direct'),
-        ownerId: Value(data['owner_id'] as String?),
+        ownerId: Value(ownerId),
         customFields: Value(customFields),
       ),
     );
@@ -400,6 +403,9 @@ class SyncService {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
 
+    final activeUserId = await _getActiveUserId();
+    final ownerId = data['owner_id'] as String? ?? activeUserId;
+
     await _db.into(_db.deals).insertOnConflictUpdate(
       DealsCompanion(
         id: Value(id),
@@ -409,7 +415,7 @@ class SyncService {
         amount: Value((data['amount'] as num?)?.toDouble() ?? 0.0),
         stage: Value(data['stage'] as String? ?? 'proposal'),
         source: Value(data['source'] as String? ?? 'direct'),
-        ownerId: Value(data['owner_id'] as String?),
+        ownerId: Value(ownerId),
         expectedCloseDate: data['expected_close_date'] != null
             ? Value(DateTime.tryParse(data['expected_close_date'].toString()))
             : const Value(null),

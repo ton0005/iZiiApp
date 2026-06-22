@@ -310,39 +310,46 @@ class CrmRepository {
   }
 
   Future<void> addLead(Map<String, dynamic> lead) async {
+    final activeUserId = await _getActiveUserId();
+    final ownerId = lead['owner_id'] ?? activeUserId;
+    final updatedLead = Map<String, dynamic>.from(lead)..['owner_id'] = ownerId;
+
     await _db.into(_db.leads).insert(
           LeadsCompanion.insert(
-            id: lead['id'],
-            title: lead['title'],
-            status: drift.Value(lead['status'] ?? 'new'),
-            expectedRevenue: drift.Value(lead['expected_revenue'] ?? 0.0),
-            notes: drift.Value(lead['name']),
-            contactId: drift.Value(lead['contact_id']),
-            source: drift.Value(lead['source'] ?? 'direct'),
-            ownerId: drift.Value(lead['owner_id']),
+            id: updatedLead['id'],
+            title: updatedLead['title'],
+            status: drift.Value(updatedLead['status'] ?? 'new'),
+            expectedRevenue: drift.Value(updatedLead['expected_revenue'] ?? 0.0),
+            notes: drift.Value(updatedLead['name']),
+            contactId: drift.Value(updatedLead['contact_id']),
+            source: drift.Value(updatedLead['source'] ?? 'direct'),
+            ownerId: drift.Value(ownerId),
             customFields: drift.Value(
-              _encodeCustomFields(lead['custom_fields']),
+              _encodeCustomFields(updatedLead['custom_fields']),
             ),
           ),
         );
-    SyncService().queueMutation('leads', 'insert', lead);
+    SyncService().queueMutation('leads', 'insert', updatedLead);
   }
 
   Future<void> updateLeadFull(Map<String, dynamic> leadMap) async {
     final leads = await _db.select(_db.leads).get();
     final lead = leads.firstWhere((l) => l.id == leadMap['id']);
+    final activeUserId = await _getActiveUserId();
+    final ownerId = leadMap['owner_id'] ?? lead.ownerId ?? activeUserId;
+    final updatedLeadMap = Map<String, dynamic>.from(leadMap)..['owner_id'] = ownerId;
 
     await _db.update(_db.leads).replace(lead.copyWith(
-          title: leadMap['title'],
-          status: leadMap['status'],
-          expectedRevenue: leadMap['expected_revenue'],
-          notes: drift.Value(leadMap['name']),
-          contactId: drift.Value(leadMap['contact_id']),
-          source: leadMap['source'] ?? 'direct',
-          ownerId: drift.Value(leadMap['owner_id']),
-          customFields: _encodeCustomFields(leadMap['custom_fields']),
+          title: updatedLeadMap['title'],
+          status: updatedLeadMap['status'],
+          expectedRevenue: updatedLeadMap['expected_revenue'],
+          notes: drift.Value(updatedLeadMap['name']),
+          contactId: drift.Value(updatedLeadMap['contact_id']),
+          source: updatedLeadMap['source'] ?? 'direct',
+          ownerId: drift.Value(ownerId),
+          customFields: _encodeCustomFields(updatedLeadMap['custom_fields']),
         ));
-    SyncService().queueMutation('leads', 'update', leadMap);
+    SyncService().queueMutation('leads', 'update', updatedLeadMap);
   }
 
   Future<void> updateLeadStatus(String leadId, String newStatus) async {
@@ -450,6 +457,8 @@ class CrmRepository {
       });
     }
 
+    final activeUserId = await _getActiveUserId();
+    final ownerId = lead.ownerId ?? activeUserId;
     final dealId = 'deal_${DateTime.now().millisecondsSinceEpoch}_${leadId.substring(0, leadId.length < 4 ? leadId.length : 4)}';
     final dealMap = {
       'id': dealId,
@@ -458,7 +467,7 @@ class CrmRepository {
       'amount': lead.expectedRevenue,
       'lead_id': leadId,
       'source': lead.source,
-      'owner_id': lead.ownerId,
+      'owner_id': ownerId,
       'stage': 'proposal',
       'created_at': DateTime.now().toIso8601String(),
     };
@@ -471,7 +480,7 @@ class CrmRepository {
         amount: lead.expectedRevenue,
         leadId: drift.Value(leadId),
         source: drift.Value(lead.source),
-        ownerId: drift.Value(lead.ownerId),
+        ownerId: drift.Value(ownerId),
         stage: const drift.Value('proposal'),
       ),
     );

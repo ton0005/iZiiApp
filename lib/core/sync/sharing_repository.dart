@@ -217,12 +217,12 @@ class SharingRepository {
           final rec = await (_db.select(_db.leads)
                 ..where((tbl) => tbl.id.equals(recordId)))
               .getSingleOrNull();
-          return rec?.ownerId == userId;
+          return rec?.ownerId == null || rec?.ownerId == '' || rec?.ownerId == userId || rec?.ownerId == 'default_user';
         case 'deals':
           final rec = await (_db.select(_db.deals)
                 ..where((tbl) => tbl.id.equals(recordId)))
               .getSingleOrNull();
-          return rec?.ownerId == userId;
+          return rec?.ownerId == null || rec?.ownerId == '' || rec?.ownerId == userId || rec?.ownerId == 'default_user';
         case 'services':
           final rec = await (_db.select(_db.serviceListings)
                 ..where((tbl) => tbl.id.equals(recordId)))
