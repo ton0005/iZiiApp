@@ -245,6 +245,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           kycStatus: 'verified',
           createdAt: DateTime.now(),
         ),
+        User(
+          id: 'user_Quill_Phan',
+          name: 'Quill Phan',
+          email: 'Quill.Phan@izii.com',
+          phone: '0988889988',
+          type: 'provider',
+          kycStatus: 'verified',
+          createdAt: DateTime.now(),
+        ),
       ];
       for (var mock in mockContacts) {
         await _db.into(_db.users).insert(mock, mode: InsertMode.insertOrIgnore);
@@ -442,6 +451,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) {
     emit(state.copyWith(isWsConnected: event.isConnected));
+
+    // Broadcast our presence to other connected users
+    if (event.isConnected && _currentUserId != null) {
+      _wsService.sendEvent(ChatWebSocketEvent(
+        event: 'presence_update',
+        data: {
+          'user_id': _currentUserId,
+          'presence': 'online_synced',
+        },
+      ));
+    }
   }
 
   Future<void> _onReceivedWs(
@@ -558,6 +578,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       case 'e2ee_message':
         // A new encrypted message is available — pull immediately
         add(PullEncryptedMessagesEvent());
+        break;
+
+      case 'heartbeat':
+        // Treat heartbeats from other users as presence online
+        final hbUserId = data['user_id'] as String?;
+        if (hbUserId != null && hbUserId != _currentUserId) {
+          final updatedMap =
+              Map<String, ChatPresenceState>.from(state.userPresenceMap)
+                ..[hbUserId] = ChatPresenceState.onlineSynced;
+          emit(state.copyWith(userPresenceMap: updatedMap));
+        }
         break;
     }
   }
@@ -685,11 +716,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
 
       // Send via server relay
-      await discoveryService.sendEncryptedMessage(
+      final sendSuccess = await discoveryService.sendEncryptedMessage(
         conversationId: event.conversationId,
         recipientDeviceIds: recipientDevices.map((d) => d.deviceId).toList(),
         payloadsPerDevice: payloadsPerDevice,
       );
+
+      if (!sendSuccess) {
+        print('[E2EE] ❌ HTTP relay failed — falling back to regular send');
+        add(SendMessageEvent(
+          conversationId: event.conversationId,
+          text: event.text,
+        ));
+        return;
+      }
 
       // Notify receiver via WebSocket to pull immediately
       if (_wsService.isConnected) {

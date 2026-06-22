@@ -1,0 +1,118 @@
+Connecting to VM Service at ws://127.0.0.1:61698/l7f1V1ycLZA=/ws
+Connected to the VM Service.
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [ChatWS] Connected successfully.
+flutter: [SyncService] 📥 Nhận được 1 cập nhật từ Server. Đang lọc và áp dụng...
+flutter: [SyncService]    🔄 service_items → insert: id=81ef6660-cea1-42de-9035-1f9e720e4bf2
+flutter: [SyncService] ✅ Đã ghi 1 bản ghi vào database local (bỏ qua/lọc 0).
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] Error starting scan: PlatformException(startScan, bluetooth must be turned on. (CBManagerStateUnknown), null, null)
+2
+flutter: [DeviceIdentity] Loaded existing identity: izii-d-45966290
+flutter: [BleDiscovery] BlePeripheral initialized successfully.
+BluetoothState: CBManagerState(rawValue: 5)
+flutter: [DeviceDiscovery] ✅ Device registered: izii-d-45966290
+flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [BleDiscovery] Failed to setup GATT Server: Service addition timed out
+flutter: [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+91
+flutter: [ChatWS] Sent event: typing_state
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+45
+flutter: [ChatWS] Sent event: typing_state
+flutter: [DeviceDiscovery] 📤 Sending E2EE to http://10.146.147.160:8080/api/v1/messages/send
+flutter: [DeviceDiscovery]    conversation_id: direct_user_an_nguyen_user_huong_vo
+flutter: [DeviceDiscovery] ❌ Error sending message: RangeError (end): Invalid value: Not in inclusive range 0..15: 16
+flutter: [ChatWS] Sent event: e2ee_message
+flutter: [E2EE] Sent encrypted message to 1 devices
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [ChatWS] Received event: heartbeat
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [BleDiscovery] Stopped BLE Advertising.
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [ChatWS] Sent event: heartbeat
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [ChatWS] Received event: heartbeat
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] Advertising status update: advertising=true, error=null
+2
+flutter: [BleDiscovery] Discovered peer: Trúc’s iPad (2) (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -50
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqm4y98h (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -51
+flutter: [DeviceDiscovery] ✅ Device registered: izii-d-45966290
+flutter: [DeviceDiscovery] Heartbeat stopped
+flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
+8
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqm4y98h (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -51
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+7
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqm4y98h (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -51
+3
+flutter: [ChatWS] Sent event: typing_state
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqm4y98h (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -51
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [SyncService] Không có cập nhật mới từ Server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [ChatWS] Sent event: heartbeat
+flutter: [ChatWS] Sent eve

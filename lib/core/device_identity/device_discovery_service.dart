@@ -196,10 +196,10 @@ class DeviceDiscoveryService {
 
       _log('📤 Sending E2EE to $baseUrl/api/v1/messages/send');
       _log('   conversation_id: $conversationId');
-      _log('   sender_device_id: ${identity.deviceId.substring(0, 16)}...');
+      _log('   sender_device_id: ${identity.deviceId}');
       _log('   recipients: ${recipientDeviceIds.length}');
       for (final entry in payloadMaps.entries) {
-        _log('   payload keys for ${entry.key.substring(0, 16)}...: ${(entry.value as Map).keys.toList()}');
+        _log('   payload keys for ${entry.key}: ${(entry.value as Map).keys.toList()}');
       }
 
       final response = await _dio.post(
