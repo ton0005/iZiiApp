@@ -164,17 +164,22 @@ class DeviceIdentityService {
       final deviceName = await _secureStorage.read(key: _kDeviceName);
       final registeredAtStr = await _secureStorage.read(key: _kRegisteredAt);
 
+      final privKey = await _secureStorage.read(key: _kX25519PrivateKey);
+      final sigPrivKey = await _secureStorage.read(key: _kEd25519PrivateKey);
+
       if (deviceId == null ||
           publicKeyB64 == null ||
           signingPubB64 == null ||
-          deviceName == null) {
-        print('[DeviceIdentity] Corrupted secure storage fields. Resetting...');
+          deviceName == null ||
+          privKey == null ||
+          sigPrivKey == null) {
+        print('[DeviceIdentity] Corrupted or missing secure storage fields. Resetting...');
         await clearIdentity();
         return await _generateNewIdentity();
       }
 
-      _cachedX25519PrivateKey = await _secureStorage.read(key: _kX25519PrivateKey);
-      _cachedEd25519PrivateKey = await _secureStorage.read(key: _kEd25519PrivateKey);
+      _cachedX25519PrivateKey = privKey;
+      _cachedEd25519PrivateKey = sigPrivKey;
 
       final registeredAt = registeredAtStr != null
           ? DateTime.parse(registeredAtStr)
@@ -265,6 +270,7 @@ class DeviceIdentityService {
     }
 
     if (privKeyB64 == null) {
+      print('[DeviceIdentity] ⚠️ WARNING: signMessage: private key is NULL! Falling back to dummy key!');
       final dummyPriv = List<int>.filled(32, 0);
       privKeyB64 = _crypto.bytesToBase64(dummyPriv);
       _cachedEd25519PrivateKey = privKeyB64;
@@ -301,6 +307,7 @@ class DeviceIdentityService {
     }
 
     if (privKeyB64 == null) {
+      print('[DeviceIdentity] ⚠️ WARNING: deriveSharedSecret: private key is NULL! Falling back to dummy key!');
       final dummyPriv = List<int>.filled(32, 0);
       privKeyB64 = _crypto.bytesToBase64(dummyPriv);
       _cachedX25519PrivateKey = privKeyB64;

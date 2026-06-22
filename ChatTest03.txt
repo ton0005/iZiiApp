@@ -1,0 +1,595 @@
+Andoid:
+
+I/flutter (14481): [DeviceDiscovery] ✅ Encrypted message sent to 1 device(s)
+I/flutter (14481): [ChatWS] Sent event: e2ee_message
+I/flutter (14481): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14481): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14481): [E2EE] Sent encrypted message to 1 devices
+I/flutter (14481): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (14481): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14481): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14481): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14481): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+3
+I/flutter (14481): [BleDiscovery] Discovered peer: iZii-ios-mqm4y98h (izii-d-ble-683ec082b63b) RSSI: -42
+I/VRI[MainActivity]@7849fae(14481): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@7849fae
+
+iOS:
+flutter: [ChatWS] Sent event: typing_state
+
+flutter: [DeviceDiscovery] 📤 Sending E2EE to http://10.146.147.160:8080/api/v1/messages/send
+
+flutter: [DeviceDiscovery]    conversation_id: direct_user_bich_tran_user_huong_vo
+
+flutter: [DeviceDiscovery]    sender_device_id: izii-d-f5d0d7b4
+
+flutter: [DeviceDiscovery]    recipients: 1
+
+flutter: [DeviceDiscovery]    payload keys for izii-d-b29880be: [ciphertext, nonce, sender_device_id, signature, sent_at]
+
+flutter: [DeviceDiscovery] ✅ Encrypted message sent to 1 device(s)
+
+flutter: [ChatWS] Sent event: e2ee_message
+
+flutter: [E2EE] Sent encrypted message to 1 devices
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [SyncService] Không có cập nhật mới từ Server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [SyncService] Không có cập nhật mới từ Server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [ChatWS] Sent event: heartbeat
+
+flutter: [ChatWS] Received event: heartbeat
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [SyncService] Không có cập nhật mới từ Server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [E2EE] Error decrypting message: Bad state: ED25519 signature verification failed for payload from izii-d-b29880be. Message may have been tampered with.
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [SyncService] Không có cập nhật mới từ Server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+Server :
+ [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:08.599859
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📬 [PENDING] 4 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:11.912377
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📨 [E2EE] Message from izii-d-b29880be → 1 devices (encrypted, server CANNOT read)
+
+   💬 Conversation: direct_user_bich_tran_user_huong_vo
+
+   📬 Envelopes created: 1
+
+   📦 Total messages in queue: 10
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:13.163689
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"e2ee_message","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","sender_device_id":"izii-d-b2988
+
+
+
+📬 [PENDING] 5 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:19.202200
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 5 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:16.906156
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:19.444485
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 5 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:21.761148
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:23.067539
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_bich_tran","is_t
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:26.761384
+
+   📦 Gửi 0/0 bản ghi
+
+
+
+📬 [PENDING] 5 message(s) waiting for device izii-d-f5d0d7b4...
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:28.127639
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","user_id":"user_bich_tran","is_t
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📨 [E2EE] Message from izii-d-f5d0d7b4 → 1 devices (encrypted, server CANNOT read)
+
+   💬 Conversation: direct_user_bich_tran_user_huong_vo
+
+   📬 Envelopes created: 1
+
+   📦 Total messages in queue: 11
+
+💬 [WS] Broadcast: {"event":"e2ee_message","data":{"conversation_id":"direct_user_bich_tran_user_huong_vo","sender_device_id":"izii-d-f5d0d
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:31.845157
+
+   📦 Gửi 0/0 bản ghi
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-b29880be...
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqm4y98h DID: izii-d-f5d0d7b4...
+
+
+
+✅ [ACK] Acknowledged 1/1 message(s)
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:33.066853
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+
+
+📬 [PENDING] 5 message(s) waiting for device izii-d-f5d0d7b4...
+
+   🕐 Lọc từ: 2026-06-22T14:12:33.625311
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:34.863733
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_huong_vo","sync_status":"synced"}}
+
+
+
+📬 [PENDING] 5 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:36.855355
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:38.036664
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 5 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:41.849151
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:43.047153
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+
+
+📬 [PENDING] 5 message(s) waiting for device izii-d-f5d0d7b4...
+
+   🕐 Lọc từ: 2026-06-22T14:12:46.860356
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+🔌 [WS] Client disconnected. Active clients: 1
+
+
+
+📬 [PENDING] 5 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T14:12:51.882407
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
