@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show Platform;
 import 'dart:typed_data';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart'
     hide CharacteristicProperties;
 import 'package:ble_peripheral/ble_peripheral.dart';
 import 'package:drift/drift.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../database/app_database.dart';
 import 'device_identity_service.dart';
 import 'noise_handshake_service.dart';
@@ -147,6 +149,21 @@ class BleDeviceDiscoveryService {
     if (_isAdvertising) return;
 
     try {
+      if (Platform.isAndroid) {
+        final statuses = await [
+          Permission.bluetoothAdvertise,
+          Permission.bluetoothConnect,
+        ].request();
+
+        final advGranted = statuses[Permission.bluetoothAdvertise]?.isGranted ?? false;
+        final connGranted = statuses[Permission.bluetoothConnect]?.isGranted ?? false;
+
+        if (!advGranted || !connGranted) {
+          print('[BleDiscovery] BLE advertising permissions not granted.');
+          return;
+        }
+      }
+
       final identity = await _identityService.getOrCreateIdentity();
 
       await _setupGattServer();
@@ -180,6 +197,23 @@ class BleDeviceDiscoveryService {
     if (_isScanning) return;
 
     try {
+      if (Platform.isAndroid) {
+        final statuses = await [
+          Permission.bluetoothScan,
+          Permission.bluetoothConnect,
+          Permission.location,
+        ].request();
+
+        final scanGranted = statuses[Permission.bluetoothScan]?.isGranted ?? false;
+        final connGranted = statuses[Permission.bluetoothConnect]?.isGranted ?? false;
+        final locGranted = statuses[Permission.location]?.isGranted ?? false;
+
+        if (!scanGranted || !connGranted || !locGranted) {
+          print('[BleDiscovery] BLE scanning permissions not granted.');
+          return;
+        }
+      }
+
       // Check BLE permissions & support
       if (await FlutterBluePlus.isSupported == false) {
         print('[BleDiscovery] Bluetooth is not supported on this device.');

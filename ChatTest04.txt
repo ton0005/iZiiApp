@@ -1,12 +1,88 @@
-From iOS to iOS
+[PULL] Thiết bị đang tải về các cập nhật mới...
 
-[PENDING] 6 message(s) waiting for device izii-d-f5d0d7b4...
+   🕐 Lọc từ: 2026-06-22T23:06:34.812733
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
 
 
 
 📤 [PULL] Thiết bị đang tải về các cập nhật mới...
 
-   🕐 Lọc từ: 2026-06-22T22:47:48.863655
+   🕐 Lọc từ: 2026-06-22T23:06:35.615073
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_an_nguyen","sync_status":"synced"}}
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:06:39.828119
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:06:40.428409
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📨 [E2EE] Message from izii-d-45966290 → 1 devices (encrypted, server CANNOT read)
+
+   💬 Conversation: direct_user_an_nguyen_user_huong_vo
+
+   📬 Envelopes created: 1
+
+   📦 Total messages in queue: 1
+
+💬 [WS] Broadcast: {"event":"e2ee_message","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","sender_device_id":"izii-d-45966
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-27fd1f53...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:06:45.524071
 
    📦 Gửi 0/0 bản ghi
 
@@ -14,59 +90,9 @@ From iOS to iOS
 
 
 
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-android-mqp8cub2 DID: izii-d-1564fe2b...
-
-   X25519 Pub: wYC+VnGFxO2PTNjlG1NI...
-
-   Ed25519 Pub: W0o7+8XPRqg2w1/v83As...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-android-mqp8cub2 DID: izii-d-1564fe2b...
-
-   X25519 Pub: wYC+VnGFxO2PTNjlG1NI...
-
-   Ed25519 Pub: W0o7+8XPRqg2w1/v83As...
-
-💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
-
-
-
 📤 [PULL] Thiết bị đang tải về các cập nhật mới...
 
-   🕐 Lọc từ: 2026-06-22T22:47:52.518322
+   🕐 Lọc từ: 2026-06-22T23:06:49.690851
 
    📦 Gửi 0/0 bản ghi
 
@@ -74,13 +100,25 @@ From iOS to iOS
 
 
 
-📬 [PENDING] 6 message(s) waiting for device izii-d-f5d0d7b4...
+📬 [PENDING] 1 message(s) waiting for device izii-d-27fd1f53...
+
+
+
+✅ [ACK] Acknowledged 1/1 message(s)
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
 
 
 
 📤 [PULL] Thiết bị đang tải về các cập nhật mới...
 
-   🕐 Lọc từ: 2026-06-22T22:47:53.869831
+   🕐 Lọc từ: 2026-06-22T23:06:44.845732
 
    📦 Gửi 0/0 bản ghi
 
@@ -88,76 +126,13 @@ From iOS to iOS
 
 
 
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-android-mqp8cub2 DID: izii-d-1564fe2b...
-
-   X25519 Pub: wYC+VnGFxO2PTNjlG1NI...
-
-   Ed25519 Pub: W0o7+8XPRqg2w1/v83As...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-android-mqp8cub2 DID: izii-d-1564fe2b...
-
-   X25519 Pub: wYC+VnGFxO2PTNjlG1NI...
-
-   Ed25519 Pub: W0o7+8XPRqg2w1/v83As...
-
-
-
-From Android to iOS:
-
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-
-   🕐 Lọc từ: 2026-06-22T22:44:17.091028
-
-   📦 Gửi 0/0 bản ghi
-
-   ✅ Đã gửi 0 cập nhật cho thiết bị.
-
-💬 [WS] Broadcast: {"event":"presence_update","data":{"user_id":"default_user","presence":"online_synced"}}
+✅ [ACK] Acknowledged 0/1 message(s)
 
 
 
 📤 [PULL] Thiết bị đang tải về các cập nhật mới...
 
-   🕐 Lọc từ: 2026-06-22T22:44:58.878672
-
-
-
-📬 [PENDING] 4 message(s) waiting for device izii-d-f5d0d7b4...
+   🕐 Lọc từ: 2026-06-22T23:06:51.403976
 
    📦 Gửi 0/0 bản ghi
 
@@ -165,45 +140,33 @@ From Android to iOS:
 
 
 
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
 
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+   🕐 Lọc từ: 2026-06-22T23:06:51.515611
 
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+   📦 Gửi 0/0 bản ghi
 
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
 
-
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
-
-   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
-
-   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
-
-
-
-📬 [PENDING] 2 message(s) waiting for device izii-d-45966290...
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_huong_vo","sync_status":"synced"}}
 
 
 
 📤 [PULL] Thiết bị đang tải về các cập nhật mới...
 
-   🕐 Lọc từ: 2026-06-22T22:45:00.857567
+   🕐 Lọc từ: 2026-06-22T23:06:50.418708
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:06:54.790541
 
    📦 Gửi 0/0 bản ghi
 
@@ -211,16 +174,314 @@ From Android to iOS:
 
 
 
-🔑 [KEY] Key lookup for device: iZii-ios-mqm4y98h DID: izii-d-f5d0d7b4...
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
 
-   X25519 Pub: nkGGCK3B5l+cprFpnlI0...
+   🕐 Lọc từ: 2026-06-22T23:06:55.412374
 
-   Ed25519 Pub: HY9uykmxmcX+KOE3PePB...
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
 
 
 
-🔑 [KEY] Key lookup for device: iZii-ios-mqm4y98h DID: izii-d-f5d0d7b4...
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
 
-   X25519 Pub: nkGGCK3B5l+cprFpnlI0...
+   🕐 Lọc từ: 2026-06-22T23:06:59.794659
 
-   Ed25519 Pub: HY9uykmxmcX+KOE3PePB...
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:07:00.454094
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:07:04.781420
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:07:05.412063
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_an_nguyen","sync_status":"synced"}}
+
+
+
+📡 [ONLINE] Queried online devices → 1 active
+
+
+
+📨 [E2EE] Message from izii-d-27fd1f53 → 1 devices (encrypted, server CANNOT read)
+
+   💬 Conversation: direct_user_an_nguyen_user_huong_vo
+
+   📬 Envelopes created: 1
+
+   📦 Total messages in queue: 2
+
+💬 [WS] Broadcast: {"event":"e2ee_message","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","sender_device_id":"izii-d-27fd1
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-45966290...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:07:09.818082
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:07:11.813659
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-45966290...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:07:10.429472
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-45966290...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:08:11.165830
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_huong_vo","sync_status":"synced"}}
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_huong_vo","is_ty
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_huong_vo","sync_status":"synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:08:14.769538
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-45966290...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:08:17.629156
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-45966290...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:08:19.876123
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_an_nguyen","sync_status":"synced"}}
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
+
+💬 [WS] Broadcast: {"event":"send_message","data":{"message_id":"c138ddac-c3d0-4c37-b825-d06106099c40","conversation_id":"direct_user_an_ng
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_an_nguyen","sync_status":"synced"}}
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_huong_vo","sync_status":"synced"}}
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-45966290...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:08:20.683752
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
+
+💬 [WS] Broadcast: {"event":"typing_state","data":{"conversation_id":"direct_user_an_nguyen_user_huong_vo","user_id":"user_an_nguyen","is_t
+
+
+
+📡 [ONLINE] Queried online devices → 0 active
+
+💬 [WS] Broadcast: {"event":"send_message","data":{"message_id":"f982310e-849d-4947-9292-b9ce3f2b2689","conversation_id":"direct_user_an_ng
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:08:25.409489
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:08:24.790619
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T23:08:28.430981
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-45966290...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
+
+   X25519 Pub: YtS/DoRV9BwfM4PIWHDf...
+
+   Ed25519 Pub: RxQteYAHQ/f9EwauA4M+...
