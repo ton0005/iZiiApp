@@ -1,0 +1,199 @@
+ [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:00.492667
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:05.536500
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:10.446311
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:15.468348
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:20.447466
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:25.526138
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:30.444508
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:35.458043
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:40.445938
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:45.454736
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqdkq9s0 DID: izii-d-b29880be...
+
+
+
+📬 [PENDING] 1 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T13:44:50.462158
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.

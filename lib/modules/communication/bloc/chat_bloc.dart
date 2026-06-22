@@ -819,10 +819,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             sentAt: sentAt,
           );
 
-          final senderPubKeyBytes = base64Decode(senderDevice.publicKeyBase64);
+          final senderX25519PubKeyBytes = base64Decode(senderDevice.publicKeyBase64);
+          final senderEd25519PubKeyBytes = base64Decode(senderDevice.signingPublicKeyBase64);
           final plaintext = await identityService.decryptPayload(
             encPayload,
-            senderPubKeyBytes,
+            senderX25519PubKeyBytes,
+            senderEd25519PubKeyBytes,
           );
 
           // Save decrypted message locally

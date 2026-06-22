@@ -356,7 +356,8 @@ class DeviceIdentityService {
   /// Throws a [StateError] if signature verification fails.
   Future<String> decryptPayload(
     EncryptedPayload payload,
-    List<int> senderPublicKeyBytes,
+    List<int> senderX25519PublicKeyBytes,
+    List<int> senderEd25519PublicKeyBytes,
   ) async {
     final ciphertextBytes = _crypto.base64ToBytes(payload.ciphertextBase64);
     final nonceBytes = _crypto.base64ToBytes(payload.nonceBase64);
@@ -367,7 +368,7 @@ class DeviceIdentityService {
     final isValid = await verifySignature(
       ciphertextHash,
       signatureBytes,
-      senderPublicKeyBytes,
+      senderEd25519PublicKeyBytes,
     );
     if (!isValid) {
       throw StateError(
@@ -377,10 +378,7 @@ class DeviceIdentityService {
     }
 
     // 2. Derive shared secret with sender's X25519 public key
-    // NOTE: We need the sender's X25519 public key here, not the ED25519 key.
-    // The caller must supply the correct X25519 public key bytes via
-    // senderPublicKeyBytes.
-    final sharedSecret = await deriveSharedSecret(senderPublicKeyBytes);
+    final sharedSecret = await deriveSharedSecret(senderX25519PublicKeyBytes);
 
     // 3. Decrypt
     return _crypto.decryptAesGcm(ciphertextBytes, nonceBytes, sharedSecret);
