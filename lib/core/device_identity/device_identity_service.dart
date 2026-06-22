@@ -29,13 +29,13 @@ class DeviceIdentityService {
   String? _cachedEd25519PrivateKey;
 
   // ── Secure-storage key constants ─────────────────────────────────────────
-  static const _kX25519PrivateKey = 'izii_x25519_private_key';
-  static const _kX25519PublicKey = 'izii_x25519_public_key';
-  static const _kEd25519PrivateKey = 'izii_ed25519_private_key';
-  static const _kEd25519PublicKey = 'izii_ed25519_public_key';
-  static const _kDeviceId = 'izii_device_id';
-  static const _kDeviceName = 'izii_device_name';
-  static const _kRegisteredAt = 'izii_registered_at';
+  static const _kX25519PrivateKey = 'izii_x25519_private_key_v2';
+  static const _kX25519PublicKey = 'izii_x25519_public_key_v2';
+  static const _kEd25519PrivateKey = 'izii_ed25519_private_key_v2';
+  static const _kEd25519PublicKey = 'izii_ed25519_public_key_v2';
+  static const _kDeviceId = 'izii_device_id_v2';
+  static const _kDeviceName = 'izii_device_name_v2';
+  static const _kRegisteredAt = 'izii_registered_at_v2';
 
   // ── Identity lifecycle ───────────────────────────────────────────────────
 

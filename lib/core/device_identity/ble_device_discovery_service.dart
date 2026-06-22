@@ -179,16 +179,16 @@ class BleDeviceDiscoveryService {
   Future<void> startScanning() async {
     if (_isScanning) return;
 
-    // Check BLE permissions & support
-    if (await FlutterBluePlus.isSupported == false) {
-      print('[BleDiscovery] Bluetooth is not supported on this device.');
-      return;
-    }
-
-    _isScanning = true;
-    print('[BleDiscovery] Starting BLE Scan for service UUID: $serviceUuid');
-
     try {
+      // Check BLE permissions & support
+      if (await FlutterBluePlus.isSupported == false) {
+        print('[BleDiscovery] Bluetooth is not supported on this device.');
+        return;
+      }
+
+      _isScanning = true;
+      print('[BleDiscovery] Starting BLE Scan for service UUID: $serviceUuid');
+
       await FlutterBluePlus.startScan(
         timeout: const Duration(seconds: 15),
       );

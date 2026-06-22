@@ -1,0 +1,226 @@
+From iOS to iOS
+
+[PENDING] 6 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T22:47:48.863655
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp8cub2 DID: izii-d-1564fe2b...
+
+   X25519 Pub: wYC+VnGFxO2PTNjlG1NI...
+
+   Ed25519 Pub: W0o7+8XPRqg2w1/v83As...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp8cub2 DID: izii-d-1564fe2b...
+
+   X25519 Pub: wYC+VnGFxO2PTNjlG1NI...
+
+   Ed25519 Pub: W0o7+8XPRqg2w1/v83As...
+
+💬 [WS] Broadcast: {"event":"heartbeat","data":{"user_id":"user_bich_tran","sync_status":"synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T22:47:52.518322
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+📬 [PENDING] 6 message(s) waiting for device izii-d-f5d0d7b4...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T22:47:53.869831
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp8cub2 DID: izii-d-1564fe2b...
+
+   X25519 Pub: wYC+VnGFxO2PTNjlG1NI...
+
+   Ed25519 Pub: W0o7+8XPRqg2w1/v83As...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-android-mqp8cub2 DID: izii-d-1564fe2b...
+
+   X25519 Pub: wYC+VnGFxO2PTNjlG1NI...
+
+   Ed25519 Pub: W0o7+8XPRqg2w1/v83As...
+
+
+
+From Android to iOS:
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T22:44:17.091028
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+💬 [WS] Broadcast: {"event":"presence_update","data":{"user_id":"default_user","presence":"online_synced"}}
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T22:44:58.878672
+
+
+
+📬 [PENDING] 4 message(s) waiting for device izii-d-f5d0d7b4...
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqi52t45 DID: izii-d-45966290...
+
+   X25519 Pub: 7PZ/2nwXWJndqDh7GPTE...
+
+   Ed25519 Pub: iQbV4cGhbWheMHMC3DVg...
+
+
+
+📬 [PENDING] 2 message(s) waiting for device izii-d-45966290...
+
+
+
+📤 [PULL] Thiết bị đang tải về các cập nhật mới...
+
+   🕐 Lọc từ: 2026-06-22T22:45:00.857567
+
+   📦 Gửi 0/0 bản ghi
+
+   ✅ Đã gửi 0 cập nhật cho thiết bị.
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqm4y98h DID: izii-d-f5d0d7b4...
+
+   X25519 Pub: nkGGCK3B5l+cprFpnlI0...
+
+   Ed25519 Pub: HY9uykmxmcX+KOE3PePB...
+
+
+
+🔑 [KEY] Key lookup for device: iZii-ios-mqm4y98h DID: izii-d-f5d0d7b4...
+
+   X25519 Pub: nkGGCK3B5l+cprFpnlI0...
+
+   Ed25519 Pub: HY9uykmxmcX+KOE3PePB...
