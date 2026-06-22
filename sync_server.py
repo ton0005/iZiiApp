@@ -320,7 +320,8 @@ class SyncMockHandler(BaseHTTPRequestHandler):
 
         print(f"\n🔐 [DEVICE] Registered: {device_name} ({platform}) DID: {device_id[:16]}...")
         print(f"   👤 User: {user_id}")
-        print(f"   🔑 Public key: {public_key[:32]}...")
+        print(f"   🔑 X25519 Pub: {public_key[:32]}...")
+        print(f"   🔑 Ed25519 Pub: {str(signing_public_key)[:32]}...")
         print(f"   📋 Total registered devices: {len(device_registry)}")
 
         self._write_json({
@@ -412,6 +413,8 @@ class SyncMockHandler(BaseHTTPRequestHandler):
             return
 
         print(f"\n🔑 [KEY] Key lookup for device: {dev['device_name']} DID: {device_id[:16]}...")
+        print(f"   X25519 Pub: {dev.get('public_key', '')[:20]}...")
+        print(f"   Ed25519 Pub: {dev.get('signing_public_key', '')[:20]}...")
 
         self._write_json({
             'device_id': dev['device_id'],

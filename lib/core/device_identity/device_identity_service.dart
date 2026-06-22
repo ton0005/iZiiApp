@@ -167,12 +167,12 @@ class DeviceIdentityService {
       final privKey = await _secureStorage.read(key: _kX25519PrivateKey);
       final sigPrivKey = await _secureStorage.read(key: _kEd25519PrivateKey);
 
-      if (deviceId == null ||
-          publicKeyB64 == null ||
-          signingPubB64 == null ||
-          deviceName == null ||
-          privKey == null ||
-          sigPrivKey == null) {
+      if (deviceId == null || deviceId.isEmpty ||
+          publicKeyB64 == null || publicKeyB64.isEmpty ||
+          signingPubB64 == null || signingPubB64.isEmpty ||
+          deviceName == null || deviceName.isEmpty ||
+          privKey == null || privKey.isEmpty ||
+          sigPrivKey == null || sigPrivKey.isEmpty) {
         print('[DeviceIdentity] Corrupted or missing secure storage fields. Resetting...');
         await clearIdentity();
         return await _generateNewIdentity();
@@ -181,7 +181,7 @@ class DeviceIdentityService {
       _cachedX25519PrivateKey = privKey;
       _cachedEd25519PrivateKey = sigPrivKey;
 
-      final registeredAt = registeredAtStr != null
+      final registeredAt = registeredAtStr != null && registeredAtStr.isNotEmpty
           ? DateTime.parse(registeredAtStr)
           : DateTime.now();
 
@@ -344,6 +344,11 @@ class DeviceIdentityService {
     final ciphertextHash = await _crypto.sha256Hash(encrypted.ciphertext);
     final signature = await signMessage(ciphertextHash);
 
+    print('[E2EE Debug] encryptForDevice:');
+    print('   - recipientDeviceId: ${recipient.deviceId}');
+    print('   - ciphertext length: ${encrypted.ciphertext.length}');
+    print('   - signature length: ${signature.length}');
+
     return EncryptedPayload(
       ciphertextBase64: _crypto.bytesToBase64(encrypted.ciphertext),
       nonceBase64: _crypto.bytesToBase64(encrypted.nonce),
@@ -369,6 +374,13 @@ class DeviceIdentityService {
     final ciphertextBytes = _crypto.base64ToBytes(payload.ciphertextBase64);
     final nonceBytes = _crypto.base64ToBytes(payload.nonceBase64);
     final signatureBytes = _crypto.base64ToBytes(payload.signatureBase64);
+
+    print('[E2EE Debug] decryptPayload:');
+    print('   - senderDeviceId: ${payload.senderDeviceId}');
+    print('   - ciphertextBytes length: ${ciphertextBytes.length}');
+    print('   - signatureBytes length: ${signatureBytes.length}');
+    print('   - senderX25519PubKey length: ${senderX25519PublicKeyBytes.length}');
+    print('   - senderEd25519PubKey length: ${senderEd25519PublicKeyBytes.length}');
 
     // 1. Verify signature
     final ciphertextHash = await _crypto.sha256Hash(ciphertextBytes);
