@@ -66,6 +66,7 @@ class BleDeviceDiscoveryService {
             uuid: charUuid,
             properties: [
               CharacteristicProperties.write.index,
+              CharacteristicProperties.writeWithoutResponse.index,
               CharacteristicProperties.notify.index,
             ],
             permissions: [
@@ -95,7 +96,7 @@ class BleDeviceDiscoveryService {
     int offset,
     Uint8List? value,
   ) {
-    if (characteristicId != charUuid || value == null || value.isEmpty) {
+    if (characteristicId.toLowerCase() != charUuid.toLowerCase() || value == null || value.isEmpty) {
       return WriteRequestResult(status: 0);
     }
 
@@ -116,7 +117,6 @@ class BleDeviceDiscoveryService {
         await BlePeripheral.updateCharacteristic(
           characteristicId: charUuid,
           value: Uint8List.fromList(msg2),
-          deviceId: remoteDeviceId,
         );
       } else {
         final session = _handshakeService.getSessionKeys(remoteDeviceId);
@@ -305,7 +305,19 @@ class BleDeviceDiscoveryService {
 
     try {
       print('[BleDiscovery] Connecting to BLE device: $realAddress (ID: $deviceId)...');
-      await device.connect(timeout: const Duration(seconds: 10));
+      if (!device.isConnected) {
+        await device.connect(timeout: const Duration(seconds: 10));
+      }
+
+      // Request MTU right after connection to prevent packet truncation on Android
+      if (Platform.isAndroid) {
+        try {
+          print('[BleDiscovery] Requesting MTU 256 for Android...');
+          await device.requestMtu(256);
+        } catch (mtuErr) {
+          print('[BleDiscovery] Failed to request MTU: $mtuErr');
+        }
+      }
 
       print('[BleDiscovery] Connected. Discovering services...');
       final List<BluetoothService> services = await device.discoverServices();
