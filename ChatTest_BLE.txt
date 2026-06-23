@@ -1,0 +1,293 @@
+
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+3
+I/flutter ( 5598): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -41
+I/VRI[MainActivity]@1f539b0( 5598): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@1f539b0
+I/flutter ( 5598): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android]( 5598): [FBP] onMethodCall: connect
+D/BluetoothGatt( 5598): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt( 5598): registerApp()
+D/BluetoothGatt( 5598): registerApp() - UUID=9a5780ae-97e3-4452-b182-60eef3cc958f
+D/BluetoothGatt( 5598): onClientRegistered() - status=0 clientIf=247
+D/[FBP-Android]( 5598): [FBP] onMethodCall: getAdapterState
+D/[FBP-Android]( 5598): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter( 5598): isLeEnabled(): ON
+D/BluetoothLeScanner( 5598): Stop Scan with callback
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/VRI[MainActivity]@1f539b0( 5598): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@1f539b0
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5598): [FBP] connection timeout
+D/[FBP-Android]( 5598): [FBP] onMethodCall: disconnect
+D/[FBP-Android]( 5598): [FBP] disconnect: cancelling connection in progress
+D/BluetoothGatt( 5598): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt( 5598): close()
+D/BluetoothGatt( 5598): unregisterApp() - mClientIf=247
+D/BluetoothGattServer( 5598): onServerConnectionState() - status=0 serverIf=246 connected=false device=XX:XX:XX:XX:5E:A9
+I/flutter ( 5598): [BleDiscovery] Connection or authentication failed: FlutterBluePlusException | connect | fbp-code: 1 | Timed out after 10s
+E/BlePeripheralPlugin( 5598): onConnectionStateChange: 0 -> 0
+D/[FBP-Android]( 5598): [FBP] onMethodCall: disconnect
+D/[FBP-Android]( 5598): [FBP] already disconnected
+I/flutter ( 5598): [ChatWS] Received event: heartbeat
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5598): [ChatWS] Sent event: heartbeat
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/VRI[MainActivity]@1f539b0( 5598): handleAppVisibility mAppVisible = true visible = false
+D/VRI[MainActivity]@1f539b0( 5598): visibilityChanged oldVisibility=true newVisibility=false
+I/VRI[MainActivity]@1f539b0( 5598): stopped(true) old = false
+D/VRI[MainActivity]@1f539b0( 5598): WindowStopped on com.izii.izii_app/com.izii.izii_app.MainActivity set to true
+D/HWUI    ( 5598): CacheManager::trimMemory(20)
+D/SurfaceView( 5598): 108142089 windowPositionLost, frameNr = 0
+I/SV[266629381 MainActivity]( 5598): aOrMT: VRI[MainActivity]@1f539b0 t = android.view.SurfaceControl$Transaction@811fba0 fN = 0 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionLost:2025 android.graphics.RenderNode$CompositePositionUpdateListener.positionLost:418 
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523e22cd0 mBlastBufferQueue=0xb400007593e947a0 fn= 0 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1863 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionLost:2025 
+I/SV[266629381 MainActivity]( 5598): windowStopped(true) false io.flutter.embedding.android.FlutterSurfaceView{fe47105 V.E...... ........ 0,0-1080,2340} of VRI[MainActivity]@1f539b0
+I/SurfaceView( 5598): 266629381 Changes: creating=false format=false size=false visible=true alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView( 5598): 266629381 Cur surface: Surface(name=null mNativeObject=-5476376640279243744)/@0x9611e04
+D/SurfaceComposerClient( 5598): setCornerRadius ## fe47105 SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#101800 cornerRadius=0.000000
+I/SurfaceView( 5598): 266629381 surfaceDestroyed
+I/SV[266629381 MainActivity]( 5598): surfaceDestroyed callback.size 1 #1 io.flutter.embedding.android.FlutterSurfaceView{fe47105 V.E...... ........ 0,0-1080,2340}
+I/SV[266629381 MainActivity]( 5598): updateSurface: mVisible = false mSurface.isValid() = true
+I/SV[266629381 MainActivity]( 5598): releaseSurfaces: viewRoot = VRI[MainActivity]@1f539b0
+V/SurfaceView( 5598): Layout: x=0 y=0 w=1080 h=2340, frame=Rect(0, 0 - 1080, 2340)
+D/SV[266629381 MainActivity]( 5598): updateSurface: surface is not valid
+I/SV[266629381 MainActivity]( 5598): releaseSurfaces: viewRoot = VRI[MainActivity]@1f539b0
+I/SV[266629381 MainActivity]( 5598): onWindowVisibilityChanged(8) false io.flutter.embedding.android.FlutterSurfaceView{fe47105 G.E...... ......I. 0,0-1080,2340} of VRI[MainActivity]@1f539b0
+D/SV[266629381 MainActivity]( 5598): updateSurface: surface is not valid
+I/SV[266629381 MainActivity]( 5598): releaseSurfaces: viewRoot = VRI[MainActivity]@1f539b0
+D/HWUI    ( 5598): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@1f539b0( 5598): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)8 dur=12 res=0x2 s={false 0x0} ch=false seqId=0
+D/SV[266629381 MainActivity]( 5598): updateSurface: surface is not valid
+I/SV[266629381 MainActivity]( 5598): releaseSurfaces: viewRoot = VRI[MainActivity]@1f539b0
+D/VRI[MainActivity]@1f539b0( 5598): applyTransactionOnDraw applyImmediately
+D/VRI[MainActivity]@1f539b0( 5598): Not drawing due to not visible. Reason=!mAppVisible && !mForceDecorViewVisibility
+D/VRI[MainActivity]@1f539b0( 5598): Pending transaction will not be applied in sync with a draw due to view not visible
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523e43d50 mBlastBufferQueue=0xnull fn= 0 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl.handleSyncRequestWhenNoAsyncDraw:6733 android.view.ViewRootImpl.performTraversals:5504 android.view.ViewRootImpl.doTraversal:3924 
+D/HWUI    ( 5598): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@1f539b0( 5598): onDisplayChanged oldDisplayState=2 newDisplayState=1
+I/ImeFocusController( 5598): onPreWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+I/ImeFocusController( 5598): onPostWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+I/VRI[MainActivity]@1f539b0( 5598): onDisplayChanged oldDisplayState=1 newDisplayState=3
+D/SV[266629381 MainActivity]( 5598): updateSurface: surface is not valid
+I/SV[266629381 MainActivity]( 5598): releaseSurfaces: viewRoot = VRI[MainActivity]@1f539b0
+D/VRI[MainActivity]@1f539b0( 5598): applyTransactionOnDraw applyImmediately
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+
+I/InputMethodManager( 5598): handleMessage: setImeVisibility visible=false
+D/InsetsController( 5598): hide(ime(), fromIme=false)
+I/ImeTracker( 5598): com.izii.izii_app:7955a1f1: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5598): [ChatWS] Connected successfully.
+I/flutter ( 5598): [ChatWS] Sent event: presence_update
+I/VRI[MainActivity]@1f539b0( 5598): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@1f539b0
+I/flutter ( 5598): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+D/[FBP-Android]( 5598): [FBP] onMethodCall: connect
+D/BluetoothGatt( 5598): connect() - device: XX:XX:XX:XX:B6:3B, auto: false
+D/BluetoothGatt( 5598): registerApp()
+D/BluetoothGatt( 5598): registerApp() - UUID=2db95168-2177-46bb-8fdf-63c5b8c4dab6
+D/BluetoothGatt( 5598): onClientRegistered() - status=0 clientIf=248
+D/BluetoothGattServer( 5598): onServerConnectionState() - status=0 serverIf=246 connected=true device=XX:XX:XX:XX:B6:3B
+E/BlePeripheralPlugin( 5598): onConnectionStateChange: 0 -> 2
+D/BluetoothGattServer( 5598): connect() - device: XX:XX:XX:XX:B6:3B, auto: true
+D/BluetoothGatt( 5598): onClientConnectionState() - status=0 clientIf=248 connected=true device=XX:XX:XX:XX:B6:3B
+D/[FBP-Android]( 5598): [FBP] onConnectionStateChange:connected
+D/[FBP-Android]( 5598): [FBP]   status: SUCCESS
+D/BluetoothGatt( 5598): onServiceChanged() - Device=XX:XX:XX:XX:B6:3B
+D/[FBP-Android]( 5598): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt( 5598): configureMTU() - device: XX:XX:XX:XX:B6:3B mtu: 512
+D/BluetoothGattServer( 5598): onConnectionUpdated() - Device=XX:XX:XX:XX:B6:3B interval=6 latency=0 timeout=500 status=0
+D/BluetoothGatt( 5598): onConnectionUpdated() - Device=XX:XX:XX:XX:B6:3B interval=6 latency=0 timeout=500 status=0
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+D/BluetoothGatt( 5598): onConfigureMTU() - Device=XX:XX:XX:XX:B6:3B mtu=517 status=0
+D/[FBP-Android]( 5598): [FBP] onMtuChanged:
+D/[FBP-Android]( 5598): [FBP]   mtu: 517
+D/[FBP-Android]( 5598): [FBP]   status: GATT_SUCCESS (0)
+I/flutter ( 5598): [BleDiscovery] Requesting MTU 256 for Android...
+D/BluetoothGattServer( 5598): onConnectionUpdated() - Device=XX:XX:XX:XX:B6:3B interval=24 latency=0 timeout=500 status=0
+D/BluetoothGatt( 5598): onConnectionUpdated() - Device=XX:XX:XX:XX:B6:3B interval=24 latency=0 timeout=500 status=0
+D/[FBP-Android]( 5598): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt( 5598): configureMTU() - device: XX:XX:XX:XX:B6:3B mtu: 256
+D/BluetoothGatt( 5598): onConfigureMTU() - Device=XX:XX:XX:XX:B6:3B mtu=517 status=0
+D/[FBP-Android]( 5598): [FBP] onMtuChanged:
+D/[FBP-Android]( 5598): [FBP]   mtu: 517
+D/[FBP-Android]( 5598): [FBP]   status: GATT_SUCCESS (0)
+I/flutter ( 5598): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android]( 5598): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt( 5598): discoverServices() - device: XX:XX:XX:XX:B6:3B
+D/BluetoothGatt( 5598): onSearchComplete() = address=XX:XX:XX:XX:B6:3B status=0
+D/[FBP-Android]( 5598): [FBP] onServicesDiscovered:
+D/[FBP-Android]( 5598): [FBP]   count: 9
+D/[FBP-Android]( 5598): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android]( 5598): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt( 5598): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android]( 5598): [FBP] onDescriptorWrite:
+D/[FBP-Android]( 5598): [FBP]   chr: 2a05
+D/[FBP-Android]( 5598): [FBP]   desc: 2902
+D/[FBP-Android]( 5598): [FBP]   status: GATT_SUCCESS (0)
+I/flutter ( 5598): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+D/[FBP-Android]( 5598): [FBP] onMethodCall: disconnect
+D/BluetoothGatt( 5598): cancelOpen() - device: XX:XX:XX:XX:B6:3B
+D/BluetoothGatt( 5598): onClientConnectionState() - status=0 clientIf=248 connected=false device=XX:XX:XX:XX:B6:3B
+D/BluetoothGatt( 5598): unregisterApp() - mClientIf=248
+D/[FBP-Android]( 5598): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android]( 5598): [FBP]   status: SUCCESS
+D/BluetoothGatt( 5598): close()
+I/VRI[MainActivity]@1f539b0( 5598): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@1f539b0
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+
+I/ImeTracker( 5598): com.izii.izii_app:155b8f3: onShown
+2
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ee0050 mBlastBufferQueue=0xb400007593f70550 fn= 9 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+I/flutter ( 5598): [ChatWS] Sent event: typing_state
+D/InputConnectionAdaptor( 5598): The input method toggled text monitoring on
+I/VRI[MainActivity]@1f539b0( 5598): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@1f539b0
+I/VRI[MainActivity]@1f539b0( 5598): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@1f539b0
+I/flutter ( 5598): [ChatWS] Sent event: typing_state
+I/TextInputPlugin( 5598): Composing region changed by the framework. Restarting the input method.
+D/InputMethodManagerUtils( 5598): startInputInner - Id : 0
+I/InputMethodManager( 5598): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+D/InputTransport( 5598): Input channel constructed: 'ClientS', fd=184
+3
+W/RemoteInputConnectionImpl( 5598): getExtractedText on inactive InputConnection
+D/InputConnectionAdaptor( 5598): The input method toggled cursor monitoring on
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [E2EE Debug] encryptForDevice:
+I/flutter ( 5598):    - recipientDeviceId: izii-d-1093d407
+I/flutter ( 5598):    - ciphertext length: 18
+I/flutter ( 5598):    - signature length: 64
+I/flutter ( 5598): [DeviceDiscovery] 📤 Sending E2EE to http://10.146.147.160:8080/api/v1/messages/send
+I/flutter ( 5598): [DeviceDiscovery]    conversation_id: direct_user_bich_tran_user_huong_vo
+I/flutter ( 5598): [DeviceDiscovery]    sender_device_id: izii-d-27fd1f53
+I/flutter ( 5598): [DeviceDiscovery]    recipients: 1
+I/flutter ( 5598): [DeviceDiscovery]    payload keys for izii-d-1093d407: [ciphertext, nonce, sender_device_id, signature, sent_at]
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [DeviceDiscovery] ✅ Encrypted message sent to 1 device(s)
+I/flutter ( 5598): [ChatWS] Sent event: e2ee_message
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5598): [E2EE] Sent encrypted message to 1 devices
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/VRI[MainActivity]@1f539b0( 5598): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@1f539b0
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/VRI[MainActivity]@1f539b0( 5598): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@1f539b0
+I/ImeTracker( 5598): com.izii.izii_app:bab10947: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+I/InputMethodManager_LC( 5598): hsifw() - flag : 0
+I/InputMethodManager_LC( 5598): hsifw() - mService.hideSoftInput
+D/InsetsController( 5598): hide(ime(), fromIme=false)
+W/WindowOnBackDispatcher( 5598): sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@44fa630
+D/InsetsController( 5598): Setting requestedVisibleTypes to -9 (was -1)
+I/InsetsController( 5598): setRequestedVisibleTypes: visible=false, mask=ime, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1604 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343 android.view.InsetsController.hide:1540 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2889 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2812 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2773 io.flutter.plugin.editing.TextInputPlugin.hideTextInput:447 io.flutter.plugin.editing.TextInputPlugin.access$400:44 io.flutter.plugin.editing.TextInputPlugin$2.hide:122 
+I/InsetsController( 5598): controlAnimationUncheckedInner: Added types=ime, animType=1, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1608 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343 
+D/CompatChangeReporter( 5598): Compat change id reported: 395521150; UID 10407; state: ENABLED
+W/WindowOnBackDispatcher( 5598): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@8096ce2
+I/BLASTBufferQueue_Java( 5598): update, w= 1080 h= 2340 mName = VRI[MainActivity]@1f539b0 mNativeObject= 0xb400007593f70550 sc.mNativeObject= 0xb4000074e3e4f550 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3574 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 
+I/VRI[MainActivity]@1f539b0( 5598): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=true req=(1080,2340)0 dur=0 res=0x0 s={true 0xb4000075f3e66410} ch=false seqId=0
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): registerCallbackForPendingTransactions
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ebc250 mBlastBufferQueue=0xb400007593f70550 fn= 10 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ea2a90 mBlastBufferQueue=0xb400007593f70550 fn= 10 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$10.onFrameDraw:6536 android.view.ViewRootImpl$4.onFrameDraw:2489 android.view.ThreadedRenderer$1.onFrameDraw:718 
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523eded10 mBlastBufferQueue=0xb400007593f70550 fn= 11 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ee0910 mBlastBufferQueue=0xb400007593f70550 fn= 12 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ee0750 mBlastBufferQueue=0xb400007593f70550 fn= 13 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ee1c50 mBlastBufferQueue=0xb400007593f70550 fn= 14 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ee1c50 mBlastBufferQueue=0xb400007593f70550 fn= 15 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ebc250 mBlastBufferQueue=0xb400007593f70550 fn= 16 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ebc250 mBlastBufferQueue=0xb400007593f70550 fn= 17 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523edd650 mBlastBufferQueue=0xb400007593f70550 fn= 18 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523edd650 mBlastBufferQueue=0xb400007593f70550 fn= 19 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+I/InsetsController( 5598): cancelAnimation: types=ime, animType=1, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.notifyFinished:2006 android.view.InsetsAnimationControlImpl.applyChangeInsets:335 android.view.InsetsController.lambda$new$3:957 
+2
+D/FlutterJNI( 5598): Sending viewport metrics to the engine.
+D/InputMethodManagerUtils( 5598): startInputInner - Id : 0
+I/InputMethodManager( 5598): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+I/VRI[MainActivity]@1f539b0( 5598): mWNT: t=0xb400007523ee1a90 mBlastBufferQueue=0xb400007593f70550 fn= 20 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0 
+I/InsetsController( 5598): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=false mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {f20000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {f20005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {f20006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {55640001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {55640004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {55640005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {55640006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {55640024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null} }
+I/VRI[MainActivity]@1f539b0( 5598): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+D/InputTransport( 5598): Input channel constructed: 'ClientS', fd=196
+I/InsetsSourceConsumer( 5598): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/ImeTracker( 5598): system_server:9a1171d1: onCancelled at PHASE_CLIENT_ON_CONTROLS_CHANGED
+I/InsetsController( 5598): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {f20000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {f20005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {f20006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {55640001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {55640004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {55640005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {55640006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {55640024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null} }
+I/VRI[MainActivity]@1f539b0( 5598): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/VRI[MainActivity]@1f539b0( 5598): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@1f539b0
+I/flutter ( 5598): [ChatWS] Received event: heartbeat
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5598): [ChatWS] Sent event: heartbeat
+I/flutter ( 5598): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter ( 5598): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5598): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5598): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5598): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!

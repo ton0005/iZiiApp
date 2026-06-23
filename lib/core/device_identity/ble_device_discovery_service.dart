@@ -224,13 +224,19 @@ class BleDeviceDiscoveryService {
       print('[BleDiscovery] Starting BLE Scan for service UUID: $serviceUuid');
 
       await FlutterBluePlus.startScan(
+        withServices: [Guid(serviceUuid)],
         timeout: const Duration(seconds: 15),
       );
 
       _scanSubscription = FlutterBluePlus.scanResults.listen((results) async {
         for (ScanResult r in results) {
-          if (r.advertisementData.serviceUuids.contains(Guid(serviceUuid)) ||
-              r.advertisementData.localName.startsWith('iZii')) {
+          final hasService = r.advertisementData.serviceUuids.any((uuid) =>
+              uuid.toString().toLowerCase() == serviceUuid.toLowerCase());
+          final hasName = r.advertisementData.localName.startsWith('iZii') ||
+              r.device.platformName.startsWith('iZii');
+          // If scanning withServices filter, iOS/macOS might return device without populating serviceUuids
+          // in advertisementData due to overflow, so we accept any match on iOS/macOS.
+          if (hasService || hasName || Platform.isIOS || Platform.isMacOS) {
             await _handleDiscoveredDevice(r);
           }
         }
@@ -261,9 +267,10 @@ class BleDeviceDiscoveryService {
 
   /// Process discovered device, saving/updating it in the SQLite LocalBlePeers table.
   Future<void> _handleDiscoveredDevice(ScanResult result) async {
-    final deviceName = result.advertisementData.localName.isNotEmpty
+    final rawName = result.advertisementData.localName.isNotEmpty
         ? result.advertisementData.localName
         : result.device.platformName;
+    final deviceName = rawName.isNotEmpty ? rawName : 'iZii Peer';
 
     // Generate a temporary DID or extract from advertisement if possible
     // For standard flow, we save peer and execute Noise XX Handshake upon connection.
@@ -320,17 +327,32 @@ class BleDeviceDiscoveryService {
       }
 
       print('[BleDiscovery] Connected. Discovering services...');
-      final List<BluetoothService> services = await device.discoverServices();
+      List<BluetoothService> services = await device.discoverServices();
 
       BluetoothCharacteristic? p2pChar;
-      for (var s in services) {
-        if (s.uuid == Guid(serviceUuid)) {
-          for (var c in s.characteristics) {
-            if (c.uuid == Guid(charUuid)) {
-              p2pChar = c;
-              break;
+      BluetoothCharacteristic? findChar(List<BluetoothService> serviceList) {
+        for (var s in serviceList) {
+          if (s.uuid.toString().toLowerCase() == serviceUuid.toLowerCase()) {
+            for (var c in s.characteristics) {
+              if (c.uuid.toString().toLowerCase() == charUuid.toLowerCase()) {
+                return c;
+              }
             }
           }
+        }
+        return null;
+      }
+
+      p2pChar = findChar(services);
+
+      if (p2pChar == null && Platform.isAndroid) {
+        print('[BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...');
+        try {
+          await device.clearGattCache();
+          services = await device.discoverServices();
+          p2pChar = findChar(services);
+        } catch (e) {
+          print('[BleDiscovery] Failed to clear GATT cache or rediscover: $e');
         }
       }
 
