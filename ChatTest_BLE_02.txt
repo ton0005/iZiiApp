@@ -1,0 +1,140 @@
+Android Logcat Output:
+
+
+D/[FBP-Android](27899): [FBP] onMethodCall: isSupported
+I/flutter (27899): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](27899): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(27899): isLeEnabled(): ON
+D/BluetoothLeScanner(27899): Start Scan with callback
+D/BluetoothLeScanner(27899): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+2
+I/flutter (27899): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -42
+I/flutter (27899): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -35
+I/flutter (27899): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/VRI[MainActivity]@e73cb85(27899): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@e73cb85
+I/VRI[MainActivity]@e73cb85(27899): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@e73cb85
+I/flutter (27899): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](27899): [FBP] onMethodCall: connect
+D/BluetoothGatt(27899): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(27899): registerApp()
+D/BluetoothGatt(27899): registerApp() - UUID=ea4f3d36-be8d-4b64-8eb2-2a157eedd9bf
+D/BluetoothGatt(27899): onClientRegistered() - status=0 clientIf=56
+D/[FBP-Android](27899): [FBP] onMethodCall: getAdapterState
+D/BluetoothGattServer(27899): onServerConnectionState() - status=0 serverIf=55 connected=true device=XX:XX:XX:XX:5E:A9
+E/BlePeripheralPlugin(27899): onConnectionStateChange: 0 -> 2
+D/BluetoothGattServer(27899): connect() - device: XX:XX:XX:XX:5E:A9, auto: true
+D/BluetoothGatt(27899): onClientConnectionState() - status=0 clientIf=56 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](27899): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](27899): [FBP]   status: SUCCESS
+I/flutter (27899): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (27899): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+D/[FBP-Android](27899): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(27899): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(27899): onPhyUpdate() - status=0 address=XX:XX:XX:XX:5E:A9 txPhy=2 rxPhy=2
+D/BluetoothGattServer(27899): onPhyUpdate() - device=XX:XX:XX:XX:5E:A9, txPHy=2, rxPHy=2
+D/BluetoothGatt(27899): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGattServer(27899): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGatt(27899): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](27899): [FBP] onMtuChanged:
+D/[FBP-Android](27899): [FBP]   mtu: 517
+D/[FBP-Android](27899): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27899): [BleDiscovery] Requesting MTU 256 for Android...
+D/BluetoothGatt(27899): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+D/BluetoothGattServer(27899): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+D/[FBP-Android](27899): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(27899): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(27899): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](27899): [FBP] onMtuChanged:
+D/[FBP-Android](27899): [FBP]   mtu: 517
+D/[FBP-Android](27899): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27899): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](27899): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(27899): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(27899): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](27899): [FBP] onServicesDiscovered:
+D/[FBP-Android](27899): [FBP]   count: 9
+D/[FBP-Android](27899): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](27899): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(27899): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](27899): [FBP] onDescriptorWrite:
+D/[FBP-Android](27899): [FBP]   chr: 2a05
+D/[FBP-Android](27899): [FBP]   desc: 2902
+D/[FBP-Android](27899): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27899): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+D/[FBP-Android](27899): [FBP] onMethodCall: clearGattCache
+I/m.izii.izii_app(27899): hiddenapi: Accessing hidden method Landroid/bluetooth/BluetoothGatt;->refresh()Z (runtime_flags=0, domain=platform, api=unsupported) from Lcom/lib/flutter_blue_plus/FlutterBluePlusPlugin; (domain=app, TargetSdkVersion=36) using reflection: allowed
+D/BluetoothGatt(27899): refresh() - device: XX:XX:XX:XX:5E:A9
+D/[FBP-Android](27899): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(27899): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(27899): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGattServer(27899): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+I/VRI[MainActivity]@e73cb85(27899): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@e73cb85
+I/flutter (27899): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27899): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (27899): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+D/BluetoothGatt(27899): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](27899): [FBP] onServicesDiscovered:
+D/[FBP-Android](27899): [FBP]   count: 9
+D/[FBP-Android](27899): [FBP]   status: 0GATT_SUCCESS
+I/flutter (27899): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+D/[FBP-Android](27899): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(27899): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(27899): onClientConnectionState() - status=0 clientIf=56 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(27899): unregisterApp() - mClientIf=56
+D/[FBP-Android](27899): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](27899): [FBP]   status: SUCCESS
+D/BluetoothGatt(27899): close()
+D/BluetoothGattServer(27899): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+I/flutter (27899): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27899): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (27899): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (27899): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+D/[FBP-Android](27899): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(27899): isLeEnabled(): ON
+D/BluetoothLeScanner(27899): Stop Scan with callback
+2
+I/flutter (27899): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27899): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (27899): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (27899): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27899): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27899): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (27899): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (27899): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27899): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+
+Iphone Log Output:
+
+
+A Dart VM Service on Thanhtruc is available at:
+http://127.0.0.1:58190/cZWHX6FWM-k=/
+The Flutter DevTools debugger and profiler on Thanhtruc is available at:
+http://127.0.0.1:58190/cZWHX6FWM-k=/devtools/?uri=ws://127.0.0.1:58190/cZWHX6
+FWM-k=/ws
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [DeviceIdentity] Loaded existing identity: izii-d-bc46ef4f
+flutter: [BleDiscovery] BlePeripheral initialized successfully.
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+BluetoothState: CBManagerState(rawValue: 5)
+flutter: [BleDiscovery] Discovered peer: Trúc’s iPad (2) (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -47
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -42
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [BleDiscovery] Failed to setup GATT Server: Service addition timed out
+flutter: [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [DeviceDiscovery] ❌ Registration failed: Connection timeout
+flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
+flutter: [BleDiscovery] BLE Scan stopped.
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] Discovered peer: Trúc’s iPad (2) (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -50
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -44
+flutter: [BleDiscovery] Connecting to BLE device: c7e7244c-1da2-5cc5-f876-e8ed88b29f6c (ID: izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c)...
+flutter: [BleDiscovery] Connection or authentication failed: PlatformException(connect, Peripheral not found, c7e7244c-1da2-5cc5-f876-e8ed88b29f6c, null)
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout

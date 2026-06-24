@@ -32,6 +32,7 @@ class BleDeviceDiscoveryService {
   bool _isScanning = false;
   bool _isAdvertising = false;
   bool _isBlePeripheralInitialized = false;
+  Completer<bool>? _blePeripheralReadyCompleter;
 
   StreamSubscription? _scanSubscription;
   final _nearbyPeersController =
@@ -45,9 +46,29 @@ class BleDeviceDiscoveryService {
   Future<void> _ensureInitialized() async {
     if (_isBlePeripheralInitialized) return;
     try {
+      _blePeripheralReadyCompleter = Completer<bool>();
+      
+      BlePeripheral.setBleStateChangeCallback((poweredOn) {
+        print('[BleDiscovery] BlePeripheral state change: poweredOn=$poweredOn');
+        if (poweredOn && _blePeripheralReadyCompleter != null && !_blePeripheralReadyCompleter!.isCompleted) {
+          _blePeripheralReadyCompleter!.complete(true);
+        }
+      });
+
       await BlePeripheral.initialize();
       _isBlePeripheralInitialized = true;
       print('[BleDiscovery] BlePeripheral initialized successfully.');
+
+      if (Platform.isIOS || Platform.isMacOS) {
+        print('[BleDiscovery] Waiting for BlePeripheral to be powered on...');
+        await _blePeripheralReadyCompleter!.future.timeout(
+          const Duration(seconds: 4),
+          onTimeout: () {
+            print('[BleDiscovery] Timeout waiting for BlePeripheral state change.');
+            return false;
+          },
+        );
+      }
     } catch (e) {
       print('[BleDiscovery] Failed to initialize BlePeripheral: $e');
     }
@@ -76,7 +97,13 @@ class BleDeviceDiscoveryService {
         ],
       );
 
-      await BlePeripheral.addService(bleService);
+      try {
+        await BlePeripheral.addService(bleService);
+      } catch (addError) {
+        print('[BleDiscovery] First attempt to add service failed: $addError. Retrying in 1 second...');
+        await Future.delayed(const Duration(seconds: 1));
+        await BlePeripheral.addService(bleService);
+      }
       
       BlePeripheral.setWriteRequestCallback(_handleWriteRequest);
       BlePeripheral.setAdvertisingStatusUpdateCallback((advertising, error) {
@@ -87,6 +114,7 @@ class BleDeviceDiscoveryService {
       print('[BleDiscovery] GATT Server configured with service: $serviceUuid');
     } catch (e) {
       print('[BleDiscovery] Failed to setup GATT Server: $e');
+      rethrow;
     }
   }
 
