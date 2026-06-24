@@ -35,6 +35,7 @@ class BleDeviceDiscoveryService {
   Completer<bool>? _blePeripheralReadyCompleter;
 
   StreamSubscription? _scanSubscription;
+  final Map<String, BluetoothDevice> _discoveredDevicesCache = {};
   final _nearbyPeersController =
       StreamController<List<LocalBlePeer>>.broadcast();
 
@@ -305,6 +306,8 @@ class BleDeviceDiscoveryService {
     final String deviceId =
         'izii-d-ble-${result.device.remoteId.str.replaceAll(':', '').toLowerCase()}';
 
+    _discoveredDevicesCache[deviceId] = result.device;
+
     final companion = LocalBlePeersCompanion.insert(
       deviceId: deviceId,
       deviceName: deviceName,
@@ -335,8 +338,16 @@ class BleDeviceDiscoveryService {
 
   /// Connects to a remote peer and performs the Noise XX Handshake.
   Future<bool> connectAndAuthenticate(String deviceId) async {
-    final realAddress = _getDeviceAddressFromId(deviceId);
-    final device = BluetoothDevice.fromId(realAddress);
+    final cachedDevice = _discoveredDevicesCache[deviceId];
+    final BluetoothDevice device;
+    if (cachedDevice != null) {
+      device = cachedDevice;
+    } else {
+      final realAddress = _getDeviceAddressFromId(deviceId);
+      device = BluetoothDevice.fromId(realAddress);
+    }
+
+    final realAddress = device.remoteId.str;
 
     try {
       print('[BleDiscovery] Connecting to BLE device: $realAddress (ID: $deviceId)...');
