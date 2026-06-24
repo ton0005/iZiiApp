@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:typed_data';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_blue_plus/flutter_blue_plus.dart'
     hide CharacteristicProperties;
 import 'package:ble_peripheral/ble_peripheral.dart';
@@ -252,8 +253,12 @@ class BleDeviceDiscoveryService {
       _isScanning = true;
       print('[BleDiscovery] Starting BLE Scan for service UUID: $serviceUuid');
 
+      // Do NOT use withServices filter: Android ble_peripheral may place
+      // the 128-bit custom service UUID in the scan response rather than the
+      // main advertisement packet. iOS CoreBluetooth withServices filter only
+      // matches the main packet, so Android devices become invisible.
+      // Instead, we filter results manually below.
       await FlutterBluePlus.startScan(
-        withServices: [Guid(serviceUuid)],
         timeout: const Duration(seconds: 15),
       );
 
@@ -263,9 +268,7 @@ class BleDeviceDiscoveryService {
               uuid.toString().toLowerCase() == serviceUuid.toLowerCase());
           final hasName = r.advertisementData.localName.startsWith('iZii') ||
               r.device.platformName.startsWith('iZii');
-          // If scanning withServices filter, iOS/macOS might return device without populating serviceUuids
-          // in advertisementData due to overflow, so we accept any match on iOS/macOS.
-          if (hasService || hasName || Platform.isIOS || Platform.isMacOS) {
+          if (hasService || hasName) {
             await _handleDiscoveredDevice(r);
           }
         }
@@ -336,13 +339,44 @@ class BleDeviceDiscoveryService {
     return clean;
   }
 
+  /// Performs a brief re-scan to refresh CoreBluetooth's peripheral reference
+  /// on iOS. Returns the refreshed BluetoothDevice if found, null otherwise.
+  Future<BluetoothDevice?> _reScanForDevice(String deviceId) async {
+    print('[BleDiscovery] Re-scanning to refresh peripheral reference for $deviceId...');
+    final Completer<BluetoothDevice?> completer = Completer<BluetoothDevice?>();
+
+    StreamSubscription? sub;
+    sub = FlutterBluePlus.scanResults.listen((results) {
+      for (ScanResult r in results) {
+        final scannedId = 'izii-d-ble-${r.device.remoteId.str.replaceAll(':', '').toLowerCase()}';
+        if (scannedId == deviceId) {
+          _discoveredDevicesCache[deviceId] = r.device;
+          if (!completer.isCompleted) {
+            completer.complete(r.device);
+          }
+          break;
+        }
+      }
+    });
+
+    try {
+      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
+    } catch (_) {}
+
+    // Wait for device found or timeout
+    final device = await completer.future.timeout(
+      const Duration(seconds: 6),
+      onTimeout: () => null,
+    );
+
+    await sub.cancel();
+    return device;
+  }
+
   /// Connects to a remote peer and performs the Noise XX Handshake.
   Future<bool> connectAndAuthenticate(String deviceId) async {
-    final cachedDevice = _discoveredDevicesCache[deviceId];
-    final BluetoothDevice device;
-    if (cachedDevice != null) {
-      device = cachedDevice;
-    } else {
+    BluetoothDevice? device = _discoveredDevicesCache[deviceId];
+    if (device == null) {
       final realAddress = _getDeviceAddressFromId(deviceId);
       device = BluetoothDevice.fromId(realAddress);
     }
@@ -352,7 +386,24 @@ class BleDeviceDiscoveryService {
     try {
       print('[BleDiscovery] Connecting to BLE device: $realAddress (ID: $deviceId)...');
       if (!device.isConnected) {
-        await device.connect(timeout: const Duration(seconds: 10));
+        try {
+          await device.connect(timeout: const Duration(seconds: 10));
+        } on PlatformException catch (e) {
+          // On iOS, CoreBluetooth may have released the CBPeripheral reference
+          // after the scan timed out. Re-scan briefly to refresh it.
+          if (e.code == 'connect' && (Platform.isIOS || Platform.isMacOS)) {
+            print('[BleDiscovery] Peripheral reference lost. Re-scanning...');
+            final refreshedDevice = await _reScanForDevice(deviceId);
+            if (refreshedDevice != null) {
+              device = refreshedDevice;
+              await device.connect(timeout: const Duration(seconds: 10));
+            } else {
+              rethrow;
+            }
+          } else {
+            rethrow;
+          }
+        }
       }
 
       // Request MTU right after connection to prevent packet truncation on Android
