@@ -30,47 +30,41 @@ class BleDeviceDiscoveryService {
   static const String serviceUuid = 'f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c';
   static const String charUuid = 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d';
 
-  bool _isScanning = false;
   bool _isAdvertising = false;
   bool _isBlePeripheralInitialized = false;
-  Completer<bool>? _blePeripheralReadyCompleter;
 
   StreamSubscription? _scanSubscription;
   final Map<String, BluetoothDevice> _discoveredDevicesCache = {};
-  final _nearbyPeersController =
-      StreamController<List<LocalBlePeer>>.broadcast();
 
   Stream<List<LocalBlePeer>> get nearbyPeersStream =>
-      _nearbyPeersController.stream;
-  bool get isScanning => _isScanning;
+      _db.select(_db.localBlePeers).watch();
+  bool get isScanning => FlutterBluePlus.isScanningNow;
   bool get isAdvertising => _isAdvertising;
 
   Future<void> _ensureInitialized() async {
     if (_isBlePeripheralInitialized) return;
     try {
-      _blePeripheralReadyCompleter = Completer<bool>();
-      
-      BlePeripheral.setBleStateChangeCallback((poweredOn) {
-        print('[BleDiscovery] BlePeripheral state change: poweredOn=$poweredOn');
-        if (poweredOn && _blePeripheralReadyCompleter != null && !_blePeripheralReadyCompleter!.isCompleted) {
-          _blePeripheralReadyCompleter!.complete(true);
-        }
-      });
-
       await BlePeripheral.initialize();
       _isBlePeripheralInitialized = true;
       print('[BleDiscovery] BlePeripheral initialized successfully.');
 
-      if (Platform.isIOS || Platform.isMacOS) {
-        print('[BleDiscovery] Waiting for BlePeripheral to be powered on...');
-        await _blePeripheralReadyCompleter!.future.timeout(
-          const Duration(seconds: 4),
+      // Wait for Bluetooth to be powered on using FlutterBluePlus.adapterState (extremely reliable on both iOS & Android)
+      if (FlutterBluePlus.adapterStateNow != BluetoothAdapterState.on) {
+        print('[BleDiscovery] Waiting for Bluetooth adapter to be powered on...');
+        await FlutterBluePlus.adapterState
+            .where((state) => state == BluetoothAdapterState.on)
+            .first
+            .timeout(
+          const Duration(seconds: 5),
           onTimeout: () {
-            print('[BleDiscovery] Timeout waiting for BlePeripheral state change.');
-            return false;
+            print('[BleDiscovery] Timeout waiting for Bluetooth adapter state.');
+            return BluetoothAdapterState.unknown;
           },
         );
       }
+
+      // Give the system a brief 500ms delay to warm up the peripheral manager after power on
+      await Future.delayed(const Duration(milliseconds: 500));
     } catch (e) {
       print('[BleDiscovery] Failed to initialize BlePeripheral: $e');
     }
@@ -147,6 +141,7 @@ class BleDeviceDiscoveryService {
         await BlePeripheral.updateCharacteristic(
           characteristicId: charUuid,
           value: Uint8List.fromList(msg2),
+          deviceId: remoteDeviceId,
         );
       } else {
         final session = _handshakeService.getSessionKeys(remoteDeviceId);
@@ -198,13 +193,19 @@ class BleDeviceDiscoveryService {
 
       await _setupGattServer();
 
+      // On Android, BLE advertising packet limit is 31 bytes.
+      // 128-bit service UUID (16 bytes) + Flags/overhead (5 bytes) leaves only 10 bytes for name.
+      // Advertising a long custom localName will cause ADVERTISE_FAILED_DATA_TOO_LARGE and advertising fails.
+      // Passing localName as null on Android prevents this.
+      final localName = Platform.isAndroid ? null : identity.deviceName;
+
       await BlePeripheral.startAdvertising(
         services: [serviceUuid],
-        localName: identity.deviceName,
+        localName: localName,
       );
       _isAdvertising = true;
       print(
-          '[BleDiscovery] Started BLE Advertising. Service UUID: $serviceUuid');
+          '[BleDiscovery] Started BLE Advertising. Service UUID: $serviceUuid, localName: $localName');
     } catch (e) {
       print('[BleDiscovery] Failed to start BLE Advertising: $e');
     }
@@ -224,7 +225,7 @@ class BleDeviceDiscoveryService {
 
   /// Starts scanning for nearby iZii P2P BLE devices.
   Future<void> startScanning() async {
-    if (_isScanning) return;
+    if (FlutterBluePlus.isScanningNow) return;
 
     try {
       if (Platform.isAndroid) {
@@ -250,18 +251,7 @@ class BleDeviceDiscoveryService {
         return;
       }
 
-      _isScanning = true;
-      print('[BleDiscovery] Starting BLE Scan for service UUID: $serviceUuid');
-
-      // Do NOT use withServices filter: Android ble_peripheral may place
-      // the 128-bit custom service UUID in the scan response rather than the
-      // main advertisement packet. iOS CoreBluetooth withServices filter only
-      // matches the main packet, so Android devices become invisible.
-      // Instead, we filter results manually below.
-      await FlutterBluePlus.startScan(
-        timeout: const Duration(seconds: 15),
-      );
-
+      await _scanSubscription?.cancel();
       _scanSubscription = FlutterBluePlus.scanResults.listen((results) async {
         for (ScanResult r in results) {
           final hasService = r.advertisementData.serviceUuids.any((uuid) =>
@@ -272,25 +262,31 @@ class BleDeviceDiscoveryService {
             await _handleDiscoveredDevice(r);
           }
         }
-
-        // Query database and emit updated peers list
-        final peers = await _db.select(_db.localBlePeers).get();
-        _nearbyPeersController.add(peers);
       });
+
+      print('[BleDiscovery] Starting BLE Scan for service UUID: $serviceUuid');
+
+      // Do NOT use withServices filter: Android ble_peripheral may place
+      // the 128-bit custom service UUID in the scan response rather than the
+      // main advertisement packet. iOS CoreBluetooth withServices filter only
+      // matches the main packet, so Android devices become invisible.
+      // Instead, we filter results manually below.
+      await FlutterBluePlus.startScan(
+        timeout: const Duration(seconds: 15),
+      );
     } catch (e) {
       print('[BleDiscovery] Error starting scan: $e');
-      _isScanning = false;
     }
   }
 
   /// Stops scanning.
   Future<void> stopScanning() async {
-    if (!_isScanning) return;
     try {
-      await FlutterBluePlus.stopScan();
+      if (FlutterBluePlus.isScanningNow) {
+        await FlutterBluePlus.stopScan();
+      }
       await _scanSubscription?.cancel();
       _scanSubscription = null;
-      _isScanning = false;
       print('[BleDiscovery] BLE Scan stopped.');
     } catch (e) {
       print('[BleDiscovery] Error stopping scan: $e');
@@ -375,6 +371,9 @@ class BleDeviceDiscoveryService {
 
   /// Connects to a remote peer and performs the Noise XX Handshake.
   Future<bool> connectAndAuthenticate(String deviceId) async {
+    // 1. Stop scanning first before attempting connection (Apple best practice to prevent connection timeouts/failures)
+    await stopScanning();
+
     BluetoothDevice? device = _discoveredDevicesCache[deviceId];
     if (device == null) {
       final realAddress = _getDeviceAddressFromId(deviceId);
@@ -396,6 +395,8 @@ class BleDeviceDiscoveryService {
             final refreshedDevice = await _reScanForDevice(deviceId);
             if (refreshedDevice != null) {
               device = refreshedDevice;
+              // Stop the scan we just started in _reScanForDevice before connecting
+              await stopScanning();
               await device.connect(timeout: const Duration(seconds: 10));
             } else {
               rethrow;
@@ -497,10 +498,14 @@ class BleDeviceDiscoveryService {
         ));
       }
 
+      // Resume scanning in background (Apple best practice)
+      startScanning();
       return true;
     } catch (e) {
       print('[BleDiscovery] Connection or authentication failed: $e');
-      await device.disconnect();
+      await device?.disconnect();
+      // Resume scanning in background
+      startScanning();
       return false;
     }
   }
@@ -508,6 +513,5 @@ class BleDeviceDiscoveryService {
   void dispose() {
     stopScanning();
     stopAdvertising();
-    _nearbyPeersController.close();
   }
 }
