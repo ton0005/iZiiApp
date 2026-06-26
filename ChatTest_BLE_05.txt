@@ -1,0 +1,1001 @@
+Ipad can not connect iphone:
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-67d6a652-68a6-b947-f7fa-e44a0ecfa1b7) RSSI: -34
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-67d6a652-68a6-b947-f7fa-e44a0ecfa1b7) RSSI: -34
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-67d6a652-68a6-b947-f7fa-e44a0ecfa1b7) RSSI: -34
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-67d6a652-68a6-b947-f7fa-e44a0ecfa1b7) RSSI: -34
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-67d6a652-68a6-b947-f7fa-e44a0ecfa1b7) RSSI: -34
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-67d6a652-68a6-b947-f7fa-e44a0ecfa1b7) RSSI: -34
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-67d6a652-68a6-b947-f7fa-e44a0ecfa1b7) RSSI: -34
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-67d6a652-68a6-b947-f7fa-e44a0ecfa1b7) RSSI: -34
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+
+flutter: [DeviceDiscovery] ❌ Registration failed: Connection timeout
+
+flutter: [DeviceDiscovery] Heartbeat stopped
+
+flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
+
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+[FBP-iOS] handleMethodCall: stopScan
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Operation timed out (OS Error: Operation timed out, errno = 60), address = 10.146.147.160, port = 63967
+
+flutter: [BleDiscovery] Connecting to BLE device: 67D6A652-68A6-B947-F7FA-E44A0ECFA1B7 (ID: izii-d-ble-67d6a652-68a6-b947-f7fa-e44a0ecfa1b7)...
+
+[FBP-iOS] handleMethodCall: connect
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [ChatWS] Retrying connection...
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+[FBP-iOS] didConnectPeripheral
+
+flutter: [BleDiscovery] Connected. Discovering services...
+
+[FBP-iOS] handleMethodCall: discoverServices
+
+[FBP-iOS] didDiscoverServices:
+
+[FBP-iOS]   svc: 180a
+
+[FBP-iOS]   svc: d0611e78-bbb4-4591-a5f8-487910ae4366
+
+[FBP-iOS]   svc: 9fa480e0-4967-4542-9390-d343dc5d04ae
+
+[FBP-iOS]   svc: 180f
+
+[FBP-iOS]   svc: 1805
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 180a
+
+[FBP-iOS]     chr: 2a29
+
+[FBP-iOS]     chr: 2a24
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 180a
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: d0611e78-bbb4-4591-a5f8-487910ae4366
+
+[FBP-iOS]     chr: 8667556c-9a37-4c91-84ed-54ee27d90049
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: d0611e78-bbb4-4591-a5f8-487910ae4366
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 9fa480e0-4967-4542-9390-d343dc5d04ae
+
+[FBP-iOS]     chr: af0badb1-5b99-43cd-917a-a77bc549e3cc
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 9fa480e0-4967-4542-9390-d343dc5d04ae
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 180f
+
+[FBP-iOS]     chr: 2a19
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 180f
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1805
+
+[FBP-iOS]     chr: 2a2b
+
+[FBP-iOS]     chr: 2a0f
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 1805
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS]     chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a29
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a24
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 180a
+
+[FBP-iOS]     chr: 2a29
+
+[FBP-iOS]     chr: 2a24
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 8667556c-9a37-4c91-84ed-54ee27d90049
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: d0611e78-bbb4-4591-a5f8-487910ae4366
+
+[FBP-iOS]     chr: 8667556c-9a37-4c91-84ed-54ee27d90049
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: af0badb1-5b99-43cd-917a-a77bc549e3cc
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 9fa480e0-4967-4542-9390-d343dc5d04ae
+
+[FBP-iOS]     chr: af0badb1-5b99-43cd-917a-a77bc549e3cc
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a19
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 180f
+
+[FBP-iOS]     chr: 2a19
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a2b
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a0f
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1805
+
+[FBP-iOS]     chr: 2a2b
+
+[FBP-iOS]     chr: 2a0f
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS]     chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a29
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a24
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 8667556c-9a37-4c91-84ed-54ee27d90049
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: af0badb1-5b99-43cd-917a-a77bc549e3cc
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a19
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a2b
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a0f
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+flutter: [BleDiscovery] Starting Noise Handshake...
+
+[FBP-iOS] handleMethodCall: setNotifyValue
+
+[FBP-iOS] didUpdateNotificationStateForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] handleMethodCall: writeCharacteristic
+
+[FBP-iOS] didWriteValueForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+
+[FBP-iOS] handleMethodCall: disconnect
+
+[FBP-iOS] didDisconnectPeripheral:
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [BleDiscovery] GATT Write received from 67D6A652-68A6-B947-F7FA-E44A0ECFA1B7, length: 32
+
+flutter: [BleDiscovery] Processing incoming Noise handshake message (length: 32)...
+
+flutter: [BleDiscovery] Message 1 processed. Sending Message 2 to 67D6A652-68A6-B947-F7FA-E44A0ECFA1B7...
+
+flutter: [BleDiscovery] Error processing handshake in GATT write: PlatformException(notFound("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d characteristic not found"), CustomError, Stacktrace: ["0   ble_peripheral                      0x00000001062ca21c $s14ble_peripheral9wrapError33_A974837FDCB16A031557534185F83A6FLLySayypSgGypF + 616", "1   ble_peripheral                      0x00000001062cd7bc $s14ble_peripheral25BlePeripheralChannelSetupC5setUp15binaryMessenger3api07messageE6SuffixySo013FlutterBinaryJ0_p_AA0cdE0_pSgSStFZyypSg_yAKctcfU9_ + 564", "2   ble_peripheral                      0x00000001062cc514 $sypSgAAIegn_Iegng_yXlSgABIeyBy_IeyByy_TR + 156", "3   Flutter                             0x000000010768bb94 InternalFlutterGpu_Texture_AsImage + 29268", "4   Flutter                             0x00000001071e7968 $s26InternalFlutterSwiftCommon8LogLevelOMa + 416352", "5   libdispatch.dylib                   0x00000001068a8544 _dispatch_call_block_and_release + 32", "6   libdispatch.dylib                   0x00000
+
+
+Ipad connect with android successfully
+
+[FBP-iOS] didConnectPeripheral
+
+flutter: [BleDiscovery] Connected. Discovering services...
+
+[FBP-iOS] handleMethodCall: discoverServices
+
+[FBP-iOS] didDiscoverServices:
+
+[FBP-iOS]   svc: 1849
+
+[FBP-iOS]   svc: 184c
+
+[FBP-iOS]   svc: 1855
+
+[FBP-iOS]   svc: e73e0001-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS]   svc: 594a34fc-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1849
+
+[FBP-iOS]     chr: 2b93
+
+[FBP-iOS]     chr: 2b96
+
+[FBP-iOS]     chr: 2b97
+
+[FBP-iOS]     chr: 2b98
+
+[FBP-iOS]     chr: 2b99
+
+[FBP-iOS]     chr: 2b9a
+
+[FBP-iOS]     chr: 2b9b
+
+[FBP-iOS]     chr: 2ba1
+
+[FBP-iOS]     chr: 2ba2
+
+[FBP-iOS]     chr: 2ba3
+
+[FBP-iOS]     chr: 2ba4
+
+[FBP-iOS]     chr: 2ba5
+
+[FBP-iOS]     chr: 2bba
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 1849
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 184c
+
+[FBP-iOS]     chr: 2bb3
+
+[FBP-iOS]     chr: 2bb4
+
+[FBP-iOS]     chr: 2bb5
+
+[FBP-iOS]     chr: 2bb6
+
+[FBP-iOS]     chr: 2bb9
+
+[FBP-iOS]     chr: 2bba
+
+[FBP-iOS]     chr: 2bbb
+
+[FBP-iOS]     chr: 2bbd
+
+[FBP-iOS]     chr: 2bbe
+
+[FBP-iOS]     chr: 2bbf
+
+[FBP-iOS]     chr: 2bc0
+
+[FBP-iOS]     chr: 2bc1
+
+[FBP-iOS]     chr: 2bc2
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 184c
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1855
+
+[FBP-iOS]     chr: 2b51
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 1855
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: e73e0001-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS]     chr: e73e0002-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: e73e0001-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 594a34fc-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     chr: 594a36e6-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     chr: 594a3010-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 594a34fc-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS]     chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b93
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b96
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b97
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b98
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b99
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b9a
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b9b
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba1
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba2
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba3
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba4
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba5
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bba
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1849
+
+[FBP-iOS]     chr: 2b93
+
+[FBP-iOS]     chr: 2b96
+
+[FBP-iOS]     chr: 2b97
+
+[FBP-iOS]     chr: 2b98
+
+[FBP-iOS]     chr: 2b99
+
+[FBP-iOS]     chr: 2b9a
+
+[FBP-iOS]     chr: 2b9b
+
+[FBP-iOS]     chr: 2ba1
+
+[FBP-iOS]     chr: 2ba2
+
+[FBP-iOS]     chr: 2ba3
+
+[FBP-iOS]     chr: 2ba4
+
+[FBP-iOS]     chr: 2ba5
+
+[FBP-iOS]     chr: 2bba
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb3
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb4
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb5
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb6
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb9
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bba
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbb
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbd
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbe
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbf
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc0
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc1
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc2
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 184c
+
+[FBP-iOS]     chr: 2bb3
+
+[FBP-iOS]     chr: 2bb4
+
+[FBP-iOS]     chr: 2bb5
+
+[FBP-iOS]     chr: 2bb6
+
+[FBP-iOS]     chr: 2bb9
+
+[FBP-iOS]     chr: 2bba
+
+[FBP-iOS]     chr: 2bbb
+
+[FBP-iOS]     chr: 2bbd
+
+[FBP-iOS]     chr: 2bbe
+
+[FBP-iOS]     chr: 2bbf
+
+[FBP-iOS]     chr: 2bc0
+
+[FBP-iOS]     chr: 2bc1
+
+[FBP-iOS]     chr: 2bc2
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b51
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1855
+
+[FBP-iOS]     chr: 2b51
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: e73e0002-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: e73e0001-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS]     chr: e73e0002-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 594a36e6-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     desc: 594a3952-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 594a3010-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     desc: 594a3952-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 594a34fc-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     chr: 594a36e6-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     chr: 594a3010-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS]     chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b93
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b96
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b97
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b98
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b99
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b9a
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b9b
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba1
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba2
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba3
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba4
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba5
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bba
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb3
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb4
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb5
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb6
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb9
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bba
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbb
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbd
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbe
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbf
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc0
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc1
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc2
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b51
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: e73e0002-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 594a36e6-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     desc: 594a3952-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 594a3010-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     desc: 594a3952-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS]     desc: 2902
+
+flutter: [BleDiscovery] Starting Noise Handshake...
+
+[FBP-iOS] handleMethodCall: setNotifyValue
+
+[FBP-iOS] didUpdateNotificationStateForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] handleMethodCall: writeCharacteristic
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+[FBP-iOS] didWriteValueForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didUpdateValueForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] handleMethodCall: writeCharacteristic
+
+[FBP-iOS] didWriteValueForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+iphone connect to Mac, report from MacOS:
+lutter: [BleDiscovery] GATT Write received from AA9B3C7B-A788-F2E9-41E4-64AF5335A25E, length: 32
+
+flutter: [BleDiscovery] Processing incoming Noise handshake message (length: 32)...
+
+flutter: [BleDiscovery] Message 1 processed. Sending Message 2 to AA9B3C7B-A788-F2E9-41E4-64AF5335A25E...
+
+flutter: [BleDiscovery] Error processing handshake in GATT write: PlatformException(notFound("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d characteristic not found"), CustomError, Stacktrace: ["0   ble_peripheral                      0x00000001065fe21c $s14ble_peripheral9wrapError33_A974837FDCB16A031557534185F83A6FLLySayypSgGypF + 616", "1   ble_peripheral                      0x00000001066017bc $s14ble_peripheral25BlePeripheralChannelSetupC5setUp15binaryMessenger3api07messageE6SuffixySo013FlutterBinaryJ0_p_AA0cdE0_pSgSStFZyypSg_yAKctcfU9_ + 564", "2   ble_peripheral                      0x0000000106600514 $sypSgAAIegn_Iegng_yXlSgABIeyBy_IeyByy_TR + 156", "3   Flutter                             0x00000001079b7b94 InternalFlutterGpu_Texture_AsImage + 29268", "4   Flutter                             0x0000000107513968 $s26InternalFlutterSwiftCommon8LogLevelOMa + 416352", "5   libdispatch.dylib                   0x00000001069685cc _dispatch_call_block_and_release + 32", "6   libdispatch.dylib                   0x00000
+
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Operation timed out (OS Error: Operation timed out, errno = 60), address = 10.146.147.160, port = 50970
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [ChatWS] Retrying connection...
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.

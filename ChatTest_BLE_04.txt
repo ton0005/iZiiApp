@@ -1,0 +1,1056 @@
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+
+[FBP-iOS] handleMethodCall: isSupported
+
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] handleMethodCall: startScan
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Connecting to BLE device: FF0D0A11-67D9-1338-55D0-CD1EA17D458A (ID: izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a)...
+
+[FBP-iOS] handleMethodCall: connect
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+[FBP-iOS] didConnectPeripheral
+
+flutter: [BleDiscovery] Connected. Discovering services...
+
+[FBP-iOS] handleMethodCall: discoverServices
+
+[FBP-iOS] didDiscoverServices:
+
+[FBP-iOS]   svc: 1849
+
+[FBP-iOS]   svc: 184c
+
+[FBP-iOS]   svc: 1855
+
+[FBP-iOS]   svc: e73e0001-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS]   svc: 594a34fc-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1849
+
+[FBP-iOS]     chr: 2b93
+
+[FBP-iOS]     chr: 2b96
+
+[FBP-iOS]     chr: 2b97
+
+[FBP-iOS]     chr: 2b98
+
+[FBP-iOS]     chr: 2b99
+
+[FBP-iOS]     chr: 2b9a
+
+[FBP-iOS]     chr: 2b9b
+
+[FBP-iOS]     chr: 2ba1
+
+[FBP-iOS]     chr: 2ba2
+
+[FBP-iOS]     chr: 2ba3
+
+[FBP-iOS]     chr: 2ba4
+
+[FBP-iOS]     chr: 2ba5
+
+[FBP-iOS]     chr: 2bba
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 1849
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 184c
+
+[FBP-iOS]     chr: 2bb3
+
+[FBP-iOS]     chr: 2bb4
+
+[FBP-iOS]     chr: 2bb5
+
+[FBP-iOS]     chr: 2bb6
+
+[FBP-iOS]     chr: 2bb9
+
+[FBP-iOS]     chr: 2bba
+
+[FBP-iOS]     chr: 2bbb
+
+[FBP-iOS]     chr: 2bbd
+
+[FBP-iOS]     chr: 2bbe
+
+[FBP-iOS]     chr: 2bbf
+
+[FBP-iOS]     chr: 2bc0
+
+[FBP-iOS]     chr: 2bc1
+
+[FBP-iOS]     chr: 2bc2
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 184c
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1855
+
+[FBP-iOS]     chr: 2b51
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 1855
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: e73e0001-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS]     chr: e73e0002-ef1b-4e74-8291-2e4f3164f3b5
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: e73e0001-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 594a34fc-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     chr: 594a36e6-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     chr: 594a3010-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: 594a34fc-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS]     chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b93
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b96
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b97
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b98
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b99
+
+[FBP-iOS]     desc: 2902
+
+FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b9a
+
+[FBP-iOS]     desc: 2902
+
+flutter: [ChatWS] Retrying connection...
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b9b
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba1
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba2
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba3
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba4
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba5
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bba
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1849
+
+[FBP-iOS]     chr: 2b93
+
+[FBP-iOS]     chr: 2b96
+
+[FBP-iOS]     chr: 2b97
+
+[FBP-iOS]     chr: 2b98
+
+[FBP-iOS]     chr: 2b99
+
+[FBP-iOS]     chr: 2b9a
+
+[FBP-iOS]     chr: 2b9b
+
+[FBP-iOS]     chr: 2ba1
+
+[FBP-iOS]     chr: 2ba2
+
+[FBP-iOS]     chr: 2ba3
+
+[FBP-iOS]     chr: 2ba4
+
+[FBP-iOS]     chr: 2ba5
+
+[FBP-iOS]     chr: 2bba
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb3
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb4
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb5
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb6
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb9
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bba
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbb
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbd
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbe
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbf
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc0
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc1
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc2
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 184c
+
+[FBP-iOS]     chr: 2bb3
+
+[FBP-iOS]     chr: 2bb4
+
+[FBP-iOS]     chr: 2bb5
+
+[FBP-iOS]     chr: 2bb6
+
+[FBP-iOS]     chr: 2bb9
+
+[FBP-iOS]     chr: 2bba
+
+[FBP-iOS]     chr: 2bbb
+
+[FBP-iOS]     chr: 2bbd
+
+[FBP-iOS]     chr: 2bbe
+
+[FBP-iOS]     chr: 2bbf
+
+[FBP-iOS]     chr: 2bc0
+
+[FBP-iOS]     chr: 2bc1
+
+[FBP-iOS]     chr: 2bc2
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b51
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1855
+
+[FBP-iOS]     chr: 2b51
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: e73e0002-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: e73e0001-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS]     chr: e73e0002-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 594a36e6-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     desc: 594a3952-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 594a3010-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     desc: 594a3952-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 594a34fc-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     chr: 594a36e6-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     chr: 594a3010-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS]     chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b93
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b96
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b97
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b98
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b99
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b9a
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b9b
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba1
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba2
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba3
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba4
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2ba5
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bba
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb3
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb4
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb5
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb6
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bb9
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bba
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbb
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbd
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbe
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bbf
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc0
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc1
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2bc2
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2b51
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: e73e0002-ef1b-4e74-8291-2e4f3164f3b5
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 594a36e6-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     desc: 594a3952-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 594a3010-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS]     desc: 594a3952-31db-11ea-978f-2e728ce88125
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS]     desc: 2902
+
+flutter: [BleDiscovery] Starting Noise Handshake...
+
+[FBP-iOS] handleMethodCall: setNotifyValue
+
+[FBP-iOS] didUpdateNotificationStateForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] handleMethodCall: writeCharacteristic
+
+[FBP-iOS] didWriteValueForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didUpdateValueForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] handleMethodCall: writeCharacteristic
+
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -49
+
+[FBP-iOS] didWriteValueForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+flutter: [BleDiscovery] Noise Handshake established successfully with FF0D0A11-67D9-1338-55D0-CD1EA17D458A.
+
+[FBP-iOS] handleMethodCall: stopScan
+
+flutter: [FBP] stopScan: already stopped
+
+flutter: [BleDiscovery] BLE Scan stopped.
+
+flutter: [BleDiscovery] Advertising status update: advertising=false, error=null
+
+flutter: [BleDiscovery] Stopped BLE Advertising.
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The connection errored: Connection failed This indicates an error which most likely cannot be solved by the library.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [ChatWS] Retrying connection...
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The connection errored: Connection failed This indicates an error which most likely cannot be solved by the library.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [ChatWS] Retrying connection...
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The connection errored: Connection failed This indicates an error which most likely cannot be solved by the library.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [ChatWS] Retrying connection...
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The connection errored: Connection failed This indicates an error which most likely cannot be solved by the library.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [ChatWS] Retrying connection...
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+
+[FBP-iOS] handleMethodCall: isSupported
+
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] handleMethodCall: startScan
+
+flutter: [DeviceDiscovery] ❌ Registration failed: Connection error – is the server running?
+
+flutter: [DeviceDiscovery] Heartbeat stopped
+
+flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
+
+flutter: [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+flutter: [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection error – is the server running?
+
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+
+flutter: [BleDiscovery] Advertising status update: advertising=true, error=null
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The connection errored: Connection failed This indicates an error which most likely cannot be solved by the library.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [ChatWS] Retrying connection...
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+
+Thread Performance Checker: Thread running at User-interactive quality-of-service class waiting on a thread without a QoS class specified. Investigate ways to avoid priority inversions
+
+PID: 1394, TID: 66744
+
+Backtrace
+
+=================================================================
+
+3   Flutter                             0x000000010785b0f0 $s26InternalFlutterSwiftCommon8LogLevelOMa + 1610216
+
+4   Flutter                             0x000000010781c29c $s26InternalFlutterSwiftCommon8LogLevelOMa + 1352596
+
+5   Flutter                             0x0000000107a56f20 $s26InternalFlutterSwiftCommon8LogLevelOMa + 3690520
+
+6   Flutter                             0x0000000107a5223c $s26InternalFlutterSwiftCommon8LogLevelOMa + 3670836
+
+7   App                                 0x000000010aaca058 kDartIsolateSnapshotInstructions + 368728
+
+8   App                                 0x000000010ab5f5b8 kDartIsolateSnapshotInstructions + 980408
+
+9   App                                 0x000000010ab6133c kDartIsolateSnapshotInstructions + 987964
+
+10  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+11  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+12  App                                 0x000000010ab5bc74 kDartIsolateSnapshotInstructions + 965748
+
+13  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+14  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+15  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+16  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+17  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+18  App                                 0x000000010ab5bc74 kDartIsolateSnapshotInstructions + 965748
+
+19  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+20  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+21  App                                 0x000000010ab5bc74 kDartIsolateSnapshotInstructions + 965748
+
+22  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+23  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+24  App                                 0x000000010ab60f70 kDartIsolateSnapshotInstructions + 986992
+
+25  App                                 0x000000010ab60dec kDartIsolateSnapshotInstructions + 986604
+
+26  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+27  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+28  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+29  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+30  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+31  App                                 0x000000010ab5bc74 kDartIsolateSnapshotInstructions + 965748
+
+32  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+33  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+34  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+35  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+36  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+37  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+38  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+39  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+40  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+41  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+42  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+43  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+44  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+45  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+46  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+47  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+48  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+49  App                                 0x000000010ab5c298 kDartIsolateSnapshotInstructions + 967320
+
+50  App                                 0x000000010ab5c0a0 kDartIsolateSnapshotInstructions + 966816
+
+51  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+52  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+53  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+54  App                                 0x000000010ab532b0 kDartIsolateSnapshotInstructions + 930480
+
+55  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+56  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+57  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+58  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+59  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+
+
+60  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+61  App                                 0x000000010ab52110 kDartIsolateSnapshotInstructions + 925968
+
+62  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+63  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+64  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+65  App                                 0x000000010ab532b0 kDartIsolateSnapshotInstructions + 930480
+
+66  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+67  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+68  App                                 0x000000010ab55350 kDartIsolateSnapshotInstructions + 938832
+
+69  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+70  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+71  App                                 0x000000010ab5c298 kDartIsolateSnapshotInstructions + 967320
+
+72  App                                 0x000000010ab5c0a0 kDartIsolateSnapshotInstructions + 966816
+
+73  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+74  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+75  App                                 0x000000010ab5bc74 kDartIsolateSnapshotInstructions + 965748
+
+76  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+77  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+78  App                                 0x000000010ab5bc74 kDartIsolateSnapshotInstructions + 965748
+
+79  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+80  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+81  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+82  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+83  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+84  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+85  App                                 0x000000010ab52110 kDartIsolateSnapshotInstructions + 925968
+
+86  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+87  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+88  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+89  App                                 0x000000010ab565b4 kDartIsolateSnapshotInstructions + 943540
+
+90  App                                 0x000000010ab54bbc kDartIsolateSnapshotInstructions + 936892
+
+91  App                                 0x000000010ab55dbc kDartIsolateSnapshotInstructions + 941500
+
+92  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+93  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+94  App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+95  App                                 0x000000010ab53c7c kDartIsolateSnapshotInstructions + 932988
+
+96  App                                 0x000000010ab51a30 kDartIsolateSnapshotInstructions + 924208
+
+97  App                                 0x000000010ab58afc kDartIsolateSnapshotInstructions + 953084
+
+98  App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+99  App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+100 App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+101 App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+102 App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+103 App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+104 App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+105 App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+106 App                                 0x000000010ab61134 kDartIsolateSnapshotInstructions + 987444
+
+107 App                                 0x000000010ab61040 kDartIsolateSnapshotInstructions + 987200
+
+108 App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+109 App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+110 App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+111 App                                 0x000000010ab52110 kDartIsolateSnapshotInstructions + 925968
+
+112 App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+113 App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+114 App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+115 App                                 0x000000010ab565b4 kDartIsolateSnapshotInstructions + 943540
+
+116 App                                 0x000000010ab54bbc kDartIsolateSnapshotInstructions + 936892
+
+117 App                                 0x000000010ab55dbc kDartIsolateSnapshotInstructions + 941500
+
+118 App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+119 App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+120 App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+121 App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+122 App                                 0x000000010ab50614 kDartIsolateSnapshotInstructions + 919060
+
+123 App                                 0x000000010ab592bc kDartIsolateSnapshotInstructions + 955068
+
+124 App                                 0x000000010ab506cc kDartIsolateSnapshotInstructions + 919244
+
+125 App                                 0x000000010ab50fec kDartIsolateSnapshotInstructions + 921580
+
+126 App                                 0x000000010ac60d28 kDartIsolateSnapshotInstructions + 2034984
+
+127 App                                 0x000000010ac60e2c kDartIsolateSnapshotInstructions + 2035244
+
+Error: this application, or a library it uses, has passed an invalid numeric value (NaN, or not-a-number) to CoreGraphics API and this value is being ignored. Please fix this problem.
+
+If you want to see the backtrace, please set CG_NUMERICS_SHOW_BACKTRACE environmental variable.
+
+Error: this application, or a library it uses, has passed an invalid numeric value (NaN, or not-a-number) to CoreGraphics API and this value is being ignored. Please fix this problem.
+
+If you want to see the backtrace, please set CG_NUMERICS_SHOW_BACKTRACE environmental variable.
+
+Error: this application, or a library it uses, has passed an invalid numeric value (NaN, or not-a-number) to CoreGraphics API and this value is being ignored. Please fix this problem.
+
+If you want to see the backtrace, please set CG_NUMERICS_SHOW_BACKTRACE environmental variable.
+
+Error: this application, or a library it uses, has passed an invalid numeric value (NaN, or not-a-number) to CoreGraphics API and this value is being ignored. Please fix this problem.
+
+If you want to see the backtrace, please set CG_NUMERICS_SHOW_BACKTRACE environmental variable.
+
+Error: this application, or a library it uses, has passed an invalid numeric value (NaN, or not-a-number) to CoreGraphics API and this value is being ignored. Please fix this problem.
+
+If you want to see the backtrace, please set CG_NUMERICS_SHOW_BACKTRACE environmental variable.
+
+Error: this application, or a library it uses, has passed an invalid numeric value (NaN, or not-a-number) to CoreGraphics API and this value is being ignored. Please fix this problem.
+
+If you want to see the backtrace, please set CG_NUMERICS_SHOW_BACKTRACE environmental variable.
+

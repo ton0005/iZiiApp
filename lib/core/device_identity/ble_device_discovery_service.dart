@@ -138,8 +138,11 @@ class BleDeviceDiscoveryService {
       
       if (msg2 != null) {
         print('[BleDiscovery] Message 1 processed. Sending Message 2 to $remoteDeviceId...');
+        final targetCharUuid = (Platform.isIOS || Platform.isMacOS)
+            ? charUuid.toUpperCase()
+            : charUuid;
         await BlePeripheral.updateCharacteristic(
-          characteristicId: charUuid,
+          characteristicId: targetCharUuid,
           value: Uint8List.fromList(msg2),
           deviceId: remoteDeviceId,
         );
