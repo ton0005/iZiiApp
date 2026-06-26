@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../database/app_database.dart';
 import 'device_identity_service.dart';
 import 'noise_handshake_service.dart';
+import '../settings/settings_service.dart';
 import '../../modules/communication/models/ble_models.dart';
 import '../../modules/communication/services/ble_transport_service.dart';
 import '../sync/ble_sync_manager.dart';
