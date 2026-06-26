@@ -13,6 +13,9 @@ import '../models/chat_models.dart';
 import '../repository/chat_repository.dart';
 import '../services/chat_websocket_service.dart';
 import '../../../core/settings/settings_service.dart';
+import '../../../core/device_identity/ble_device_discovery_service.dart';
+import '../models/ble_models.dart';
+import '../services/ble_transport_service.dart';
 
 // --- Events ---
 abstract class ChatEvent extends Equatable {
@@ -175,6 +178,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final AppDatabase _db = AppDatabase();
   StreamSubscription? _wsEventSubscription;
   StreamSubscription? _wsConnSubscription;
+  StreamSubscription? _bleMessageSubscription;
   Timer? _pullTimer;
   String? _currentUserId;
 
@@ -271,6 +275,31 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // Listen to events
     _wsEventSubscription = _wsService.eventStream.listen((event) {
       add(ReceivedWsEvent(event));
+    });
+
+    // Listen to BLE P2P messages
+    _bleMessageSubscription = BleDeviceDiscoveryService().messageReceivedStream.listen((packet) {
+      if (packet.messageType == BleMessageType.message) {
+        try {
+          final jsonStr = utf8.decode(packet.payload);
+          final chatMsgMap = jsonDecode(jsonStr) as Map<String, dynamic>;
+          add(ReceivedWsEvent(ChatWebSocketEvent(
+            event: 'message_received',
+            data: {
+              'message_id': chatMsgMap['id'],
+              'conversation_id': chatMsgMap['conversation_id'],
+              'sender_id': chatMsgMap['sender_id'],
+              'type': chatMsgMap['type'],
+              'content': chatMsgMap['content'] is String 
+                  ? jsonDecode(chatMsgMap['content']) 
+                  : chatMsgMap['content'],
+              'sent_at': chatMsgMap['sent_at'],
+            },
+          )));
+        } catch (e) {
+          print('[ChatBloc] Error processing BLE message: $e');
+        }
+      }
     });
 
     // Periodic polling for E2EE messages and HTTP Sync
@@ -439,10 +468,40 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         },
       ));
     } else {
-      // Outbox fallback
-      await _chatRepository.queueMessageOffline(chatMsg);
-      // Trigger background sync to push this message to server immediately
-      SyncService().triggerSync();
+      // Offline fallback: Check if peer is connected via BLE P2P
+      final bleDiscovery = BleDeviceDiscoveryService();
+      final companionId = companion?.id;
+      final bleDeviceId = companionId != null 
+          ? bleDiscovery.getConnectedDeviceIdForUser(companionId) 
+          : null;
+          
+      if (bleDeviceId != null) {
+        print('[ChatBloc] Companion is connected via BLE P2P. Sending message directly...');
+        final payloadBytes = utf8.encode(jsonEncode({
+          'id': messageId,
+          'conversation_id': event.conversationId,
+          'sender_id': _currentUserId!,
+          'type': event.type.name,
+          'content': contentMap,
+          'sent_at': now.toIso8601String(),
+        }));
+        
+        final packet = BleMeshPacket(
+          messageId: messageId,
+          senderDeviceId: 'local-device',
+          recipientDeviceId: bleDeviceId,
+          payload: payloadBytes,
+          ttl: 1,
+          messageType: BleMessageType.message,
+        );
+        
+        await bleDiscovery.sendPacket(bleDeviceId, packet);
+      } else {
+        // Outbox fallback
+        await _chatRepository.queueMessageOffline(chatMsg);
+        // Trigger background sync to push this message to server immediately
+        SyncService().triggerSync();
+      }
     }
   }
 
@@ -655,6 +714,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     _pullTimer?.cancel();
     _wsEventSubscription?.cancel();
     _wsConnSubscription?.cancel();
+    _bleMessageSubscription?.cancel();
     return super.close();
   }
 

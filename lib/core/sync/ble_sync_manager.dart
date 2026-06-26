@@ -5,6 +5,7 @@ import '../../modules/communication/models/ble_models.dart';
 import '../../modules/communication/services/ble_transport_service.dart';
 import 'outbox_queue.dart';
 import 'sync_service.dart';
+import '../device_identity/ble_device_discovery_service.dart';
 
 /// Manages offline-first data synchronization (Track 2 Selective Share) over P2P BLE.
 class BleSyncManager {
@@ -72,18 +73,9 @@ class BleSyncManager {
       messageType: BleMessageType.syncResponse,
     );
 
-    final serialized = packet.toJson();
-    final packetBytes = utf8.encode(serialized);
-
-    // Handle BLE fragmenting
-    final fragments = _transport.fragmentPayload(packetBytes, BleMessageType.syncResponse);
-    if (fragments.isEmpty) {
-      sendBleBytes(packetBytes);
-    } else {
-      for (final fragment in fragments) {
-        sendBleBytes(fragment.toBytes());
-      }
-    }
+    // Use BleDeviceDiscoveryService.sendPacket to encrypt, fragment and transmit!
+    final discoveryService = BleDeviceDiscoveryService();
+    await discoveryService.sendPacket(remoteDeviceId, packet);
   }
 
   /// Handles incoming BLE sync packet containing database mutations from a peer.

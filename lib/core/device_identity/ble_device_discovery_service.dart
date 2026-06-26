@@ -13,6 +13,7 @@ import 'device_identity_service.dart';
 import 'noise_handshake_service.dart';
 import '../../modules/communication/models/ble_models.dart';
 import '../../modules/communication/services/ble_transport_service.dart';
+import '../sync/ble_sync_manager.dart';
 
 /// Service managing BLE Central (scanning/connecting) and Peripheral (advertising) roles.
 /// Automates discovery, Noise protocol handshakes, and SQLite peer registry updates.
@@ -40,6 +41,20 @@ class BleDeviceDiscoveryService {
       _db.select(_db.localBlePeers).watch();
   bool get isScanning => FlutterBluePlus.isScanningNow;
   bool get isAdvertising => _isAdvertising;
+
+  final Map<String, BluetoothCharacteristic> _activeClientCharacteristics = {};
+  final Map<String, StreamSubscription> _activeClientSubscriptions = {};
+  final Map<String, String> _deviceToUserMap = {}; // remoteDeviceId -> remoteUserId
+
+  final _messageReceivedController = StreamController<BleMeshPacket>.broadcast();
+  Stream<BleMeshPacket> get messageReceivedStream => _messageReceivedController.stream;
+
+  String? getConnectedDeviceIdForUser(String userId) {
+    for (final entry in _deviceToUserMap.entries) {
+      if (entry.value == userId) return entry.key;
+    }
+    return null;
+  }
 
   Future<void> _ensureInitialized() async {
     if (_isBlePeripheralInitialized) return;
@@ -125,7 +140,12 @@ class BleDeviceDiscoveryService {
     }
 
     print('[BleDiscovery] GATT Write received from $deviceId, length: ${value.length}');
-    _processIncomingHandshake(deviceId, value);
+    
+    if (_handshakeService.isSessionEstablished(deviceId)) {
+      _handleIncomingData(deviceId, value);
+    } else {
+      _processIncomingHandshake(deviceId, value);
+    }
 
     return WriteRequestResult(status: 0);
   }
@@ -162,6 +182,9 @@ class BleDeviceDiscoveryService {
           
           await _db.into(_db.localBlePeers).insertOnConflictUpdate(companion);
           print('[BleDiscovery] Saved peer static public key to database: $dbDeviceId');
+
+          // Immediately send announce packet as Responder
+          await sendAnnounce(remoteDeviceId);
         } else {
           print('[BleDiscovery] Noise Handshake processing completed, no session established yet.');
         }
@@ -462,10 +485,16 @@ class BleDeviceDiscoveryService {
       // Step 1: Subscribe to notifications FIRST to avoid race conditions
       final Completer<List<int>> responseCompleter = Completer<List<int>>();
       final subscription = p2pChar.onValueReceived.listen((bytes) {
-        if (!responseCompleter.isCompleted) {
-          responseCompleter.complete(bytes);
+        final initiatorId = 'ble-${realAddress.replaceAll(':', '').toLowerCase()}';
+        if (!_handshakeService.isSessionEstablished(initiatorId)) {
+          if (!responseCompleter.isCompleted) {
+            responseCompleter.complete(bytes);
+          }
+        } else {
+          _handleIncomingData(deviceId, bytes);
         }
       });
+      _activeClientSubscriptions[deviceId] = subscription;
 
       // Enable notifications on characteristic
       await p2pChar.setNotifyValue(true);
@@ -477,7 +506,6 @@ class BleDeviceDiscoveryService {
       // Wait for Message 2
       final msg2 =
           await responseCompleter.future.timeout(const Duration(seconds: 10));
-      subscription.cancel();
 
       // Step 3: Process Message 2 and write Message 3
       final msg3 =
@@ -501,11 +529,30 @@ class BleDeviceDiscoveryService {
         ));
       }
 
+      // Save active client characteristic
+      _activeClientCharacteristics[deviceId] = p2pChar;
+
+      // Monitor connection state to clean up on disconnect
+      device.connectionState.listen((state) {
+        if (state == BluetoothConnectionState.disconnected) {
+          _activeClientCharacteristics.remove(deviceId);
+          _activeClientSubscriptions[deviceId]?.cancel();
+          _activeClientSubscriptions.remove(deviceId);
+          _deviceToUserMap.remove(deviceId);
+          print('[BleDiscovery] Client device disconnected: $deviceId. Cleaned up cache.');
+        }
+      });
+
+      // Immediately send announce packet as Initiator
+      await sendAnnounce(deviceId);
+
       // Resume scanning in background (Apple best practice)
       startScanning();
       return true;
     } catch (e) {
       print('[BleDiscovery] Connection or authentication failed: $e');
+      _activeClientSubscriptions[deviceId]?.cancel();
+      _activeClientSubscriptions.remove(deviceId);
       await device?.disconnect();
       // Resume scanning in background
       startScanning();
@@ -513,8 +560,237 @@ class BleDeviceDiscoveryService {
     }
   }
 
+  NoiseSessionKeys? _getSessionKeysForDevice(String deviceId) {
+    if (_handshakeService.isSessionEstablished(deviceId)) {
+      return _handshakeService.getSessionKeys(deviceId);
+    }
+    final macAddress = _getDeviceAddressFromId(deviceId);
+    final macId = 'ble-${macAddress.replaceAll(':', '').toLowerCase()}';
+    if (_handshakeService.isSessionEstablished(macId)) {
+      return _handshakeService.getSessionKeys(macId);
+    }
+    return null;
+  }
+
+  Future<void> sendAnnounce(String remoteDeviceId) async {
+    try {
+      final identity = await _identityService.getOrCreateIdentity();
+      final activeUserId = await SettingsService().getActiveUserId();
+      
+      final announceData = {
+        'user_id': activeUserId,
+        'user_name': identity.deviceName,
+        'device_id': identity.deviceId,
+      };
+      
+      final payloadBytes = utf8.encode(jsonEncode(announceData));
+      
+      final packet = BleMeshPacket(
+        messageId: 'announce-${DateTime.now().millisecondsSinceEpoch}',
+        senderDeviceId: identity.deviceId,
+        recipientDeviceId: remoteDeviceId,
+        payload: payloadBytes,
+        ttl: 1,
+        messageType: BleMessageType.announce,
+      );
+      
+      print('[BleDiscovery] Sending announce packet to $remoteDeviceId...');
+      await sendPacket(remoteDeviceId, packet);
+    } catch (e) {
+      print('[BleDiscovery] Failed to send announce packet: $e');
+    }
+  }
+
+  /// Sends a BleMeshPacket to a specific connected peer.
+  /// Handles encryption, GZIP compression, packet serialization, and fragmentation automatically.
+  Future<bool> sendPacket(String remoteDeviceId, BleMeshPacket packet) async {
+    final session = _getSessionKeysForDevice(remoteDeviceId);
+    if (session == null) {
+      print('[BleDiscovery] No active authenticated session for $remoteDeviceId. Cannot send.');
+      return false;
+    }
+
+    try {
+      // Encrypt the payload using session key
+      final encryptedPayload = await session.encrypt(packet.payload);
+      
+      final encryptedPacket = BleMeshPacket(
+        messageId: packet.messageId,
+        senderDeviceId: packet.senderDeviceId,
+        recipientDeviceId: packet.recipientDeviceId,
+        payload: encryptedPayload,
+        ttl: packet.ttl,
+        messageType: packet.messageType,
+        signatureBase64: packet.signatureBase64,
+      );
+
+      final serialized = encryptedPacket.toJson();
+      final packetBytes = utf8.encode(serialized);
+
+      final clientChar = _activeClientCharacteristics[remoteDeviceId];
+      
+      final sendBytesCallback = (List<int> bytes) async {
+        if (clientChar != null) {
+          // Client (Initiator) role: Write directly to the discovered characteristic
+          await clientChar.write(Uint8List.fromList(bytes));
+        } else {
+          // Server (Responder) role: Update the local characteristic and notify
+          final targetCharUuid = (Platform.isIOS || Platform.isMacOS)
+              ? charUuid.toUpperCase()
+              : charUuid;
+          await BlePeripheral.updateCharacteristic(
+            characteristicId: targetCharUuid,
+            value: Uint8List.fromList(bytes),
+            deviceId: remoteDeviceId,
+          );
+        }
+      };
+
+      final fragments = _transportService.fragmentPayload(packetBytes, packet.messageType);
+      if (fragments.isEmpty) {
+        await sendBytesCallback(packetBytes);
+      } else {
+        for (final fragment in fragments) {
+          await sendBytesCallback(fragment.toBytes());
+        }
+      }
+      return true;
+    } catch (e) {
+      print('[BleDiscovery] Error sending BLE packet to $remoteDeviceId: $e');
+      return false;
+    }
+  }
+
+  Future<void> _handleIncomingData(String remoteDeviceId, List<int> bytes) async {
+    BleMeshPacket? packet;
+    
+    try {
+      // 1. Try parsing as complete JSON packet first (unfragmented)
+      final jsonStr = utf8.decode(bytes);
+      if (jsonStr.startsWith('{') && jsonStr.endsWith('}')) {
+        packet = BleMeshPacket.fromJson(jsonStr);
+      }
+    } catch (_) {}
+
+    if (packet == null) {
+      // 2. Try parsing as fragment
+      try {
+        final fragment = BleFragment.fromBytes(bytes);
+        final reassembled = _transportService.addFragment(fragment);
+        if (reassembled != null) {
+          final jsonStr = utf8.decode(reassembled.payload);
+          packet = BleMeshPacket.fromJson(jsonStr);
+        }
+      } catch (e) {
+        print('[BleDiscovery] Error parsing fragment: $e');
+      }
+    }
+
+    if (packet == null) return;
+
+    // 3. Decrypt payload
+    final session = _getSessionKeysForDevice(remoteDeviceId);
+    if (session == null) {
+      print('[BleDiscovery] Received packet but no active session for $remoteDeviceId. Dropping.');
+      return;
+    }
+
+    try {
+      final decryptedPayload = await session.decrypt(packet.payload);
+      
+      final decryptedPacket = BleMeshPacket(
+        messageId: packet.messageId,
+        senderDeviceId: packet.senderDeviceId,
+        recipientDeviceId: packet.recipientDeviceId,
+        payload: decryptedPayload,
+        ttl: packet.ttl,
+        messageType: packet.messageType,
+        signatureBase64: packet.signatureBase64,
+      );
+
+      // 4. Route packet by type
+      await _routeIncomingPacket(remoteDeviceId, decryptedPacket);
+    } catch (e) {
+      print('[BleDiscovery] Error decrypting or routing BLE packet: $e');
+    }
+  }
+
+  Future<void> _routeIncomingPacket(String remoteDeviceId, BleMeshPacket packet) async {
+    print('[BleDiscovery] Routing incoming packet: type=${packet.messageType.name} from $remoteDeviceId');
+    
+    switch (packet.messageType) {
+      case BleMessageType.announce:
+        try {
+          final jsonStr = utf8.decode(packet.payload);
+          final data = jsonDecode(jsonStr) as Map<String, dynamic>;
+          final remoteUserId = data['user_id'] as String;
+          final remoteDeviceName = data['user_name'] as String;
+          
+          _deviceToUserMap[remoteDeviceId] = remoteUserId;
+          print('[BleDiscovery] Registered BLE user mapping: $remoteDeviceId -> $remoteUserId ($remoteDeviceName)');
+          
+          // Save peer to local database if not already
+          final dbDeviceId = 'izii-d-ble-${remoteDeviceId.replaceAll(':', '').replaceAll('-', '').toLowerCase()}';
+          final session = _getSessionKeysForDevice(remoteDeviceId);
+          if (session != null && session.remoteStaticPublicKey != null) {
+            final companion = LocalBlePeersCompanion(
+              deviceId: Value(dbDeviceId),
+              deviceName: Value(remoteDeviceName),
+              publicKey: Value(base64Encode(session.remoteStaticPublicKey!)),
+              lastSeenAt: Value(DateTime.now()),
+            );
+            await _db.into(_db.localBlePeers).insertOnConflictUpdate(companion);
+          }
+
+          // Trigger outbox sync automatically!
+          importSyncManagerAndSync(remoteDeviceId, remoteUserId);
+        } catch (e) {
+          print('[BleDiscovery] Error processing announce packet: $e');
+        }
+        break;
+        
+      case BleMessageType.syncRequest:
+      case BleMessageType.syncResponse:
+        try {
+          final syncManager = BleSyncManager();
+          await syncManager.handleIncomingSyncPacket(packet);
+        } catch (e) {
+          print('[BleDiscovery] Error handling sync packet: $e');
+        }
+        break;
+        
+      case BleMessageType.message:
+        if (!_messageReceivedController.isClosed) {
+          _messageReceivedController.add(packet);
+        }
+        break;
+        
+      default:
+        print('[BleDiscovery] Unhandled packet type: ${packet.messageType}');
+    }
+  }
+
+  Future<void> importSyncManagerAndSync(String remoteDeviceId, String remoteUserId) async {
+    try {
+      final syncManager = BleSyncManager();
+      await syncManager.syncOutboxWithPeer(
+        remoteDeviceId: remoteDeviceId,
+        remoteUserId: remoteUserId,
+        sendBleBytes: (_) {},
+      );
+    } catch (e) {
+      print('[BleDiscovery] Error running sync: $e');
+    }
+  }
+
   void dispose() {
     stopScanning();
     stopAdvertising();
+    for (final sub in _activeClientSubscriptions.values) {
+      sub.cancel();
+    }
+    _activeClientSubscriptions.clear();
+    _activeClientCharacteristics.clear();
+    _messageReceivedController.close();
   }
 }
