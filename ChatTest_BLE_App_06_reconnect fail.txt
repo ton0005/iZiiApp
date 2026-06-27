@@ -1,0 +1,69 @@
+reconnect iphone vs SamSung fail
+
+
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 7 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+3
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [FBP] connection timeout
+flutter: [BleDiscovery] Connection or authentication failed: FlutterBluePlusException | connect | fbp-code: 1 | Timed out after 10s
+flutter: [BleDiscovery] Client device disconnected: izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a. Cleaned up cache.
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -58
+flutter: [BleDiscovery] Discovered peer: Trúc’s iPad (2) (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -64
+13
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -64
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 7 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+3
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+4
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -64
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+5
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -64
+flutter: [BleDiscovery] GATT Write received from FF0D0A11-67D9-1338-55D0-CD1EA17D458A, length: 32
+flutter: [BleDiscovery] Processing incoming Noise handshake message (length: 32)...
+flutter: [BleDiscovery] Error processing handshake in GATT write: SecretBoxAuthenticationError: SecretBox has wrong message authentication code (MAC)
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 7 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+3
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+2
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -64

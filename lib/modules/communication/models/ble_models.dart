@@ -11,7 +11,9 @@ enum BleMessageType {
   fragmentContinue(0x06),
   fragmentEnd(0x07),
   syncRequest(0x08),
-  syncResponse(0x09);
+  syncResponse(0x09),
+  shareRequest(0x0A),
+  shareResponse(0x0B);
 
   final int value;
   const BleMessageType(this.value);

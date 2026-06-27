@@ -86,6 +86,48 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
           ),
           actions: [
             IconButton(
+              icon: const Icon(Icons.settings_backup_restore_rounded, color: _warning),
+              onPressed: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    backgroundColor: _surfaceCard,
+                    title: Text('Reset Bluetooth?', style: GoogleFonts.outfit(color: _textPrimary, fontWeight: FontWeight.bold)),
+                    content: Text(
+                      'Hành động này sẽ xóa sạch cache kết nối, danh sách thiết bị ngoại tuyến đã lưu và khởi động lại dịch vụ Bluetooth để giải phóng các tiến trình bị treo. Bạn có chắc chắn?',
+                      style: GoogleFonts.inter(color: _textSecondary),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: Text('Hủy', style: GoogleFonts.inter(color: _textSecondary)),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: _warning),
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text('Reset', style: GoogleFonts.inter(color: _textPrimary, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Đang reset hệ thống kết nối Bluetooth...')),
+                    );
+                  }
+                  await _bleDiscovery.resetBleRegistry();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Đã reset Bluetooth thành công!')),
+                    );
+                  }
+                }
+              },
+              tooltip: 'Reset Bluetooth',
+            ),
+            IconButton(
               icon: const Icon(Icons.refresh_rounded, color: _secondary),
               onPressed: () {
                 if (_tabController.index == 0) {

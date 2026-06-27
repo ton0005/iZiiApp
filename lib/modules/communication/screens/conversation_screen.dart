@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/device_identity/device_discovery_service.dart';
+import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../../../core/device_identity/device_identity_models.dart';
 import '../bloc/chat_bloc.dart';
 import '../models/chat_models.dart';
@@ -162,8 +163,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
                   return BlocBuilder<ChatBloc, ChatState>(
                     builder: (context, state) {
-                      final presence = state.userPresenceMap[companion.id] ??
-                          ChatPresenceState.offline;
+                      final isBleConnected = BleDeviceDiscoveryService().isUserConnectedBle(companion.id);
+                      final presence = isBleConnected 
+                          ? ChatPresenceState.onlineSynced 
+                          : (state.userPresenceMap[companion.id] ?? ChatPresenceState.offline);
                       final isTyping = state
                               .typingUsersMap[widget.conversationId]
                               ?.contains(companion.id) ??

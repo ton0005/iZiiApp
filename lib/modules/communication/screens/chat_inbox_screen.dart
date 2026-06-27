@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/device_identity/screens/online_devices_screen.dart';
+import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../bloc/chat_bloc.dart';
 import '../models/chat_models.dart';
 import '../widgets/presence_avatar.dart';
@@ -253,8 +254,10 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                 itemCount: filteredContacts.length,
                 itemBuilder: (context, index) {
                   final contact = filteredContacts[index];
-                  final presence = state.userPresenceMap[contact.id] ??
-                      ChatPresenceState.offline;
+                  final isBleConnected = BleDeviceDiscoveryService().isUserConnectedBle(contact.id);
+                  final presence = isBleConnected 
+                      ? ChatPresenceState.onlineSynced 
+                      : (state.userPresenceMap[contact.id] ?? ChatPresenceState.offline);
 
                   return GestureDetector(
                     onTap: () {
@@ -355,9 +358,11 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
 
                 final detail = snapshot.data!;
                 final companionName = detail['name'] as String;
-                final companionPresence =
-                    state.userPresenceMap[detail['id'] as String] ??
-                        ChatPresenceState.offline;
+                final companionId = detail['id'] as String;
+                final isBleConnected = BleDeviceDiscoveryService().isUserConnectedBle(companionId);
+                final companionPresence = isBleConnected 
+                    ? ChatPresenceState.onlineSynced 
+                    : (state.userPresenceMap[companionId] ?? ChatPresenceState.offline);
                 final lastSnippet = detail['last_message'] as String;
                 final timeStr = detail['time'] as String;
                 final unreadCount = detail['unread_count'] as int;

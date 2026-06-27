@@ -32,6 +32,11 @@ class NoiseHandshakeService {
     _sessions.remove(deviceId);
   }
 
+  void clearAllSessions() {
+    _handshakes.clear();
+    _sessions.clear();
+  }
+
   /// Initialize handshaker as the Initiator
   Future<List<int>> initiateHandshake(String remoteDeviceId) async {
     clearSession(remoteDeviceId);

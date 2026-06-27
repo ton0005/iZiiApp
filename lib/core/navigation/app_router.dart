@@ -68,11 +68,11 @@ final _aiAgentService = AiAgentService(toolRegistry: _buildToolRegistry());
 
 final _moduleRegistry = ModuleRegistry()..registerDefaultModuleFactories();
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
-  navigatorKey: _rootNavigatorKey,
+  navigatorKey: rootNavigatorKey,
   initialLocation: '/',
   routes: [
     // Shell route with bottom navigation

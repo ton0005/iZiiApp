@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../bloc/crm_bloc.dart';
 import '../ui/lead_form.dart';
 import 'deal_detail_screen.dart';
@@ -97,6 +98,95 @@ class _EditLeadScreenState extends State<EditLeadScreen> {
     }
   }
 
+  Future<void> _shareLeadBluetooth(BuildContext context) async {
+    final bleDiscovery = BleDeviceDiscoveryService();
+    final connectedPeers = await bleDiscovery.getConnectedPeersList();
+    
+    if (connectedPeers.isEmpty) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: const Color(0xFF1E293B),
+            title: const Text('📡 Chia sẻ ngoại tuyến', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            content: const Text(
+              'Không tìm thấy thiết bị nào đang kết nối Bluetooth.\n\nHãy đảm bảo Bluetooth của các thiết bị đã bật, ứng dụng iZiiApp đang mở và các thiết bị đã được kết nối bắt tay trong tab "Thiết bị kết nối".',
+              style: TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Đóng'),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+    
+    if (mounted) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: const Color(0xFF0F172A),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (ctx) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Chọn thiết bị để chia sẻ qua BLE',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: connectedPeers.length,
+                  itemBuilder: (context, index) {
+                    final peer = connectedPeers[index];
+                    return ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Color(0xFF6366F1),
+                        child: Icon(Icons.bluetooth_connected, color: Colors.white),
+                      ),
+                      title: Text(peer['name'] ?? '', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                      subtitle: Text(peer['deviceId'] ?? '', style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                      onTap: () async {
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Đang gửi yêu cầu chia sẻ cơ hội tới ${peer['name']}...')),
+                        );
+                        final success = await bleDiscovery.shareRecordWithPeer(
+                          remoteDeviceId: peer['deviceId']!,
+                          table: 'leads',
+                          recordData: widget.lead,
+                        );
+                        if (!success && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Không thể gửi yêu cầu chia sẻ. Vui lòng kiểm tra lại kết nối.')),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
   Future<void> _saveLead(Map<String, dynamic> values) async {
     final updatedLead = {
       ...widget.lead,
@@ -124,6 +214,13 @@ class _EditLeadScreenState extends State<EditLeadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.tr('crm_edit_customer')),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share_outlined, color: Colors.white),
+            onPressed: () => _shareLeadBluetooth(context),
+            tooltip: 'Chia sẻ Bluetooth',
+          ),
+        ],
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(

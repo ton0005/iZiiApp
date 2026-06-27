@@ -8,10 +8,13 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart'
 import 'package:ble_peripheral/ble_peripheral.dart';
 import 'package:drift/drift.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/material.dart';
 import '../database/app_database.dart';
 import 'device_identity_service.dart';
 import 'noise_handshake_service.dart';
 import '../settings/settings_service.dart';
+import '../navigation/app_router.dart';
+import '../sync/sync_service.dart';
 import '../../modules/communication/models/ble_models.dart';
 import '../../modules/communication/services/ble_transport_service.dart';
 import '../sync/ble_sync_manager.dart';
@@ -814,6 +817,22 @@ class BleDeviceDiscoveryService {
           _messageReceivedController.add(packet);
         }
         break;
+
+      case BleMessageType.shareRequest:
+        try {
+          await _handleIncomingShareRequest(packet);
+        } catch (e) {
+          print('[BleDiscovery] Error routing shareRequest: $e');
+        }
+        break;
+        
+      case BleMessageType.shareResponse:
+        try {
+          await _handleIncomingShareResponse(packet);
+        } catch (e) {
+          print('[BleDiscovery] Error routing shareResponse: $e');
+        }
+        break;
         
       default:
         print('[BleDiscovery] Unhandled packet type: ${packet.messageType}');
@@ -877,6 +896,222 @@ class BleDeviceDiscoveryService {
 
   String? getUserIdForDevice(String deviceId) {
     return _deviceToUserMap[deviceId];
+  }
+
+  bool isUserConnectedBle(String userId) {
+    return _deviceToUserMap.containsValue(userId);
+  }
+
+  Future<List<Map<String, String>>> getConnectedPeersList() async {
+    final list = <Map<String, String>>[];
+    for (final deviceId in _deviceToUserMap.keys) {
+      final dbDeviceId = 'izii-d-ble-${deviceId.replaceAll(':', '').replaceAll('-', '').toLowerCase()}';
+      final peer = await (_db.select(_db.localBlePeers)
+            ..where((t) => t.deviceId.equals(dbDeviceId)))
+          .getSingleOrNull();
+      list.add({
+        'deviceId': deviceId,
+        'name': peer?.deviceName ?? 'Thiết bị ngoại tuyến',
+        'userId': _deviceToUserMap[deviceId] ?? '',
+      });
+    }
+    return list;
+  }
+
+  Future<void> resetBleRegistry() async {
+    print('[BleDiscovery] Resetting BLE Registry...');
+    try {
+      // 1. Clear sessions in HandshakeService
+      _handshakeService.clearAllSessions();
+      
+      // 2. Clear in-memory caches
+      _activeClientCharacteristics.clear();
+      for (final sub in _activeClientSubscriptions.values) {
+        await sub.cancel();
+      }
+      _activeClientSubscriptions.clear();
+      _deviceToUserMap.clear();
+      _connectingDevices.clear();
+      
+      // 3. Clear database LocalBlePeers
+      await _db.delete(_db.localBlePeers).go();
+      
+      // 4. Restart advertising and scanning
+      await stopAdvertising();
+      await stopScanning();
+      await startAdvertising();
+      await startScanning();
+      print('[BleDiscovery] BLE Registry reset successfully.');
+    } catch (e) {
+      print('[BleDiscovery] Error resetting BLE Registry: $e');
+    }
+  }
+
+  Future<void> _handleIncomingShareRequest(BleMeshPacket packet) async {
+    try {
+      final decompressedBytes = _transportService.parsePayload(packet.payload);
+      final jsonStr = utf8.decode(decompressedBytes);
+      final Map<String, dynamic> shareData = jsonDecode(jsonStr) as Map<String, dynamic>;
+      
+      final senderName = shareData['sender_name'] as String? ?? 'Ai đó';
+      final table = shareData['table'] as String;
+      final recordData = Map<String, dynamic>.from(shareData['data'] as Map);
+      
+      final recordName = recordData['name'] ?? recordData['title'] ?? 'Bản ghi không tên';
+      final recordTypeLabel = table == 'leads' ? 'Cơ hội' : 'Dịch vụ';
+      
+      print('[BleDiscovery] Incoming share request from $senderName for $recordTypeLabel: $recordName');
+      
+      final context = rootNavigatorKey.currentContext;
+      if (context == null) {
+        print('[BleDiscovery] Cannot show share dialog: context is null.');
+        return;
+      }
+      
+      showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: const Color(0xFF1E293B),
+          title: const Text(
+            '📥 Chia sẻ ngoại tuyến',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            '$senderName muốn chia sẻ $recordTypeLabel "$recordName" với bạn qua kết nối Bluetooth.\n\nBạn có muốn nhận bản ghi này không?',
+            style: const TextStyle(color: Colors.white70),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('Không cần', style: TextStyle(color: Colors.grey[400])),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Chấp nhận', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ).then((approved) async {
+        final status = approved == true ? 'approved' : 'ignored';
+        print('[BleDiscovery] User decision for shared record: $status');
+        
+        if (approved == true) {
+          final syncService = SyncService();
+          await syncService.applySyncUpdate({
+            'table': table,
+            'operation': 'insert',
+            'data': recordData,
+          });
+          print('[BleDiscovery] Shared record applied locally: $table ID: ${recordData['id']}');
+          
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: const Color(0xFF10B981),
+                content: Text('🎉 Đã chấp nhận và lưu $recordTypeLabel "$recordName"!'),
+              ),
+            );
+          }
+        } else {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('🚫 Đã bỏ qua bản ghi chia sẻ từ $senderName.'),
+              ),
+            );
+          }
+        }
+        
+        final responseData = {
+          'table': table,
+          'id': recordData['id'],
+          'status': status,
+        };
+        
+        final identity = await _identityService.getOrCreateIdentity();
+        final responsePayload = _transportService.preparePayload(utf8.encode(jsonEncode(responseData)));
+        final responsePacket = BleMeshPacket(
+          messageId: 'share-resp-${DateTime.now().millisecondsSinceEpoch}',
+          senderDeviceId: identity.deviceId,
+          recipientDeviceId: packet.senderDeviceId,
+          payload: responsePayload,
+          ttl: 1,
+          messageType: BleMessageType.shareResponse,
+        );
+        
+        await sendPacket(packet.senderDeviceId, responsePacket);
+      });
+    } catch (e) {
+      print('[BleDiscovery] Error handling incoming share request: $e');
+    }
+  }
+
+  Future<void> _handleIncomingShareResponse(BleMeshPacket packet) async {
+    try {
+      final decompressedBytes = _transportService.parsePayload(packet.payload);
+      final jsonStr = utf8.decode(decompressedBytes);
+      final Map<String, dynamic> responseData = jsonDecode(jsonStr) as Map<String, dynamic>;
+      
+      final table = responseData['table'] as String;
+      final status = responseData['status'] as String;
+      final recordTypeLabel = table == 'leads' ? 'Cơ hội' : 'Dịch vụ';
+      
+      final context = rootNavigatorKey.currentContext;
+      if (context != null && context.mounted) {
+        if (status == 'approved') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: const Color(0xFF10B981),
+              content: Text('✅ Người nhận đã CHẤP NHẬN chia sẻ $recordTypeLabel!'),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: const Color(0xFFEF4444),
+              content: Text('❌ Người nhận đã BỎ QUA chia sẻ $recordTypeLabel.'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('[BleDiscovery] Error handling incoming share response: $e');
+    }
+  }
+
+  Future<bool> shareRecordWithPeer({
+    required String remoteDeviceId,
+    required String table,
+    required Map<String, dynamic> recordData,
+  }) async {
+    try {
+      final identity = await _identityService.getOrCreateIdentity();
+      final shareData = {
+        'sender_name': identity.deviceName,
+        'table': table,
+        'data': recordData,
+      };
+      
+      final payloadBytes = utf8.encode(jsonEncode(shareData));
+      final compressedPayload = _transportService.preparePayload(payloadBytes);
+      
+      final packet = BleMeshPacket(
+        messageId: 'share-req-${DateTime.now().millisecondsSinceEpoch}',
+        senderDeviceId: identity.deviceId,
+        recipientDeviceId: remoteDeviceId,
+        payload: compressedPayload,
+        ttl: 1,
+        messageType: BleMessageType.shareRequest,
+      );
+      
+      print('[BleDiscovery] Triggering share request for $table to $remoteDeviceId...');
+      return await sendPacket(remoteDeviceId, packet);
+    } catch (e) {
+      print('[BleDiscovery] Failed to share record: $e');
+      return false;
+    }
   }
 
   void dispose() {
