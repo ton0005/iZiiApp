@@ -1,0 +1,575 @@
+from Macbook
+
+LIENT: Failure to determine if this machine is in the process of shutting down, err=1/Operation not permitted
+
+LSPrefs: could not find untranslocated node for <FSNode 0x82e921840> { isDir = ?, path = '/private/var/folders/r1/tcl5mfzx4ys9lwm2ksk6pdl40000gp/X/97830117-6014-5E5C-943D-9F693ABBC33F/d/Wrapper/Runner.app' }, proceeding on the assumption it is not translocated: Error Domain=NSPOSIXErrorDomain Code=1 "Operation not permitted"
+
+LSPrefs: could not find untranslocated node for <FSNode 0x82e921840> { isDir = ?, path = '/private/var/folders/r1/tcl5mfzx4ys9lwm2ksk6pdl40000gp/X/97830117-6014-5E5C-943D-9F693ABBC33F/d/Wrapper/Runner.app' }, proceeding on the assumption it is not translocated: Error Domain=NSPOSIXErrorDomain Code=1 "Operation not permitted"
+
+LSPrefs: could not find untranslocated node for <FSNode 0x82e921840> { isDir = ?, path = '/private/var/folders/r1/tcl5mfzx4ys9lwm2ksk6pdl40000gp/X/97830117-6014-5E5C-943D-9F693ABBC33F/d/Wrapper/Runner.app' }, proceeding on the assumption it is not translocated: Error Domain=NSPOSIXErrorDomain Code=1 "Operation not permitted"
+
+LSPrefs: could not find untranslocated node for <FSNode 0x82e921840> { isDir = ?, path = '/private/var/folders/r1/tcl5mfzx4ys9lwm2ksk6pdl40000gp/X/97830117-6014-5E5C-943D-9F693ABBC33F/d/Wrapper/Runner.app' }, proceeding on the assumption it is not translocated: Error Domain=NSPOSIXErrorDomain Code=1 "Operation not permitted"
+
+FlutterView implements focusItemsInRect: - caching for linear focus movement is limited as long as this view is on screen.
+
+AddInstanceForFactory: No factory registered for id <CFUUID 0x82f17c600> F8BB1C28-BAE8-11D6-9C31-00039315CD46
+
+Reporter disconnected. { function=sendMessage, reporterID=228393475899393 }
+
+Unable to obtain a task name port right for pid 401: (os/kern) failure (0x5)
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+[FBP-iOS] handleMethodCall: flutterRestart
+
+[FBP-iOS] initializing CBCentralManager
+
+[FBP-iOS] showPowerAlert: yes
+
+[FBP-iOS] restoreState: no
+
+API MISUSE: <CBCentralManager: 0x82e4ecdc0> has no restore identifier but the delegate implements the centralManager:willRestoreState: method. Restoring will not be supported
+
+[FBP-iOS] initializing checkForMtuChangesTimer
+
+[FBP-iOS] disconnectAllDevices(flutterRestart)
+
+[FBP-iOS] connectedPeripherals: 0
+
+[FBP-iOS] handleMethodCall: isSupported
+
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] handleMethodCall: startScan
+
+flutter: [BleDiscovery] Error starting scan: PlatformException(startScan, bluetooth must be turned on. (CBManagerStateUnknown), null, null)
+
+[FBP-iOS] centralManagerDidUpdateState CBManagerStatePoweredOn
+
+flutter: [DeviceIdentity] Loaded existing identity: izii-d-649ae694
+
+flutter: [BleDiscovery] BlePeripheral initialized successfully.
+
+flutter: [DeviceIdentity] Loaded existing identity: izii-d-649ae694
+
+BluetoothState: CBManagerState(rawValue: 5)
+
+flutter: [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+flutter: [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: iZii-ios-mqs6u8yo
+
+flutter: [BleDiscovery] Advertising status update: advertising=true, error=null
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [DeviceDiscovery] ❌ Registration failed: Connection timeout
+
+flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [BleDiscovery] BLE Scan stopped.
+
+flutter: [BleDiscovery] Connecting to BLE device: f4a3269e-740f-15c3-1bf9-7b0797cacf96 (ID: izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96)...
+
+[FBP-iOS] handleMethodCall: connect
+
+flutter: [BleDiscovery] Peripheral reference lost. Re-scanning...
+
+flutter: [BleDiscovery] Re-scanning to refresh peripheral reference for izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96...
+
+[FBP-iOS] handleMethodCall: startScan
+
+[FBP-iOS] handleMethodCall: stopScan
+
+flutter: [BleDiscovery] BLE Scan stopped.
+
+[FBP-iOS] handleMethodCall: connect
+
+[FBP-iOS] didConnectPeripheral
+
+flutter: [BleDiscovery] Connected. Discovering services...
+
+[FBP-iOS] handleMethodCall: discoverServices
+
+[FBP-iOS] didDiscoverServices:
+
+[FBP-iOS]   svc: 180a
+
+[FBP-iOS]   svc: d0611e78-bbb4-4591-a5f8-487910ae4366
+
+[FBP-iOS]   svc: 9fa480e0-4967-4542-9390-d343dc5d04ae
+
+[FBP-iOS]   svc: 180f
+
+[FBP-iOS]   svc: 1805
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 180a
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS]     chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didDiscoverIncludedServicesForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a29
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a24
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 180a
+
+[FBP-iOS]     chr: 2a29
+
+[FBP-iOS]     chr: 2a24
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 8667556c-9a37-4c91-84ed-54ee27d90049
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: d0611e78-bbb4-4591-a5f8-487910ae4366
+
+[FBP-iOS]     chr: 8667556c-9a37-4c91-84ed-54ee27d90049
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: af0badb1-5b99-43cd-917a-a77bc549e3cc
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 9fa480e0-4967-4542-9390-d343dc5d04ae
+
+[FBP-iOS]     chr: af0badb1-5b99-43cd-917a-a77bc549e3cc
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a19
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 180f
+
+[FBP-iOS]     chr: 2a19
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a2b
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a0f
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: 1805
+
+[FBP-iOS]     chr: 2a2b
+
+[FBP-iOS]     chr: 2a0f
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverCharacteristicsForService:
+
+[FBP-iOS]   svc: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS]     chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a29
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a24
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 8667556c-9a37-4c91-84ed-54ee27d90049
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: af0badb1-5b99-43cd-917a-a77bc549e3cc
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a19
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a2b
+
+[FBP-iOS]     desc: 2902
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: 2a0f
+
+[FBP-iOS] didDiscoverDescriptorsForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS]     desc: 2900
+
+[FBP-iOS]     desc: 2902
+
+flutter: [BleDiscovery] Starting Noise Handshake...
+
+[FBP-iOS] handleMethodCall: setNotifyValue
+
+[FBP-iOS] didUpdateNotificationStateForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+[FBP-iOS] handleMethodCall: writeCharacteristic
+
+[FBP-iOS] didWriteValueForCharacteristic:
+
+[FBP-iOS]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+
+[FBP-iOS] handleMethodCall: disconnect
+
+[FBP-iOS] didDisconnectPeripheral:
+
+[FBP-iOS] handleMethodCall: isSupported
+
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] handleMethodCall: startScan
+
+flutter: [BleDiscovery] Discovered peer: Trúc’s iPad (2) (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -51
+
+flutter: [BleDiscovery] Discovered peer: Trúc’s iPad (2) (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -47
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: 127
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -49
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -48
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -48
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -52
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -52
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -48
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -48
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -44
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -44
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -46
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -46
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -46
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -42
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -51
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -51
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -55
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -44
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -44
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -51
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -51
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -50
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -56
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -56
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -44
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -44
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -52
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -52
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -56
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -56
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -53
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -53
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -53
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -54
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -54
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -56
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -57
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -46
+
+[FBP-iOS] handleMethodCall: stopScan
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [BleDiscovery] BLE Scan stopped.
+
+flutter: [BleDiscovery] Advertising status update: advertising=false, error=null
+
+flutter: [BleDiscovery] Stopped BLE Advertising.
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Operation timed out (OS Error: Operation timed out, errno = 60), address = 10.146.147.160, port = 64481
+
+[FBP-iOS] handleMethodCall: isSupported
+
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+[FBP-iOS] handleMethodCall: startScan
+
+flutter: [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+
+flutter: [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: iZii-ios-mqs6u8yo
+
+flutter: [BleDiscovery] Advertising status update: advertising=true, error=null
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -46
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -43
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -43
+
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+
+flutter: [ChatWS] Retrying connection...
+
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -43
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -43
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -43
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -43
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -43
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -53
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -44
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -52
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -52
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -52
+
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -56
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -55
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -55
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -55
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -53
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -53
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -44
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -44
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -54
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: 127
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: 127
+
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-f4a3269e-740f-15c3-1bf9-7b0797cacf96) RSSI: -53
+
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+
+<p class="gmail-p1" style="margin:0px;font-style:normal;font-variant:normal;font-size-adjust:none;font-kerning:auto;font-feature-settings:normal;

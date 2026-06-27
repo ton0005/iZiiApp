@@ -46,6 +46,7 @@ class BleDeviceDiscoveryService {
   final Map<String, BluetoothCharacteristic> _activeClientCharacteristics = {};
   final Map<String, StreamSubscription> _activeClientSubscriptions = {};
   final Map<String, String> _deviceToUserMap = {}; // remoteDeviceId -> remoteUserId
+  final Set<String> _connectingDevices = {}; // deviceId currently connecting
 
   final _messageReceivedController = StreamController<BleMeshPacket>.broadcast();
   Stream<BleMeshPacket> get messageReceivedStream => _messageReceivedController.stream;
@@ -358,7 +359,9 @@ class BleDeviceDiscoveryService {
             ..where((t) => t.deviceId.equals(deviceId)))
           .getSingleOrNull();
       if (existing != null && existing.publicKey.isNotEmpty) {
-        if (!_activeClientCharacteristics.containsKey(deviceId) && !result.device.isConnected) {
+        if (!_activeClientCharacteristics.containsKey(deviceId) && 
+            !_connectingDevices.contains(deviceId) && 
+            !result.device.isConnected) {
           print('[BleDiscovery] Discovered known authenticated peer $deviceId. Auto-connecting...');
           // Run in background without blocking scan thread
           connectAndAuthenticate(deviceId).then((success) {
@@ -383,7 +386,23 @@ class BleDeviceDiscoveryService {
       }
       return parts.join(':');
     }
+    if (clean.length == 32) {
+      final p1 = clean.substring(0, 8);
+      final p2 = clean.substring(8, 12);
+      final p3 = clean.substring(12, 16);
+      final p4 = clean.substring(16, 20);
+      final p5 = clean.substring(20, 32);
+      return '$p1-$p2-$p3-$p4-$p5'.toLowerCase();
+    }
     return clean;
+  }
+
+  String _getPeripheralDeviceId(String remoteDeviceId) {
+    final raw = _getDeviceAddressFromId(remoteDeviceId);
+    if (raw.contains('-') && raw.length == 36) {
+      return raw.toUpperCase();
+    }
+    return raw;
   }
 
   /// Performs a brief re-scan to refresh CoreBluetooth's peripheral reference
@@ -422,6 +441,12 @@ class BleDeviceDiscoveryService {
 
   /// Connects to a remote peer and performs the Noise XX Handshake.
   Future<bool> connectAndAuthenticate(String deviceId) async {
+    if (_connectingDevices.contains(deviceId)) {
+      print('[BleDiscovery] Connection to $deviceId already in progress. Skipping.');
+      return false;
+    }
+    _connectingDevices.add(deviceId);
+
     // 1. Stop scanning first before attempting connection (Apple best practice to prevent connection timeouts/failures)
     await stopScanning();
 
@@ -582,6 +607,8 @@ class BleDeviceDiscoveryService {
       // Resume scanning in background
       startScanning();
       return false;
+    } finally {
+      _connectingDevices.remove(deviceId);
     }
   }
 
@@ -663,7 +690,7 @@ class BleDeviceDiscoveryService {
           await BlePeripheral.updateCharacteristic(
             characteristicId: charUuid,
             value: Uint8List.fromList(bytes),
-            deviceId: remoteDeviceId,
+            deviceId: _getPeripheralDeviceId(remoteDeviceId),
           );
         }
       };
