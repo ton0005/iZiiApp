@@ -171,14 +171,11 @@ class BleDeviceDiscoveryService {
           
           final dbDeviceId = 'izii-d-ble-${remoteDeviceId.replaceAll(':', '').replaceAll('-', '').toLowerCase()}';
           
-          final companion = LocalBlePeersCompanion(
-            deviceId: Value(dbDeviceId),
-            deviceName: Value('iZii Peer ($remoteDeviceId)'),
-            publicKey: Value(base64Encode(session.remoteStaticPublicKey!)),
-            lastSeenAt: Value(DateTime.now()),
+          await _upsertPeer(
+            deviceId: dbDeviceId,
+            deviceName: 'iZii Peer ($remoteDeviceId)',
+            publicKey: base64Encode(session.remoteStaticPublicKey!),
           );
-          
-          await _db.into(_db.localBlePeers).insertOnConflictUpdate(companion);
           print('[BleDiscovery] Saved peer static public key to database: $dbDeviceId');
 
           // Immediately send announce packet as Responder
@@ -331,17 +328,11 @@ class BleDeviceDiscoveryService {
 
     _discoveredDevicesCache[deviceId] = result.device;
 
-    final companion = LocalBlePeersCompanion.insert(
+    await _upsertPeer(
       deviceId: deviceId,
       deviceName: deviceName,
-      publicKey: '', // Will be updated after Noise handshake
-      signingPublicKey: '', // Will be updated after Noise handshake
       rssi: result.rssi,
-      lastSeenAt: Value(DateTime.now()),
     );
-
-    // Upsert into local_ble_peers
-    await _db.into(_db.localBlePeers).insertOnConflictUpdate(companion);
     print(
         '[BleDiscovery] Discovered peer: $deviceName ($deviceId) RSSI: ${result.rssi}');
   }
@@ -728,13 +719,11 @@ class BleDeviceDiscoveryService {
           final dbDeviceId = 'izii-d-ble-${remoteDeviceId.replaceAll(':', '').replaceAll('-', '').toLowerCase()}';
           final session = _getSessionKeysForDevice(remoteDeviceId);
           if (session != null && session.remoteStaticPublicKey != null) {
-            final companion = LocalBlePeersCompanion(
-              deviceId: Value(dbDeviceId),
-              deviceName: Value(remoteDeviceName),
-              publicKey: Value(base64Encode(session.remoteStaticPublicKey!)),
-              lastSeenAt: Value(DateTime.now()),
+            await _upsertPeer(
+              deviceId: dbDeviceId,
+              deviceName: remoteDeviceName,
+              publicKey: base64Encode(session.remoteStaticPublicKey!),
             );
-            await _db.into(_db.localBlePeers).insertOnConflictUpdate(companion);
           }
 
           // Trigger outbox sync automatically!
@@ -775,6 +764,44 @@ class BleDeviceDiscoveryService {
       );
     } catch (e) {
       print('[BleDiscovery] Error running sync: $e');
+    }
+  }
+
+  Future<void> _upsertPeer({
+    required String deviceId,
+    required String deviceName,
+    String? publicKey,
+    String? signingPublicKey,
+    int? rssi,
+  }) async {
+    try {
+      final existing = await (_db.select(_db.localBlePeers)
+            ..where((t) => t.deviceId.equals(deviceId)))
+          .getSingleOrNull();
+
+      if (existing == null) {
+        final companion = LocalBlePeersCompanion.insert(
+          deviceId: deviceId,
+          deviceName: deviceName,
+          publicKey: publicKey ?? '',
+          signingPublicKey: signingPublicKey ?? '',
+          rssi: rssi ?? -100,
+          lastSeenAt: Value(DateTime.now()),
+        );
+        await _db.into(_db.localBlePeers).insert(companion);
+      } else {
+        await (_db.update(_db.localBlePeers)
+              ..where((t) => t.deviceId.equals(deviceId)))
+            .write(LocalBlePeersCompanion(
+              deviceName: Value(deviceName),
+              lastSeenAt: Value(DateTime.now()),
+              publicKey: publicKey != null ? Value(publicKey) : const Value.absent(),
+              signingPublicKey: signingPublicKey != null ? Value(signingPublicKey) : const Value.absent(),
+              rssi: rssi != null ? Value(rssi) : const Value.absent(),
+            ));
+      }
+    } catch (e) {
+      print('[BleDiscovery] Error upserting peer $deviceId: $e');
     }
   }
 

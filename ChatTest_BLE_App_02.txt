@@ -1,0 +1,201 @@
+I/flutter (10012): [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+I/flutter (10012): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (10012): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (10012): [SyncService]    📦 service_items → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (10012): [DeviceIdentity] Loaded existing identity: izii-d-27fd1f53
+I/flutter (10012): [DeviceIdentity] Loaded existing identity: izii-d-27fd1f53
+I/flutter (10012): [BleDiscovery] BlePeripheral initialized successfully.
+I/flutter (10012): [BleDiscovery] Waiting for Bluetooth adapter to be powered on...
+I/flutter (10012): [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (10012): [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: null
+I/flutter (10012): [BleDiscovery] Advertising status update: advertising=true, error=null
+I/flutter (10012): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (10012): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (10012): [DeviceDiscovery] ❌ Registration failed: Connection timeout
+I/flutter (10012): [DeviceDiscovery] Starting heartbeat (every 30s)
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (10012): [SyncService]    📦 service_items → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [BleDiscovery] BLE Scan stopped.
+I/flutter (10012): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter (10012): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (10012): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter (10012): [BleDiscovery] Connected. Discovering services...
+I/flutter (10012): [BleDiscovery] Starting Noise Handshake...
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (10012): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (10012): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (10012): [SyncService]    📦 service_items → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (10012): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] BLE Scan stopped.
+I/flutter (10012): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (10012): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (10012): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (10012): [SyncService]    📦 service_items → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [FBP] connection timeout
+I/flutter (10012): [BleDiscovery] Connection or authentication failed: FlutterBluePlusException | connect | fbp-code: 1 | Timed out after 10s
+I/flutter (10012): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] GATT Write received from 68:3E:C0:82:B6:3B, length: 32
+I/flutter (10012): [BleDiscovery] Processing incoming Noise handshake message (length: 32)...
+I/flutter (10012): [BleDiscovery] Message 1 processed. Sending Message 2 to 68:3E:C0:82:B6:3B...
+I/flutter (10012): [BleDiscovery] GATT Write received from 68:3E:C0:82:B6:3B, length: 48
+I/flutter (10012): [BleDiscovery] Processing incoming Noise handshake message (length: 48)...
+I/flutter (10012): [BleDiscovery] Noise Handshake established as Responder with 68:3E:C0:82:B6:3B.
+I/flutter (10012): [BleDiscovery] Error processing handshake in GATT write: InvalidDataException: Sorry, LocalBlePeersCompanion(deviceId: Value(izii-d-ble-683ec082b63b), deviceName: Value(iZii Peer (68:3E:C0:82:B6:3B)), publicKey: Value(/1545igE+z7st58GUoLoD9iAWZnDplKgCUF+JBXwMCA=), signingPublicKey: Value.absent(), lastSeenAt: Value(2026-06-27 12:42:13.703456), rssi: Value.absent(), rowid: Value.absent()) cannot be used for that because: 
+I/flutter (10012): • signingPublicKey: This value was required, but isn't present
+I/flutter (10012): • rssi: This value was required, but isn't present
+I/flutter (10012): [BleDiscovery] GATT Write received from 68:3E:C0:82:B6:3B, length: 330
+I/flutter (10012): [BleDiscovery] Routing incoming packet: type=announce from 68:3E:C0:82:B6:3B
+I/flutter (10012): [BleDiscovery] Registered BLE user mapping: 68:3E:C0:82:B6:3B -> user_bich_tran (iZii-ios-mqpaxasx)
+I/flutter (10012): [BleDiscovery] Error processing announce packet: InvalidDataException: Sorry, LocalBlePeersCompanion(deviceId: Value(izii-d-ble-683ec082b63b), deviceName: Value(iZii-ios-mqpaxasx), publicKey: Value(/1545igE+z7st58GUoLoD9iAWZnDplKgCUF+JBXwMCA=), signingPublicKey: Value.absent(), lastSeenAt: Value(2026-06-27 12:42:13.763722), rssi: Value.absent(), rowid: Value.absent()) cannot be used for that because: 
+I/flutter (10012): • signingPublicKey: This value was required, but isn't present
+I/flutter (10012): • rssi: This value was required, but isn't present
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (10012): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (10012): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (10012): [SyncService]    📦 service_items → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [BleDiscovery] Stopped BLE Advertising.
+I/flutter (10012): [BleDiscovery] BLE Scan stopped.
+I/flutter (10012): [BleDiscovery] Advertising status update: advertising=false, error=null
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (10012): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (10012): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (10012): [SyncService]    📦 service_items → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (10012): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (10012): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (10012): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (10012): [SyncService]    📦 service_items → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (10012): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (10012): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (10012): [SyncService]    📦 service_items → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (10012): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (10012): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (10012): [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (10012): [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: null
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter (10012): [BleDiscovery] Advertising status update: advertising=true, error=null
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (10012): [SyncService]    📦 service_items → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [SyncService]    📦 chat_messages → insert
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (10012): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (10012): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
