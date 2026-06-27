@@ -159,11 +159,8 @@ class BleDeviceDiscoveryService {
       
       if (msg2 != null) {
         print('[BleDiscovery] Message 1 processed. Sending Message 2 to $remoteDeviceId...');
-        final targetCharUuid = (Platform.isIOS || Platform.isMacOS)
-            ? charUuid.toUpperCase()
-            : charUuid;
         await BlePeripheral.updateCharacteristic(
-          characteristicId: targetCharUuid,
+          characteristicId: charUuid,
           value: Uint8List.fromList(msg2),
           deviceId: remoteDeviceId,
         );
@@ -636,11 +633,8 @@ class BleDeviceDiscoveryService {
           await clientChar.write(Uint8List.fromList(bytes));
         } else {
           // Server (Responder) role: Update the local characteristic and notify
-          final targetCharUuid = (Platform.isIOS || Platform.isMacOS)
-              ? charUuid.toUpperCase()
-              : charUuid;
           await BlePeripheral.updateCharacteristic(
-            characteristicId: targetCharUuid,
+            characteristicId: charUuid,
             value: Uint8List.fromList(bytes),
             deviceId: remoteDeviceId,
           );

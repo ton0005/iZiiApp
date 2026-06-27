@@ -1,0 +1,272 @@
+SamSung connect success to ipad
+flutter: [BleDiscovery] GATT Write received from A581F8B9-02DC-DB2E-EEC9-35A2C8876801, length: 32
+flutter: [BleDiscovery] Processing incoming Noise handshake message (length: 32)...
+flutter: [BleDiscovery] Message 1 processed. Sending Message 2 to A581F8B9-02DC-DB2E-EEC9-35A2C8876801...
+flutter: [BleDiscovery] GATT Write received from A581F8B9-02DC-DB2E-EEC9-35A2C8876801, length: 48
+flutter: [BleDiscovery] Processing incoming Noise handshake message (length: 48)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ipad connect success to Samsung
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [BleDiscovery] BLE Scan stopped.
+flutter: [BleDiscovery] Advertising status update: advertising=false, error=null
+flutter: [BleDiscovery] Stopped BLE Advertising.
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [BleDiscovery] BLE Scan stopped.
+flutter: [BleDiscovery] Connected. Discovering services...
+flutter: [BleDiscovery] Starting Noise Handshake...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [DeviceDiscovery] ❌ Registration failed: Connection timeout
+flutter: [DeviceDiscovery] Heartbeat stopped
+flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+5
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+The following plugins do not support Swift Package Manager for ios:
+  - mobile_scanner
+  - ble_peripheral
+This will become an error in a future version of Flutter. Please contact the plugin maintainers to request Swift Package Manager adoption.
+The following plugins do not support Swift Package Manager for macos:
+  - ble_peripheral
+This will become an error in a future version of Flutter. Please contact the plugin maintainers to request Swift Package Manager adoption.
+Launching lib/main.dart on Trúc’s iPad (2) in debug mode...
+Automatically signing iOS for device deployment using specified development team in Xcode project: FJJU96LJ6P
+The following target(s) do not support arm64 architecture, which is a requirement for Apple Silicon iOS 26+ simulators:
+  - ble_peripheral (Flutter plugin)
+  - connectivity_plus (Flutter plugin)
+  - connectivity_plus-connectivity_plus_privacy
+  - CwlCatchException (transitive dependency of Flutter plugin speech_to_text)
+  - CwlCatchExceptionSupport (transitive dependency of Flutter plugin speech_to_text)
+  - DKImagePickerController (transitive dependency of Flutter plugin file_picker)
+  - DKImagePickerController-DKImagePickerController
+  - DKPhotoGallery (transitive dependency of Flutter plugin file_picker)
+  - DKPhotoGallery-DKPhotoGallery (transitive dependency of Flutter plugin file_picker)
+  - file_picker (Flutter plugin)
+  - file_picker-file_picker_ios_privacy
+  - Flutter (transitive dependency of Flutter plugin ble_peripheral)
+  - flutter_blue_plus_darwin (Flutter plugin)
+  - flutter_secure_storage_darwin (Flutter plugin)
+  - flutter_secure_storage_darwin-flutter_secure_storage
+  - geolocator_apple (Flutter plugin)
+  - geolocator_apple-geolocator_apple_privacy
+  - GoogleDataTransport (transitive dependency of Flutter plugin mobile_scanner)
+  - GoogleDataTransport-GoogleDataTransport_Privacy (transitive dependency of Flutter plugin mobile_scanner)
+  - GoogleMLKit (transitive dependency of Flutter plugin mobile_scanner)
+  - GoogleToolboxForMac (transitive dependency of Flutter plugin mobile_scanner)
+  - GoogleToolboxForMac-GoogleToolboxForMac_Logger_Privacy
+  - GoogleToolboxForMac-GoogleToolboxForMac_Privacy
+  - GoogleUtilities (transitive dependency of Flutter plugin mobile_scanner)
+  - GoogleUtilities-GoogleUtilities_Privacy
+  - GTMSessionFetcher (transitive dependency of Flutter plugin mobile_scanner)
+  - GTMSessionFetcher-GTMSessionFetcher_Core_Privacy
+  - image_picker_ios (Flutter plugin)
+  - image_picker_ios-image_picker_ios_privacy
+  - MLImage (transitive dependency of Flutter plugin mobile_scanner)
+  - MLKitBarcodeScanning (transitive dependency of Flutter plugin mobile_scanner)
+  - MLKitCommon (transitive dependency of Flutter plugin mobile_scanner)
+  - MLKitVision (transitive dependency of Flutter plugin mobile_scanner)
+  - mobile_scanner (Flutter plugin)
+  - mobile_scanner-mobile_scanner_privacy
+  - nanopb (transitive dependency of Flutter plugin mobile_scanner)
+  - nanopb-nanopb_Privacy (transitive dependency of Flutter plugin mobile_scanner)
+  - package_info_plus (Flutter plugin)
+  - package_info_plus-package_info_plus_privacy
+  - permission_handler_apple (Flutter plugin)
+  - permission_handler_apple-permission_handler_apple_privacy
+  - PromisesObjC (transitive dependency of Flutter plugin mobile_scanner)
+  - PromisesObjC-FBLPromises_Privacy (transitive dependency of Flutter plugin mobile_scanner)
+  - SDWebImage (transitive dependency of Flutter plugin file_picker)
+  - SDWebImage-SDWebImage (transitive dependency of Flutter plugin file_picker)
+  - share_plus (Flutter plugin)
+  - share_plus-share_plus_privacy
+  - shared_preferences_foundation (Flutter plugin)
+  - shared_preferences_foundation-shared_preferences_foundation_privacy
+  - speech_to_text (Flutter plugin)
+  - sqflite_darwin (Flutter plugin)
+  - sqflite_darwin-sqflite_darwin_privacy
+  - sqlite3 (transitive dependency of Flutter plugin sqlite3_flutter_libs)
+  - sqlite3_flutter_libs (Flutter plugin)
+  - SwiftyGif (transitive dependency of Flutter plugin file_picker)
+  - SwiftyGif-SwiftyGif (transitive dependency of Flutter plugin file_picker)
+  - url_launcher_ios (Flutter plugin)
+  - url_launcher_ios-url_launcher_ios_privacy
+  - ble_peripheral (Flutter plugin)
+
+Please contact plugin maintainers to request arm64 support to continue to be able to use the plugin on a simulator.
+Xcode build done.                                           22.5s
+Error: unable to find directory entry in pubspec.yaml: /Users/heodev/iZiiApp/iZiiApp/assets/icons/
+Error: unable to find directory entry in pubspec.yaml: /Users/heodev/iZiiApp/iZiiApp/assets/images/
+Error: unable to find directory entry in pubspec.yaml: /Users/heodev/iZiiApp/iZiiApp/assets/lottie/
+Connecting to VM Service at ws://127.0.0.1:58953/iX6jvt0Ttk0=/ws
+Connected to the VM Service.
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] Error starting scan: PlatformException(startScan, bluetooth must be turned on. (CBManagerStateUnknown), null, null)
+flutter: [DeviceIdentity] Loaded existing identity: izii-d-1093d407
+flutter: [DeviceIdentity] Loaded existing identity: izii-d-1093d407
+flutter: [BleDiscovery] BlePeripheral initialized successfully.
+BluetoothState: CBManagerState(rawValue: 5)
+flutter: [DeviceIdentity] Loaded existing identity: izii-d-1093d407
+flutter: [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: iZii-ios-mqpaxasx
+flutter: [BleDiscovery] Advertising status update: advertising=true, error=null
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [BleDiscovery] BLE Scan stopped.
+flutter: [BleDiscovery] Connecting to BLE device: a581f8b9-02dc-db2e-eec9-35a2c8876801 (ID: izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801)...
+flutter: [BleDiscovery] Peripheral reference lost. Re-scanning...
+flutter: [BleDiscovery] Re-scanning to refresh peripheral reference for izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801...
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [DeviceDiscovery] ❌ Registration failed: Connection timeout
+flutter: [DeviceDiscovery] Starting heartbeat (every 30s)
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [BleDiscovery] Connection or authentication failed: PlatformException(connect, Peripheral not found, a581f8b9-02dc-db2e-eec9-35a2c8876801, null)
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -44
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [BleDiscovery] BLE Scan stopped.
+flutter: [BleDiscovery] Connecting to BLE device: A581F8B9-02DC-DB2E-EEC9-35A2C8876801 (ID: izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801)...
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [BleDiscovery] Connected. Discovering services...
+flutter: [BleDiscovery] Starting Noise Handshake...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [BleDiscovery] Noise Handshake established successfully with A581F8B9-02DC-DB2E-EEC9-35A2C8876801.
+flutter: [BleDiscovery] Sending announce packet to izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801...
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -44
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] ⚠️ Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+flutter: [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+flutter: [SyncService] Đang kiểm tra cập nhật mới từ Server...
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -53
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
