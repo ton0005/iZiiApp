@@ -1,0 +1,94 @@
+SamSung debug:
+
+I/VRI[MainActivity]@f42e2ce(14953): handleAppVisibility mAppVisible = true visible = false
+D/VRI[MainActivity]@f42e2ce(14953): visibilityChanged oldVisibility=true newVisibility=false
+I/VRI[MainActivity]@f42e2ce(14953): stopped(true) old = false
+D/VRI[MainActivity]@f42e2ce(14953): WindowStopped on com.izii.izii_app/com.izii.izii_app.MainActivity set to true
+D/HWUI    (14953): CacheManager::trimMemory(20)
+D/SurfaceView(14953): 154982922 windowPositionLost, frameNr = 0
+I/SV[135307819 MainActivity](14953): aOrMT: VRI[MainActivity]@f42e2ce t = android.view.SurfaceControl$Transaction@ca122e2 fN = 0 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionLost:2025 android.graphics.RenderNode$CompositePositionUpdateListener.positionLost:418 
+I/VRI[MainActivity]@f42e2ce(14953): mWNT: t=0xb400007782996390 mBlastBufferQueue=0xb400007692a87f90 fn= 0 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1863 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionLost:2025 
+I/SV[135307819 MainActivity](14953): windowStopped(true) false io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ........ 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+I/SurfaceView(14953): 135307819 Changes: creating=false format=false size=false visible=true alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView(14953): 135307819 Cur surface: Surface(name=null mNativeObject=-5476376635200148576)/@0x309d13a
+D/SurfaceComposerClient(14953): setCornerRadius ## 810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#16922 cornerRadius=0.000000
+I/SurfaceView(14953): 135307819 surfaceDestroyed
+I/SV[135307819 MainActivity](14953): surfaceDestroyed callback.size 1 #1 io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ........ 0,0-1080,2340}
+I/SV[135307819 MainActivity](14953): updateSurface: mVisible = false mSurface.isValid() = true
+I/SV[135307819 MainActivity](14953): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+V/SurfaceView(14953): Layout: x=0 y=0 w=1080 h=2340, frame=Rect(0, 0 - 1080, 2340)
+I/AutofillManager(14953): onInvisibleForAutofill(): expiringResponse
+D/SV[135307819 MainActivity](14953): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](14953): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+I/SV[135307819 MainActivity](14953): onWindowVisibilityChanged(8) false io.flutter.embedding.android.FlutterSurfaceView{810a22b G.E...... ......I. 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+D/SV[135307819 MainActivity](14953): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](14953): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/HWUI    (14953): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@f42e2ce(14953): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)8 dur=6 res=0x2 s={false 0x0} ch=false seqId=0
+D/SV[135307819 MainActivity](14953): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](14953): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(14953): applyTransactionOnDraw applyImmediately
+D/VRI[MainActivity]@f42e2ce(14953): Not drawing due to not visible. Reason=!mAppVisible && !mForceDecorViewVisibility
+D/VRI[MainActivity]@f42e2ce(14953): Pending transaction will not be applied in sync with a draw due to view not visible
+I/VRI[MainActivity]@f42e2ce(14953): mWNT: t=0xb4000077829c0710 mBlastBufferQueue=0xnull fn= 0 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl.handleSyncRequestWhenNoAsyncDraw:6733 android.view.ViewRootImpl.performTraversals:5504 android.view.ViewRootImpl.doTraversal:3924 
+D/HWUI    (14953): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@f42e2ce(14953): onDisplayChanged oldDisplayState=2 newDisplayState=1
+I/ImeFocusController(14953): onPreWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+I/ImeFocusController(14953): onPostWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+I/flutter (14953): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (14953): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (14953): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (14953): [SyncService]    📦 service_items → insert
+2
+I/flutter (14953): [SyncService]    📦 chat_messages → insert
+
+Ipad debug:
+
+flutter: [SyncService] Đang gửi 1 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [BleDiscovery] BLE Scan stopped.
+flutter: [BleDiscovery] Connected. Discovering services...
+flutter: [BleDiscovery] Starting Noise Handshake...
+flutter: [BleDiscovery] Noise Handshake established successfully with a581f8b9-02dc-db2e-eec9-35a2c8876801.
+flutter: [BleDiscovery] Routing incoming packet: type=announce from izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801
+flutter: [BleDiscovery] Registered BLE user mapping: izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801 -> user_huong_vo (iZii-android-mqp9cpj6)
+flutter: [BleDiscovery] Sending announce packet to izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801...
+flutter: [BleSync] Starting outbox sync with peer: user_huong_vo (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801)
+flutter: [BleSync] Syncing 1 mutations to peer...
+flutter: [BleDiscovery] Routing incoming packet: type=syncResponse from izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801
+flutter: [BleSync] Received sync packet from device: local-device
+flutter: [BleSync] Applying 2 mutations from peer...
+flutter: [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService]    🔄 chat_messages → insert: id=a4c87982-2c32-457b-86a0-2cdefb4ff9be
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -46
+flutter: [BleSync] Applied mutation successfully: chat_messages -> insert (id=a4c87982-2c32-457b-86a0-2cdefb4ff9be)
+flutter: [SyncService]    🔄 chat_messages → insert: id=d123ec6f-1981-488a-a60a-b1dd38f7ee10
+flutter: [BleSync] Applied mutation successfully: chat_messages -> insert (id=d123ec6f-1981-488a-a60a-b1dd38f7ee10)
+13
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection timeout
+3
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+4
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Đang gửi 1 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+flutter: [BleDiscovery] Discovered peer: iZii-android-mqp9cpj6 (izii-d-ble-a581f8b9-02dc-db2e-eec9-35a2c8876801) RSSI: -47
+2
+
+flutter: [SyncService] Đang gửi 1 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+2
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+ERROR: An error occurred while communicating with a remote process. (com.apple.dt.CoreDeviceError error 3 (0x03))
+       ----------------------------------------
+           The connection was invalidated. (com.apple.Mercury.error error 1001 (0x3E9))
+           XPCConnectionDescription = <RemoteXPCPeerConnection 0x91b074420> { <remote connection: 0x91b1a83c0> { type = preconnected, state = canceled, remote service name = (null), server mode = 0, protocol version number = 1, protocol feature flags = 0x6, local service version = 0, remote service version = 0, traffic class = 0, (root, reply) helo received = (1, 1), next msg id = 5, first msg id = 1, send in progress = 0, preexisting socket = -1 }
+

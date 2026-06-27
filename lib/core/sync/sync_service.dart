@@ -7,6 +7,8 @@ import '../database/app_database.dart';
 import '../settings/settings_service.dart';
 import 'outbox_queue.dart';
 import 'sync_config_repository.dart';
+import '../device_identity/ble_device_discovery_service.dart';
+import 'ble_sync_manager.dart';
 
 class SyncService {
   static final SyncService _instance = SyncService._internal();
@@ -658,6 +660,26 @@ class SyncService {
   Future<void> queueMutation(String table, String operation, Map<String, dynamic> data) async {
     await _outbox.addMutation(table, operation, data);
     _log('📝 Đã lưu ngoại tuyến thay đổi: $table -> $operation');
+
+    // Trigger instant BLE sync for any connected peers
+    try {
+      final bleDiscovery = BleDeviceDiscoveryService();
+      final syncManager = BleSyncManager();
+      final connectedIds = bleDiscovery.getConnectedDeviceIds();
+      for (final deviceId in connectedIds) {
+        final userId = bleDiscovery.getUserIdForDevice(deviceId);
+        if (userId != null) {
+          _log('🔗 Kích hoạt đồng bộ BLE cho $table -> $operation tới peer: $userId ($deviceId)');
+          unawaited(syncManager.syncOutboxWithPeer(
+            remoteDeviceId: deviceId,
+            remoteUserId: userId,
+            sendBleBytes: (_) {},
+          ));
+        }
+      }
+    } catch (e) {
+      _log('⚠️ Lỗi kích hoạt đồng bộ BLE tức thời: $e');
+    }
   }
 }
 

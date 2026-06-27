@@ -118,6 +118,22 @@ class BleDeviceDiscoveryService {
       }
       
       BlePeripheral.setWriteRequestCallback(_handleWriteRequest);
+      BlePeripheral.setConnectionStateChangeCallback((deviceId, connected) {
+        if (!connected) {
+          // A client disconnected from our GATT server
+          final cleanId = 'izii-d-ble-${deviceId.replaceAll(':', '').replaceAll('-', '').toLowerCase()}';
+          _activeClientCharacteristics.remove(deviceId);
+          _activeClientSubscriptions[deviceId]?.cancel();
+          _activeClientSubscriptions.remove(deviceId);
+          _deviceToUserMap.remove(deviceId);
+          _handshakeService.clearSession(deviceId);
+          _handshakeService.clearSession(cleanId);
+          final macAddress = _getDeviceAddressFromId(deviceId);
+          final macId = 'ble-${macAddress.replaceAll(':', '').toLowerCase()}';
+          _handshakeService.clearSession(macId);
+          print('[BleDiscovery] GATT Server client disconnected: $deviceId. Cleaned up cache.');
+        }
+      });
       BlePeripheral.setAdvertisingStatusUpdateCallback((advertising, error) {
         _isAdvertising = advertising;
         print('[BleDiscovery] Advertising status update: advertising=$advertising, error=$error');
@@ -335,6 +351,26 @@ class BleDeviceDiscoveryService {
     );
     print(
         '[BleDiscovery] Discovered peer: $deviceName ($deviceId) RSSI: ${result.rssi}');
+
+    // Auto-reconnect to known authenticated peers if disconnected
+    try {
+      final existing = await (_db.select(_db.localBlePeers)
+            ..where((t) => t.deviceId.equals(deviceId)))
+          .getSingleOrNull();
+      if (existing != null && existing.publicKey.isNotEmpty) {
+        if (!_activeClientCharacteristics.containsKey(deviceId) && !result.device.isConnected) {
+          print('[BleDiscovery] Discovered known authenticated peer $deviceId. Auto-connecting...');
+          // Run in background without blocking scan thread
+          connectAndAuthenticate(deviceId).then((success) {
+            if (success) {
+              print('[BleDiscovery] Auto-connected and authenticated known peer: $deviceId');
+            }
+          });
+        }
+      }
+    } catch (e) {
+      print('[BleDiscovery] Error during auto-reconnect check: $e');
+    }
   }
 
   String _getDeviceAddressFromId(String deviceId) {
@@ -621,7 +657,7 @@ class BleDeviceDiscoveryService {
       final sendBytesCallback = (List<int> bytes) async {
         if (clientChar != null) {
           // Client (Initiator) role: Write directly to the discovered characteristic
-          await clientChar.write(Uint8List.fromList(bytes));
+          await clientChar.write(Uint8List.fromList(bytes), withoutResponse: true);
         } else {
           // Server (Responder) role: Update the local characteristic and notify
           await BlePeripheral.updateCharacteristic(
@@ -636,8 +672,11 @@ class BleDeviceDiscoveryService {
       if (fragments.isEmpty) {
         await sendBytesCallback(packetBytes);
       } else {
-        for (final fragment in fragments) {
-          await sendBytesCallback(fragment.toBytes());
+        for (var i = 0; i < fragments.length; i++) {
+          if (i > 0) {
+            await Future.delayed(const Duration(milliseconds: 15)); // Short delay to prevent buffer overflow
+          }
+          await sendBytesCallback(fragments[i].toBytes());
         }
       }
       return true;
@@ -803,6 +842,14 @@ class BleDeviceDiscoveryService {
     } catch (e) {
       print('[BleDiscovery] Error upserting peer $deviceId: $e');
     }
+  }
+
+  List<String> getConnectedDeviceIds() {
+    return _deviceToUserMap.keys.toList();
+  }
+
+  String? getUserIdForDevice(String deviceId) {
+    return _deviceToUserMap[deviceId];
   }
 
   void dispose() {
