@@ -1,0 +1,2088 @@
+Launching lib\main.dart on SM A366B in debug mode...
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "Windows_NT" == "Windows_NT" setlocal
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set DEFAULT_JVM_OPTS=
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set DIRNAME=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\" == "" set DIRNAME=.
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set APP_BASE_NAME=gradlew
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set APP_HOME=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if defined JAVA_HOME goto findJavaFromJavaHome
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set JAVA_HOME=C:\Program Files\Android\Android Studio\jre
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set JAVA_EXE=C:\Program Files\Android\Android Studio\jre/bin/java.exe
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if exist "C:\Program Files\Android\Android Studio\jre/bin/java.exe" goto init
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if not "Windows_NT" == "Windows_NT" goto win9xME_args
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "@eval[2+2]" == "4" goto 4NT_args
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set CMD_LINE_ARGS=
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set _SKIP=2
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "x-q" == "x" goto execute
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set CMD_LINE_ARGS=-q -Ptarget-platform=android-arm64 -Ptarget=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\lib\main.dart -Pbase-application-name=android.app.Application -Pdart-defines=RkxVVFRFUl9WRVJTSU9OPTMuNDQuMA==,RkxVVFRFUl9DSEFOTkVMPXN0YWJsZQ==,RkxVVFRFUl9HSVRfVVJMPWh0dHBzOi8vZ2l0aHViLmNvbS9mbHV0dGVyL2ZsdXR0ZXIuZ2l0,RkxVVFRFUl9GUkFNRVdPUktfUkVWSVNJT049NTU5ZmZhM2Y3NQ==,RkxVVFRFUl9FTkdJTkVfUkVWSVNJT049NGM1MjVkYWM1ZQ==,RkxVVFRFUl9EQVJUX1ZFUlNJT049My4xMi4w -Pdart-obfuscation=false -Ptrack-widget-creation=true -Ptree-shake-icons=false -Pfilesystem-scheme=org-dartlang-root assembleDebug
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>goto execute
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set CLASSPATH=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\\gradle\wrapper\gradle-wrapper.jar
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>"C:\Program Files\Android\Android Studio\jre/bin/java.exe"    "-Dorg.gradle.appname=gradlew" -classpath "C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\\gradle\wrapper\gradle-wrapper.jar" org.gradle.wrapper.GradleWrapperMain -q -Ptarget-platform=android-arm64 -Ptarget=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\lib\main.dart -Pbase-application-name=android.app.Application -Pdart-defines=RkxVVFRFUl9WRVJTSU9OPTMuNDQuMA==,RkxVVFRFUl9DSEFOTkVMPXN0YWJsZQ==,RkxVVFRFUl9HSVRfVVJMPWh0dHBzOi8vZ2l0aHViLmNvbS9mbHV0dGVyL2ZsdXR0ZXIuZ2l0,RkxVVFRFUl9GUkFNRVdPUktfUkVWSVNJT049NTU5ZmZhM2Y3NQ==,RkxVVFRFUl9FTkdJTkVfUkVWSVNJT049NGM1MjVkYWM1ZQ==,RkxVVFRFUl9EQVJUX1ZFUlNJT049My4xMi4w -Pdart-obfuscation=false -Ptrack-widget-creation=true -Ptree-shake-icons=false -Pfilesystem-scheme=org-dartlang-root assembleDebug
+WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): ble_peripheral, file_picker, image_picker_android, mobile_scanner, package_info_plus, share_plus, shared_preferences_android, speech_to_text, url_launcher_android
+Future versions of Flutter will fail to build if your app uses plugins that apply KGP.
+
+Please check the changelogs of these plugins and upgrade to a version that supports Built-in Kotlin.
+If no such version exists, report the issue to the plugin. If necessary, here is a guide on filing
+an issue against a plugin: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers#report-incompatible-kotlin-gradle-plugin-usage-to-plugin-authors
+
+If you are a plugin author, please migrate your plugin to Built-in Kotlin using this guide: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "0" == "0" goto mainEnd
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "Windows_NT" == "Windows_NT" endlocal
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+I/FlutterActivityAndFragmentDelegate(19086): If you are attempting to set --start-paused via Intent extras to launch a Flutter component outside of using the Flutter CLI, note that support for setting engine flags on Android via Intent will soon be dropped; see https://github.com/flutter/flutter/issues/180686 for more information on this breaking change. To migrate, set --start-paused or any other flags specified via Intent extras on the command line instead or see https://github.com/flutter/flutter/blob/main/docs/engine/Flutter-Android-Engine-Flags.md for alternative methods.
+D/FlutterJNI(19086): Beginning load of flutter...
+D/FlutterJNI(19086): flutter (null) was loaded normally!
+I/flutter (19086): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterGeolocator(19086): Attaching Geolocator to activity
+D/FlutterRenderer(19086): Width is zero. 0,0
+D/FlutterGeolocator(19086): Creating service.
+D/FlutterGeolocator(19086): Binding to location service.
+D/FlutterRenderer(19086): Width is zero. 0,0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+D/FlutterGeolocator(19086): Geolocator foreground service connected
+D/FlutterGeolocator(19086): Initializing Geolocator services
+D/FlutterGeolocator(19086): Flutter engine connected. Connected engine count 1
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/m.izii.izii_app(19086): Compiler allocated 5158KB to compile void android.view.ViewRootImpl.performTraversals()
+Connecting to VM Service at ws://127.0.0.1:62361/t3Jwc6i4oac=/ws
+Connected to the VM Service.
+I/BLASTBufferQueue(19086): [9727821 SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#1](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/SurfaceComposerClient(19086): apply transaction with the first frame. layerId: 28789, bufferData(ID: 81973745811466, frameNumber: 1)
+I/Choreographer(19086): Skipped 107 frames!  The application may be doing too much work on its main thread.
+I/SurfaceView(19086): 158496801 finishedDrawing
+D/ProfileInstaller(19086): Installing profile for com.izii.izii_app
+I/Choreographer(19086): Skipped 30 frames!  The application may be doing too much work on its main thread.
+D/VRI[MainActivity]@51708fc(19086): Setup new sync=wmsSync-VRI[MainActivity]@51708fc#1
+I/VRI[MainActivity]@51708fc(19086): Creating new active sync group VRI[MainActivity]@51708fc#2
+D/VRI[MainActivity]@51708fc(19086): Draw frame after cancel
+D/VRI[MainActivity]@51708fc(19086): registerCallbacksForSync syncBuffer=false
+D/SurfaceView(19086): 158496801 updateSurfacePosition RenderWorker, frameNr = 1, position = [0, 0, 1080, 2340] surfaceSize = 1080x2340
+I/SV[158496801 MainActivity](19086): uSP: rtp = Rect(0, 0 - 1080, 2340) rtsw = 1080 rtsh = 2340
+I/SV[158496801 MainActivity](19086): onSSPAndSRT: pl = 0 pt = 0 sx = 1.0 sy = 1.0
+I/SV[158496801 MainActivity](19086): aOrMT: VRI[MainActivity]@51708fc t = android.view.SurfaceControl$Transaction@dafbc90 fN = 1 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1932 android.graphics.RenderNode$CompositePositionUpdateListener.positionChanged:401
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb4000077829bee90 mBlastBufferQueue=0xb4000076929e85a0 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1863 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1932
+D/VRI[MainActivity]@51708fc(19086): Received frameDrawingCallback syncResult=0 frameNum=1.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb4000077829a2410 mBlastBufferQueue=0xb4000076929e85a0 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$12.onFrameDraw:15441 android.view.ThreadedRenderer$1.onFrameDraw:718 <bottom of call stack>
+I/VRI[MainActivity]@51708fc(19086): Setting up sync and frameCommitCallback
+I/BLASTBufferQueue(19086): [VRI[MainActivity]@51708fc#0](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/SurfaceComposerClient(19086): apply transaction with the first frame. layerId: 28784, bufferData(ID: 81973745811471, frameNumber: 1)
+I/VRI[MainActivity]@51708fc(19086): Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true
+D/HWUI    (19086): CFMS:: SetUp Pid : 19086    Tid : 19160
+D/VRI[MainActivity]@51708fc(19086): reportDrawFinished seqId=0
+D/VRI[MainActivity]@51708fc(19086): mThreadedRenderer.initializeIfNeeded()#2 mSurface={isValid=true 0xb4000077229b7660}
+D/InputMethodManagerUtils(19086): startInputInner - Id : 0
+I/InputMethodManager(19086): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+D/InputTransport(19086): Input channel constructed: 'ClientS', fd=190
+I/InputMethodManager(19086): handleMessage: setImeVisibility visible=false
+D/InsetsController(19086): hide(ime(), fromIme=false)
+I/ImeTracker(19086): com.izii.izii_app:67c70cd: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+D/[FBP-Android](19086): [FBP] onMethodCall: flutterRestart
+D/[FBP-Android](19086): [FBP] initializing BluetoothAdapter
+I/BluetoothAdapter(19086): BluetoothAdapter() : com.izii.izii_app
+D/[FBP-Android](19086): [FBP] disconnectAllDevices(flutterRestart)
+D/[FBP-Android](19086): [FBP] connectedPeripherals: 0
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/CompatChangeReporter(19086): Compat change id reported: 386727721; UID 10407; state: ENABLED
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [DeviceIdentity] Loaded existing identity: izii-d-27fd1f53
+I/flutter (19086): [DeviceIdentity] Loaded existing identity: izii-d-27fd1f53
+D/BluetoothGattServer(19086): registerCallback()
+D/BluetoothGattServer(19086): registerCallback() - UUID=f6fd8989-3e04-4ab4-94ea-39703802827b
+D/BluetoothGattServer(19086): onServerRegistered() - status=0 serverIf=159
+I/flutter (19086): [BleDiscovery] BlePeripheral initialized successfully.
+I/flutter (19086): [BleDiscovery] Waiting for Bluetooth adapter to be powered on...
+I/BluetoothAdapter(19086): BluetoothAdapter() : com.izii.izii_app
+D/[FBP-Android](19086): [FBP] onMethodCall: getAdapterState
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -43
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -43
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=b68dadff-7ded-4542-92b5-136eeddb0f8f
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=160
+D/BluetoothGattServer(19086): clearServices()
+D/BlePeripheral(19086): Added CCCD for a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/BluetoothGattServer(19086): addService() - service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/BluetoothGattServer(19086): onServiceAdded() - handle=154 uuid=f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c status=0
+I/flutter (19086): [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (19086): [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: null
+D/AdvertiseSettings(19086): setTxPowerLevel: 3
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeAdvertiser(19086): TxPower == ADVERTISE_TX_POWER_HIGH
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeAdvertiser(19086): onAdvertisingSetStarted(0, 1, 0)
+I/flutter (19086): [BleDiscovery] Advertising status update: advertising=true, error=null
+D/BluetoothGattServer(19086): onServerConnectionState() - status=0 serverIf=159 connected=true device=XX:XX:XX:XX:5E:A9
+E/BlePeripheralPlugin(19086): onConnectionStateChange: 0 -> 2
+D/BluetoothGattServer(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: true
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=160 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onPhyUpdate() - status=0 address=XX:XX:XX:XX:5E:A9 txPhy=2 rxPhy=2
+D/BluetoothGattServer(19086): onPhyUpdate() - device=XX:XX:XX:XX:5E:A9, txPHy=2, rxPHy=2
+D/BluetoothGatt(19086): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGattServer(19086): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/BluetoothGatt(19086): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+D/BluetoothGattServer(19086): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/BluetoothGatt(19086): onServiceChanged() - Device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onCharacteristicChanged:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/BluetoothGatt(19086): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGattServer(19086): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGatt(19086): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+D/BluetoothGattServer(19086): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [BleDiscovery] Connection to izii-d-ble-f0c371175ea9 already in progress. Skipping.
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [DeviceDiscovery] ❌ Registration failed: Connection timeout
+I/flutter (19086): [DeviceDiscovery] Starting heartbeat (every 30s)
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+D/BlePeripheralPlugin(19086): onDescriptorWriteRequest: [1, 0] -> 00002902-0000-1000-8000-00805f9b34fb | Char UUID: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 32
+I/flutter (19086): [BleDiscovery] Processing incoming Noise handshake message (length: 32)...
+I/flutter (19086): [BleDiscovery] Message 1 processed. Sending Message 2 to F0:C3:71:17:5E:A9...
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 48
+I/flutter (19086): [BleDiscovery] Processing incoming Noise handshake message (length: 48)...
+I/flutter (19086): [BleDiscovery] Noise Handshake established as Responder with F0:C3:71:17:5E:A9.
+I/flutter (19086): [BleDiscovery] Saved peer static public key to database: izii-d-ble-f0c371175ea9
+I/flutter (19086): [BleDiscovery] Sending announce packet to F0:C3:71:17:5E:A9...
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 330
+I/flutter (19086): [BleDiscovery] Routing incoming packet: type=announce from F0:C3:71:17:5E:A9
+I/flutter (19086): [BleDiscovery] Registered BLE user mapping: F0:C3:71:17:5E:A9 -> user_an_nguyen (iZii-ios-mqpasi6u)
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 494
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 351
+I/flutter (19086): [BleDiscovery] Routing incoming packet: type=syncResponse from F0:C3:71:17:5E:A9
+I/flutter (19086): [BleSync] Received sync packet from device: local-device
+I/flutter (19086): [BleSync] Applying 3 mutations from peer...
+I/flutter (19086): [BleSync] Starting outbox sync with peer: user_an_nguyen (F0:C3:71:17:5E:A9)
+I/flutter (19086): [SyncService]    🔄 chat_messages → insert: id=add45edc-000c-4373-83f3-c972d0c9e357
+I/flutter (19086): [BleSync] Applied mutation successfully: chat_messages -> insert (id=add45edc-000c-4373-83f3-c972d0c9e357)
+I/flutter (19086): [SyncService]    🔄 chat_messages → insert: id=1405ed12-bfc1-4657-9996-ef6bd045b526
+I/flutter (19086): [BleSync] Applied mutation successfully: chat_messages -> insert (id=1405ed12-bfc1-4657-9996-ef6bd045b526)
+I/flutter (19086): [SyncService]    🔄 chat_messages → insert: id=1e3f7d0c-d20b-41fc-aa56-30d47a8dd4be
+I/flutter (19086): [BleSync] Applied mutation successfully: chat_messages -> insert (id=1e3f7d0c-d20b-41fc-aa56-30d47a8dd4be)
+I/flutter (19086): [BleSync] Syncing 3 mutations to peer...
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=160 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=160
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -43
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=c379557f-2048-4547-ae59-1af43807cead
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=162
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=162 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Stopped BLE Advertising.
+D/BluetoothLeAdvertiser(19086): Stop AdvertingSet
+I/flutter (19086): [BleDiscovery] Advertising status update: advertising=false, error=null
+D/BluetoothLeAdvertiser(19086): onAdvertisingSetStopped(0)
+I/flutter (19086): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=162 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=162
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -46
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=9ab4fb42-f910-4268-b3be-606fc299815a
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=163
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=163 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [ChatWS] Cannot send event, WebSocket disconnected.
+I/flutter (19086): [ChatWS] Cannot send event, WebSocket disconnected.
+W/WindowOnBackDispatcher(19086): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@545afa7
+I/InputMethodManager_LC(19086): showSoftInput(View,I)
+I/ImeTracker(19086): com.izii.izii_app:8dbef566: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+I/InputMethodManager_LC(19086): ssi(): flags=0 view=com.izii.izii_app reason=SHOW_SOFT_INPUT
+I/InputMethodManager_LC(19086): ssi() view is not EditText
+D/InputMethodManagerUtils(19086): startInputInner - Id : 0
+I/InputMethodManager(19086): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+D/InsetsController(19086): show(ime(), fromIme=false)
+D/InsetsController(19086): Setting requestedVisibleTypes to -1 (was -9)
+I/InsetsController(19086): setRequestedVisibleTypes: visible=true, mask=ime, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1604 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343 android.view.InsetsController.show:1422 android.view.inputmethod.InputMethodManager.showSoftInput:2659 android.view.inputmethod.InputMethodManager.showSoftInput:2571 android.view.inputmethod.InputMethodManager.showSoftInput:2563 android.view.inputmethod.InputMethodManager.showSoftInput:2491 io.flutter.plugin.editing.TextInputPlugin.showTextInput:433 io.flutter.plugin.editing.TextInputPlugin$2.show:114
+D/InputTransport(19086): Input channel constructed: 'ClientS', fd=201
+I/VRI[MainActivity]@51708fc(19086): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/AssistStructure(19086): Flattened final assist data: 496 bytes, containing 1 windows, 3 views
+D/InputConnectionAdaptor(19086): The input method toggled cursor monitoring on
+I/InsetsController(19086): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@51708fc(19086): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/InsetsController(19086): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/InsetsController(19086): controlAnimationUncheckedInner: Added types=ime, animType=0, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1608 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343
+I/BLASTBufferQueue_Java(19086): update, w= 1080 h= 2340 mName = VRI[MainActivity]@51708fc mNativeObject= 0xb4000076929e85a0 sc.mNativeObject= 0xb4000077f29a9990 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3574 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901
+I/VRI[MainActivity]@51708fc(19086): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=true req=(1080,2340)0 dur=1 res=0x0 s={true 0xb4000077229b7660} ch=false seqId=0
+W/InteractionJankMonitor(19086): Initializing without READ_DEVICE_CONFIG permission. enabled=false, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.izii.izii_app
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): registerCallbackForPendingTransactions
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a31a50 mBlastBufferQueue=0xb4000076929e85a0 fn= 3 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a4d190 mBlastBufferQueue=0xb4000076929e85a0 fn= 3 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$10.onFrameDraw:6536 android.view.ViewRootImpl$4.onFrameDraw:2489 android.view.ThreadedRenderer$1.onFrameDraw:718
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb4000077829e0d10 mBlastBufferQueue=0xb4000076929e85a0 fn= 4 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a48d50 mBlastBufferQueue=0xb4000076929e85a0 fn= 5 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a48490 mBlastBufferQueue=0xb4000076929e85a0 fn= 6 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a4c550 mBlastBufferQueue=0xb4000076929e85a0 fn= 7 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a4ce10 mBlastBufferQueue=0xb4000076929e85a0 fn= 8 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a49ed0 mBlastBufferQueue=0xb4000076929e85a0 fn= 9 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/InsetsController(19086): cancelAnimation: types=ime, animType=0, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.notifyFinished:2006 android.view.InsetsAnimationControlImpl.applyChangeInsets:335 android.view.InsetsController.lambda$new$3:957
+I/ImeTracker(19086): com.izii.izii_app:8dbef566: onShown
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a489d0 mBlastBufferQueue=0xb4000076929e85a0 fn= 10 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/TextInputPlugin(19086): Composing region changed by the framework. Restarting the input method.
+D/InputMethodManagerUtils(19086): startInputInner - Id : 0
+I/InputMethodManager(19086): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+D/InputTransport(19086): Input channel constructed: 'ClientS', fd=213
+W/RemoteInputConnectionImpl(19086): getExtractedText on inactive InputConnection
+W/RemoteInputConnectionImpl(19086): getExtractedText on inactive InputConnection
+D/InputConnectionAdaptor(19086): The input method toggled cursor monitoring on
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=163 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=163
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -46
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=e720d0ca-ef41-46dd-846c-6d9c8527752b
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=164
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=164 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [ChatBloc] Companion is connected via BLE P2P. Sending message directly...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=164 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=164
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=db663b13-8878-4a9b-a174-be146a3c7f5c
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=165
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=165 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 494
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 47
+I/flutter (19086): [BleDiscovery] Routing incoming packet: type=message from F0:C3:71:17:5E:A9
+I/flutter (19086): [ChatWS] Cannot send event, WebSocket disconnected.
+I/flutter (19086): [ChatWS] Cannot send event, WebSocket disconnected.
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=165 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=165
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=1e005167-d155-436f-a51b-c97a3881d55e
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=166
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=166 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/TextInputPlugin(19086): Composing region changed by the framework. Restarting the input method.
+D/InputMethodManagerUtils(19086): startInputInner - Id : 0
+I/InputMethodManager(19086): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+D/InputTransport(19086): Input channel constructed: 'ClientS', fd=187
+W/RemoteInputConnectionImpl(19086): getExtractedText on inactive InputConnection
+W/RemoteInputConnectionImpl(19086): getExtractedText on inactive InputConnection
+W/RemoteInputConnectionImpl(19086): getExtractedText on inactive InputConnection
+D/InputConnectionAdaptor(19086): The input method toggled cursor monitoring on
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=166 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=166
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -42
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -44
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=c9fa96ed-2bc3-4a82-8324-683514158673
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=167
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=167 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -42
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (19086): [ChatBloc] Companion is connected via BLE P2P. Sending message directly...
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=167 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=167
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -44
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -42
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=37d51338-f324-4327-b483-bad38f320e35
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=168
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=168 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 494
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 35
+I/flutter (19086): [BleDiscovery] Routing incoming packet: type=message from F0:C3:71:17:5E:A9
+I/flutter (19086): [ChatWS] Cannot send event, WebSocket disconnected.
+I/flutter (19086): [ChatWS] Cannot send event, WebSocket disconnected.
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=168 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=168
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/ImeTracker(19086): com.izii.izii_app:585e47e3: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+I/InputMethodManager_LC(19086): hsifw() - flag : 0
+I/InputMethodManager_LC(19086): hsifw() - mService.hideSoftInput
+D/InsetsController(19086): hide(ime(), fromIme=false)
+W/WindowOnBackDispatcher(19086): sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@bef3c5d
+D/InsetsController(19086): Setting requestedVisibleTypes to -9 (was -1)
+I/InsetsController(19086): setRequestedVisibleTypes: visible=false, mask=ime, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1604 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343 android.view.InsetsController.hide:1540 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2889 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2812 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2773 io.flutter.plugin.editing.TextInputPlugin.hideTextInput:447 io.flutter.plugin.editing.TextInputPlugin.access$400:44 io.flutter.plugin.editing.TextInputPlugin$2.hide:122
+I/InsetsController(19086): controlAnimationUncheckedInner: Added types=ime, animType=1, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1608 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343
+D/CompatChangeReporter(19086): Compat change id reported: 395521150; UID 10407; state: ENABLED
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -42
+W/WindowOnBackDispatcher(19086): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@545afa7
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+I/BLASTBufferQueue_Java(19086): update, w= 1080 h= 2340 mName = VRI[MainActivity]@51708fc mNativeObject= 0xb4000076929e85a0 sc.mNativeObject= 0xb4000077f29a9990 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3574 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901
+I/VRI[MainActivity]@51708fc(19086): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=true req=(1080,2340)0 dur=0 res=0x0 s={true 0xb4000077229b7660} ch=false seqId=0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): registerCallbackForPendingTransactions
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a47310 mBlastBufferQueue=0xb4000076929e85a0 fn= 11 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a16a10 mBlastBufferQueue=0xb4000076929e85a0 fn= 11 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$10.onFrameDraw:6536 android.view.ViewRootImpl$4.onFrameDraw:2489 android.view.ThreadedRenderer$1.onFrameDraw:718
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a3fa50 mBlastBufferQueue=0xb4000076929e85a0 fn= 12 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=ba82aa8b-a84a-4446-ba23-da5e154010dc
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=169
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=169 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a4d350 mBlastBufferQueue=0xb4000076929e85a0 fn= 13 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a4b590 mBlastBufferQueue=0xb4000076929e85a0 fn= 14 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a4a090 mBlastBufferQueue=0xb4000076929e85a0 fn= 15 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a49610 mBlastBufferQueue=0xb4000076929e85a0 fn= 16 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a4d510 mBlastBufferQueue=0xb4000076929e85a0 fn= 17 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a3dc90 mBlastBufferQueue=0xb4000076929e85a0 fn= 18 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a45390 mBlastBufferQueue=0xb4000076929e85a0 fn= 19 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a48810 mBlastBufferQueue=0xb4000076929e85a0 fn= 20 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a46510 mBlastBufferQueue=0xb4000076929e85a0 fn= 21 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/InsetsController(19086): cancelAnimation: types=ime, animType=1, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.notifyFinished:2006 android.view.InsetsAnimationControlImpl.applyChangeInsets:335 android.view.InsetsController.lambda$new$3:957
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+D/FlutterJNI(19086): Sending viewport metrics to the engine.
+D/InputMethodManagerUtils(19086): startInputInner - Id : 0
+I/InputMethodManager(19086): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb400007782a44750 mBlastBufferQueue=0xb4000076929e85a0 fn= 22 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/InputTransport(19086): Input channel constructed: 'ClientS', fd=197
+D/InputTransport(19086): Input channel destroyed: 'ClientS', fd=201
+D/InputTransport(19086): Input channel destroyed: 'ClientS', fd=213
+D/InputTransport(19086): Input channel destroyed: 'ClientS', fd=187
+I/InsetsController(19086): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=false mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@51708fc(19086): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/InsetsSourceConsumer(19086): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/ImeTracker(19086): system_server:e02e46e4: onCancelled at PHASE_CLIENT_ON_CONTROLS_CHANGED
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+I/InsetsController(19086): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@51708fc(19086): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+W/WindowOnBackDispatcher(19086): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@545afa7
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=169 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=169
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -42
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=c7ae5c61-4fbc-45a5-bae0-480065b3cebb
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=170
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=170 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=170 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=170
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=44b6fe2c-b559-4dff-b8d9-d0a42d78f431
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=171
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=171 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 494
+I/flutter (19086): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 158
+I/flutter (19086): [BleDiscovery] Routing incoming packet: type=shareRequest from F0:C3:71:17:5E:A9
+I/flutter (19086): [BleDiscovery] Incoming share request from iZii-ios-mqpasi6u for Cơ hội: Quill Phan
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [BleDiscovery] User decision for shared record: approved
+I/flutter (19086): [SyncService]    🔄 leads → insert: id=dd841bee-fe7f-4f51-bcbf-faf9365ed86a
+I/flutter (19086): [BleDiscovery] Shared record applied locally: leads ID: dd841bee-fe7f-4f51-bcbf-faf9365ed86a
+I/flutter (19086): [BleDiscovery] Granted explicit local permission for shared record ID: dd841bee-fe7f-4f51-bcbf-faf9365ed86a
+I/flutter (19086): [BleDiscovery] No active authenticated session for izii-d-bc46ef4f. Cannot send.
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=171 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=171
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -40
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=802f2e00-9821-4b2f-a7fb-780bd11a3e61
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=172
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=172 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+I/flutter (19086): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection timed out (OS Error: Connection timed out, errno = 110), address = 10.146.147.160, port = 52508
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+W/WindowOnBackDispatcher(19086): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@545afa7
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [ChatWS] Retrying connection...
+I/flutter (19086): [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=172 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=172
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -39
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -39
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=5cf1804b-5264-4808-80f4-24c3189e9556
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=173
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=173 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=173 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=173
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -45
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -39
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=286c1116-0ec3-4375-9a7f-dfefb96b4b7a
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=174
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=174 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=174 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=174
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -51
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=9fe53550-e0cd-4d83-b232-af217c3cb9cd
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=175
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=175 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=175 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=175
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -51
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=91e6872e-eba7-4d26-abc4-42e8fb89bda5
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=176
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=176 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+W/WindowOnBackDispatcher(19086): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@545afa7
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/ImeFocusController(19086): onPreWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+I/ImeFocusController(19086): onPostWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+D/InputTransport(19086): Input channel destroyed: 'ClientS', fd=190
+I/VRI[MainActivity]@51708fc(19086): handleAppVisibility mAppVisible = true visible = false
+D/VRI[MainActivity]@51708fc(19086): visibilityChanged oldVisibility=true newVisibility=false
+I/SV[158496801 MainActivity](19086): onWindowVisibilityChanged(8) false io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ........ 0,0-1080,2340} of VRI[MainActivity]@51708fc
+I/SurfaceView(19086): 158496801 Changes: creating=false format=false size=false visible=true alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView(19086): 158496801 Cur surface: Surface(name=null mNativeObject=-5476376635200781408)/@0x309d13a
+D/SurfaceComposerClient(19086): setCornerRadius ## 9727821 SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#28788 cornerRadius=0.000000
+I/SurfaceView(19086): 158496801 surfaceDestroyed
+I/SV[158496801 MainActivity](19086): surfaceDestroyed callback.size 1 #2 io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ........ 0,0-1080,2340}
+I/SV[158496801 MainActivity](19086): updateSurface: mVisible = false mSurface.isValid() = true
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+V/SurfaceView(19086): Layout: x=0 y=0 w=1080 h=2340, frame=Rect(0, 0 - 1080, 2340)
+D/SurfaceView(19086): 242131603 windowPositionLost, frameNr = 0
+D/HWUI    (19086): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@51708fc(19086): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)8 dur=5 res=0x2 s={false 0x0} ch=true seqId=0
+I/SV[158496801 MainActivity](19086): windowStopped(true) false io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ........ 0,0-1080,2340} of VRI[MainActivity]@51708fc
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+D/VRI[MainActivity]@51708fc(19086): Not drawing due to not visible. Reason=!mAppVisible && !mForceDecorViewVisibility
+D/VRI[MainActivity]@51708fc(19086): Pending transaction will not be applied in sync with a draw due to view not visible
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb4000077829c0390 mBlastBufferQueue=0xnull fn= 0 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl.handleSyncRequestWhenNoAsyncDraw:6733 android.view.ViewRootImpl.performTraversals:5504 android.view.ViewRootImpl.doTraversal:3924
+D/HWUI    (19086): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@51708fc(19086): stopped(true) old = false
+D/VRI[MainActivity]@51708fc(19086): WindowStopped on com.izii.izii_app/com.izii.izii_app.MainActivity set to true
+D/HWUI    (19086): CacheManager::trimMemory(20)
+I/AutofillManager(19086): onInvisibleForAutofill(): expiringResponse
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+D/BBA2    (19086): setIsFg isFg = false; delayValue 3999ms
+I/VRI[MainActivity]@51708fc(19086): handleAppVisibility mAppVisible = false visible = true
+I/VRI[MainActivity]@51708fc(19086): stopped(false) old = true
+D/VRI[MainActivity]@51708fc(19086): WindowStopped on com.izii.izii_app/com.izii.izii_app.MainActivity set to false
+D/ViewRootImpl(19086): Skipping stats log for color mode
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+I/SV[158496801 MainActivity](19086): onWindowVisibilityChanged(0) false io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ......ID 0,0-1080,2340} of VRI[MainActivity]@51708fc
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+I/BufferQueueProducer(19086): [](id:4a8e00000002,api:0,p:-761493840,c:19086) setDequeueTimeout:2077252342
+I/BLASTBufferQueue_Java(19086): new BLASTBufferQueue, mName= VRI[MainActivity]@51708fc mNativeObject= 0xb4000076929e85a0 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3585 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 android.view.Choreographer$CallbackRecord.run:1910 android.view.Choreographer.doCallbacks:1367 android.view.Choreographer.doFrame:1292 android.view.Choreographer$FrameDisplayEventReceiver.run:1870
+I/BLASTBufferQueue_Java(19086): update, w= 1080 h= 2340 mName = VRI[MainActivity]@51708fc mNativeObject= 0xb4000076929e85a0 sc.mNativeObject= 0xb4000077f29a9ed0 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3590 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901
+I/VRI[MainActivity]@51708fc(19086): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)0 dur=16 res=0x3 s={true 0xb4000077229bb6c0} ch=true seqId=0
+D/VRI[MainActivity]@51708fc(19086): mThreadedRenderer.initialize() mSurface={isValid=true 0xb4000077229bb6c0} hwInitialized=true
+I/SurfaceView(19086): 158496801 Changes: creating=false format=false size=false visible=false alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SV[158496801 MainActivity](19086): windowStopped(false) true io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ......ID 0,0-1080,2340} of VRI[MainActivity]@51708fc
+I/SurfaceView(19086): 158496801 Changes: creating=true format=false size=false visible=true alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/BufferQueueProducer(19086): [](id:4a8e00000003,api:0,p:0,c:19086) setDequeueTimeout:2077252342
+I/BLASTBufferQueue_Java(19086): new BLASTBufferQueue, mName= 9727821 SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0 mNativeObject= 0xb4000076929d94b0 caller= android.view.SurfaceView.createBlastSurfaceControls:1781 android.view.SurfaceView.updateSurface:1450 android.view.SurfaceView.setWindowStopped:539 android.view.SurfaceView.surfaceCreated:2327 android.view.ViewRootImpl.notifySurfaceCreated:3502 android.view.ViewRootImpl.performTraversals:5286 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 android.view.Choreographer$CallbackRecord.run:1910
+I/BLASTBufferQueue_Java(19086): update, w= 1080 h= 2340 mName = 9727821 SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0 mNativeObject= 0xb4000076929d94b0 sc.mNativeObject= 0xb4000077f29a9990 format= 4 caller= android.view.SurfaceView.createBlastSurfaceControls:1782 android.view.SurfaceView.updateSurface:1450 android.view.SurfaceView.setWindowStopped:539 android.view.SurfaceView.surfaceCreated:2327 android.view.ViewRootImpl.notifySurfaceCreated:3502 android.view.ViewRootImpl.performTraversals:5286
+I/SurfaceView(19086): 158496801 Cur surface: Surface(name=null mNativeObject=0)/@0x309d13a
+D/SurfaceComposerClient(19086): setCornerRadius ## 9727821 SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#28819 cornerRadius=0.000000
+I/SV[158496801 MainActivity](19086): pST: sr = Rect(0, 0 - 1080, 2340) sw = 1080 sh = 2340
+D/SurfaceView(19086): 158496801 performSurfaceTransaction RenderWorker position = [0, 0, 1080, 2340] surfaceSize = 1080x2340
+I/SV[158496801 MainActivity](19086): updateSurface: mVisible = true mSurface.isValid() = true
+I/SV[158496801 MainActivity](19086): updateSurface: mSurfaceCreated = false surfaceChanged = true visibleChanged = true
+I/SurfaceView(19086): 158496801 visibleChanged -- surfaceCreated
+I/SV[158496801 MainActivity](19086): surfaceCreated 1 #1 io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ......ID 0,0-1080,2340}
+I/SurfaceView(19086): 158496801 surfaceChanged -- format=4 w=1080 h=2340
+I/SV[158496801 MainActivity](19086): surfaceChanged (1080,2340) 1 #1 io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ......ID 0,0-1080,2340}
+I/SurfaceView(19086): 158496801 surfaceRedrawNeeded
+V/SurfaceView(19086): Layout: x=0 y=0 w=1080 h=2340, frame=Rect(0, 0 - 1080, 2340)
+D/VRI[MainActivity]@51708fc(19086): reportNextDraw android.view.ViewRootImpl.performTraversals:5443 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 android.view.Choreographer$CallbackRecord.run:1910
+D/VRI[MainActivity]@51708fc(19086): Setup new sync=wmsSync-VRI[MainActivity]@51708fc#4
+I/VRI[MainActivity]@51708fc(19086): Creating new active sync group VRI[MainActivity]@51708fc#5
+D/VRI[MainActivity]@51708fc(19086): Start draw after previous draw not visible
+D/VRI[MainActivity]@51708fc(19086): registerCallbacksForSync syncBuffer=false
+D/SurfaceView(19086): 158496801 updateSurfacePosition RenderWorker, frameNr = 1, position = [0, 0, 1080, 2340] surfaceSize = 1080x2340
+I/SV[158496801 MainActivity](19086): uSP: rtp = Rect(0, 0 - 1080, 2340) rtsw = 1080 rtsh = 2340
+I/SV[158496801 MainActivity](19086): onSSPAndSRT: pl = 0 pt = 0 sx = 1.0 sy = 1.0
+I/SV[158496801 MainActivity](19086): aOrMT: VRI[MainActivity]@51708fc t = android.view.SurfaceControl$Transaction@70d8be8 fN = 1 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1932 android.graphics.RenderNode$CompositePositionUpdateListener.positionChanged:401
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb4000077829d8650 mBlastBufferQueue=0xb4000076929e85a0 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1863 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1932
+D/VRI[MainActivity]@51708fc(19086): Received frameDrawingCallback syncResult=0 frameNum=1.
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb4000077829f5610 mBlastBufferQueue=0xb4000076929e85a0 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$12.onFrameDraw:15441 android.view.ThreadedRenderer$1.onFrameDraw:718 <bottom of call stack>
+I/VRI[MainActivity]@51708fc(19086): Setting up sync and frameCommitCallback
+I/BLASTBufferQueue(19086): [VRI[MainActivity]@51708fc#2](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/SurfaceComposerClient(19086): apply transaction with the first frame. layerId: 28813, bufferData(ID: 81973745811490, frameNumber: 1)
+I/VRI[MainActivity]@51708fc(19086): Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true
+I/InsetsSourceConsumer(19086): applyRequestedVisibilityToControl: visible=true, type=statusBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/InsetsSourceConsumer(19086): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/BLASTBufferQueue(19086): [9727821 SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#3](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/SurfaceComposerClient(19086): apply transaction with the first frame. layerId: 28820, bufferData(ID: 81973745811485, frameNumber: 1)
+D/VRI[MainActivity]@51708fc(19086): reportDrawFinished seqId=0
+I/SurfaceView(19086): 158496801 finishedDrawing
+D/VRI[MainActivity]@51708fc(19086): mThreadedRenderer.initializeIfNeeded()#2 mSurface={isValid=true 0xb4000077229bb6c0}
+D/InputMethodManagerUtils(19086): startInputInner - Id : 0
+I/InputMethodManager(19086): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+I/InputMethodManager(19086): handleMessage: setImeVisibility visible=false
+D/InsetsController(19086): hide(ime(), fromIme=false)
+I/ImeTracker(19086): com.izii.izii_app:434ad9e7: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+D/InputTransport(19086): Input channel constructed: 'ClientS', fd=185
+I/VRI[MainActivity]@51708fc(19086): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@51708fc
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+W/WindowOnBackDispatcher(19086): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@545afa7
+I/ImeFocusController(19086): onPreWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+I/ImeFocusController(19086): onPostWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+D/InputTransport(19086): Input channel destroyed: 'ClientS', fd=185
+I/VRI[MainActivity]@51708fc(19086): handleAppVisibility mAppVisible = true visible = false
+D/VRI[MainActivity]@51708fc(19086): visibilityChanged oldVisibility=true newVisibility=false
+I/SV[158496801 MainActivity](19086): onWindowVisibilityChanged(8) false io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ........ 0,0-1080,2340} of VRI[MainActivity]@51708fc
+I/SurfaceView(19086): 158496801 Changes: creating=false format=false size=false visible=true alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView(19086): 158496801 Cur surface: Surface(name=null mNativeObject=-5476376635200788000)/@0x309d13a
+D/SurfaceComposerClient(19086): setCornerRadius ## 9727821 SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#28819 cornerRadius=0.000000
+I/SurfaceView(19086): 158496801 surfaceDestroyed
+I/SV[158496801 MainActivity](19086): surfaceDestroyed callback.size 1 #2 io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ........ 0,0-1080,2340}
+I/SV[158496801 MainActivity](19086): updateSurface: mVisible = false mSurface.isValid() = true
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+V/SurfaceView(19086): Layout: x=0 y=0 w=1080 h=2340, frame=Rect(0, 0 - 1080, 2340)
+D/SurfaceView(19086): 89478787 windowPositionLost, frameNr = 0
+D/HWUI    (19086): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@51708fc(19086): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)8 dur=5 res=0x2 s={false 0x0} ch=true seqId=0
+I/SV[158496801 MainActivity](19086): windowStopped(true) false io.flutter.embedding.android.FlutterSurfaceView{9727821 V.E...... ........ 0,0-1080,2340} of VRI[MainActivity]@51708fc
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+D/VRI[MainActivity]@51708fc(19086): Not drawing due to not visible. Reason=!mAppVisible && !mForceDecorViewVisibility
+D/VRI[MainActivity]@51708fc(19086): Pending transaction will not be applied in sync with a draw due to view not visible
+I/VRI[MainActivity]@51708fc(19086): mWNT: t=0xb4000077829c0390 mBlastBufferQueue=0xnull fn= 0 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl.handleSyncRequestWhenNoAsyncDraw:6733 android.view.ViewRootImpl.performTraversals:5504 android.view.ViewRootImpl.doTraversal:3924
+D/HWUI    (19086): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@51708fc(19086): stopped(true) old = false
+D/VRI[MainActivity]@51708fc(19086): WindowStopped on com.izii.izii_app/com.izii.izii_app.MainActivity set to true
+D/HWUI    (19086): CacheManager::trimMemory(20)
+I/AutofillManager(19086): onInvisibleForAutofill(): expiringResponse
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+D/SV[158496801 MainActivity](19086): updateSurface: surface is not valid
+I/SV[158496801 MainActivity](19086): releaseSurfaces: viewRoot = VRI[MainActivity]@51708fc
+D/VRI[MainActivity]@51708fc(19086): applyTransactionOnDraw applyImmediately
+D/BBA2    (19086): setIsFg isFg = false; delayValue 3999ms
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (19086): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](19086): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(19086): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=176 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): unregisterApp() - mClientIf=176
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): close()
+D/[FBP-Android](19086): [FBP] onMethodCall: isSupported
+I/flutter (19086): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](19086): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Start Scan with callback
+D/BluetoothLeScanner(19086): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -46
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -46
+I/flutter (19086): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](19086): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(19086): isLeEnabled(): ON
+D/BluetoothLeScanner(19086): Stop Scan with callback
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -46
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -46
+I/flutter (19086): [BleDiscovery] BLE Scan stopped.
+I/flutter (19086): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](19086): [FBP] onMethodCall: connect
+D/BluetoothGatt(19086): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(19086): registerApp()
+D/BluetoothGatt(19086): registerApp() - UUID=562326b7-47a4-4a09-bf9b-12e7e0efb3c1
+D/BluetoothGatt(19086): onClientRegistered() - status=0 clientIf=177
+D/BluetoothGatt(19086): onClientConnectionState() - status=0 clientIf=177 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](19086): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](19086): [FBP]   status: SUCCESS
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -43
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](19086): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(19086): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(19086): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](19086): [FBP] onMtuChanged:
+D/[FBP-Android](19086): [FBP]   mtu: 517
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](19086): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(19086): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(19086): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](19086): [FBP] onServicesDiscovered:
+D/[FBP-Android](19086): [FBP]   count: 10
+D/[FBP-Android](19086): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: 2a05
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](19086): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(19086): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](19086): [FBP] onDescriptorWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   desc: 2902
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](19086): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](19086): [FBP] onCharacteristicWrite:
+D/[FBP-Android](19086): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](19086): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (19086): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Software caused connection abort (OS Error: Software caused connection abort, errno = 103), address = 10.146.147.160, port = 42164
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (19086): [DeviceDiscovery] ! Heartbeat failed: Connection error – is the server running?
+I/flutter (19086): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (19086): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (19086): [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+I/flutter (19086): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (19086): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 contacts → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 deals → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [SyncService]    📦 service_items → update
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 chat_messages → insert
+I/flutter (19086): [SyncService]    📦 leads → insert
+I/flutter (19086): [SyncService]    📦 leads → update
+I/flutter (19086): [SyncService]    📦 service_items → insert
+I/flutter (19086): [ChatWS] Retrying connection...
+I/flutter (19086): [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...

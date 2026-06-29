@@ -4,6 +4,9 @@ import '../../core/database/app_database.dart';
 import '../../core/theme/izii_colors.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/settings/settings_service.dart';
+import '../../modules/sales_crm/screens/edit_lead_screen.dart';
+import '../../modules/sales_crm/screens/deal_detail_screen.dart';
+import '../../modules/services/screens/edit_service_screen.dart';
 
 User _defaultUser(
     {required String id, required String name, required String type}) {
@@ -89,6 +92,7 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
               'permission': perm.permissionLevel,
               'expires_at': perm.expiresAt,
               'status': rec.status,
+              'record_type': 'leads',
             });
           }
           break;
@@ -104,6 +108,7 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
               'permission': perm.permissionLevel,
               'expires_at': perm.expiresAt,
               'amount': rec.amount,
+              'record_type': 'deals',
             });
           }
           break;
@@ -119,6 +124,7 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
               'permission': perm.permissionLevel,
               'expires_at': perm.expiresAt,
               'rating': rec.rating,
+              'record_type': 'services',
             });
           }
           break;
@@ -134,6 +140,7 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
               'permission': perm.permissionLevel,
               'expires_at': perm.expiresAt,
               'rating': 0.0,
+              'record_type': 'service_items',
             });
           }
           break;
@@ -292,14 +299,43 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
                 ),
               ),
             ),
-            onTap: () {
-              // Open detail logic per module (read-only or edit based on permission)
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                      'Đang mở bản ghi ${rec['title']} với quyền ${rec['permission']}'),
-                ),
-              );
+            onTap: () async {
+              final recType = rec['record_type'] as String? ?? type;
+              if (recType == 'leads') {
+                final lead = await (_db.select(_db.leads)..where((tbl) => tbl.id.equals(rec['id'] as String))).getSingleOrNull();
+                if (lead != null && context.mounted) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => EditLeadScreen(lead: lead),
+                    ),
+                  ).then((_) => _loadSharedRecords());
+                }
+              } else if (recType == 'deals') {
+                final deal = await (_db.select(_db.deals)..where((tbl) => tbl.id.equals(rec['id'] as String))).getSingleOrNull();
+                if (deal != null && context.mounted) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => DealDetailScreen(deal: deal),
+                    ),
+                  ).then((_) => _loadSharedRecords());
+                }
+              } else if (recType == 'service_items') {
+                final service = await (_db.select(_db.serviceItems)..where((tbl) => tbl.id.equals(rec['id'] as String))).getSingleOrNull();
+                if (service != null && context.mounted) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => EditServiceScreen(service: service),
+                    ),
+                  ).then((_) => _loadSharedRecords());
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        'Đang mở bản ghi ${rec['title']} với quyền ${rec['permission']}'),
+                  ),
+                );
+              }
             },
           ),
         );
