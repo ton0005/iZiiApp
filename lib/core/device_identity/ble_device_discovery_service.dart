@@ -186,7 +186,6 @@ class BleDeviceDiscoveryService {
         await BlePeripheral.updateCharacteristic(
           characteristicId: charUuid,
           value: Uint8List.fromList(msg2),
-          deviceId: remoteDeviceId,
         );
       } else {
         final session = _handshakeService.getSessionKeys(remoteDeviceId);
@@ -697,7 +696,6 @@ class BleDeviceDiscoveryService {
           await BlePeripheral.updateCharacteristic(
             characteristicId: charUuid,
             value: Uint8List.fromList(bytes),
-            deviceId: _getPeripheralDeviceId(remoteDeviceId),
           );
         }
       };
@@ -1004,10 +1002,15 @@ class BleDeviceDiscoveryService {
         
         if (approved == true) {
           final syncService = SyncService();
+          final Map<String, dynamic> localRecordData = {
+            ...recordData,
+            if (table == 'leads' || table == 'deals') 'visibility': 'team',
+          };
+          
           await syncService.applySyncUpdate({
             'table': table,
             'operation': 'insert',
-            'data': recordData,
+            'data': localRecordData,
           }, force: true);
           print('[BleDiscovery] Shared record applied locally: $table ID: ${recordData['id']}');
           
