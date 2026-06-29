@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../../core/database/app_database.dart';
 import '../../../core/sync/sync_service.dart';
 import '../../../core/settings/settings_service.dart';
-
+import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../../../core/sync/sharing_repository.dart';
 
 // Events
@@ -492,7 +493,16 @@ class CrmRepository {
 
 // Bloc
 class CrmBloc extends Bloc<CrmEvent, CrmState> {
+  StreamSubscription? _shareSubscription;
+
   CrmBloc() : super(const CrmState()) {
+    _shareSubscription = BleDeviceDiscoveryService().shareCompletedStream.listen((table) {
+      if (table == 'leads') {
+        add(LoadLeadsEvent());
+      } else if (table == 'deals') {
+        add(LoadDealsEvent());
+      }
+    });
     on<LoadLeadsEvent>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       try {
@@ -591,5 +601,11 @@ class CrmBloc extends Bloc<CrmEvent, CrmState> {
         emit(state.copyWith(isLoading: false, error: e.toString()));
       }
     });
+  }
+
+  @override
+  Future<void> close() {
+    _shareSubscription?.cancel();
+    return super.close();
   }
 }

@@ -54,6 +54,9 @@ class BleDeviceDiscoveryService {
   final _messageReceivedController = StreamController<BleMeshPacket>.broadcast();
   Stream<BleMeshPacket> get messageReceivedStream => _messageReceivedController.stream;
 
+  final _shareCompletedController = StreamController<String>.broadcast();
+  Stream<String> get shareCompletedStream => _shareCompletedController.stream;
+
   String? getConnectedDeviceIdForUser(String userId) {
     for (final entry in _deviceToUserMap.entries) {
       if (entry.value == userId) return entry.key;
@@ -1003,8 +1006,10 @@ class BleDeviceDiscoveryService {
             'table': table,
             'operation': 'insert',
             'data': recordData,
-          });
+          }, force: true);
           print('[BleDiscovery] Shared record applied locally: $table ID: ${recordData['id']}');
+          
+          _shareCompletedController.add(table);
           
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -1123,5 +1128,6 @@ class BleDeviceDiscoveryService {
     _activeClientSubscriptions.clear();
     _activeClientCharacteristics.clear();
     _messageReceivedController.close();
+    _shareCompletedController.close();
   }
 }

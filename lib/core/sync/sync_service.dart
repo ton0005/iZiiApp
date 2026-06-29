@@ -241,8 +241,11 @@ class SyncService {
   }
 
   /// Public wrapper to apply updates from offline sync channels (e.g. BLE P2P).
-  Future<bool> applySyncUpdate(Map<String, dynamic> update) async {
+  Future<bool> applySyncUpdate(Map<String, dynamic> update, {bool force = false}) async {
     try {
+      if (force) {
+        return await _applyServerUpdate(update, {}, true, force: true);
+      }
       final userId = await _getActiveUserId();
       final syncConfigRepo = SyncConfigRepository();
       final configs = await syncConfigRepo.getConfigsForUser(userId);
@@ -258,8 +261,9 @@ class SyncService {
   Future<bool> _applyServerUpdate(
     Map<String, dynamic> update,
     Map<String, UserSyncConfig> configMap,
-    bool isManual,
-  ) async {
+    bool isManual, {
+    bool force = false,
+  }) async {
     final table = update['table'] as String?;
     final operation = update['operation'] as String?;
     final rawData = update['data'];
@@ -267,22 +271,24 @@ class SyncService {
     if (table == null || rawData == null) return false;
 
     // Filter incoming updates by module status
-    final moduleKey = SyncConfigRepository.tableToModuleMap[table];
-    if (moduleKey != null) {
-      final config = configMap[moduleKey];
-      if (config == null || !config.isEnabled) {
-        return false;
-      }
-      if (!isManual && config.syncGranularity == 'manual') {
-        return false;
-      }
-      if (config.syncGranularity == 'selective' && config.selectiveEntities != null) {
-        try {
-          final selective = List<String>.from(jsonDecode(config.selectiveEntities!));
-          if (!selective.contains(table)) {
-            return false;
-          }
-        } catch (_) {}
+    if (!force) {
+      final moduleKey = SyncConfigRepository.tableToModuleMap[table];
+      if (moduleKey != null) {
+        final config = configMap[moduleKey];
+        if (config == null || !config.isEnabled) {
+          return false;
+        }
+        if (!isManual && config.syncGranularity == 'manual') {
+          return false;
+        }
+        if (config.syncGranularity == 'selective' && config.selectiveEntities != null) {
+          try {
+            final selective = List<String>.from(jsonDecode(config.selectiveEntities!));
+            if (!selective.contains(table)) {
+              return false;
+            }
+          } catch (_) {}
+        }
       }
     }
 

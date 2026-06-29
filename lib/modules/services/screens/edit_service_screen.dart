@@ -155,7 +155,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
                         );
                         final success = await bleDiscovery.shareRecordWithPeer(
                           remoteDeviceId: peer['deviceId']!,
-                          table: 'service_listings',
+                          table: 'service_items',
                           recordData: widget.service,
                         );
                         if (!success && context.mounted) {

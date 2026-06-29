@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../repository.dart';
 
 // === Events ===
@@ -72,9 +74,23 @@ class ServiceModuleRepository {
 // === BLoC ===
 
 class ServicesBloc extends Bloc<ServicesEvent, ServicesState> {
+  StreamSubscription? _shareSubscription;
+
   ServicesBloc() : super(const ServicesState()) {
+    _shareSubscription = BleDeviceDiscoveryService().shareCompletedStream.listen((table) {
+      if (table == 'service_items') {
+        add(LoadServicesEvent());
+      }
+    });
+
     on<LoadServicesEvent>(_onLoadServices);
     on<LoadBookingsEvent>(_onLoadBookings);
+  }
+
+  @override
+  Future<void> close() {
+    _shareSubscription?.cancel();
+    return super.close();
   }
 
   Future<void> _onLoadServices(LoadServicesEvent event, Emitter<ServicesState> emit) async {
