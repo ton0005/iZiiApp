@@ -254,10 +254,12 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                 itemCount: filteredContacts.length,
                 itemBuilder: (context, index) {
                   final contact = filteredContacts[index];
-                  final isBleConnected = BleDeviceDiscoveryService().isUserConnectedBle(contact.id);
-                  final presence = isBleConnected 
-                      ? ChatPresenceState.onlineSynced 
-                      : (state.userPresenceMap[contact.id] ?? ChatPresenceState.offline);
+                  final isBleConnected = BleDeviceDiscoveryService()
+                      .isUserConnectedBle(contact.id);
+                  final presence = isBleConnected
+                      ? ChatPresenceState.onlineSynced
+                      : (state.userPresenceMap[contact.id] ??
+                          ChatPresenceState.offline);
 
                   return GestureDetector(
                     onTap: () {
@@ -359,10 +361,12 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                 final detail = snapshot.data!;
                 final companionName = detail['name'] as String;
                 final companionId = detail['id'] as String;
-                final isBleConnected = BleDeviceDiscoveryService().isUserConnectedBle(companionId);
-                final companionPresence = isBleConnected 
-                    ? ChatPresenceState.onlineSynced 
-                    : (state.userPresenceMap[companionId] ?? ChatPresenceState.offline);
+                final isBleConnected =
+                    BleDeviceDiscoveryService().isUserConnectedBle(companionId);
+                final companionPresence = isBleConnected
+                    ? ChatPresenceState.onlineSynced
+                    : (state.userPresenceMap[companionId] ??
+                        ChatPresenceState.offline);
                 final lastSnippet = detail['last_message'] as String;
                 final timeStr = detail['time'] as String;
                 final unreadCount = detail['unread_count'] as int;
@@ -705,6 +709,8 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                   currentName = 'Võ Thị Hương';
                 if (currentUserId == 'user_bich_tran')
                   currentName = 'Trần Thị Bích';
+                if (currentUserId == 'user_quill_phan')
+                  currentName = 'Quill Phan';
 
                 return Text(
                   'Đóng vai: $currentName',

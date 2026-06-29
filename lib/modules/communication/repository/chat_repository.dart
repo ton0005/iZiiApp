@@ -6,8 +6,7 @@ import '../../../core/database/app_database.dart';
 class ChatRepository {
   final AppDatabase _db;
 
-  ChatRepository([AppDatabase? database])
-      : _db = database ?? AppDatabase();
+  ChatRepository([AppDatabase? database]) : _db = database ?? AppDatabase();
 
   // === CONVERSATIONS ===
 
@@ -19,8 +18,11 @@ class ChatRepository {
           ..where(_db.chatParticipants.userId.equals(currentUserId));
         return c.id.isInQuery(subquery);
       })
-      ..orderBy([(c) => OrderingTerm(expression: c.lastMessageAt, mode: OrderingMode.desc)]);
-    
+      ..orderBy([
+        (c) =>
+            OrderingTerm(expression: c.lastMessageAt, mode: OrderingMode.desc)
+      ]);
+
     return query.get();
   }
 
@@ -30,32 +32,35 @@ class ChatRepository {
     return query.get();
   }
 
-  Future<User?> getCompanion(String conversationId, String currentUserId) async {
+  Future<User?> getCompanion(
+      String conversationId, String currentUserId) async {
     final participants = await getParticipants(conversationId);
     if (participants.isEmpty) return null;
-    
+
     final companionParticipant = participants.firstWhere(
       (p) => p.userId != currentUserId,
       orElse: () => participants.first,
     );
-    
-    final query = _db.select(_db.users)..where((u) => u.id.equals(companionParticipant.userId));
+
+    final query = _db.select(_db.users)
+      ..where((u) => u.id.equals(companionParticipant.userId));
     return query.getSingleOrNull();
   }
 
-  Future<ChatConversation> getOrCreateDirectConversation(String currentUserId, String otherUserId) async {
+  Future<ChatConversation> getOrCreateDirectConversation(
+      String currentUserId, String otherUserId) async {
     final ids = [currentUserId, otherUserId]..sort();
     final convoId = 'direct_${ids[0]}_${ids[1]}';
-    
+
     final query = _db.select(_db.chatConversations)
       ..where((c) => c.id.equals(convoId));
-    
+
     final existing = await query.getSingleOrNull();
     if (existing != null) return existing;
-    
+
     // Create new conversation
     final now = DateTime.now();
-    
+
     final newConvo = ChatConversation(
       id: convoId,
       type: 'direct',
@@ -63,23 +68,23 @@ class ChatRepository {
       createdAt: now,
       lastMessageAt: now,
     );
-    
+
     await _db.into(_db.chatConversations).insert(newConvo);
-    
+
     await _db.into(_db.chatParticipants).insert(ChatParticipant(
-      conversationId: convoId,
-      userId: currentUserId,
-      joinedAt: now,
-      muted: false,
-    ));
-    
+          conversationId: convoId,
+          userId: currentUserId,
+          joinedAt: now,
+          muted: false,
+        ));
+
     await _db.into(_db.chatParticipants).insert(ChatParticipant(
-      conversationId: convoId,
-      userId: otherUserId,
-      joinedAt: now,
-      muted: false,
-    ));
-    
+          conversationId: convoId,
+          userId: otherUserId,
+          joinedAt: now,
+          muted: false,
+        ));
+
     return newConvo;
   }
 
@@ -93,7 +98,7 @@ class ChatRepository {
       ..where((c) => c.type.equals('record_linked'))
       ..where((c) => c.recordType.equals(recordType))
       ..where((c) => c.recordId.equals(recordId));
-    
+
     final existingConvo = await query.getSingleOrNull();
     if (existingConvo != null) return existingConvo;
 
@@ -114,11 +119,11 @@ class ChatRepository {
 
     for (var userId in participantUserIds) {
       await _db.into(_db.chatParticipants).insert(ChatParticipant(
-        conversationId: convoId,
-        userId: userId,
-        joinedAt: now,
-        muted: false,
-      ));
+            conversationId: convoId,
+            userId: userId,
+            joinedAt: now,
+            muted: false,
+          ));
     }
 
     return newConvo;
@@ -126,12 +131,14 @@ class ChatRepository {
 
   // === MESSAGES ===
 
-  Future<List<ChatMessage>> getMessages(String conversationId, {int limit = 50, int offset = 0}) async {
+  Future<List<ChatMessage>> getMessages(String conversationId,
+      {int limit = 50, int offset = 0}) async {
     final query = _db.select(_db.chatMessages)
       ..where((m) => m.conversationId.equals(conversationId))
-      ..orderBy([(m) => OrderingTerm(expression: m.sentAt, mode: OrderingMode.desc)])
+      ..orderBy(
+          [(m) => OrderingTerm(expression: m.sentAt, mode: OrderingMode.desc)])
       ..limit(limit, offset: offset);
-    
+
     final messages = await query.get();
     // Return in chronological order
     return messages.reversed.toList();
@@ -140,14 +147,17 @@ class ChatRepository {
   Future<ChatMessage?> getLatestMessage(String conversationId) async {
     final query = _db.select(_db.chatMessages)
       ..where((m) => m.conversationId.equals(conversationId))
-      ..orderBy([(m) => OrderingTerm(expression: m.sentAt, mode: OrderingMode.desc)])
+      ..orderBy(
+          [(m) => OrderingTerm(expression: m.sentAt, mode: OrderingMode.desc)])
       ..limit(1);
     return query.getSingleOrNull();
   }
 
   Future<void> saveMessage(ChatMessage message) async {
-    await _db.into(_db.chatMessages).insert(message, mode: InsertMode.insertOrReplace);
-    
+    await _db
+        .into(_db.chatMessages)
+        .insert(message, mode: InsertMode.insertOrReplace);
+
     // Update lastMessageAt on conversation
     final updateQuery = _db.update(_db.chatConversations)
       ..where((c) => c.id.equals(message.conversationId));
@@ -161,15 +171,18 @@ class ChatRepository {
     DateTime? deliveredAt,
     DateTime? readAt,
   }) async {
-    final updateQuery = _db.update(_db.chatMessages)..where((m) => m.id.equals(messageId));
+    final updateQuery = _db.update(_db.chatMessages)
+      ..where((m) => m.id.equals(messageId));
     await updateQuery.write(ChatMessagesCompanion(
-      deliveredAt: deliveredAt != null ? Value(deliveredAt) : const Value.absent(),
+      deliveredAt:
+          deliveredAt != null ? Value(deliveredAt) : const Value.absent(),
       readAt: readAt != null ? Value(readAt) : const Value.absent(),
     ));
   }
 
   Future<void> deleteMessage(String messageId) async {
-    final updateQuery = _db.update(_db.chatMessages)..where((m) => m.id.equals(messageId));
+    final updateQuery = _db.update(_db.chatMessages)
+      ..where((m) => m.id.equals(messageId));
     await updateQuery.write(const ChatMessagesCompanion(
       isDeleted: Value(true),
     ));
@@ -201,15 +214,15 @@ class ChatRepository {
   Future<List<User>> getReachableContacts(String currentUserId) async {
     // Ensure default user and mock contacts exist in database
     await _db.into(_db.users).insert(
-      User(
-        id: 'default_user',
-        name: 'Tôi (Demo User)',
-        type: 'both',
-        kycStatus: 'verified',
-        createdAt: DateTime.now(),
-      ),
-      mode: InsertMode.insertOrIgnore,
-    );
+          User(
+            id: 'default_user',
+            name: 'Tôi (Demo User)',
+            type: 'both',
+            kycStatus: 'verified',
+            createdAt: DateTime.now(),
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
 
     final mockContacts = [
       User(
@@ -239,12 +252,22 @@ class ChatRepository {
         kycStatus: 'verified',
         createdAt: DateTime.now(),
       ),
+      User(
+        id: 'user_quill_phan',
+        name: 'Quill Phan',
+        email: 'Quill.Phan@iziiapp.com',
+        phone: '0488951392',
+        type: 'provider',
+        kycStatus: 'verified',
+        createdAt: DateTime.now(),
+      ),
     ];
     for (var mock in mockContacts) {
       await _db.into(_db.users).insert(mock, mode: InsertMode.insertOrIgnore);
     }
 
-    final query = _db.select(_db.users)..where((u) => u.id.equals(currentUserId).not());
+    final query = _db.select(_db.users)
+      ..where((u) => u.id.equals(currentUserId).not());
     return query.get();
   }
 
@@ -255,17 +278,19 @@ class ChatRepository {
   /// Save an encrypted message envelope to the local queue.
   Future<void> saveEncryptedMessage(EncryptedMessageQueueData entry) async {
     await _db.into(_db.encryptedMessageQueue).insert(
-      entry,
-      mode: InsertMode.insertOrReplace,
-    );
+          entry,
+          mode: InsertMode.insertOrReplace,
+        );
   }
 
   /// Get all pending (undelivered) encrypted messages for a device.
-  Future<List<EncryptedMessageQueueData>> getPendingEncryptedMessages(String recipientDeviceId) async {
+  Future<List<EncryptedMessageQueueData>> getPendingEncryptedMessages(
+      String recipientDeviceId) async {
     final query = _db.select(_db.encryptedMessageQueue)
       ..where((m) => m.recipientDeviceId.equals(recipientDeviceId))
       ..where((m) => m.deliveredAt.isNull())
-      ..orderBy([(m) => OrderingTerm(expression: m.sentAt, mode: OrderingMode.asc)]);
+      ..orderBy(
+          [(m) => OrderingTerm(expression: m.sentAt, mode: OrderingMode.asc)]);
     return query.get();
   }
 
@@ -292,9 +317,9 @@ class ChatRepository {
   /// Cache a remote device's info locally.
   Future<void> saveDeviceRegistryEntry(DeviceRegistryEntry entry) async {
     await _db.into(_db.deviceRegistryEntries).insert(
-      entry,
-      mode: InsertMode.insertOrReplace,
-    );
+          entry,
+          mode: InsertMode.insertOrReplace,
+        );
   }
 
   /// Get all registered devices for a user.

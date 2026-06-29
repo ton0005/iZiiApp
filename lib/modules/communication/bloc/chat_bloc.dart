@@ -250,10 +250,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           createdAt: DateTime.now(),
         ),
         User(
-          id: 'user_Quill_Phan',
+          id: 'user_quill_phan',
           name: 'Quill Phan',
-          email: 'Quill.Phan@izii.com',
-          phone: '0988889988',
+          email: 'Quill.Phan@iziiapp.com',
+          phone: '0488951392',
           type: 'provider',
           kycStatus: 'verified',
           createdAt: DateTime.now(),
@@ -278,7 +278,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
 
     // Listen to BLE P2P messages
-    _bleMessageSubscription = BleDeviceDiscoveryService().messageReceivedStream.listen((packet) {
+    _bleMessageSubscription =
+        BleDeviceDiscoveryService().messageReceivedStream.listen((packet) {
       if (packet.messageType == BleMessageType.message) {
         try {
           final jsonStr = utf8.decode(packet.payload);
@@ -290,8 +291,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               'conversation_id': chatMsgMap['conversation_id'],
               'sender_id': chatMsgMap['sender_id'],
               'type': chatMsgMap['type'],
-              'content': chatMsgMap['content'] is String 
-                  ? jsonDecode(chatMsgMap['content']) 
+              'content': chatMsgMap['content'] is String
+                  ? jsonDecode(chatMsgMap['content'])
                   : chatMsgMap['content'],
               'sent_at': chatMsgMap['sent_at'],
             },
@@ -471,12 +472,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // Offline fallback: Check if peer is connected via BLE P2P
       final bleDiscovery = BleDeviceDiscoveryService();
       final companionId = companion?.id;
-      final bleDeviceId = companionId != null 
-          ? bleDiscovery.getConnectedDeviceIdForUser(companionId) 
+      final bleDeviceId = companionId != null
+          ? bleDiscovery.getConnectedDeviceIdForUser(companionId)
           : null;
-          
+
       if (bleDeviceId != null) {
-        print('[ChatBloc] Companion is connected via BLE P2P. Sending message directly...');
+        print(
+            '[ChatBloc] Companion is connected via BLE P2P. Sending message directly...');
         final payloadBytes = utf8.encode(jsonEncode({
           'id': messageId,
           'conversation_id': event.conversationId,
@@ -485,7 +487,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           'content': contentMap,
           'sent_at': now.toIso8601String(),
         }));
-        
+
         final packet = BleMeshPacket(
           messageId: messageId,
           senderDeviceId: 'local-device',
@@ -494,7 +496,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           ttl: 1,
           messageType: BleMessageType.message,
         );
-        
+
         await bleDiscovery.sendPacket(bleDeviceId, packet);
       } else {
         // Outbox fallback
@@ -879,8 +881,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             sentAt: sentAt,
           );
 
-          final senderX25519PubKeyBytes = base64Decode(senderDevice.publicKeyBase64);
-          final senderEd25519PubKeyBytes = base64Decode(senderDevice.signingPublicKeyBase64);
+          final senderX25519PubKeyBytes =
+              base64Decode(senderDevice.publicKeyBase64);
+          final senderEd25519PubKeyBytes =
+              base64Decode(senderDevice.signingPublicKeyBase64);
           final plaintext = await identityService.decryptPayload(
             encPayload,
             senderX25519PubKeyBytes,

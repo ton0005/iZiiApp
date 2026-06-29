@@ -122,6 +122,21 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
             });
           }
           break;
+        case 'service_items':
+          final rec = await (_db.select(_db.serviceItems)
+                ..where((tbl) => tbl.id.equals(perm.recordId)))
+              .getSingleOrNull();
+          if (rec != null) {
+            tempServices.add({
+              'id': rec.id,
+              'title': rec.name,
+              'shared_by': sharerName,
+              'permission': perm.permissionLevel,
+              'expires_at': perm.expiresAt,
+              'rating': 0.0,
+            });
+          }
+          break;
         case 'tasks':
           final rec = await (_db.select(_db.tasks)
                 ..where((tbl) => tbl.id.equals(perm.recordId)))
