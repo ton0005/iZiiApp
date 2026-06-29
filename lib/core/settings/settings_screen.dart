@@ -5,6 +5,7 @@ import 'settings_service.dart';
 import '../bloc/app_bloc.dart';
 import '../localization/app_localizations.dart';
 import '../device_identity/ble_device_discovery_service.dart';
+import '../../modules/communication/screens/notification_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -322,6 +323,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         }
                       },
                       contentPadding: EdgeInsets.zero,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // --- Notification Settings ---
+            Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.notifications_rounded,
+                            color: Color(0xFFEC4899)),
+                        SizedBox(width: 8),
+                        Text(
+                          'Cài đặt thông báo',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Tùy chỉnh thông báo cho tin nhắn mới, nhắc tên và cuộc gọi qua các kênh Push, In-app, Email.',
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.tune_rounded),
+                        label: const Text('Cấu hình chi tiết',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: const Color(0xFFEC4899),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const NotificationSettingsScreen(),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),

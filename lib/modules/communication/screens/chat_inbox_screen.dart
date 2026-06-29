@@ -69,7 +69,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
           // Track 3: Online devices discovery
           IconButton(
             icon: const Icon(Icons.devices_rounded, color: Color(0xFF06B6D4)),
-            tooltip: '📡 Thiết bị trực tuyến',
+            tooltip: context.tr('chat_tooltip_online_devices'),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const OnlineDevicesScreen()),
@@ -79,7 +79,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
           IconButton(
             icon: const Icon(Icons.supervised_user_circle_rounded,
                 color: Colors.orange),
-            tooltip: 'Đổi tài khoản Test',
+            tooltip: context.tr('chat_tooltip_switch_test_account'),
             onPressed: () => _showTestProfileSwitcher(context),
           ),
           IconButton(
@@ -381,14 +381,14 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                       color: ChatTheme.getDanger(isDark),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Icon(Icons.delete_rounded, color: Colors.white),
-                        SizedBox(width: 8),
+                        const Icon(Icons.delete_rounded, color: Colors.white),
+                        const SizedBox(width: 8),
                         Text(
-                          'Delete',
-                          style: TextStyle(
+                          context.tr('chat_action_delete'),
+                          style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                               fontSize: 15),
@@ -524,7 +524,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Select a conversation to start chatting.',
+            context.tr('chat_select_convo_prompt'),
             style:
                 TextStyle(fontSize: 16, color: ChatTheme.getTextMuted(isDark)),
           ),
@@ -540,7 +540,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Record Context',
+            context.tr('chat_record_context_header'),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
@@ -560,7 +560,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
               ),
               child: Center(
                 child: Text(
-                  'No linked job or lead selected.',
+                  context.tr('chat_no_linked_record_selected'),
                   style: TextStyle(
                       color: ChatTheme.getTextMuted(isDark), fontSize: 14),
                   textAlign: TextAlign.center,
@@ -640,7 +640,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
         backgroundColor: ChatTheme.getBgBubbleTheirs(
             Theme.of(ctx).brightness == Brightness.dark),
         title: Text(
-          'Chọn tài khoản Test',
+          context.tr('chat_switch_test_role_title'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: ChatTheme.getTextPrimary(
@@ -713,7 +713,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                   currentName = 'Quill Phan';
 
                 return Text(
-                  'Đóng vai: $currentName',
+                  context.tr('chat_playing_role').replaceAll('{name}', currentName),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: ChatTheme.getTextPrimary(isDark),
@@ -732,8 +732,8 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             ),
             icon: const Icon(Icons.swap_horiz_rounded, size: 16),
-            label: const Text('Đổi Vai Test',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            label: Text(context.tr('chat_switch_role_button'),
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             onPressed: () => _showTestProfileSwitcher(context),
           ),
         ],

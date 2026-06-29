@@ -18,12 +18,17 @@ db = {
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #  Track 3 — Device Identity & E2EE Messaging
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# device_id -> {device_id, user_id, public_key, signing_public_key, device_name, platform, registered_at, last_seen_at}
+# device_id -> {device_id, user_id, public_key, signing_public_key, device_name, platform, registered_at, last_seen_at, push_token}
 device_registry = {}
 # list of encrypted message envelopes
 message_queue = []
 # append-only trust events (for Phase 3)
 trust_ledger = []
+
+# notification_settings: user_id -> {event_type -> {enable_push, enable_in_app, enable_email, digest_frequency}}
+notification_settings = {}
+# in_app_notifications: user_id -> list of notification dicts
+in_app_notifications = {}
 
 # Thread-safe active WebSocket clients
 ws_clients = []
@@ -165,6 +170,30 @@ class SyncMockHandler(BaseHTTPRequestHandler):
         elif path == '/api/v1/messages/ack':
             self._handle_message_ack()
 
+        # ── Notification: Mark as read ───────────────────────────
+        elif path == '/api/v1/notifications/read':
+            self._handle_notifications_read()
+
+        # ── Notification: Mark all as read ───────────────────────
+        elif path == '/api/v1/notifications/read-all':
+            self._handle_notifications_read_all()
+
+        # ── Notification Settings: Update (alternative POST) ─────
+        elif path == '/api/v1/notification-settings':
+            self._handle_notification_settings_update()
+
+        else:
+            self._write_json({'error': 'Not Found'}, 404)
+
+    # ══════════════════════════════════════════════════════════════
+    #  PUT routes
+    # ══════════════════════════════════════════════════════════════
+
+    def do_PUT(self):
+        parsed = urlparse(self.path)
+        path = parsed.path.rstrip('/')
+        if path == '/api/v1/notification-settings':
+            self._handle_notification_settings_update()
         else:
             self._write_json({'error': 'Not Found'}, 404)
 
@@ -200,6 +229,14 @@ class SyncMockHandler(BaseHTTPRequestHandler):
         # ── Track 3: WebSocket Upgrade ─────────────────────────────
         elif path == '/chat':
             self._handle_websocket_upgrade()
+
+        # ── Notification: Fetch Notifications ──────────────────────
+        elif path == '/api/v1/notifications':
+            self._handle_notifications_get(params)
+
+        # ── Notification Settings: Fetch Configuration ─────────────
+        elif path == '/api/v1/notification-settings':
+            self._handle_notification_settings_get(params)
 
         else:
             self._write_json({'error': 'Not Found'}, 404)
@@ -289,6 +326,7 @@ class SyncMockHandler(BaseHTTPRequestHandler):
         signing_public_key = body.get('signing_public_key') or body.get('signing_public_key_base64')
         device_name = body.get('device_name', 'Unknown Device')
         platform = body.get('platform', 'unknown')
+        push_token = body.get('push_token')
 
         # Generate a short human-readable fingerprint from the public key
         import hashlib
@@ -311,6 +349,7 @@ class SyncMockHandler(BaseHTTPRequestHandler):
             'signing_public_key': signing_public_key,
             'device_name': device_name,
             'platform': platform,
+            'push_token': push_token,
             'fingerprint': fingerprint,
             'registered_at': now,
             'last_seen_at': now,
@@ -465,6 +504,50 @@ class SyncMockHandler(BaseHTTPRequestHandler):
             message_queue.append(envelope)
             created_ids.append(msg_id)
 
+        # Simulated Notification Dispatch logic
+        for recipient_device_id in payloads.keys():
+            dev = device_registry.get(recipient_device_id)
+            if dev:
+                recipient_user_id = dev.get('user_id')
+                if not recipient_user_id:
+                    continue
+
+                # Check user notification settings
+                settings = notification_settings.get(recipient_user_id, {}).get('new_message', {
+                    'enable_push': True,
+                    'enable_in_app': True,
+                    'enable_email': True,
+                    'digest_frequency': 'instant'
+                })
+
+                if settings.get('enable_in_app'):
+                    notif_id = str(uuid.uuid4())
+                    notif = {
+                        'id': notif_id,
+                        'user_id': recipient_user_id,
+                        'title': 'New Message',
+                        'body': 'You have received an encrypted private message.',
+                        'event_type': 'new_message',
+                        'resource_id': conversation_id,
+                        'read_at': None,
+                        'created_at': now
+                    }
+                    if recipient_user_id not in in_app_notifications:
+                        in_app_notifications[recipient_user_id] = []
+                    in_app_notifications[recipient_user_id].append(notif)
+                    print(f"   🔔 [IN-APP] Created notification for {recipient_user_id}: {notif['body']}")
+
+                if settings.get('enable_push'):
+                    # Check if recipient has registered push token
+                    push_token = dev.get('push_token')
+                    if push_token:
+                        print(f"   📲 [PUSH] Dispatched Push Notification to {recipient_user_id} on token {push_token[:16]}...")
+                    else:
+                        print(f"   📲 [PUSH] Simulated push to device {dev.get('device_name')} (Recipient hasn't registered token yet)")
+
+                if settings.get('enable_email'):
+                    print(f"   ✉️ [EMAIL WORKER] Scheduled Delayed Email to {recipient_user_id} in 15 mins (Will clear if user reads conversation)")
+
         sender_short = sender_device_id[:16] if sender_device_id else '???'
         print(f"\n📨 [E2EE] Message from {sender_short} → {len(payloads)} devices (encrypted, server CANNOT read)")
         print(f"   💬 Conversation: {conversation_id}")
@@ -593,6 +676,120 @@ class SyncMockHandler(BaseHTTPRequestHandler):
                 if sock in ws_clients:
                     ws_clients.remove(sock)
             print(f"🔌 [WS] Client disconnected. Active clients: {len(ws_clients)}")
+
+    # ══════════════════════════════════════════════════════════════
+    #  Notification handlers
+    # ══════════════════════════════════════════════════════════════
+
+    def _handle_notifications_get(self, params):
+        user_id = params.get('user_id', [None])[0]
+        if not user_id:
+            self._write_json({'error': 'Missing user_id parameter'}, 400)
+            return
+
+        notifs = in_app_notifications.get(user_id, [])
+        self._write_json({'notifications': notifs})
+
+    def _handle_notifications_read(self):
+        body = self._read_json_body()
+        user_id = body.get('user_id')
+        notification_ids = body.get('notification_ids', [])
+
+        if not user_id or not notification_ids:
+            self._write_json({'error': 'Missing user_id or notification_ids'}, 400)
+            return
+
+        user_notifs = in_app_notifications.get(user_id, [])
+        ids_set = set(notification_ids)
+        updated_count = 0
+        now = datetime.now().isoformat()
+
+        for notif in user_notifs:
+            if notif['id'] in ids_set and notif['read_at'] is None:
+                notif['read_at'] = now
+                updated_count += 1
+
+        print(f"\n🔔 [NOTIF] Marked {updated_count} notification(s) as read for user {user_id}")
+        self._write_json({'status': 'success', 'read_count': updated_count})
+
+    def _handle_notifications_read_all(self):
+        body = self._read_json_body()
+        user_id = body.get('user_id')
+
+        if not user_id:
+            self._write_json({'error': 'Missing user_id'}, 400)
+            return
+
+        user_notifs = in_app_notifications.get(user_id, [])
+        updated_count = 0
+        now = datetime.now().isoformat()
+
+        for notif in user_notifs:
+            if notif['read_at'] is None:
+                notif['read_at'] = now
+                updated_count += 1
+
+        # Send silent push notification to other devices of the same user to clear badge
+        devices = [d for d in device_registry.values() if d.get('user_id') == user_id]
+        if len(devices) > 1:
+            print(f"   📲 [MULTI-DEVICE] Broadcasting clear_badge payload to {len(devices) - 1} other devices of user {user_id}")
+            for d in devices:
+                push_token = d.get('push_token')
+                if push_token:
+                    print(f"      - Sending silent push to device '{d.get('device_name')}' token {push_token[:16]}...")
+
+        print(f"\n🔔 [NOTIF] Marked all ({updated_count}) notifications as read for user {user_id}")
+        self._write_json({'status': 'success', 'read_count': updated_count})
+
+    def _handle_notification_settings_get(self, params):
+        user_id = params.get('user_id', [None])[0]
+        if not user_id:
+            self._write_json({'error': 'Missing user_id parameter'}, 400)
+            return
+
+        # Default settings for 5 types of events
+        default_events = ['new_message', 'new_group_message', 'mention', 'added_to_group', 'missed_call']
+        user_settings = notification_settings.get(user_id, {})
+
+        settings_list = []
+        for event in default_events:
+            ev_settings = user_settings.get(event, {
+                'enable_push': True,
+                'enable_in_app': True,
+                'enable_email': True,
+                'digest_frequency': 'instant'
+            })
+            settings_list.append({
+                'event_type': event,
+                'enable_push': ev_settings['enable_push'],
+                'enable_in_app': ev_settings['enable_in_app'],
+                'enable_email': ev_settings['enable_email'],
+                'digest_frequency': ev_settings['digest_frequency']
+            })
+
+        self._write_json({'settings': settings_list})
+
+    def _handle_notification_settings_update(self):
+        body = self._read_json_body()
+        user_id = body.get('user_id')
+        event_type = body.get('event_type')
+
+        if not user_id or not event_type:
+            self._write_json({'error': 'Missing user_id or event_type'}, 400)
+            return
+
+        if user_id not in notification_settings:
+            notification_settings[user_id] = {}
+
+        notification_settings[user_id][event_type] = {
+            'enable_push': body.get('enable_push', True),
+            'enable_in_app': body.get('enable_in_app', True),
+            'enable_email': body.get('enable_email', True),
+            'digest_frequency': body.get('digest_frequency', 'instant')
+        }
+
+        print(f"\n⚙️ [SETTINGS] Updated notifications config for user {user_id} - event {event_type}")
+        self._write_json({'status': 'success'})
 
 
 # ══════════════════════════════════════════════════════════════════

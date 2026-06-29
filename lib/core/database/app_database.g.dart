@@ -19534,6 +19534,803 @@ class LocalBlePeersCompanion extends UpdateCompanion<LocalBlePeer> {
   }
 }
 
+class $InAppNotificationsTable extends InAppNotifications
+    with TableInfo<$InAppNotificationsTable, InAppNotification> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InAppNotificationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+      'body', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _eventTypeMeta =
+      const VerificationMeta('eventType');
+  @override
+  late final GeneratedColumn<String> eventType = GeneratedColumn<String>(
+      'event_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _resourceIdMeta =
+      const VerificationMeta('resourceId');
+  @override
+  late final GeneratedColumn<String> resourceId = GeneratedColumn<String>(
+      'resource_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _readAtMeta = const VerificationMeta('readAt');
+  @override
+  late final GeneratedColumn<DateTime> readAt = GeneratedColumn<DateTime>(
+      'read_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, userId, title, body, eventType, resourceId, readAt, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'in_app_notifications';
+  @override
+  VerificationContext validateIntegrity(Insertable<InAppNotification> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+          _bodyMeta, body.isAcceptableOrUnknown(data['body']!, _bodyMeta));
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('event_type')) {
+      context.handle(_eventTypeMeta,
+          eventType.isAcceptableOrUnknown(data['event_type']!, _eventTypeMeta));
+    } else if (isInserting) {
+      context.missing(_eventTypeMeta);
+    }
+    if (data.containsKey('resource_id')) {
+      context.handle(
+          _resourceIdMeta,
+          resourceId.isAcceptableOrUnknown(
+              data['resource_id']!, _resourceIdMeta));
+    }
+    if (data.containsKey('read_at')) {
+      context.handle(_readAtMeta,
+          readAt.isAcceptableOrUnknown(data['read_at']!, _readAtMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  InAppNotification map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InAppNotification(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      body: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}body'])!,
+      eventType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}event_type'])!,
+      resourceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}resource_id']),
+      readAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}read_at']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $InAppNotificationsTable createAlias(String alias) {
+    return $InAppNotificationsTable(attachedDatabase, alias);
+  }
+}
+
+class InAppNotification extends DataClass
+    implements Insertable<InAppNotification> {
+  final String id;
+  final String userId;
+  final String title;
+  final String body;
+  final String eventType;
+  final String? resourceId;
+  final DateTime? readAt;
+  final DateTime createdAt;
+  const InAppNotification(
+      {required this.id,
+      required this.userId,
+      required this.title,
+      required this.body,
+      required this.eventType,
+      this.resourceId,
+      this.readAt,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['user_id'] = Variable<String>(userId);
+    map['title'] = Variable<String>(title);
+    map['body'] = Variable<String>(body);
+    map['event_type'] = Variable<String>(eventType);
+    if (!nullToAbsent || resourceId != null) {
+      map['resource_id'] = Variable<String>(resourceId);
+    }
+    if (!nullToAbsent || readAt != null) {
+      map['read_at'] = Variable<DateTime>(readAt);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  InAppNotificationsCompanion toCompanion(bool nullToAbsent) {
+    return InAppNotificationsCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      title: Value(title),
+      body: Value(body),
+      eventType: Value(eventType),
+      resourceId: resourceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resourceId),
+      readAt:
+          readAt == null && nullToAbsent ? const Value.absent() : Value(readAt),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory InAppNotification.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InAppNotification(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String>(json['userId']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      eventType: serializer.fromJson<String>(json['eventType']),
+      resourceId: serializer.fromJson<String?>(json['resourceId']),
+      readAt: serializer.fromJson<DateTime?>(json['readAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String>(userId),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String>(body),
+      'eventType': serializer.toJson<String>(eventType),
+      'resourceId': serializer.toJson<String?>(resourceId),
+      'readAt': serializer.toJson<DateTime?>(readAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  InAppNotification copyWith(
+          {String? id,
+          String? userId,
+          String? title,
+          String? body,
+          String? eventType,
+          Value<String?> resourceId = const Value.absent(),
+          Value<DateTime?> readAt = const Value.absent(),
+          DateTime? createdAt}) =>
+      InAppNotification(
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        title: title ?? this.title,
+        body: body ?? this.body,
+        eventType: eventType ?? this.eventType,
+        resourceId: resourceId.present ? resourceId.value : this.resourceId,
+        readAt: readAt.present ? readAt.value : this.readAt,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  InAppNotification copyWithCompanion(InAppNotificationsCompanion data) {
+    return InAppNotification(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      eventType: data.eventType.present ? data.eventType.value : this.eventType,
+      resourceId:
+          data.resourceId.present ? data.resourceId.value : this.resourceId,
+      readAt: data.readAt.present ? data.readAt.value : this.readAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InAppNotification(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('eventType: $eventType, ')
+          ..write('resourceId: $resourceId, ')
+          ..write('readAt: $readAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, userId, title, body, eventType, resourceId, readAt, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InAppNotification &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.eventType == this.eventType &&
+          other.resourceId == this.resourceId &&
+          other.readAt == this.readAt &&
+          other.createdAt == this.createdAt);
+}
+
+class InAppNotificationsCompanion extends UpdateCompanion<InAppNotification> {
+  final Value<String> id;
+  final Value<String> userId;
+  final Value<String> title;
+  final Value<String> body;
+  final Value<String> eventType;
+  final Value<String?> resourceId;
+  final Value<DateTime?> readAt;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const InAppNotificationsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.eventType = const Value.absent(),
+    this.resourceId = const Value.absent(),
+    this.readAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InAppNotificationsCompanion.insert({
+    required String id,
+    required String userId,
+    required String title,
+    required String body,
+    required String eventType,
+    this.resourceId = const Value.absent(),
+    this.readAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        userId = Value(userId),
+        title = Value(title),
+        body = Value(body),
+        eventType = Value(eventType);
+  static Insertable<InAppNotification> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<String>? eventType,
+    Expression<String>? resourceId,
+    Expression<DateTime>? readAt,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (eventType != null) 'event_type': eventType,
+      if (resourceId != null) 'resource_id': resourceId,
+      if (readAt != null) 'read_at': readAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InAppNotificationsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? userId,
+      Value<String>? title,
+      Value<String>? body,
+      Value<String>? eventType,
+      Value<String?>? resourceId,
+      Value<DateTime?>? readAt,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return InAppNotificationsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      eventType: eventType ?? this.eventType,
+      resourceId: resourceId ?? this.resourceId,
+      readAt: readAt ?? this.readAt,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (eventType.present) {
+      map['event_type'] = Variable<String>(eventType.value);
+    }
+    if (resourceId.present) {
+      map['resource_id'] = Variable<String>(resourceId.value);
+    }
+    if (readAt.present) {
+      map['read_at'] = Variable<DateTime>(readAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InAppNotificationsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('eventType: $eventType, ')
+          ..write('resourceId: $resourceId, ')
+          ..write('readAt: $readAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $NotificationSettingsTableTable extends NotificationSettingsTable
+    with
+        TableInfo<$NotificationSettingsTableTable,
+            NotificationSettingsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NotificationSettingsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _eventTypeMeta =
+      const VerificationMeta('eventType');
+  @override
+  late final GeneratedColumn<String> eventType = GeneratedColumn<String>(
+      'event_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _enablePushMeta =
+      const VerificationMeta('enablePush');
+  @override
+  late final GeneratedColumn<bool> enablePush = GeneratedColumn<bool>(
+      'enable_push', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("enable_push" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _enableInAppMeta =
+      const VerificationMeta('enableInApp');
+  @override
+  late final GeneratedColumn<bool> enableInApp = GeneratedColumn<bool>(
+      'enable_in_app', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("enable_in_app" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _enableEmailMeta =
+      const VerificationMeta('enableEmail');
+  @override
+  late final GeneratedColumn<bool> enableEmail = GeneratedColumn<bool>(
+      'enable_email', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("enable_email" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _digestFrequencyMeta =
+      const VerificationMeta('digestFrequency');
+  @override
+  late final GeneratedColumn<String> digestFrequency = GeneratedColumn<String>(
+      'digest_frequency', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('instant'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        userId,
+        eventType,
+        enablePush,
+        enableInApp,
+        enableEmail,
+        digestFrequency
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notification_settings_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<NotificationSettingsTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('event_type')) {
+      context.handle(_eventTypeMeta,
+          eventType.isAcceptableOrUnknown(data['event_type']!, _eventTypeMeta));
+    } else if (isInserting) {
+      context.missing(_eventTypeMeta);
+    }
+    if (data.containsKey('enable_push')) {
+      context.handle(
+          _enablePushMeta,
+          enablePush.isAcceptableOrUnknown(
+              data['enable_push']!, _enablePushMeta));
+    }
+    if (data.containsKey('enable_in_app')) {
+      context.handle(
+          _enableInAppMeta,
+          enableInApp.isAcceptableOrUnknown(
+              data['enable_in_app']!, _enableInAppMeta));
+    }
+    if (data.containsKey('enable_email')) {
+      context.handle(
+          _enableEmailMeta,
+          enableEmail.isAcceptableOrUnknown(
+              data['enable_email']!, _enableEmailMeta));
+    }
+    if (data.containsKey('digest_frequency')) {
+      context.handle(
+          _digestFrequencyMeta,
+          digestFrequency.isAcceptableOrUnknown(
+              data['digest_frequency']!, _digestFrequencyMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userId, eventType};
+  @override
+  NotificationSettingsTableData map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NotificationSettingsTableData(
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      eventType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}event_type'])!,
+      enablePush: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}enable_push'])!,
+      enableInApp: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}enable_in_app'])!,
+      enableEmail: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}enable_email'])!,
+      digestFrequency: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}digest_frequency'])!,
+    );
+  }
+
+  @override
+  $NotificationSettingsTableTable createAlias(String alias) {
+    return $NotificationSettingsTableTable(attachedDatabase, alias);
+  }
+}
+
+class NotificationSettingsTableData extends DataClass
+    implements Insertable<NotificationSettingsTableData> {
+  final String userId;
+  final String eventType;
+  final bool enablePush;
+  final bool enableInApp;
+  final bool enableEmail;
+  final String digestFrequency;
+  const NotificationSettingsTableData(
+      {required this.userId,
+      required this.eventType,
+      required this.enablePush,
+      required this.enableInApp,
+      required this.enableEmail,
+      required this.digestFrequency});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_id'] = Variable<String>(userId);
+    map['event_type'] = Variable<String>(eventType);
+    map['enable_push'] = Variable<bool>(enablePush);
+    map['enable_in_app'] = Variable<bool>(enableInApp);
+    map['enable_email'] = Variable<bool>(enableEmail);
+    map['digest_frequency'] = Variable<String>(digestFrequency);
+    return map;
+  }
+
+  NotificationSettingsTableCompanion toCompanion(bool nullToAbsent) {
+    return NotificationSettingsTableCompanion(
+      userId: Value(userId),
+      eventType: Value(eventType),
+      enablePush: Value(enablePush),
+      enableInApp: Value(enableInApp),
+      enableEmail: Value(enableEmail),
+      digestFrequency: Value(digestFrequency),
+    );
+  }
+
+  factory NotificationSettingsTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NotificationSettingsTableData(
+      userId: serializer.fromJson<String>(json['userId']),
+      eventType: serializer.fromJson<String>(json['eventType']),
+      enablePush: serializer.fromJson<bool>(json['enablePush']),
+      enableInApp: serializer.fromJson<bool>(json['enableInApp']),
+      enableEmail: serializer.fromJson<bool>(json['enableEmail']),
+      digestFrequency: serializer.fromJson<String>(json['digestFrequency']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userId': serializer.toJson<String>(userId),
+      'eventType': serializer.toJson<String>(eventType),
+      'enablePush': serializer.toJson<bool>(enablePush),
+      'enableInApp': serializer.toJson<bool>(enableInApp),
+      'enableEmail': serializer.toJson<bool>(enableEmail),
+      'digestFrequency': serializer.toJson<String>(digestFrequency),
+    };
+  }
+
+  NotificationSettingsTableData copyWith(
+          {String? userId,
+          String? eventType,
+          bool? enablePush,
+          bool? enableInApp,
+          bool? enableEmail,
+          String? digestFrequency}) =>
+      NotificationSettingsTableData(
+        userId: userId ?? this.userId,
+        eventType: eventType ?? this.eventType,
+        enablePush: enablePush ?? this.enablePush,
+        enableInApp: enableInApp ?? this.enableInApp,
+        enableEmail: enableEmail ?? this.enableEmail,
+        digestFrequency: digestFrequency ?? this.digestFrequency,
+      );
+  NotificationSettingsTableData copyWithCompanion(
+      NotificationSettingsTableCompanion data) {
+    return NotificationSettingsTableData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      eventType: data.eventType.present ? data.eventType.value : this.eventType,
+      enablePush:
+          data.enablePush.present ? data.enablePush.value : this.enablePush,
+      enableInApp:
+          data.enableInApp.present ? data.enableInApp.value : this.enableInApp,
+      enableEmail:
+          data.enableEmail.present ? data.enableEmail.value : this.enableEmail,
+      digestFrequency: data.digestFrequency.present
+          ? data.digestFrequency.value
+          : this.digestFrequency,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationSettingsTableData(')
+          ..write('userId: $userId, ')
+          ..write('eventType: $eventType, ')
+          ..write('enablePush: $enablePush, ')
+          ..write('enableInApp: $enableInApp, ')
+          ..write('enableEmail: $enableEmail, ')
+          ..write('digestFrequency: $digestFrequency')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      userId, eventType, enablePush, enableInApp, enableEmail, digestFrequency);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NotificationSettingsTableData &&
+          other.userId == this.userId &&
+          other.eventType == this.eventType &&
+          other.enablePush == this.enablePush &&
+          other.enableInApp == this.enableInApp &&
+          other.enableEmail == this.enableEmail &&
+          other.digestFrequency == this.digestFrequency);
+}
+
+class NotificationSettingsTableCompanion
+    extends UpdateCompanion<NotificationSettingsTableData> {
+  final Value<String> userId;
+  final Value<String> eventType;
+  final Value<bool> enablePush;
+  final Value<bool> enableInApp;
+  final Value<bool> enableEmail;
+  final Value<String> digestFrequency;
+  final Value<int> rowid;
+  const NotificationSettingsTableCompanion({
+    this.userId = const Value.absent(),
+    this.eventType = const Value.absent(),
+    this.enablePush = const Value.absent(),
+    this.enableInApp = const Value.absent(),
+    this.enableEmail = const Value.absent(),
+    this.digestFrequency = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NotificationSettingsTableCompanion.insert({
+    required String userId,
+    required String eventType,
+    this.enablePush = const Value.absent(),
+    this.enableInApp = const Value.absent(),
+    this.enableEmail = const Value.absent(),
+    this.digestFrequency = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : userId = Value(userId),
+        eventType = Value(eventType);
+  static Insertable<NotificationSettingsTableData> custom({
+    Expression<String>? userId,
+    Expression<String>? eventType,
+    Expression<bool>? enablePush,
+    Expression<bool>? enableInApp,
+    Expression<bool>? enableEmail,
+    Expression<String>? digestFrequency,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userId != null) 'user_id': userId,
+      if (eventType != null) 'event_type': eventType,
+      if (enablePush != null) 'enable_push': enablePush,
+      if (enableInApp != null) 'enable_in_app': enableInApp,
+      if (enableEmail != null) 'enable_email': enableEmail,
+      if (digestFrequency != null) 'digest_frequency': digestFrequency,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NotificationSettingsTableCompanion copyWith(
+      {Value<String>? userId,
+      Value<String>? eventType,
+      Value<bool>? enablePush,
+      Value<bool>? enableInApp,
+      Value<bool>? enableEmail,
+      Value<String>? digestFrequency,
+      Value<int>? rowid}) {
+    return NotificationSettingsTableCompanion(
+      userId: userId ?? this.userId,
+      eventType: eventType ?? this.eventType,
+      enablePush: enablePush ?? this.enablePush,
+      enableInApp: enableInApp ?? this.enableInApp,
+      enableEmail: enableEmail ?? this.enableEmail,
+      digestFrequency: digestFrequency ?? this.digestFrequency,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (eventType.present) {
+      map['event_type'] = Variable<String>(eventType.value);
+    }
+    if (enablePush.present) {
+      map['enable_push'] = Variable<bool>(enablePush.value);
+    }
+    if (enableInApp.present) {
+      map['enable_in_app'] = Variable<bool>(enableInApp.value);
+    }
+    if (enableEmail.present) {
+      map['enable_email'] = Variable<bool>(enableEmail.value);
+    }
+    if (digestFrequency.present) {
+      map['digest_frequency'] = Variable<String>(digestFrequency.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationSettingsTableCompanion(')
+          ..write('userId: $userId, ')
+          ..write('eventType: $eventType, ')
+          ..write('enablePush: $enablePush, ')
+          ..write('enableInApp: $enableInApp, ')
+          ..write('enableEmail: $enableEmail, ')
+          ..write('digestFrequency: $digestFrequency, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -19597,6 +20394,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DeviceTrustLedgerTable deviceTrustLedger =
       $DeviceTrustLedgerTable(this);
   late final $LocalBlePeersTable localBlePeers = $LocalBlePeersTable(this);
+  late final $InAppNotificationsTable inAppNotifications =
+      $InAppNotificationsTable(this);
+  late final $NotificationSettingsTableTable notificationSettingsTable =
+      $NotificationSettingsTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -19645,7 +20446,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         deviceRegistryEntries,
         encryptedMessageQueue,
         deviceTrustLedger,
-        localBlePeers
+        localBlePeers,
+        inAppNotifications,
+        notificationSettingsTable
       ];
 }
 
@@ -29389,6 +30192,423 @@ typedef $$LocalBlePeersTableProcessedTableManager = ProcessedTableManager<
     ),
     LocalBlePeer,
     PrefetchHooks Function()>;
+typedef $$InAppNotificationsTableCreateCompanionBuilder
+    = InAppNotificationsCompanion Function({
+  required String id,
+  required String userId,
+  required String title,
+  required String body,
+  required String eventType,
+  Value<String?> resourceId,
+  Value<DateTime?> readAt,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+typedef $$InAppNotificationsTableUpdateCompanionBuilder
+    = InAppNotificationsCompanion Function({
+  Value<String> id,
+  Value<String> userId,
+  Value<String> title,
+  Value<String> body,
+  Value<String> eventType,
+  Value<String?> resourceId,
+  Value<DateTime?> readAt,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$InAppNotificationsTableFilterComposer
+    extends Composer<_$AppDatabase, $InAppNotificationsTable> {
+  $$InAppNotificationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get body => $composableBuilder(
+      column: $table.body, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get eventType => $composableBuilder(
+      column: $table.eventType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get resourceId => $composableBuilder(
+      column: $table.resourceId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get readAt => $composableBuilder(
+      column: $table.readAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$InAppNotificationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $InAppNotificationsTable> {
+  $$InAppNotificationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get body => $composableBuilder(
+      column: $table.body, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get eventType => $composableBuilder(
+      column: $table.eventType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get resourceId => $composableBuilder(
+      column: $table.resourceId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get readAt => $composableBuilder(
+      column: $table.readAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$InAppNotificationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $InAppNotificationsTable> {
+  $$InAppNotificationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<String> get eventType =>
+      $composableBuilder(column: $table.eventType, builder: (column) => column);
+
+  GeneratedColumn<String> get resourceId => $composableBuilder(
+      column: $table.resourceId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get readAt =>
+      $composableBuilder(column: $table.readAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$InAppNotificationsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $InAppNotificationsTable,
+    InAppNotification,
+    $$InAppNotificationsTableFilterComposer,
+    $$InAppNotificationsTableOrderingComposer,
+    $$InAppNotificationsTableAnnotationComposer,
+    $$InAppNotificationsTableCreateCompanionBuilder,
+    $$InAppNotificationsTableUpdateCompanionBuilder,
+    (
+      InAppNotification,
+      BaseReferences<_$AppDatabase, $InAppNotificationsTable, InAppNotification>
+    ),
+    InAppNotification,
+    PrefetchHooks Function()> {
+  $$InAppNotificationsTableTableManager(
+      _$AppDatabase db, $InAppNotificationsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InAppNotificationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InAppNotificationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InAppNotificationsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> userId = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String> body = const Value.absent(),
+            Value<String> eventType = const Value.absent(),
+            Value<String?> resourceId = const Value.absent(),
+            Value<DateTime?> readAt = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              InAppNotificationsCompanion(
+            id: id,
+            userId: userId,
+            title: title,
+            body: body,
+            eventType: eventType,
+            resourceId: resourceId,
+            readAt: readAt,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String userId,
+            required String title,
+            required String body,
+            required String eventType,
+            Value<String?> resourceId = const Value.absent(),
+            Value<DateTime?> readAt = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              InAppNotificationsCompanion.insert(
+            id: id,
+            userId: userId,
+            title: title,
+            body: body,
+            eventType: eventType,
+            resourceId: resourceId,
+            readAt: readAt,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$InAppNotificationsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $InAppNotificationsTable,
+    InAppNotification,
+    $$InAppNotificationsTableFilterComposer,
+    $$InAppNotificationsTableOrderingComposer,
+    $$InAppNotificationsTableAnnotationComposer,
+    $$InAppNotificationsTableCreateCompanionBuilder,
+    $$InAppNotificationsTableUpdateCompanionBuilder,
+    (
+      InAppNotification,
+      BaseReferences<_$AppDatabase, $InAppNotificationsTable, InAppNotification>
+    ),
+    InAppNotification,
+    PrefetchHooks Function()>;
+typedef $$NotificationSettingsTableTableCreateCompanionBuilder
+    = NotificationSettingsTableCompanion Function({
+  required String userId,
+  required String eventType,
+  Value<bool> enablePush,
+  Value<bool> enableInApp,
+  Value<bool> enableEmail,
+  Value<String> digestFrequency,
+  Value<int> rowid,
+});
+typedef $$NotificationSettingsTableTableUpdateCompanionBuilder
+    = NotificationSettingsTableCompanion Function({
+  Value<String> userId,
+  Value<String> eventType,
+  Value<bool> enablePush,
+  Value<bool> enableInApp,
+  Value<bool> enableEmail,
+  Value<String> digestFrequency,
+  Value<int> rowid,
+});
+
+class $$NotificationSettingsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $NotificationSettingsTableTable> {
+  $$NotificationSettingsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get eventType => $composableBuilder(
+      column: $table.eventType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get enablePush => $composableBuilder(
+      column: $table.enablePush, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get enableInApp => $composableBuilder(
+      column: $table.enableInApp, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get enableEmail => $composableBuilder(
+      column: $table.enableEmail, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get digestFrequency => $composableBuilder(
+      column: $table.digestFrequency,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$NotificationSettingsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $NotificationSettingsTableTable> {
+  $$NotificationSettingsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get eventType => $composableBuilder(
+      column: $table.eventType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get enablePush => $composableBuilder(
+      column: $table.enablePush, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get enableInApp => $composableBuilder(
+      column: $table.enableInApp, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get enableEmail => $composableBuilder(
+      column: $table.enableEmail, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get digestFrequency => $composableBuilder(
+      column: $table.digestFrequency,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$NotificationSettingsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NotificationSettingsTableTable> {
+  $$NotificationSettingsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get eventType =>
+      $composableBuilder(column: $table.eventType, builder: (column) => column);
+
+  GeneratedColumn<bool> get enablePush => $composableBuilder(
+      column: $table.enablePush, builder: (column) => column);
+
+  GeneratedColumn<bool> get enableInApp => $composableBuilder(
+      column: $table.enableInApp, builder: (column) => column);
+
+  GeneratedColumn<bool> get enableEmail => $composableBuilder(
+      column: $table.enableEmail, builder: (column) => column);
+
+  GeneratedColumn<String> get digestFrequency => $composableBuilder(
+      column: $table.digestFrequency, builder: (column) => column);
+}
+
+class $$NotificationSettingsTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $NotificationSettingsTableTable,
+    NotificationSettingsTableData,
+    $$NotificationSettingsTableTableFilterComposer,
+    $$NotificationSettingsTableTableOrderingComposer,
+    $$NotificationSettingsTableTableAnnotationComposer,
+    $$NotificationSettingsTableTableCreateCompanionBuilder,
+    $$NotificationSettingsTableTableUpdateCompanionBuilder,
+    (
+      NotificationSettingsTableData,
+      BaseReferences<_$AppDatabase, $NotificationSettingsTableTable,
+          NotificationSettingsTableData>
+    ),
+    NotificationSettingsTableData,
+    PrefetchHooks Function()> {
+  $$NotificationSettingsTableTableTableManager(
+      _$AppDatabase db, $NotificationSettingsTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NotificationSettingsTableTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$NotificationSettingsTableTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$NotificationSettingsTableTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> userId = const Value.absent(),
+            Value<String> eventType = const Value.absent(),
+            Value<bool> enablePush = const Value.absent(),
+            Value<bool> enableInApp = const Value.absent(),
+            Value<bool> enableEmail = const Value.absent(),
+            Value<String> digestFrequency = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              NotificationSettingsTableCompanion(
+            userId: userId,
+            eventType: eventType,
+            enablePush: enablePush,
+            enableInApp: enableInApp,
+            enableEmail: enableEmail,
+            digestFrequency: digestFrequency,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String userId,
+            required String eventType,
+            Value<bool> enablePush = const Value.absent(),
+            Value<bool> enableInApp = const Value.absent(),
+            Value<bool> enableEmail = const Value.absent(),
+            Value<String> digestFrequency = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              NotificationSettingsTableCompanion.insert(
+            userId: userId,
+            eventType: eventType,
+            enablePush: enablePush,
+            enableInApp: enableInApp,
+            enableEmail: enableEmail,
+            digestFrequency: digestFrequency,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$NotificationSettingsTableTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $NotificationSettingsTableTable,
+        NotificationSettingsTableData,
+        $$NotificationSettingsTableTableFilterComposer,
+        $$NotificationSettingsTableTableOrderingComposer,
+        $$NotificationSettingsTableTableAnnotationComposer,
+        $$NotificationSettingsTableTableCreateCompanionBuilder,
+        $$NotificationSettingsTableTableUpdateCompanionBuilder,
+        (
+          NotificationSettingsTableData,
+          BaseReferences<_$AppDatabase, $NotificationSettingsTableTable,
+              NotificationSettingsTableData>
+        ),
+        NotificationSettingsTableData,
+        PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -29485,4 +30705,9 @@ class $AppDatabaseManager {
       $$DeviceTrustLedgerTableTableManager(_db, _db.deviceTrustLedger);
   $$LocalBlePeersTableTableManager get localBlePeers =>
       $$LocalBlePeersTableTableManager(_db, _db.localBlePeers);
+  $$InAppNotificationsTableTableManager get inAppNotifications =>
+      $$InAppNotificationsTableTableManager(_db, _db.inAppNotifications);
+  $$NotificationSettingsTableTableTableManager get notificationSettingsTable =>
+      $$NotificationSettingsTableTableTableManager(
+          _db, _db.notificationSettingsTable);
 }

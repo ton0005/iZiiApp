@@ -196,9 +196,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                                     ),
                                     if (isE2ee) ...[
                                       const SizedBox(width: 6),
-                                      const Tooltip(
-                                        message: 'Mã hoá đầu cuối (E2EE)',
-                                        child: Icon(
+                                      Tooltip(
+                                        message: context.tr('chat_tooltip_e2ee'),
+                                        child: const Icon(
                                           Icons.lock_outline_rounded,
                                           size: 15,
                                           color: Color(
@@ -250,35 +250,35 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 });
               },
               itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: ChatFontSizeOption.small,
-                  child: Text('A A Small text (14px)',
-                      style: TextStyle(
-                          fontSize:
-                              ChatTheme.getFontSize(ChatFontSizeOption.small))),
-                ),
-                PopupMenuItem(
-                  value: ChatFontSizeOption.medium,
-                  child: Text('A A Normal text (16px)',
-                      style: TextStyle(
-                          fontSize: ChatTheme.getFontSize(
-                              ChatFontSizeOption.medium))),
-                ),
-                PopupMenuItem(
-                  value: ChatFontSizeOption.large,
-                  child: Text('A A Large text (18px)',
-                      style: TextStyle(
-                          fontSize:
-                              ChatTheme.getFontSize(ChatFontSizeOption.large))),
-                ),
-                PopupMenuItem(
-                  value: ChatFontSizeOption.extraLarge,
-                  child: Text('A A Extra Large (20px)',
-                      style: TextStyle(
-                          fontSize: ChatTheme.getFontSize(
-                              ChatFontSizeOption.extraLarge))),
-                ),
-              ],
+                                PopupMenuItem(
+                                  value: ChatFontSizeOption.small,
+                                  child: Text(context.tr('chat_font_size_small'),
+                                      style: TextStyle(
+                                          fontSize:
+                                              ChatTheme.getFontSize(ChatFontSizeOption.small))),
+                                ),
+                                PopupMenuItem(
+                                  value: ChatFontSizeOption.medium,
+                                  child: Text(context.tr('chat_font_size_normal'),
+                                      style: TextStyle(
+                                          fontSize: ChatTheme.getFontSize(
+                                              ChatFontSizeOption.medium))),
+                                ),
+                                PopupMenuItem(
+                                  value: ChatFontSizeOption.large,
+                                  child: Text(context.tr('chat_font_size_large'),
+                                      style: TextStyle(
+                                          fontSize:
+                                              ChatTheme.getFontSize(ChatFontSizeOption.large))),
+                                ),
+                                PopupMenuItem(
+                                  value: ChatFontSizeOption.extraLarge,
+                                  child: Text(context.tr('chat_font_size_extra_large'),
+                                      style: TextStyle(
+                                          fontSize: ChatTheme.getFontSize(
+                                              ChatFontSizeOption.extraLarge))),
+                                ),
+                              ],
             ),
           ],
         ),
@@ -395,9 +395,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final difference = now.difference(localDate).inDays;
 
     if (difference == 0) {
-      dateStr = 'Today';
+      dateStr = context.tr('chat_time_today_separator');
     } else if (difference == 1) {
-      dateStr = 'Yesterday';
+      dateStr = context.tr('chat_time_yesterday_separator');
     } else {
       dateStr = DateFormat('EEEE, d MMM').format(localDate);
     }
@@ -518,7 +518,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
           child: Row(
             children: [
               Text(
-                'typing...',
+                context.tr('chat_typing_indicator'),
                 style: TextStyle(
                   fontSize: 13,
                   fontStyle: FontStyle.italic,
@@ -642,10 +642,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             : () {
                                 // Voice message recorder trigger placeholder
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: Text(
-                                        'Voice recording... (Hold to Record alternative)'),
-                                    duration: Duration(seconds: 1),
+                                        context.tr('chat_voice_recording_snack')),
+                                    duration: const Duration(seconds: 1),
                                   ),
                                 );
                               },
@@ -678,9 +678,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
               ListTile(
                 leading: Icon(Icons.copy_rounded,
                     color: ChatTheme.getAccent(isDark)),
-                title: const Text('Copy message',
+                title: Text(context.tr('chat_action_copy'),
                     style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: text));
                   Navigator.pop(context);
@@ -690,9 +690,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ListTile(
                   leading: Icon(Icons.delete_forever_rounded,
                       color: ChatTheme.getDanger(isDark)),
-                  title: const Text('Delete message',
+                  title: Text(context.tr('chat_action_delete_msg'),
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   onTap: () {
                     // Soft delete logic
                     context
@@ -708,9 +708,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
               ListTile(
                 leading: Icon(Icons.reply_rounded,
                     color: ChatTheme.getAccent(isDark)),
-                title: const Text('Reply to message',
+                title: Text(context.tr('chat_action_reply'),
                     style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 onTap: () {
                   Navigator.pop(context);
                 },

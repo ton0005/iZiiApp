@@ -94,3 +94,29 @@ class DeviceTrustLedger extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+class InAppNotifications extends Table {
+  TextColumn get id => text()(); // UUID
+  TextColumn get userId => text()();
+  TextColumn get title => text()();
+  TextColumn get body => text()();
+  TextColumn get eventType => text()(); // e.g. new_message, mention, added_to_group, missed_call
+  TextColumn get resourceId => text().nullable()();
+  DateTimeColumn get readAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class NotificationSettingsTable extends Table {
+  TextColumn get userId => text()();
+  TextColumn get eventType => text()(); // 'new_message', 'new_group_message', 'mention', 'added_to_group', 'missed_call'
+  BoolColumn get enablePush => boolean().withDefault(const Constant(true))();
+  BoolColumn get enableInApp => boolean().withDefault(const Constant(true))();
+  BoolColumn get enableEmail => boolean().withDefault(const Constant(true))();
+  TextColumn get digestFrequency => text().withDefault(const Constant('instant'))();
+
+  @override
+  Set<Column> get primaryKey => {userId, eventType};
+}

@@ -67,7 +67,9 @@ part 'app_database.g.dart';
   DeviceRegistryEntries,
   EncryptedMessageQueue,
   DeviceTrustLedger,
-  LocalBlePeers
+  LocalBlePeers,
+  InAppNotifications,
+  NotificationSettingsTable
 ])
 class AppDatabase extends _$AppDatabase {
   static final AppDatabase _instance = AppDatabase._internal();
@@ -76,7 +78,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 18;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -280,6 +282,35 @@ class AppDatabase extends _$AppDatabase {
                   signing_public_key TEXT NOT NULL,
                   last_seen_at TEXT NOT NULL,
                   rssi INTEGER NOT NULL
+                );
+              ''');
+            } catch (_) {}
+          }
+          if (from < 18) {
+            try {
+              await customStatement('''
+                CREATE TABLE IF NOT EXISTS in_app_notifications (
+                  id TEXT NOT NULL PRIMARY KEY,
+                  user_id TEXT NOT NULL,
+                  title TEXT NOT NULL,
+                  body TEXT NOT NULL,
+                  event_type TEXT NOT NULL,
+                  resource_id TEXT,
+                  read_at INTEGER,
+                  created_at INTEGER NOT NULL
+                );
+              ''');
+            } catch (_) {}
+            try {
+              await customStatement('''
+                CREATE TABLE IF NOT EXISTS notification_settings_table (
+                  user_id TEXT NOT NULL,
+                  event_type TEXT NOT NULL,
+                  enable_push INTEGER NOT NULL DEFAULT 1,
+                  enable_in_app INTEGER NOT NULL DEFAULT 1,
+                  enable_email INTEGER NOT NULL DEFAULT 1,
+                  digest_frequency TEXT NOT NULL DEFAULT 'instant',
+                  PRIMARY KEY (user_id, event_type)
                 );
               ''');
             } catch (_) {}
