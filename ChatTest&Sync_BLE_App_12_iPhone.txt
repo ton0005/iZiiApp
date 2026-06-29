@@ -1,0 +1,958 @@
+flutter: [BleDiscovery] Discovered peer: Galaxy A36 5G (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -46
+flutter: [BleDiscovery] Discovered peer: Galaxy A36 5G (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -46
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -32
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -32
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [BleDiscovery] Discovered peer: Galaxy A36 5G (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -46
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -32
+flutter: [BleDiscovery] Discovered peer: Galaxy A36 5G (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -46
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -32
+flutter: [BleDiscovery] Discovered peer: Galaxy A36 5G (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -46
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -32
+flutter: [BleDiscovery] Discovered peer: Galaxy A36 5G (izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a) RSSI: -46
+flutter: [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-c7e7244c-1da2-5cc5-f876-e8ed88b29f6c) RSSI: -32
+flutter: [BleDiscovery] Advertising status update: advertising=false, error=null
+flutter: [BleDiscovery] Stopped BLE Advertising.
+flutter: [BleDiscovery] BLE Scan stopped.
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection error – is the server running?
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [BleDiscovery] Routing incoming packet: type=message from izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a
+flutter: [ChatWS] Cannot send event, WebSocket disconnected.
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Cannot send event, WebSocket disconnected.
+flutter: [ChatWS] Cannot send event, WebSocket disconnected.
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [ChatBloc] Companion is connected via BLE P2P. Sending message directly...
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection error – is the server running?
+flutter: [BleDiscovery] Triggering share request for service_items to izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a...
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection error – is the server running?
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection error – is the server running?
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection error – is the server running?
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [BleDiscovery] Client device disconnected: izii-d-ble-ff0d0a11-67d9-1338-55d0-cd1ea17d458a. Cleaned up cache.
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection error – is the server running?
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [DeviceDiscovery] ⚠️ Heartbeat failed: Connection error – is the server running?
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080
+flutter: [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+flutter: [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+flutter: [SyncService] Đang gửi 11 thay đổi lên server...
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 leads → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 service_items → insert
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 service_items → update
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService]    📦 chat_messages → insert
+flutter: [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+flutter: [SyncService]    → Không thể kết nối. Kiểm tra lại URL và đảm bảo server đang chạy.
+flutter: [ChatWS] Retrying connection...
+flutter: [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+flutter: [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection failed (OS Error: Network is unreachable, errno = 51), address = 10.146.147.160, port = 8080

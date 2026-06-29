@@ -1,0 +1,1208 @@
+Launching lib\main.dart on SM A366B in debug mode...
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "Windows_NT" == "Windows_NT" setlocal
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set DEFAULT_JVM_OPTS=
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set DIRNAME=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\" == "" set DIRNAME=.
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set APP_BASE_NAME=gradlew
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set APP_HOME=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if defined JAVA_HOME goto findJavaFromJavaHome
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set JAVA_HOME=C:\Program Files\Android\Android Studio\jre
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set JAVA_EXE=C:\Program Files\Android\Android Studio\jre/bin/java.exe
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if exist "C:\Program Files\Android\Android Studio\jre/bin/java.exe" goto init
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if not "Windows_NT" == "Windows_NT" goto win9xME_args
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "@eval[2+2]" == "4" goto 4NT_args
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set CMD_LINE_ARGS=
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set _SKIP=2
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "x-q" == "x" goto execute
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set CMD_LINE_ARGS=-q -Ptarget-platform=android-arm64 -Ptarget=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\lib\main.dart -Pbase-application-name=android.app.Application -Pdart-defines=RkxVVFRFUl9WRVJTSU9OPTMuNDQuMA==,RkxVVFRFUl9DSEFOTkVMPXN0YWJsZQ==,RkxVVFRFUl9HSVRfVVJMPWh0dHBzOi8vZ2l0aHViLmNvbS9mbHV0dGVyL2ZsdXR0ZXIuZ2l0,RkxVVFRFUl9GUkFNRVdPUktfUkVWSVNJT049NTU5ZmZhM2Y3NQ==,RkxVVFRFUl9FTkdJTkVfUkVWSVNJT049NGM1MjVkYWM1ZQ==,RkxVVFRFUl9EQVJUX1ZFUlNJT049My4xMi4w -Pdart-obfuscation=false -Ptrack-widget-creation=true -Ptree-shake-icons=false -Pfilesystem-scheme=org-dartlang-root assembleDebug
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>goto execute
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>set CLASSPATH=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\\gradle\wrapper\gradle-wrapper.jar
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>"C:\Program Files\Android\Android Studio\jre/bin/java.exe"    "-Dorg.gradle.appname=gradlew" -classpath "C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android\\gradle\wrapper\gradle-wrapper.jar" org.gradle.wrapper.GradleWrapperMain -q -Ptarget-platform=android-arm64 -Ptarget=C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\lib\main.dart -Pbase-application-name=android.app.Application -Pdart-defines=RkxVVFRFUl9WRVJTSU9OPTMuNDQuMA==,RkxVVFRFUl9DSEFOTkVMPXN0YWJsZQ==,RkxVVFRFUl9HSVRfVVJMPWh0dHBzOi8vZ2l0aHViLmNvbS9mbHV0dGVyL2ZsdXR0ZXIuZ2l0,RkxVVFRFUl9GUkFNRVdPUktfUkVWSVNJT049NTU5ZmZhM2Y3NQ==,RkxVVFRFUl9FTkdJTkVfUkVWSVNJT049NGM1MjVkYWM1ZQ==,RkxVVFRFUl9EQVJUX1ZFUlNJT049My4xMi4w -Pdart-obfuscation=false -Ptrack-widget-creation=true -Ptree-shake-icons=false -Pfilesystem-scheme=org-dartlang-root assembleDebug
+WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): ble_peripheral, file_picker, image_picker_android, mobile_scanner, package_info_plus, share_plus, shared_preferences_android, speech_to_text, url_launcher_android
+Future versions of Flutter will fail to build if your app uses plugins that apply KGP.
+
+Please check the changelogs of these plugins and upgrade to a version that supports Built-in Kotlin.
+If no such version exists, report the issue to the plugin. If necessary, here is a guide on filing
+an issue against a plugin: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers#report-incompatible-kotlin-gradle-plugin-usage-to-plugin-authors
+
+If you are a plugin author, please migrate your plugin to Built-in Kotlin using this guide: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "0" == "0" goto mainEnd
+
+C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\android>if "Windows_NT" == "Windows_NT" endlocal
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+I/FlutterActivityAndFragmentDelegate(27059): If you are attempting to set --start-paused via Intent extras to launch a Flutter component outside of using the Flutter CLI, note that support for setting engine flags on Android via Intent will soon be dropped; see https://github.com/flutter/flutter/issues/180686 for more information on this breaking change. To migrate, set --start-paused or any other flags specified via Intent extras on the command line instead or see https://github.com/flutter/flutter/blob/main/docs/engine/Flutter-Android-Engine-Flags.md for alternative methods.
+D/FlutterJNI(27059): Beginning load of flutter...
+D/FlutterJNI(27059): flutter (null) was loaded normally!
+I/flutter (27059): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterGeolocator(27059): Attaching Geolocator to activity
+D/FlutterRenderer(27059): Width is zero. 0,0
+D/FlutterGeolocator(27059): Creating service.
+D/FlutterGeolocator(27059): Binding to location service.
+D/FlutterRenderer(27059): Width is zero. 0,0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+D/FlutterGeolocator(27059): Geolocator foreground service connected
+D/FlutterGeolocator(27059): Initializing Geolocator services
+D/FlutterGeolocator(27059): Flutter engine connected. Connected engine count 1
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/m.izii.izii_app(27059): Compiler allocated 5158KB to compile void android.view.ViewRootImpl.performTraversals()
+Connecting to VM Service at ws://127.0.0.1:63864/o9DUumYtoAs=/ws
+Connected to the VM Service.
+D/ProfileInstaller(27059): Installing profile for com.izii.izii_app
+I/m.izii.izii_app(27059): Background concurrent mark compact GC freed 6208KB AllocSpace bytes, 8(260KB) LOS objects, 65% free, 3223KB/9367KB, paused 209us,5.069ms total 39.780ms
+
+════════ Exception caught by rendering library ═════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 14 pixels on the bottom.
+
+The relevant error-causing widget was:
+    Column Column:file:///C:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/features/home/home_screen.dart:588:16
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be seen. If the content is legitimately bigger than the available space, consider clipping it with a ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex, like a ListView.
+The specific RenderFlex in question is: RenderFlex#0e238 OVERFLOWING
+    parentData: offset=Offset(17.0, 17.0) (can use size)
+    constraints: BoxConstraints(w=132.0, h=84.6)
+    size: Size(132.0, 84.6)
+    direction: vertical
+    mainAxisAlignment: start
+    mainAxisSize: max
+    crossAxisAlignment: start
+    textDirection: ltr
+    verticalDirection: down
+    spacing: 0.0
+    child 1: RenderConstrainedBox#9fec1 relayoutBoundary=up1
+        parentData: offset=Offset(0.0, 0.0); flex=null; fit=null (can use size)
+        constraints: BoxConstraints(0.0<=w<=132.0, 0.0<=h<=Infinity)
+        size: Size(40.0, 40.0)
+        additionalConstraints: BoxConstraints(w=40.0, h=40.0)
+        child: RenderDecoratedBox#a5f15
+            parentData: <none> (can use size)
+            constraints: BoxConstraints(w=40.0, h=40.0)
+            size: Size(40.0, 40.0)
+            decoration: BoxDecoration
+                color: Color(alpha: 0.1500, red: 0.0235, green: 0.7137, blue: 0.8314, colorSpace: ColorSpace.sRGB)
+                borderRadius: BorderRadius.circular(12.0)
+            configuration: ImageConfiguration(bundle: PlatformAssetBundle#92609(), devicePixelRatio: 2.8, locale: vi, textDirection: TextDirection.ltr, platform: android)
+            child: RenderPadding#808a8
+                parentData: <none> (can use size)
+                constraints: BoxConstraints(w=40.0, h=40.0)
+                size: Size(40.0, 40.0)
+                padding: EdgeInsets.zero
+                textDirection: ltr
+                child: RenderSemanticsAnnotations#d2c03
+                    parentData: offset=Offset(0.0, 0.0) (can use size)
+                    constraints: BoxConstraints(w=40.0, h=40.0)
+                    size: Size(40.0, 40.0)
+    child 2: RenderConstrainedBox#1dbb2 relayoutBoundary=up1
+        parentData: offset=Offset(0.0, 40.0); flex=1; fit=FlexFit.tight (can use size)
+        constraints: BoxConstraints(0.0<=w<=132.0, h=0.0)
+        size: Size(0.0, 0.0)
+        additionalConstraints: BoxConstraints(w=0.0, h=0.0)
+    child 3: RenderParagraph#2a1c1 relayoutBoundary=up1
+        parentData: offset=Offset(0.0, 40.0); flex=null; fit=null (can use size)
+        constraints: BoxConstraints(0.0<=w<=132.0, 0.0<=h<=Infinity)
+        size: Size(132.0, 40.0)
+        textAlign: start
+        textDirection: ltr
+        softWrap: wrapping at box width
+        overflow: clip
+        locale: vi
+        maxLines: unlimited
+        text: TextSpan
+            debugLabel: ((englishLike bodyMedium 2021).merge((whiteMountainView bodyMedium).apply)).merge(unknown)
+            inherit: false
+            color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB)
+            family: Roboto
+            size: 14.0
+            weight: 700
+            letterSpacing: 0.3
+            baseline: alphabetic
+            height: 1.4x
+            leadingDistribution: even
+            decoration: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB) TextDecoration.none
+            "Australian Accountant"
+    child 4: RenderConstrainedBox#7f57e relayoutBoundary=up1
+        parentData: offset=Offset(0.0, 80.0); flex=null; fit=null (can use size)
+        constraints: BoxConstraints(0.0<=w<=132.0, 0.0<=h<=Infinity)
+        size: Size(0.0, 2.0)
+        additionalConstraints: BoxConstraints(0.0<=w<=Infinity, h=2.0)
+    child 5: RenderParagraph#ff551 relayoutBoundary=up1
+        parentData: offset=Offset(0.0, 82.0); flex=null; fit=null (can use size)
+        constraints: BoxConstraints(0.0<=w<=132.0, 0.0<=h<=Infinity)
+        size: Size(43.7, 17.0)
+        textAlign: start
+        textDirection: ltr
+        softWrap: wrapping at box width
+        overflow: clip
+        locale: vi
+        maxLines: unlimited
+        text: TextSpan
+            debugLabel: ((englishLike bodyMedium 2021).merge((whiteMountainView bodyMedium).apply)).merge(unknown)
+            inherit: false
+            color: Color(alpha: 0.3843, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB)
+            family: Roboto
+            size: 12.0
+            weight: 400
+            letterSpacing: 0.3
+            baseline: alphabetic
+            height: 1.4x
+            leadingDistribution: even
+            decoration: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB) TextDecoration.none
+            "Finance"
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════
+I/VRI[MainActivity]@f42e2ce(27059): onDisplayChanged oldDisplayState=1 newDisplayState=2
+I/VRI[MainActivity]@f42e2ce(27059): handleAppVisibility mAppVisible = false visible = true
+I/VRI[MainActivity]@f42e2ce(27059): stopped(false) old = true
+D/VRI[MainActivity]@f42e2ce(27059): WindowStopped on com.izii.izii_app/com.izii.izii_app.MainActivity set to false
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(27059): applyTransactionOnDraw applyImmediately
+I/VRI[MainActivity]@f42e2ce(27059): onDisplayChanged oldDisplayState=2 newDisplayState=2
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=true displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/VRI[MainActivity]@f42e2ce(27059): performConfigurationChange setNightDimText nightDimLevel=0
+I/VRI[MainActivity]@f42e2ce(27059): handleResized mSyncSeqId = 0
+I/InsetsController(27059): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/SV[135307819 MainActivity](27059): onWindowVisibilityChanged(0) false io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ......ID 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(27059): applyTransactionOnDraw applyImmediately
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/BufferQueueProducer(27059): [](id:69b300000002,api:0,p:-761484816,c:27059) setDequeueTimeout:2077252342
+I/BLASTBufferQueue_Java(27059): new BLASTBufferQueue, mName= VRI[MainActivity]@f42e2ce mNativeObject= 0xb400007692a88fa0 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3585 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 android.view.Choreographer$CallbackRecord.run:1910 android.view.Choreographer.doCallbacks:1367 android.view.Choreographer.doFrame:1292 android.view.Choreographer$FrameDisplayEventReceiver.run:1870
+I/BLASTBufferQueue_Java(27059): update, w= 1080 h= 2340 mName = VRI[MainActivity]@f42e2ce mNativeObject= 0xb400007692a88fa0 sc.mNativeObject= 0xb4000077f29c1a50 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3590 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901
+I/VRI[MainActivity]@f42e2ce(27059): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)0 dur=6 res=0x3 s={true 0xb400007722a0d190} ch=true seqId=0
+D/VRI[MainActivity]@f42e2ce(27059): mThreadedRenderer.initialize() mSurface={isValid=true 0xb400007722a0d190} hwInitialized=true
+I/SV[135307819 MainActivity](27059): windowStopped(false) true io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ......ID 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+I/SurfaceView(27059): 135307819 Changes: creating=true format=false size=false visible=true alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/BufferQueueProducer(27059): [](id:69b300000003,api:0,p:0,c:27059) setDequeueTimeout:2077252342
+I/BLASTBufferQueue_Java(27059): new BLASTBufferQueue, mName= 810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0 mNativeObject= 0xb4000076929fe700 caller= android.view.SurfaceView.createBlastSurfaceControls:1781 android.view.SurfaceView.updateSurface:1450 android.view.SurfaceView.setWindowStopped:539 android.view.SurfaceView.surfaceCreated:2327 android.view.ViewRootImpl.notifySurfaceCreated:3502 android.view.ViewRootImpl.performTraversals:5286 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 android.view.Choreographer$CallbackRecord.run:1910
+I/BLASTBufferQueue_Java(27059): update, w= 1080 h= 2340 mName = 810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0 mNativeObject= 0xb4000076929fe700 sc.mNativeObject= 0xb4000077f29942d0 format= 4 caller= android.view.SurfaceView.createBlastSurfaceControls:1782 android.view.SurfaceView.updateSurface:1450 android.view.SurfaceView.setWindowStopped:539 android.view.SurfaceView.surfaceCreated:2327 android.view.ViewRootImpl.notifySurfaceCreated:3502 android.view.ViewRootImpl.performTraversals:5286
+I/SurfaceView(27059): 135307819 Cur surface: Surface(name=null mNativeObject=0)/@0x309d13a
+D/SurfaceComposerClient(27059): setCornerRadius ## 810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#28999 cornerRadius=0.000000
+I/SV[135307819 MainActivity](27059): pST: sr = Rect(0, 0 - 1080, 2340) sw = 1080 sh = 2340
+D/SurfaceView(27059): 135307819 performSurfaceTransaction RenderWorker position = [0, 0, 1080, 2340] surfaceSize = 1080x2340
+I/SV[135307819 MainActivity](27059): updateSurface: mVisible = true mSurface.isValid() = true
+I/SV[135307819 MainActivity](27059): updateSurface: mSurfaceCreated = false surfaceChanged = true visibleChanged = true
+I/SurfaceView(27059): 135307819 visibleChanged -- surfaceCreated
+I/SV[135307819 MainActivity](27059): surfaceCreated 1 #1 io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ......ID 0,0-1080,2340}
+I/SurfaceView(27059): 135307819 surfaceChanged -- format=4 w=1080 h=2340
+I/SV[135307819 MainActivity](27059): surfaceChanged (1080,2340) 1 #1 io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ......ID 0,0-1080,2340}
+I/SurfaceView(27059): 135307819 surfaceRedrawNeeded
+V/SurfaceView(27059): Layout: x=0 y=0 w=1080 h=2340, frame=Rect(0, 0 - 1080, 2340)
+D/VRI[MainActivity]@f42e2ce(27059): reportNextDraw android.view.ViewRootImpl.performTraversals:5443 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 android.view.Choreographer$CallbackRecord.run:1910
+I/InsetsSourceConsumer(27059): applyRequestedVisibilityToControl: visible=true, type=statusBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/InsetsSourceConsumer(27059): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/BLASTBufferQueue(27059): [810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#3](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/SurfaceComposerClient(27059): apply transaction with the first frame. layerId: 29000, bufferData(ID: 116217520062489, frameNumber: 1)
+I/SurfaceView(27059): 135307819 finishedDrawing
+I/SurfaceView(27059): 135307819 finishedDrawing
+D/VRI[MainActivity]@f42e2ce(27059): Setup new sync=wmsSync-VRI[MainActivity]@f42e2ce#2
+I/VRI[MainActivity]@f42e2ce(27059): Creating new active sync group VRI[MainActivity]@f42e2ce#3
+D/VRI[MainActivity]@f42e2ce(27059): Draw frame after cancel
+D/VRI[MainActivity]@f42e2ce(27059): registerCallbacksForSync syncBuffer=false
+D/SurfaceView(27059): 135307819 updateSurfacePosition RenderWorker, frameNr = 1, position = [0, 0, 1080, 2340] surfaceSize = 1080x2340
+I/SV[135307819 MainActivity](27059): uSP: rtp = Rect(0, 0 - 1080, 2340) rtsw = 1080 rtsh = 2340
+I/SV[135307819 MainActivity](27059): onSSPAndSRT: pl = 0 pt = 0 sx = 1.0 sy = 1.0
+I/SV[135307819 MainActivity](27059): aOrMT: VRI[MainActivity]@f42e2ce t = android.view.SurfaceControl$Transaction@ae34066 fN = 1 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1932 android.graphics.RenderNode$CompositePositionUpdateListener.positionChanged:401
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829db3d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1863 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1932
+D/VRI[MainActivity]@f42e2ce(27059): Received frameDrawingCallback syncResult=0 frameNum=1.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829de850 mBlastBufferQueue=0xb400007692a88fa0 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$12.onFrameDraw:15441 android.view.ThreadedRenderer$1.onFrameDraw:718 <bottom of call stack>
+I/VRI[MainActivity]@f42e2ce(27059): Setting up sync and frameCommitCallback
+I/BLASTBufferQueue(27059): [VRI[MainActivity]@f42e2ce#2](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/SurfaceComposerClient(27059): apply transaction with the first frame. layerId: 28995, bufferData(ID: 116217520062494, frameNumber: 1)
+I/VRI[MainActivity]@f42e2ce(27059): Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true
+D/HWUI    (27059): CFMS:: SetUp Pid : 27059    Tid : 27119
+D/VRI[MainActivity]@f42e2ce(27059): reportDrawFinished seqId=0
+D/VRI[MainActivity]@f42e2ce(27059): mThreadedRenderer.initializeIfNeeded()#2 mSurface={isValid=true 0xb400007722a0d190}
+D/InputMethodManagerUtils(27059): startInputInner - Id : 0
+I/InputMethodManager(27059): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+I/InputMethodManager(27059): handleMessage: setImeVisibility visible=false
+D/InsetsController(27059): hide(ime(), fromIme=false)
+I/ImeTracker(27059): com.izii.izii_app:fcdf7982: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+D/InputTransport(27059): Input channel constructed: 'ClientS', fd=242
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [DeviceIdentity] Loaded existing identity: izii-d-27fd1f53
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@f42e2ce
+D/[FBP-Android](27059): [FBP] onMethodCall: flutterRestart
+D/[FBP-Android](27059): [FBP] initializing BluetoothAdapter
+I/BluetoothAdapter(27059): BluetoothAdapter() : com.izii.izii_app
+D/[FBP-Android](27059): [FBP] disconnectAllDevices(flutterRestart)
+D/[FBP-Android](27059): [FBP] connectedPeripherals: 0
+D/BluetoothGattServer(27059): registerCallback()
+D/BluetoothGattServer(27059): registerCallback() - UUID=51246e30-6d33-448e-ab41-fd641e2429b8
+D/BluetoothGattServer(27059): onServerRegistered() - status=0 serverIf=181
+I/flutter (27059): [BleDiscovery] BlePeripheral initialized successfully.
+I/flutter (27059): [BleDiscovery] Waiting for Bluetooth adapter to be powered on...
+D/[FBP-Android](27059): [FBP] onMethodCall: isSupported
+I/flutter (27059): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](27059): [FBP] onMethodCall: getAdapterState
+D/[FBP-Android](27059): [FBP] onMethodCall: startScan
+D/CompatChangeReporter(27059): Compat change id reported: 386727721; UID 10407; state: ENABLED
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/BluetoothLeScanner(27059): Start Scan with callback
+D/BluetoothLeScanner(27059): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/BluetoothAdapter(27059): BluetoothAdapter() : com.izii.izii_app
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -54
+I/flutter (27059): [BleDiscovery] Discovered known authenticated peer izii-d-ble-f0c371175ea9. Auto-connecting...
+D/[FBP-Android](27059): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/BluetoothLeScanner(27059): Stop Scan with callback
+I/flutter (27059): [BleDiscovery] BLE Scan stopped.
+I/flutter (27059): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+D/[FBP-Android](27059): [FBP] onMethodCall: connect
+D/BluetoothGatt(27059): connect() - device: XX:XX:XX:XX:5E:A9, auto: false
+D/BluetoothGatt(27059): registerApp()
+D/BluetoothGatt(27059): registerApp() - UUID=9384ae26-de04-47f3-aaaf-12389fbc60c5
+D/BluetoothGatt(27059): onClientRegistered() - status=0 clientIf=182
+D/BluetoothGattServer(27059): clearServices()
+D/BlePeripheral(27059): Added CCCD for a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/BluetoothGattServer(27059): addService() - service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/BluetoothGattServer(27059): onServerConnectionState() - status=0 serverIf=181 connected=true device=XX:XX:XX:XX:5E:A9
+E/BlePeripheralPlugin(27059): onConnectionStateChange: 0 -> 2
+D/BluetoothGattServer(27059): connect() - device: XX:XX:XX:XX:5E:A9, auto: true
+D/BluetoothGatt(27059): onClientConnectionState() - status=0 clientIf=182 connected=true device=XX:XX:XX:XX:5E:A9
+D/[FBP-Android](27059): [FBP] onConnectionStateChange:connected
+D/[FBP-Android](27059): [FBP]   status: SUCCESS
+D/BluetoothGattServer(27059): onServiceAdded() - handle=154 uuid=f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c status=0
+I/flutter (27059): [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (27059): [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: null
+D/AdvertiseSettings(27059): setTxPowerLevel: 3
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/BluetoothLeAdvertiser(27059): TxPower == ADVERTISE_TX_POWER_HIGH
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/BluetoothLeAdvertiser(27059): onAdvertisingSetStarted(0, 1, 0)
+I/flutter (27059): [BleDiscovery] Advertising status update: advertising=true, error=null
+D/[FBP-Android](27059): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(27059): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 512
+D/BluetoothGatt(27059): onPhyUpdate() - status=0 address=XX:XX:XX:XX:5E:A9 txPhy=2 rxPhy=2
+D/BluetoothGattServer(27059): onPhyUpdate() - device=XX:XX:XX:XX:5E:A9, txPHy=2, rxPHy=2
+D/BluetoothGattServer(27059): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGatt(27059): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGatt(27059): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](27059): [FBP] onMtuChanged:
+D/[FBP-Android](27059): [FBP]   mtu: 517
+D/[FBP-Android](27059): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27059): [BleDiscovery] Requesting MTU 256 for Android...
+D/BluetoothGatt(27059): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+D/BluetoothGattServer(27059): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+I/flutter (27059): [BleDiscovery] Connection to izii-d-ble-f0c371175ea9 already in progress. Skipping.
+D/[FBP-Android](27059): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(27059): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(27059): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](27059): [FBP] onMtuChanged:
+D/[FBP-Android](27059): [FBP]   mtu: 517
+D/[FBP-Android](27059): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27059): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](27059): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(27059): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(27059): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](27059): [FBP] onServicesDiscovered:
+D/[FBP-Android](27059): [FBP]   count: 10
+D/[FBP-Android](27059): [FBP]   status: 0GATT_SUCCESS
+D/[FBP-Android](27059): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(27059): setCharacteristicNotification() - uuid: 00002a05-0000-1000-8000-00805f9b34fb enable: true
+D/[FBP-Android](27059): [FBP] onDescriptorWrite:
+D/[FBP-Android](27059): [FBP]   chr: 2a05
+D/[FBP-Android](27059): [FBP]   desc: 2902
+D/[FBP-Android](27059): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27059): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](27059): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(27059): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](27059): [FBP] onDescriptorWrite:
+D/[FBP-Android](27059): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](27059): [FBP]   desc: 2902
+D/[FBP-Android](27059): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+D/[FBP-Android](27059): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](27059): [FBP] onCharacteristicWrite:
+D/[FBP-Android](27059): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](27059): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27059): [BleDiscovery] Resetting BLE Registry...
+I/flutter (27059): [BleDiscovery] Stopped BLE Advertising.
+I/flutter (27059): [BleDiscovery] BLE Scan stopped.
+D/BluetoothLeAdvertiser(27059): Stop AdvertingSet
+I/flutter (27059): [BleDiscovery] Advertising status update: advertising=false, error=null
+D/BluetoothLeAdvertiser(27059): onAdvertisingSetStopped(0)
+D/BluetoothGattServer(27059): clearServices()
+D/BlePeripheral(27059): Added CCCD for a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/BluetoothGattServer(27059): addService() - service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/BluetoothGattServer(27059): onServiceAdded() - handle=154 uuid=f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c status=0
+I/flutter (27059): [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (27059): [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: null
+D/AdvertiseSettings(27059): setTxPowerLevel: 3
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/BluetoothLeAdvertiser(27059): TxPower == ADVERTISE_TX_POWER_HIGH
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/[FBP-Android](27059): [FBP] onMethodCall: isSupported
+I/flutter (27059): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](27059): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/BluetoothLeScanner(27059): Start Scan with callback
+D/BluetoothLeScanner(27059): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (27059): [BleDiscovery] BLE Registry reset successfully.
+D/BluetoothLeAdvertiser(27059): onAdvertisingSetStarted(0, 1, 0)
+I/flutter (27059): [BleDiscovery] Advertising status update: advertising=true, error=null
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -54
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -53
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+D/BluetoothGatt(27059): onServiceChanged() - Device=XX:XX:XX:XX:5E:A9
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -49
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+D/[FBP-Android](27059): [FBP] onCharacteristicChanged:
+D/[FBP-Android](27059): [FBP]   chr: 2a05
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -49
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+D/BluetoothGatt(27059): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+D/BluetoothGattServer(27059): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=6 latency=0 timeout=500 status=0
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [DeviceDiscovery] ❌ Registration failed: Connection timeout
+I/flutter (27059): [DeviceDiscovery] Starting heartbeat (every 30s)
+D/BluetoothGatt(27059): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+D/BluetoothGattServer(27059): onConnectionUpdated() - Device=XX:XX:XX:XX:5E:A9 interval=24 latency=0 timeout=500 status=0
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -49
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -49
+D/[FBP-Android](27059): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/BluetoothLeScanner(27059): Stop Scan with callback
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] BLE Scan stopped.
+I/flutter (27059): [BleDiscovery] Connecting to BLE device: F0:C3:71:17:5E:A9 (ID: izii-d-ble-f0c371175ea9)...
+I/flutter (27059): [BleDiscovery] Requesting MTU 256 for Android...
+D/[FBP-Android](27059): [FBP] onMethodCall: requestMtu
+D/BluetoothGatt(27059): configureMTU() - device: XX:XX:XX:XX:5E:A9 mtu: 256
+D/BluetoothGatt(27059): onConfigureMTU() - Device=XX:XX:XX:XX:5E:A9 mtu=517 status=0
+D/[FBP-Android](27059): [FBP] onMtuChanged:
+D/[FBP-Android](27059): [FBP]   mtu: 517
+D/[FBP-Android](27059): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27059): [BleDiscovery] Connected. Discovering services...
+D/[FBP-Android](27059): [FBP] onMethodCall: discoverServices
+D/BluetoothGatt(27059): discoverServices() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(27059): onSearchComplete() = address=XX:XX:XX:XX:5E:A9 status=0
+D/[FBP-Android](27059): [FBP] onServicesDiscovered:
+D/[FBP-Android](27059): [FBP]   count: 10
+D/[FBP-Android](27059): [FBP]   status: 0GATT_SUCCESS
+I/flutter (27059): [BleDiscovery] Starting Noise Handshake...
+D/[FBP-Android](27059): [FBP] onMethodCall: setNotifyValue
+D/BluetoothGatt(27059): setCharacteristicNotification() - uuid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d enable: true
+D/[FBP-Android](27059): [FBP] onDescriptorWrite:
+D/[FBP-Android](27059): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](27059): [FBP]   desc: 2902
+D/[FBP-Android](27059): [FBP]   status: GATT_SUCCESS (0)
+D/[FBP-Android](27059): [FBP] onMethodCall: writeCharacteristic
+D/[FBP-Android](27059): [FBP] onCharacteristicWrite:
+D/[FBP-Android](27059): [FBP]   chr: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+D/[FBP-Android](27059): [FBP]   status: GATT_SUCCESS (0)
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](27059): [FBP] onMethodCall: disconnect
+D/BluetoothGatt(27059): cancelOpen() - device: XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(27059): onClientConnectionState() - status=0 clientIf=182 connected=false device=XX:XX:XX:XX:5E:A9
+D/BluetoothGatt(27059): unregisterApp() - mClientIf=182
+D/[FBP-Android](27059): [FBP] onConnectionStateChange:disconnected
+D/[FBP-Android](27059): [FBP]   status: SUCCESS
+D/BluetoothGatt(27059): close()
+D/[FBP-Android](27059): [FBP] onMethodCall: isSupported
+I/flutter (27059): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+D/[FBP-Android](27059): [FBP] onMethodCall: startScan
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/BluetoothLeScanner(27059): Start Scan with callback
+D/BluetoothLeScanner(27059): onScannerRegistered() - status=0 scannerId=7 mScannerId=0
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -49
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -71
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Connection or authentication failed: TimeoutException after 0:00:10.000000: Future not completed
+D/[FBP-Android](27059): [FBP] onMethodCall: disconnect
+D/[FBP-Android](27059): [FBP] already disconnected
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpasi6u (izii-d-ble-f0c371175ea9) RSSI: -56
+I/flutter (27059): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -51
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+D/[FBP-Android](27059): [FBP] onMethodCall: stopScan
+D/BluetoothAdapter(27059): isLeEnabled(): ON
+D/BluetoothLeScanner(27059): Stop Scan with callback
+D/BlePeripheralPlugin(27059): onDescriptorWriteRequest: [1, 0] -> 00002902-0000-1000-8000-00805f9b34fb | Char UUID: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 32
+I/flutter (27059): [BleDiscovery] Processing incoming Noise handshake message (length: 32)...
+I/flutter (27059): [BleDiscovery] Message 1 processed. Sending Message 2 to F0:C3:71:17:5E:A9...
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 48
+I/flutter (27059): [BleDiscovery] Processing incoming Noise handshake message (length: 48)...
+I/flutter (27059): [BleDiscovery] Noise Handshake established as Responder with F0:C3:71:17:5E:A9.
+I/flutter (27059): [BleDiscovery] Saved peer static public key to database: izii-d-ble-f0c371175ea9
+I/flutter (27059): [BleDiscovery] Sending announce packet to F0:C3:71:17:5E:A9...
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 330
+I/flutter (27059): [BleDiscovery] Routing incoming packet: type=announce from F0:C3:71:17:5E:A9
+I/flutter (27059): [BleDiscovery] Registered BLE user mapping: F0:C3:71:17:5E:A9 -> user_an_nguyen (iZii-ios-mqpasi6u)
+I/flutter (27059): [BleSync] Starting outbox sync with peer: user_an_nguyen (F0:C3:71:17:5E:A9)
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 494
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 494
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 39
+I/flutter (27059): [BleDiscovery] Routing incoming packet: type=syncResponse from F0:C3:71:17:5E:A9
+I/flutter (27059): [BleSync] Received sync packet from device: local-device
+I/flutter (27059): [BleSync] Applying 4 mutations from peer...
+I/flutter (27059): [SyncService]    🔄 chat_messages → insert: id=add45edc-000c-4373-83f3-c972d0c9e357
+I/flutter (27059): [BleSync] Applied mutation successfully: chat_messages -> insert (id=add45edc-000c-4373-83f3-c972d0c9e357)
+I/flutter (27059): [SyncService]    🔄 leads → insert: id=dd841bee-fe7f-4f51-bcbf-faf9365ed86a
+I/flutter (27059): [BleSync] Applied mutation successfully: leads -> insert (id=dd841bee-fe7f-4f51-bcbf-faf9365ed86a)
+I/flutter (27059): [SyncService]    🔄 chat_messages → insert: id=1405ed12-bfc1-4657-9996-ef6bd045b526
+I/flutter (27059): [BleSync] Applied mutation successfully: chat_messages -> insert (id=1405ed12-bfc1-4657-9996-ef6bd045b526)
+I/flutter (27059): [BleSync] Syncing 4 mutations to peer...
+I/flutter (27059): [SyncService]    🔄 chat_messages → insert: id=1e3f7d0c-d20b-41fc-aa56-30d47a8dd4be
+I/flutter (27059): [BleSync] Applied mutation successfully: chat_messages -> insert (id=1e3f7d0c-d20b-41fc-aa56-30d47a8dd4be)
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [BleDiscovery] BLE Scan stopped.
+I/flutter (27059): [BleDiscovery] Stopped BLE Advertising.
+D/BluetoothLeAdvertiser(27059): Stop AdvertingSet
+I/flutter (27059): [BleDiscovery] Advertising status update: advertising=false, error=null
+D/BluetoothLeAdvertiser(27059): onAdvertisingSetStopped(0)
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+W/WindowOnBackDispatcher(27059): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@b46ec9f
+I/InputMethodManager_LC(27059): showSoftInput(View,I)
+I/ImeTracker(27059): com.izii.izii_app:b0c848b: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+I/InputMethodManager_LC(27059): ssi(): flags=0 view=com.izii.izii_app reason=SHOW_SOFT_INPUT
+I/InputMethodManager_LC(27059): ssi() view is not EditText
+D/InputMethodManagerUtils(27059): startInputInner - Id : 0
+I/InputMethodManager(27059): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+D/InsetsController(27059): show(ime(), fromIme=false)
+D/InsetsController(27059): Setting requestedVisibleTypes to -1 (was -9)
+I/InsetsController(27059): setRequestedVisibleTypes: visible=true, mask=ime, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1604 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343 android.view.InsetsController.show:1422 android.view.inputmethod.InputMethodManager.showSoftInput:2659 android.view.inputmethod.InputMethodManager.showSoftInput:2571 android.view.inputmethod.InputMethodManager.showSoftInput:2563 android.view.inputmethod.InputMethodManager.showSoftInput:2491 io.flutter.plugin.editing.TextInputPlugin.showTextInput:433 io.flutter.plugin.editing.TextInputPlugin$2.show:114
+D/InputTransport(27059): Input channel constructed: 'ClientS', fd=211
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/AssistStructure(27059): Flattened final assist data: 496 bytes, containing 1 windows, 3 views
+D/InputConnectionAdaptor(27059): The input method toggled cursor monitoring on
+I/InsetsController(27059): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/InsetsController(27059): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/InsetsController(27059): controlAnimationUncheckedInner: Added types=ime, animType=0, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1608 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343
+I/BLASTBufferQueue_Java(27059): update, w= 1080 h= 2340 mName = VRI[MainActivity]@f42e2ce mNativeObject= 0xb400007692a88fa0 sc.mNativeObject= 0xb4000077f29c1a50 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3574 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901
+I/VRI[MainActivity]@f42e2ce(27059): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=true req=(1080,2340)0 dur=1 res=0x0 s={true 0xb400007722a0d190} ch=false seqId=0
+W/InteractionJankMonitor(27059): Initializing without READ_DEVICE_CONFIG permission. enabled=false, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.izii.izii_app
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): registerCallbackForPendingTransactions
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a3bed0 mBlastBufferQueue=0xb400007692a88fa0 fn= 16 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829c9690 mBlastBufferQueue=0xb400007692a88fa0 fn= 16 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$10.onFrameDraw:6536 android.view.ViewRootImpl$4.onFrameDraw:2489 android.view.ThreadedRenderer$1.onFrameDraw:718
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829e2c90 mBlastBufferQueue=0xb400007692a88fa0 fn= 17 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a38dd0 mBlastBufferQueue=0xb400007692a88fa0 fn= 18 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a36750 mBlastBufferQueue=0xb400007692a88fa0 fn= 19 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a33f10 mBlastBufferQueue=0xb400007692a88fa0 fn= 20 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/InsetsController(27059): cancelAnimation: types=ime, animType=0, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.notifyFinished:2006 android.view.InsetsAnimationControlImpl.applyChangeInsets:335 android.view.InsetsController.lambda$new$3:957
+I/ImeTracker(27059): com.izii.izii_app:b0c848b: onShown
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829e2c90 mBlastBufferQueue=0xb400007692a88fa0 fn= 21 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (27059): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/TextInputPlugin(27059): Composing region changed by the framework. Restarting the input method.
+D/InputMethodManagerUtils(27059): startInputInner - Id : 0
+I/InputMethodManager(27059): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+W/RemoteInputConnectionImpl(27059): getExtractedText on inactive InputConnection
+D/InputTransport(27059): Input channel constructed: 'ClientS', fd=226
+W/RemoteInputConnectionImpl(27059): getExtractedText on inactive InputConnection
+D/InputConnectionAdaptor(27059): The input method toggled cursor monitoring on
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [ChatBloc] Companion is connected via BLE P2P. Sending message directly...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 494
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 39
+I/flutter (27059): [BleDiscovery] Routing incoming packet: type=message from F0:C3:71:17:5E:A9
+I/flutter (27059): [ChatWS] Cannot send event, WebSocket disconnected.
+I/flutter (27059): [ChatWS] Cannot send event, WebSocket disconnected.
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 494
+I/flutter (27059): [BleDiscovery] GATT Write received from F0:C3:71:17:5E:A9, length: 82
+I/flutter (27059): [BleDiscovery] Routing incoming packet: type=shareRequest from F0:C3:71:17:5E:A9
+I/flutter (27059): [BleDiscovery] Incoming share request from iZii-ios-mqpasi6u for Dịch vụ: Gardening
+I/ImeTracker(27059): com.izii.izii_app:c9e194e8: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+I/InputMethodManager_LC(27059): hsifw() - flag : 0
+I/InputMethodManager_LC(27059): hsifw() - mService.hideSoftInput
+D/InsetsController(27059): hide(ime(), fromIme=false)
+W/WindowOnBackDispatcher(27059): sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@bd29a15
+D/InsetsController(27059): Setting requestedVisibleTypes to -9 (was -1)
+I/InsetsController(27059): setRequestedVisibleTypes: visible=false, mask=ime, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1604 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343 android.view.InsetsController.hide:1540 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2889 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2812 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2773 io.flutter.plugin.editing.TextInputPlugin.hideTextInput:447 io.flutter.plugin.editing.TextInputPlugin.access$400:44 io.flutter.plugin.editing.TextInputPlugin$2.hide:122
+I/InsetsController(27059): controlAnimationUncheckedInner: Added types=ime, animType=1, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1608 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343
+D/CompatChangeReporter(27059): Compat change id reported: 395521150; UID 10407; state: ENABLED
+I/BLASTBufferQueue_Java(27059): update, w= 1080 h= 2340 mName = VRI[MainActivity]@f42e2ce mNativeObject= 0xb400007692a88fa0 sc.mNativeObject= 0xb4000077f29c1a50 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3574 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901
+I/VRI[MainActivity]@f42e2ce(27059): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=true req=(1080,2340)0 dur=0 res=0x0 s={true 0xb400007722a0d190} ch=false seqId=0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): registerCallbackForPendingTransactions
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829d0a10 mBlastBufferQueue=0xb400007692a88fa0 fn= 22 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829b4850 mBlastBufferQueue=0xb400007692a88fa0 fn= 22 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$10.onFrameDraw:6536 android.view.ViewRootImpl$4.onFrameDraw:2489 android.view.ThreadedRenderer$1.onFrameDraw:718
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a38350 mBlastBufferQueue=0xb400007692a88fa0 fn= 23 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a386d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 24 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a35b10 mBlastBufferQueue=0xb400007692a88fa0 fn= 25 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a14a90 mBlastBufferQueue=0xb400007692a88fa0 fn= 26 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a27b10 mBlastBufferQueue=0xb400007692a88fa0 fn= 27 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a2ded0 mBlastBufferQueue=0xb400007692a88fa0 fn= 28 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a2ecd0 mBlastBufferQueue=0xb400007692a88fa0 fn= 29 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a30e10 mBlastBufferQueue=0xb400007692a88fa0 fn= 30 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/InsetsController(27059): cancelAnimation: types=ime, animType=1, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.notifyFinished:2006 android.view.InsetsAnimationControlImpl.applyChangeInsets:335 android.view.InsetsController.lambda$new$3:957
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+D/InputMethodManagerUtils(27059): startInputInner - Id : 0
+I/InputMethodManager(27059): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829b44d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 31 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/InputTransport(27059): Input channel constructed: 'ClientS', fd=217
+I/InsetsController(27059): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=false mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/InsetsSourceConsumer(27059): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/ImeTracker(27059): system_server:a024b090: onCancelled at PHASE_CLIENT_ON_CONTROLS_CHANGED
+I/InsetsController(27059): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [BleDiscovery] User decision for shared record: approved
+I/flutter (27059): [SyncService]    🔄 service_items → insert: id=6748b434-5ee1-432d-bcf9-da33026f8d49
+I/flutter (27059): [BleDiscovery] Shared record applied locally: service_items ID: 6748b434-5ee1-432d-bcf9-da33026f8d49
+D/InputMethodManagerUtils(27059): startInputInner - Id : 0
+I/InputMethodManager(27059): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+I/InputMethodManager_LC(27059): showSoftInput(View,I)
+I/ImeTracker(27059): com.izii.izii_app:4ec53d5a: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+I/InputMethodManager_LC(27059): ssi(): flags=0 view=com.izii.izii_app reason=SHOW_SOFT_INPUT
+I/InputMethodManager_LC(27059): ssi() view is not EditText
+D/InsetsController(27059): show(ime(), fromIme=false)
+D/InsetsController(27059): Setting requestedVisibleTypes to -1 (was -9)
+I/InsetsController(27059): setRequestedVisibleTypes: visible=true, mask=ime, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1604 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343 android.view.InsetsController.show:1422 android.view.inputmethod.InputMethodManager.showSoftInput:2659 android.view.inputmethod.InputMethodManager.showSoftInput:2571 android.view.inputmethod.InputMethodManager.showSoftInput:2563 android.view.inputmethod.InputMethodManager.showSoftInput:2491 io.flutter.plugin.editing.TextInputPlugin.showTextInput:433 io.flutter.plugin.editing.TextInputPlugin$2.show:114
+D/InputTransport(27059): Input channel constructed: 'ClientS', fd=168
+I/flutter (27059): [BleDiscovery] Granted explicit local permission for shared record ID: 6748b434-5ee1-432d-bcf9-da33026f8d49
+I/flutter (27059): [BleDiscovery] No active authenticated session for izii-d-bc46ef4f. Cannot send.
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+D/InputConnectionAdaptor(27059): The input method toggled cursor monitoring on
+I/InsetsController(27059): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/InsetsController(27059): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/InsetsController(27059): controlAnimationUncheckedInner: Added types=ime, animType=0, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1608 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343
+I/BLASTBufferQueue_Java(27059): update, w= 1080 h= 2340 mName = VRI[MainActivity]@f42e2ce mNativeObject= 0xb400007692a88fa0 sc.mNativeObject= 0xb4000077f29c1a50 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3574 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901
+I/VRI[MainActivity]@f42e2ce(27059): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=true req=(1080,2340)0 dur=1 res=0x0 s={true 0xb400007722a0d190} ch=false seqId=0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): registerCallbackForPendingTransactions
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829c01d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 32 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829eaa90 mBlastBufferQueue=0xb400007692a88fa0 fn= 32 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$10.onFrameDraw:6536 android.view.ViewRootImpl$4.onFrameDraw:2489 android.view.ThreadedRenderer$1.onFrameDraw:718
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829a0b90 mBlastBufferQueue=0xb400007692a88fa0 fn= 33 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829ee290 mBlastBufferQueue=0xb400007692a88fa0 fn= 34 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829ec310 mBlastBufferQueue=0xb400007692a88fa0 fn= 35 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829eafd0 mBlastBufferQueue=0xb400007692a88fa0 fn= 36 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829ef5d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 37 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829eae10 mBlastBufferQueue=0xb400007692a88fa0 fn= 38 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829ee0d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 39 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829ed110 mBlastBufferQueue=0xb400007692a88fa0 fn= 40 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a298d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 41 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829d2990 mBlastBufferQueue=0xb400007692a88fa0 fn= 42 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829f0210 mBlastBufferQueue=0xb400007692a88fa0 fn= 43 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/InsetsController(27059): cancelAnimation: types=ime, animType=0, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.notifyFinished:2006 android.view.InsetsAnimationControlImpl.applyChangeInsets:335 android.view.InsetsController.lambda$new$3:957
+I/ImeTracker(27059): com.izii.izii_app:4ec53d5a: onShown
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829bcf10 mBlastBufferQueue=0xb400007692a88fa0 fn= 44 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/ImeTracker(27059): com.izii.izii_app:cc245b91: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+I/InputMethodManager_LC(27059): hsifw() - flag : 0
+I/InputMethodManager_LC(27059): hsifw() - mService.hideSoftInput
+D/InsetsController(27059): hide(ime(), fromIme=false)
+W/WindowOnBackDispatcher(27059): sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@bd29a15
+D/InsetsController(27059): Setting requestedVisibleTypes to -9 (was -1)
+I/InsetsController(27059): setRequestedVisibleTypes: visible=false, mask=ime, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1604 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343 android.view.InsetsController.hide:1540 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2889 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2812 android.view.inputmethod.InputMethodManager.hideSoftInputFromWindow:2773 io.flutter.plugin.editing.TextInputPlugin.hideTextInput:447 io.flutter.plugin.editing.TextInputPlugin.access$400:44 io.flutter.plugin.editing.TextInputPlugin$2.hide:122
+I/InsetsController(27059): controlAnimationUncheckedInner: Added types=ime, animType=1, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1608 android.view.InsetsController.applyAnimation:2416 android.view.InsetsController.applyAnimation:2343
+W/WindowOnBackDispatcher(27059): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@b46ec9f
+I/BLASTBufferQueue_Java(27059): update, w= 1080 h= 2340 mName = VRI[MainActivity]@f42e2ce mNativeObject= 0xb400007692a88fa0 sc.mNativeObject= 0xb4000077f29c1a50 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3574 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901
+I/VRI[MainActivity]@f42e2ce(27059): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=true req=(1080,2340)0 dur=1 res=0x0 s={true 0xb400007722a0d190} ch=false seqId=0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): registerCallbackForPendingTransactions
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829eeb50 mBlastBufferQueue=0xb400007692a88fa0 fn= 45 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829ed9d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 45 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$10.onFrameDraw:6536 android.view.ViewRootImpl$4.onFrameDraw:2489 android.view.ThreadedRenderer$1.onFrameDraw:718
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829e7b50 mBlastBufferQueue=0xb400007692a88fa0 fn= 46 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829ef250 mBlastBufferQueue=0xb400007692a88fa0 fn= 47 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829ed650 mBlastBufferQueue=0xb400007692a88fa0 fn= 48 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a363d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 49 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a34610 mBlastBufferQueue=0xb400007692a88fa0 fn= 50 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a33f10 mBlastBufferQueue=0xb400007692a88fa0 fn= 51 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a38dd0 mBlastBufferQueue=0xb400007692a88fa0 fn= 52 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a3bed0 mBlastBufferQueue=0xb400007692a88fa0 fn= 53 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a2bd90 mBlastBufferQueue=0xb400007692a88fa0 fn= 54 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a2c9d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 55 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782a2db50 mBlastBufferQueue=0xb400007692a88fa0 fn= 56 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+I/InsetsController(27059): cancelAnimation: types=ime, animType=1, host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.InsetsController.notifyFinished:2006 android.view.InsetsAnimationControlImpl.applyChangeInsets:335 android.view.InsetsController.lambda$new$3:957
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+D/FlutterJNI(27059): Sending viewport metrics to the engine.
+D/InputMethodManagerUtils(27059): startInputInner - Id : 0
+I/InputMethodManager(27059): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829c01d0 mBlastBufferQueue=0xb400007692a88fa0 fn= 57 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:100 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:73 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$afI4fXg3U3-nBZQEDQMiNy-B06s:0
+D/InputTransport(27059): Input channel constructed: 'ClientS', fd=206
+I/InsetsController(27059): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,1332][1080,2340] mVisible=false mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/InsetsSourceConsumer(27059): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/ImeTracker(27059): system_server:94a176fd: onCancelled at PHASE_CLIENT_ON_CONTROLS_CHANGED
+I/InsetsController(27059): onStateChanged: host=com.izii.izii_app/com.izii.izii_app.MainActivity, from=android.view.ViewRootImpl.onInsetsStateChanged:3026, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2340), mDisplayCutout=DisplayCutout{insets=Rect(0, 92 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(505, 0 - 575, 92), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2340 physicalDisplayWidth=1080 physicalDisplayHeight=2340 density={2.8125} cutoutSpec={M 0,0 M 0, 8.177777777777778 a 12.26666666666667,12.26666666666667 0 1,0 0,24.53333333333333 a 12.26666666666667,12.26666666666667 0 1,0 0,-24.53333333333333 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}} sideOverrides={}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=118, center=Point(118, 118)}, RoundedCorner{position=TopRight, radius=118, center=Point(962, 118)}, RoundedCorner{position=BottomRight, radius=118, center=Point(962, 2222)}, RoundedCorner{position=BottomLeft, radius=118, center=Point(118, 2222)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2340), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 92) rotation=0}, mDisplayShape=DisplayShape{ spec=1406003047 displayWidth=1080 displayHeight=2340 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85a00001 mType=navigationBars mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {85a00005 mType=mandatorySystemGestures mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00006 mType=tappableElement mFrame=[0,2205][1080,2340] mVisible=true mFlags= mSideHint=BOTTOM mBoundingRects=null}, InsetsSource: {85a00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags= mSideHint=NONE mBoundingRects=null}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80000 mType=statusBars mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80005 mType=mandatorySystemGestures mFrame=[0,0][1080,126] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null}, InsetsSource: {44a80006 mType=tappableElement mFrame=[0,0][1080,92] mVisible=true mFlags= mSideHint=TOP mBoundingRects=null} }
+I/VRI[MainActivity]@f42e2ce(27059): handleResized, frames=ClientWindowFrames{frame=[0,0][1080,2340] display=[0,0][1080,2340] parentFrame=[0,0][0,0]} displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false dragResizingChanged=false
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+W/WindowOnBackDispatcher(27059): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@b46ec9f
+W/WindowOnBackDispatcher(27059): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@b46ec9f
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@f42e2ce
+I/ImeFocusController(27059): onPreWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+I/ImeFocusController(27059): onPostWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+D/InputTransport(27059): Input channel destroyed: 'ClientS', fd=242
+I/VRI[MainActivity]@f42e2ce(27059): handleAppVisibility mAppVisible = true visible = false
+D/VRI[MainActivity]@f42e2ce(27059): visibilityChanged oldVisibility=true newVisibility=false
+I/SV[135307819 MainActivity](27059): onWindowVisibilityChanged(8) false io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ........ 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+I/SurfaceView(27059): 135307819 Changes: creating=false format=false size=false visible=true alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView(27059): 135307819 Cur surface: Surface(name=null mNativeObject=-5476376635200445216)/@0x309d13a
+D/SurfaceComposerClient(27059): setCornerRadius ## 810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#28999 cornerRadius=0.000000
+I/SurfaceView(27059): 135307819 surfaceDestroyed
+I/SV[135307819 MainActivity](27059): surfaceDestroyed callback.size 1 #2 io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ........ 0,0-1080,2340}
+I/SV[135307819 MainActivity](27059): updateSurface: mVisible = false mSurface.isValid() = true
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+V/SurfaceView(27059): Layout: x=0 y=0 w=1080 h=2340, frame=Rect(0, 0 - 1080, 2340)
+D/SurfaceView(27059): 248340537 windowPositionLost, frameNr = 0
+D/HWUI    (27059): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@f42e2ce(27059): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)8 dur=9 res=0x2 s={false 0x0} ch=true seqId=0
+I/SV[135307819 MainActivity](27059): windowStopped(true) false io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ........ 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(27059): applyTransactionOnDraw applyImmediately
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(27059): applyTransactionOnDraw applyImmediately
+D/VRI[MainActivity]@f42e2ce(27059): Not drawing due to not visible. Reason=!mAppVisible && !mForceDecorViewVisibility
+D/VRI[MainActivity]@f42e2ce(27059): Pending transaction will not be applied in sync with a draw due to view not visible
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829b0410 mBlastBufferQueue=0xnull fn= 0 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl.handleSyncRequestWhenNoAsyncDraw:6733 android.view.ViewRootImpl.performTraversals:5504 android.view.ViewRootImpl.doTraversal:3924
+D/HWUI    (27059): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@f42e2ce(27059): stopped(true) old = false
+D/VRI[MainActivity]@f42e2ce(27059): WindowStopped on com.izii.izii_app/com.izii.izii_app.MainActivity set to true
+D/HWUI    (27059): CacheManager::trimMemory(20)
+I/AutofillManager(27059): onInvisibleForAutofill(): expiringResponse
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(27059): applyTransactionOnDraw applyImmediately
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(27059): applyTransactionOnDraw applyImmediately
+D/BBA2    (27059): setIsFg isFg = false; delayValue 3999ms
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/VRI[MainActivity]@f42e2ce(27059): handleAppVisibility mAppVisible = false visible = true
+I/VRI[MainActivity]@f42e2ce(27059): stopped(false) old = true
+D/VRI[MainActivity]@f42e2ce(27059): WindowStopped on com.izii.izii_app/com.izii.izii_app.MainActivity set to false
+D/ViewRootImpl(27059): Skipping stats log for color mode
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(27059): applyTransactionOnDraw applyImmediately
+I/SV[135307819 MainActivity](27059): onWindowVisibilityChanged(0) false io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ......ID 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(27059): applyTransactionOnDraw applyImmediately
+I/BufferQueueProducer(27059): [](id:69b300000004,api:0,p:-761484816,c:27059) setDequeueTimeout:2077252342
+I/BLASTBufferQueue_Java(27059): new BLASTBufferQueue, mName= VRI[MainActivity]@f42e2ce mNativeObject= 0xb400007692a88fa0 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3585 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 android.view.Choreographer$CallbackRecord.run:1910 android.view.Choreographer.doCallbacks:1367 android.view.Choreographer.doFrame:1292 android.view.Choreographer$FrameDisplayEventReceiver.run:1870
+I/BLASTBufferQueue_Java(27059): update, w= 1080 h= 2340 mName = VRI[MainActivity]@f42e2ce mNativeObject= 0xb400007692a88fa0 sc.mNativeObject= 0xb4000077f29ceb90 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3590 android.view.ViewRootImpl.relayoutWindow:11685 android.view.ViewRootImpl.performTraversals:4804 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901
+I/VRI[MainActivity]@f42e2ce(27059): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)0 dur=18 res=0x3 s={true 0xb400007722a09e10} ch=true seqId=0
+D/VRI[MainActivity]@f42e2ce(27059): mThreadedRenderer.initialize() mSurface={isValid=true 0xb400007722a09e10} hwInitialized=true
+I/SurfaceView(27059): 135307819 Changes: creating=false format=false size=false visible=false alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SV[135307819 MainActivity](27059): windowStopped(false) true io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ......ID 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+I/SurfaceView(27059): 135307819 Changes: creating=true format=false size=false visible=true alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/BufferQueueProducer(27059): [](id:69b300000005,api:0,p:0,c:27059) setDequeueTimeout:2077252342
+I/BLASTBufferQueue_Java(27059): new BLASTBufferQueue, mName= 810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0 mNativeObject= 0xb400007692a6adc0 caller= android.view.SurfaceView.createBlastSurfaceControls:1781 android.view.SurfaceView.updateSurface:1450 android.view.SurfaceView.setWindowStopped:539 android.view.SurfaceView.surfaceCreated:2327 android.view.ViewRootImpl.notifySurfaceCreated:3502 android.view.ViewRootImpl.performTraversals:5286 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 android.view.Choreographer$CallbackRecord.run:1910
+I/BLASTBufferQueue_Java(27059): update, w= 1080 h= 2340 mName = 810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0 mNativeObject= 0xb400007692a6adc0 sc.mNativeObject= 0xb4000077f29c1a50 format= 4 caller= android.view.SurfaceView.createBlastSurfaceControls:1782 android.view.SurfaceView.updateSurface:1450 android.view.SurfaceView.setWindowStopped:539 android.view.SurfaceView.surfaceCreated:2327 android.view.ViewRootImpl.notifySurfaceCreated:3502 android.view.ViewRootImpl.performTraversals:5286
+I/SurfaceView(27059): 135307819 Cur surface: Surface(name=null mNativeObject=0)/@0x309d13a
+D/SurfaceComposerClient(27059): setCornerRadius ## 810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#29035 cornerRadius=0.000000
+I/SV[135307819 MainActivity](27059): pST: sr = Rect(0, 0 - 1080, 2340) sw = 1080 sh = 2340
+D/SurfaceView(27059): 135307819 performSurfaceTransaction RenderWorker position = [0, 0, 1080, 2340] surfaceSize = 1080x2340
+I/SV[135307819 MainActivity](27059): updateSurface: mVisible = true mSurface.isValid() = true
+I/SV[135307819 MainActivity](27059): updateSurface: mSurfaceCreated = false surfaceChanged = true visibleChanged = true
+I/SurfaceView(27059): 135307819 visibleChanged -- surfaceCreated
+I/SV[135307819 MainActivity](27059): surfaceCreated 1 #1 io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ......ID 0,0-1080,2340}
+I/SurfaceView(27059): 135307819 surfaceChanged -- format=4 w=1080 h=2340
+I/SV[135307819 MainActivity](27059): surfaceChanged (1080,2340) 1 #1 io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ......ID 0,0-1080,2340}
+I/SurfaceView(27059): 135307819 surfaceRedrawNeeded
+V/SurfaceView(27059): Layout: x=0 y=0 w=1080 h=2340, frame=Rect(0, 0 - 1080, 2340)
+D/VRI[MainActivity]@f42e2ce(27059): reportNextDraw android.view.ViewRootImpl.performTraversals:5443 android.view.ViewRootImpl.doTraversal:3924 android.view.ViewRootImpl$TraversalRunnable.run:12903 android.view.Choreographer$CallbackRecord.run:1901 android.view.Choreographer$CallbackRecord.run:1910
+D/VRI[MainActivity]@f42e2ce(27059): Setup new sync=wmsSync-VRI[MainActivity]@f42e2ce#5
+I/VRI[MainActivity]@f42e2ce(27059): Creating new active sync group VRI[MainActivity]@f42e2ce#6
+D/VRI[MainActivity]@f42e2ce(27059): Start draw after previous draw not visible
+D/VRI[MainActivity]@f42e2ce(27059): registerCallbacksForSync syncBuffer=false
+D/SurfaceView(27059): 135307819 updateSurfacePosition RenderWorker, frameNr = 1, position = [0, 0, 1080, 2340] surfaceSize = 1080x2340
+I/SV[135307819 MainActivity](27059): uSP: rtp = Rect(0, 0 - 1080, 2340) rtsw = 1080 rtsh = 2340
+I/SV[135307819 MainActivity](27059): onSSPAndSRT: pl = 0 pt = 0 sx = 1.0 sy = 1.0
+I/SV[135307819 MainActivity](27059): aOrMT: VRI[MainActivity]@f42e2ce t = android.view.SurfaceControl$Transaction@715e756 fN = 1 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1932 android.graphics.RenderNode$CompositePositionUpdateListener.positionChanged:401
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829eed10 mBlastBufferQueue=0xb400007692a88fa0 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1863 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1932
+D/VRI[MainActivity]@f42e2ce(27059): Received frameDrawingCallback syncResult=0 frameNum=1.
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829bf590 mBlastBufferQueue=0xb400007692a88fa0 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$12.onFrameDraw:15441 android.view.ThreadedRenderer$1.onFrameDraw:718 <bottom of call stack>
+I/VRI[MainActivity]@f42e2ce(27059): Setting up sync and frameCommitCallback
+I/BLASTBufferQueue(27059): [VRI[MainActivity]@f42e2ce#4](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/SurfaceComposerClient(27059): apply transaction with the first frame. layerId: 29028, bufferData(ID: 116217520062513, frameNumber: 1)
+I/VRI[MainActivity]@f42e2ce(27059): Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true
+I/InsetsSourceConsumer(27059): applyRequestedVisibilityToControl: visible=true, type=statusBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/InsetsSourceConsumer(27059): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.izii.izii_app/com.izii.izii_app.MainActivity
+I/BLASTBufferQueue(27059): [810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#5](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/SurfaceComposerClient(27059): apply transaction with the first frame. layerId: 29036, bufferData(ID: 116217520062508, frameNumber: 1)
+D/VRI[MainActivity]@f42e2ce(27059): reportDrawFinished seqId=0
+I/SurfaceView(27059): 135307819 finishedDrawing
+D/VRI[MainActivity]@f42e2ce(27059): mThreadedRenderer.initializeIfNeeded()#2 mSurface={isValid=true 0xb400007722a09e10}
+D/InputMethodManagerUtils(27059): startInputInner - Id : 0
+I/InputMethodManager(27059): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+I/InputMethodManager(27059): handleMessage: setImeVisibility visible=false
+D/InsetsController(27059): hide(ime(), fromIme=false)
+I/ImeTracker(27059): com.izii.izii_app:9e61c54c: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+D/InputTransport(27059): Input channel constructed: 'ClientS', fd=189
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@f42e2ce
+W/WindowOnBackDispatcher(27059): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@b46ec9f
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (27059): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@f42e2ce
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+W/WindowOnBackDispatcher(27059): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@b46ec9f
+I/VRI[MainActivity]@f42e2ce(27059): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@f42e2ce
+I/flutter (27059): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection timed out (OS Error: Connection timed out, errno = 110), address = 10.146.147.160, port = 57190
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [ChatWS] Retrying connection...
+I/flutter (27059): [ChatWS] Connecting to ws://10.146.147.160:8080/chat ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/flutter (27059): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] ❌ Lỗi kết nối tới server (http://10.146.147.160:8080):
+I/flutter (27059): [SyncService]    → Hết thời gian chờ kết nối (Connection Timeout).
+I/VRI[MainActivity]@f42e2ce(27059): handleAppVisibility mAppVisible = true visible = false
+D/VRI[MainActivity]@f42e2ce(27059): visibilityChanged oldVisibility=true newVisibility=false
+I/VRI[MainActivity]@f42e2ce(27059): stopped(true) old = false
+D/VRI[MainActivity]@f42e2ce(27059): WindowStopped on com.izii.izii_app/com.izii.izii_app.MainActivity set to true
+D/HWUI    (27059): CacheManager::trimMemory(20)
+D/SurfaceView(27059): 101246579 windowPositionLost, frameNr = 0
+I/SV[135307819 MainActivity](27059): aOrMT: VRI[MainActivity]@f42e2ce t = android.view.SurfaceControl$Transaction@7f35930 fN = 0 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionLost:2025 android.graphics.RenderNode$CompositePositionUpdateListener.positionLost:418
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb400007782996390 mBlastBufferQueue=0xb400007692a88fa0 fn= 0 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1863 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionLost:2025
+I/SV[135307819 MainActivity](27059): windowStopped(true) false io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ........ 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+I/SurfaceView(27059): 135307819 Changes: creating=false format=false size=false visible=true alpha=false hint=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView(27059): 135307819 Cur surface: Surface(name=null mNativeObject=-5476376635200443568)/@0x309d13a
+D/SurfaceComposerClient(27059): setCornerRadius ## 810a22b SurfaceView[com.izii.izii_app/com.izii.izii_app.MainActivity]@0#29035 cornerRadius=0.000000
+I/SurfaceView(27059): 135307819 surfaceDestroyed
+I/SV[135307819 MainActivity](27059): surfaceDestroyed callback.size 1 #1 io.flutter.embedding.android.FlutterSurfaceView{810a22b V.E...... ........ 0,0-1080,2340}
+I/SV[135307819 MainActivity](27059): updateSurface: mVisible = false mSurface.isValid() = true
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+V/SurfaceView(27059): Layout: x=0 y=0 w=1080 h=2340, frame=Rect(0, 0 - 1080, 2340)
+I/AutofillManager(27059): onInvisibleForAutofill(): expiringResponse
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+I/SV[135307819 MainActivity](27059): onWindowVisibilityChanged(8) false io.flutter.embedding.android.FlutterSurfaceView{810a22b G.E...... ......I. 0,0-1080,2340} of VRI[MainActivity]@f42e2ce
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/HWUI    (27059): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@f42e2ce(27059): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)8 dur=7 res=0x2 s={false 0x0} ch=false seqId=0
+D/SV[135307819 MainActivity](27059): updateSurface: surface is not valid
+I/SV[135307819 MainActivity](27059): releaseSurfaces: viewRoot = VRI[MainActivity]@f42e2ce
+D/VRI[MainActivity]@f42e2ce(27059): applyTransactionOnDraw applyImmediately
+D/VRI[MainActivity]@f42e2ce(27059): Not drawing due to not visible. Reason=!mAppVisible && !mForceDecorViewVisibility
+D/VRI[MainActivity]@f42e2ce(27059): Pending transaction will not be applied in sync with a draw due to view not visible
+I/VRI[MainActivity]@f42e2ce(27059): mWNT: t=0xb4000077829b0410 mBlastBufferQueue=0xnull fn= 0 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl.handleSyncRequestWhenNoAsyncDraw:6733 android.view.ViewRootImpl.performTraversals:5504 android.view.ViewRootImpl.doTraversal:3924
+D/HWUI    (27059): CacheManager::trimMemory(20)
+I/VRI[MainActivity]@f42e2ce(27059): onDisplayChanged oldDisplayState=2 newDisplayState=1
+I/ImeFocusController(27059): onPreWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+I/ImeFocusController(27059): onPostWindowFocus: skipped hasWindowFocus=false mHasImeFocus=true
+I/flutter (27059): [SyncService] Đang kết nối tới server: http://10.146.147.160:8080 ...
+I/flutter (27059): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter (27059): [SyncService] Đang gửi 18 thay đổi lên server...
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 contacts → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 deals → update
+I/flutter (27059): [SyncService]    📦 service_items → insert
+I/flutter (27059): [SyncService]    📦 service_items → update
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 chat_messages → insert
+I/flutter (27059): [SyncService]    📦 leads → insert
+I/flutter (27059): [SyncService]    📦 leads → update
+I/flutter (27059): [SyncService]    📦 service_items → insert

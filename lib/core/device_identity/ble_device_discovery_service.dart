@@ -36,6 +36,12 @@ class BleDeviceDiscoveryService {
   static const String serviceUuid = 'f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c';
   static const String charUuid = 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d';
 
+  String get _normalizedServiceUuid =>
+      Platform.isIOS || Platform.isMacOS ? serviceUuid.toUpperCase() : serviceUuid;
+
+  String get _normalizedCharUuid =>
+      Platform.isIOS || Platform.isMacOS ? charUuid.toUpperCase() : charUuid;
+
   bool _isAdvertising = false;
   bool _isBlePeripheralInitialized = false;
 
@@ -100,11 +106,11 @@ class BleDeviceDiscoveryService {
       await BlePeripheral.clearServices();
 
       final bleService = BleService(
-        uuid: serviceUuid,
+        uuid: _normalizedServiceUuid,
         primary: true,
         characteristics: [
           BleCharacteristic(
-            uuid: charUuid,
+            uuid: _normalizedCharUuid,
             properties: [
               CharacteristicProperties.write.index,
               CharacteristicProperties.writeWithoutResponse.index,
@@ -184,7 +190,7 @@ class BleDeviceDiscoveryService {
       if (msg2 != null) {
         print('[BleDiscovery] Message 1 processed. Sending Message 2 to $remoteDeviceId...');
         await BlePeripheral.updateCharacteristic(
-          characteristicId: charUuid,
+          characteristicId: _normalizedCharUuid,
           value: Uint8List.fromList(msg2),
         );
       } else {
@@ -244,7 +250,7 @@ class BleDeviceDiscoveryService {
       final localName = Platform.isAndroid ? null : identity.deviceName;
 
       await BlePeripheral.startAdvertising(
-        services: [serviceUuid],
+        services: [_normalizedServiceUuid],
         localName: localName,
       );
       _isAdvertising = true;
@@ -694,7 +700,7 @@ class BleDeviceDiscoveryService {
         } else {
           // Server (Responder) role: Update the local characteristic and notify
           await BlePeripheral.updateCharacteristic(
-            characteristicId: charUuid,
+            characteristicId: _normalizedCharUuid,
             value: Uint8List.fromList(bytes),
           );
         }
