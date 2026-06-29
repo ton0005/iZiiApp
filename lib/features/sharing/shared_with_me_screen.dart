@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' hide Column;
 import '../../core/database/app_database.dart';
 import '../../core/theme/izii_colors.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/settings/settings_service.dart';
+import '../../modules/sales_crm/bloc/crm_bloc.dart';
 import '../../modules/sales_crm/screens/edit_lead_screen.dart';
 import '../../modules/sales_crm/screens/deal_detail_screen.dart';
 import '../../modules/services/screens/edit_service_screen.dart';
@@ -19,6 +22,16 @@ User _defaultUser(
     kycStatus: 'none',
     createdAt: DateTime.now(),
   );
+}
+
+Map<String, dynamic> _decodeCustomFields(String raw) {
+  try {
+    final decoded = jsonDecode(raw);
+    if (decoded is Map) {
+      return decoded.map((key, value) => MapEntry(key.toString(), value));
+    }
+  } catch (_) {}
+  return {};
 }
 
 class SharedWithMeScreen extends StatefulWidget {
@@ -302,7 +315,8 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
             onTap: () async {
               final recType = rec['record_type'] as String? ?? type;
               if (recType == 'leads') {
-                final lead = await (_db.select(_db.leads)..where((tbl) => tbl.id.equals(rec['id'] as String))).getSingleOrNull();
+                final lead =
+                    await CrmRepository().getLeadById(rec['id'] as String);
                 if (lead != null && context.mounted) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -311,20 +325,51 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
                   ).then((_) => _loadSharedRecords());
                 }
               } else if (recType == 'deals') {
-                final deal = await (_db.select(_db.deals)..where((tbl) => tbl.id.equals(rec['id'] as String))).getSingleOrNull();
+                final deal = await (_db.select(_db.deals)
+                      ..where((tbl) => tbl.id.equals(rec['id'] as String)))
+                    .getSingleOrNull();
                 if (deal != null && context.mounted) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => DealDetailScreen(deal: deal),
+                      builder: (_) => DealDetailScreen(
+                        deal: {
+                          'id': deal.id,
+                          'title': deal.title,
+                          'amount': deal.amount,
+                          'stage': deal.stage,
+                          'expected_close_date':
+                              deal.expectedCloseDate?.toIso8601String(),
+                          'created_at': deal.createdAt.toIso8601String(),
+                          'lead_id': deal.leadId,
+                          'contact_id': deal.contactId,
+                          'source': deal.source,
+                          'owner_id': deal.ownerId,
+                        },
+                      ),
                     ),
                   ).then((_) => _loadSharedRecords());
                 }
               } else if (recType == 'service_items') {
-                final service = await (_db.select(_db.serviceItems)..where((tbl) => tbl.id.equals(rec['id'] as String))).getSingleOrNull();
+                final service = await (_db.select(_db.serviceItems)
+                      ..where((tbl) => tbl.id.equals(rec['id'] as String)))
+                    .getSingleOrNull();
                 if (service != null && context.mounted) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => EditServiceScreen(service: service),
+                      builder: (_) => EditServiceScreen(
+                        service: {
+                          'id': service.id,
+                          'name': service.name,
+                          'category': service.category,
+                          'hourly_rate': service.hourlyRate,
+                          'estimated_hours': service.estimatedHours,
+                          'description': service.description ?? '',
+                          'is_active': service.isActive,
+                          'custom_fields':
+                              _decodeCustomFields(service.customFields),
+                          'created_at': service.createdAt.toIso8601String(),
+                        },
+                      ),
                     ),
                   ).then((_) => _loadSharedRecords());
                 }
