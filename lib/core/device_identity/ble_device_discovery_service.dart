@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:typed_data';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_blue_plus/flutter_blue_plus.dart'
     hide CharacteristicProperties;
@@ -957,6 +958,7 @@ class BleDeviceDiscoveryService {
       final Map<String, dynamic> shareData = jsonDecode(jsonStr) as Map<String, dynamic>;
       
       final senderName = shareData['sender_name'] as String? ?? 'Ai đó';
+      final senderUserId = shareData['sender_user_id'] as String? ?? 'unknown_sender';
       final table = shareData['table'] as String;
       final recordData = Map<String, dynamic>.from(shareData['data'] as Map);
       
@@ -1008,6 +1010,28 @@ class BleDeviceDiscoveryService {
             'data': recordData,
           }, force: true);
           print('[BleDiscovery] Shared record applied locally: $table ID: ${recordData['id']}');
+          
+          // Grant explicit permission locally for 'team' visibility records
+          if (table == 'leads' || table == 'deals' || table == 'service_items') {
+            try {
+              final activeUserId = await SettingsService().getActiveUserId();
+              final db = AppDatabase();
+              await db.into(db.recordSharingPermissions).insert(
+                RecordSharingPermissionsCompanion.insert(
+                  id: const Uuid().v4(),
+                  recordType: table,
+                  recordId: recordData['id'] as String,
+                  sharedWith: activeUserId,
+                  sharedBy: senderUserId,
+                  permissionLevel: const Value('edit'),
+                ),
+                mode: InsertMode.insertOrReplace,
+              );
+              print('[BleDiscovery] Granted explicit local permission for shared record ID: ${recordData['id']}');
+            } catch (e) {
+              print('[BleDiscovery] Error granting sharing permission locally: $e');
+            }
+          }
           
           _shareCompletedController.add(table);
           
@@ -1093,8 +1117,10 @@ class BleDeviceDiscoveryService {
   }) async {
     try {
       final identity = await _identityService.getOrCreateIdentity();
+      final currentUserId = await SettingsService().getActiveUserId();
       final shareData = {
         'sender_name': identity.deviceName,
+        'sender_user_id': currentUserId,
         'table': table,
         'data': recordData,
       };

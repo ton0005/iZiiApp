@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/device_identity/ble_device_discovery_service.dart';
+import '../../../core/sync/sharing_repository.dart';
+import '../../../core/settings/settings_service.dart';
 import '../bloc/crm_bloc.dart';
 import '../ui/lead_form.dart';
 import 'deal_detail_screen.dart';
@@ -165,10 +167,35 @@ class _EditLeadScreenState extends State<EditLeadScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Đang gửi yêu cầu chia sẻ cơ hội tới ${peer['name']}...')),
                         );
+                        
+                        final targetUserId = peer['userId'] ?? 'unknown_recipient';
+                        final leadId = widget.lead['id'] as String;
+                        
+                        // 1. Update visibility to 'team' in local database and grant local permission for the recipient
+                        try {
+                          final currentUserId = await SettingsService().getActiveUserId();
+                          await SharingRepository().updateRecordVisibility(
+                            userId: currentUserId,
+                            recordType: 'leads',
+                            recordId: leadId,
+                            visibility: 'team',
+                            audience: [targetUserId],
+                            permissionLevel: 'edit',
+                          );
+                          print('[EditLeadScreen] Successfully set visibility to team for lead $leadId locally.');
+                        } catch (e) {
+                          print('[EditLeadScreen] Error setting visibility or granting local permission: $e');
+                        }
+
+                        // 2. Share with peer with visibility set to team in payload
+                        final sharedData = {
+                          ...widget.lead,
+                          'visibility': 'team',
+                        };
                         final success = await bleDiscovery.shareRecordWithPeer(
                           remoteDeviceId: peer['deviceId']!,
                           table: 'leads',
-                          recordData: widget.lead,
+                          recordData: sharedData,
                         );
                         if (!success && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
