@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/windows/flutter"
+    "cmake.sourceDirectory": "C:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/windows/flutter",
+    "sarif-viewer.connectToGithubCodeScanning": "off"
 }

@@ -9,10 +9,12 @@ class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
 
   @override
-  State<NotificationSettingsScreen> createState() => _NotificationSettingsScreenState();
+  State<NotificationSettingsScreen> createState() =>
+      _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+class _NotificationSettingsScreenState
+    extends State<NotificationSettingsScreen> {
   final NotificationService _notificationService = NotificationService();
   bool _isLoading = true;
   List<NotificationSettingsTableData> _settings = [];
@@ -40,7 +42,13 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
     // Populate mock configs if SQLite is completely empty
     if (localSettings.isEmpty) {
-      final defaultEvents = ['new_message', 'new_group_message', 'mention', 'added_to_group', 'missed_call'];
+      final defaultEvents = [
+        'new_message',
+        'new_group_message',
+        'mention',
+        'added_to_group',
+        'missed_call'
+      ];
       for (var ev in defaultEvents) {
         final mockSetting = NotificationSettingsTableData(
           userId: userId,
@@ -50,7 +58,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           enableEmail: true,
           digestFrequency: 'instant',
         );
-        await db.into(db.notificationSettingsTable).insertOnConflictUpdate(mockSetting);
+        await db
+            .into(db.notificationSettingsTable)
+            .insertOnConflictUpdate(mockSetting);
       }
       final reloaded = await (db.select(db.notificationSettingsTable)
             ..where((t) => t.userId.equals(userId)))
@@ -106,7 +116,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     }
   }
 
-  Future<void> _toggleChannel(NotificationSettingsTableData setting, String channel, bool enabled) async {
+  Future<void> _toggleChannel(NotificationSettingsTableData setting,
+      String channel, bool enabled) async {
     final updated = NotificationSettingsTableData(
       userId: setting.userId,
       eventType: setting.eventType,
@@ -118,7 +129,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
     // Optimistic UI update
     setState(() {
-      final index = _settings.indexWhere((s) => s.eventType == setting.eventType);
+      final index =
+          _settings.indexWhere((s) => s.eventType == setting.eventType);
       if (index != -1) {
         _settings[index] = updated;
       }
@@ -132,7 +144,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     }
   }
 
-  Future<void> _changeFrequency(NotificationSettingsTableData setting, String freq) async {
+  Future<void> _changeFrequency(
+      NotificationSettingsTableData setting, String freq) async {
     final updated = NotificationSettingsTableData(
       userId: setting.userId,
       eventType: setting.eventType,
@@ -143,7 +156,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     );
 
     setState(() {
-      final index = _settings.indexWhere((s) => s.eventType == setting.eventType);
+      final index =
+          _settings.indexWhere((s) => s.eventType == setting.eventType);
       if (index != -1) {
         _settings[index] = updated;
       }
@@ -159,7 +173,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     return Scaffold(
       backgroundColor: ChatTheme.getBgPrimary(isDark),
       appBar: AppBar(
-        title: const Text('Cấu hình Thông báo', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Cấu hình Thông báo',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
         elevation: 1,
       ),
@@ -179,13 +194,16 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                     final setting = _settings[index];
 
                     return Card(
-                      color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
+                      color:
+                          isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
                       elevation: 0,
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                         side: BorderSide(
-                          color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                          color: isDark
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade200,
                         ),
                       ),
                       child: Padding(
@@ -195,7 +213,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                           children: [
                             Row(
                               children: [
-                                Icon(_getEventIcon(setting.eventType), color: ChatTheme.getAccent(isDark)),
+                                Icon(_getEventIcon(setting.eventType),
+                                    color: ChatTheme.getAccent(isDark)),
                                 const SizedBox(width: 12),
                                 Text(
                                   _getEventLabel(setting.eventType),
@@ -212,25 +231,29 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                             _buildChannelToggle(
                               label: 'Push Notification (Real-time)',
                               value: setting.enablePush,
-                              onChanged: (val) => _toggleChannel(setting, 'push', val),
+                              onChanged: (val) =>
+                                  _toggleChannel(setting, 'push', val),
                               isDark: isDark,
                             ),
                             _buildChannelToggle(
                               label: 'In-app Notification (Hộp thư)',
                               value: setting.enableInApp,
-                              onChanged: (val) => _toggleChannel(setting, 'in_app', val),
+                              onChanged: (val) =>
+                                  _toggleChannel(setting, 'in_app', val),
                               isDark: isDark,
                             ),
                             _buildChannelToggle(
                               label: 'Email Notification',
                               value: setting.enableEmail,
-                              onChanged: (val) => _toggleChannel(setting, 'email', val),
+                              onChanged: (val) =>
+                                  _toggleChannel(setting, 'email', val),
                               isDark: isDark,
                             ),
                             if (setting.enableEmail) ...[
                               const SizedBox(height: 12),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Tần suất Email:',
@@ -241,17 +264,27 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                                   ),
                                   DropdownButton<String>(
                                     value: setting.digestFrequency,
-                                    dropdownColor: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
+                                    dropdownColor: isDark
+                                        ? ChatTheme.bgBubbleTheirsDark
+                                        : Colors.white,
                                     style: TextStyle(
                                       color: ChatTheme.getTextPrimary(isDark),
                                       fontWeight: FontWeight.w500,
                                     ),
                                     underline: const SizedBox(),
                                     items: const [
-                                      DropdownMenuItem(value: 'instant', child: Text('Tức thời')),
-                                      DropdownMenuItem(value: 'hourly', child: Text('Hàng giờ')),
-                                      DropdownMenuItem(value: 'daily', child: Text('Hàng ngày (Digest)')),
-                                      DropdownMenuItem(value: 'never', child: Text('Không bao giờ')),
+                                      DropdownMenuItem(
+                                          value: 'instant',
+                                          child: Text('Tức thời')),
+                                      DropdownMenuItem(
+                                          value: 'hourly',
+                                          child: Text('Hàng giờ')),
+                                      DropdownMenuItem(
+                                          value: 'daily',
+                                          child: Text('Hàng ngày (Digest)')),
+                                      DropdownMenuItem(
+                                          value: 'never',
+                                          child: Text('Không bao giờ')),
                                     ],
                                     onChanged: (val) {
                                       if (val != null) {
@@ -291,7 +324,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           ),
           Switch(
             value: value,
-            activeColor: ChatTheme.getAccent(isDark),
+            activeThumbColor: ChatTheme.getAccent(isDark),
             onChanged: onChanged,
           ),
         ],

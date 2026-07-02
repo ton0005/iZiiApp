@@ -703,17 +703,23 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                     break;
                   }
                 }
-                if (currentUserId == 'user_an_nguyen')
+                if (currentUserId == 'user_an_nguyen') {
                   currentName = 'Nguyễn Văn An';
-                if (currentUserId == 'user_huong_vo')
+                }
+                if (currentUserId == 'user_huong_vo') {
                   currentName = 'Võ Thị Hương';
-                if (currentUserId == 'user_bich_tran')
+                }
+                if (currentUserId == 'user_bich_tran') {
                   currentName = 'Trần Thị Bích';
-                if (currentUserId == 'user_quill_phan')
+                }
+                if (currentUserId == 'user_quill_phan') {
                   currentName = 'Quill Phan';
+                }
 
                 return Text(
-                  context.tr('chat_playing_role').replaceAll('{name}', currentName),
+                  context
+                      .tr('chat_playing_role')
+                      .replaceAll('{name}', currentName),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: ChatTheme.getTextPrimary(isDark),
@@ -733,7 +739,8 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
             ),
             icon: const Icon(Icons.swap_horiz_rounded, size: 16),
             label: Text(context.tr('chat_switch_role_button'),
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             onPressed: () => _showTestProfileSwitcher(context),
           ),
         ],
