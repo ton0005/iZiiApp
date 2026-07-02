@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iZiiApp — Mushroom Farm Fork</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Emergency Warning Bar -->
+  <div id="global-emergency-bar" class="emergency-bar">
+    <div class="emergency-content">
+      <span class="pulse-dot"></span>
+      <span id="emergency-text">CẢNH BÁO KHẨN CẤP: Sự cố rò rỉ khí CO2 phát hiện tại Phòng 55 (Growing). Vui lòng sơ tán!</span>
+      <button class="btn btn-sm btn-light" onclick="dismissEmergency()">Xác nhận</button>
+    </div>
+  </div>
+
+  <div class="shell">
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <div class="app-name"><i class="ti ti-layout-dashboard"></i> iZiiApp</div>
+        <div class="branch-tag"><i class="ti ti-git-branch"></i> mushroom-farm-fork</div>
+      </div>
+
+      <div class="nav-section-label">Bộ phận (Departments)</div>
+      <a class="nav-item active" data-tab="growing" onclick="switchTab('growing')">
+        <span class="nav-dot" style="background: #2D6A4F;"></span>
+        <i class="ti ti-building-factory-2"></i> Trồng trọt (Growing)
+      </a>
+      <a class="nav-item" data-tab="harvest" onclick="switchTab('harvest')">
+        <span class="nav-dot" style="background: #7C3AED;"></span>
+        <i class="ti ti-scissors"></i> Thu hoạch (Harvest)
+      </a>
+      <a class="nav-item" data-tab="coolroom" onclick="switchTab('coolroom')">
+        <span class="nav-dot" style="background: #0369A1;"></span>
+        <i class="ti ti-snowflake"></i> Kho lạnh (Cool Room)
+      </a>
+      <a class="nav-item" data-tab="maintenance" onclick="switchTab('maintenance')">
+        <span class="nav-dot" style="background: #B45309;"></span>
+        <i class="ti ti-tools"></i> Bảo trì (Maintenance)
+      </a>
+
+      <div class="nav-divider"></div>
+      <div class="nav-section-label">Hệ thống & Tiện ích</div>
+      <a class="nav-item" data-tab="tasks" onclick="switchTab('tasks')">
+        <i class="ti ti-layout-kanban"></i> Công việc (Tasks)
+      </a>
+      <a class="nav-item" data-tab="chat" onclick="switchTab('chat')">
+        <i class="ti ti-messages"></i> Trò chuyện (Chat)
+        <span class="badge badge-danger" id="chat-unread-count" style="display:none;">0</span>
+      </a>
+      <a class="nav-item" data-tab="safety" onclick="switchTab('safety')">
+        <i class="ti ti-shield-alert"></i> An toàn (Safety)
+        <span class="badge badge-warning" id="safety-alert-count" style="display:none;">0</span>
+      </a>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title" id="page-title">Trồng trọt (Growing)</h1>
+          <div class="topbar-subtitle" id="page-subtitle">Plant M2 — Rooms 33–66</div>
+        </div>
+        <div class="topbar-right">
+          <!-- Language Selector -->
+          <div class="lang-selector">
+            <button class="btn btn-ghost" id="lang-btn" onclick="toggleLanguage()">
+              <i class="ti ti-language"></i> <span id="current-lang">Tiếng Việt</span>
+            </button>
+          </div>
+          <!-- User / Role Profile -->
+          <div class="role-selector-wrap">
+            <select id="user-role-select" class="role-select" onchange="changeActiveRole(this.value)">
+              <option value="Growing Lead">Vinh (Growing Lead)</option>
+              <option value="Harvest Supervisor">Hải (Harvest Supervisor)</option>
+              <option value="Cool Room Manager">Trúc (Cool Room Manager)</option>
+              <option value="Maintenance Lead">Nam (Maintenance Lead)</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <!-- Panel Container -->
+      <div class="content-panel">
+
+        <!-- 1. GROWING PANEL -->
+        <section id="panel-growing" class="tab-panel active">
+          <!-- Top Filter Bar -->
+          <div class="control-row">
+            <div class="plant-toggle">
+              <button class="btn btn-toggle active" id="btn-plant-m2" onclick="switchPlant('M2')">Plant M2 (Rooms 33-66)</button>
+              <button class="btn btn-toggle" id="btn-plant-m1" onclick="switchPlant('M1')">Plant M1 (Rooms 1-32)</button>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="openNewJobModal()">+ Thêm Job Mới</button>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Tổng số phòng</div>
+              <div class="kpi-val" id="growing-total-rooms">33</div>
+              <div class="kpi-sub" id="growing-rooms-desc">Phòng 33 – 66</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Đang hoạt động</div>
+              <div class="kpi-val" id="growing-active-jobs">12</div>
+              <div class="kpi-sub">Có Task chưa hoàn thành</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Hoàn thành hôm nay</div>
+              <div class="kpi-val" id="growing-completed-today">8</div>
+              <div class="kpi-sub">Task đã kiểm tra đạt</div>
+            </div>
+            <div class="kpi-card danger">
+              <div class="kpi-label">Chờ thu hoạch</div>
+              <div class="kpi-val" id="growing-ready-harvest">4</div>
+              <div class="kpi-sub">Ready to Handover</div>
+            </div>
+          </div>
+
+          <!-- Split Panel Layout -->
+          <div class="split-layout">
+            <!-- Left: Rooms List -->
+            <div class="room-panel">
+              <div class="room-panel-header">Danh sách phòng</div>
+              <div class="room-filter">
+                <button class="filter-btn active" id="room-filter-all" onclick="filterGrowingRooms('all')">Tất cả</button>
+                <button class="filter-btn" id="room-filter-active" onclick="filterGrowingRooms('active')">Đang chạy</button>
+                <button class="filter-btn" id="room-filter-idle" onclick="filterGrowingRooms('idle')">Đang trống</button>
+              </div>
+              <div class="room-grid" id="growing-rooms-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Right: Room Details -->
+            <div class="detail-panel" id="growing-detail-panel">
+              <div class="empty-state">
+                <i class="ti ti-door-enter"></i>
+                <p>Chọn một phòng để xem chi tiết công việc</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. HARVEST PANEL -->
+        <section id="panel-harvest" class="tab-panel">
+          <!-- Live Alerts inside Harvest -->
+          <div class="harvest-alerts" id="harvest-alert-banner" style="display:none;">
+            <div class="alert-banner">
+              <div class="alert-dot"></div>
+              <div class="alert-text" id="harvest-alert-text">Cảnh báo: Nhân viên đang làm việc đơn lẻ (Solo) tại Phòng 55!</div>
+              <button class="btn btn-sm btn-danger" onclick="triggerSafetyCheck('55')">Liên lạc ngay</button>
+            </div>
+          </div>
+
+          <div class="split-layout-horizontal">
+            <!-- Left: Check In Form & Picking Plan -->
+            <div class="left-column">
+              <div class="card">
+                <div class="card-header">Nhân viên Check-in / Check-out phòng</div>
+                <div class="card-body">
+                  <form id="harvest-checkin-form" onsubmit="handleHarvestCheckIn(event)">
+                    <div class="field">
+                      <label for="checkin-emp-id">Mã số nhân viên (Employee ID) <span class="required">*</span></label>
+                      <input type="text" id="checkin-emp-id" placeholder="VD: EMP001" required>
+                      <span class="field-hint">Nhập mã định danh nhân viên để đăng ký vào phòng làm việc.</span>
+                    </div>
+                    <div class="field-row">
+                      <div class="field">
+                        <label for="checkin-plant">Plant</label>
+                        <select id="checkin-plant" onchange="updateCheckinRoomsList(this.value)">
+                          <option value="M2">Plant M2</option>
+                          <option value="M1">Plant M1</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="checkin-room">Phòng làm việc (Room)</label>
+                        <select id="checkin-room">
+                          <!-- Filled dynamically -->
+                        </select>
+                      </div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:14px;">
+                      <button type="submit" class="btn btn-primary" style="flex:1;"><i class="ti ti-login"></i> Check In</button>
+                      <button type="button" class="btn btn-ghost" style="flex:1; color: var(--danger);" onclick="handleHarvestCheckOut()"><i class="ti ti-logout"></i> Check Out</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Picking Plan Card -->
+              <div class="card" style="margin-top:16px;">
+                <div class="card-header">Kế hoạch thu hoạch từ Kho lạnh (Cool Room)</div>
+                <div class="card-body" id="harvest-picking-plan-container">
+                  <div class="empty-state">
+                    <i class="ti ti-checklist"></i>
+                    <p>Chưa có yêu cầu thu hoạch nào từ kho lạnh.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Active Picking Rooms Grid -->
+            <div class="right-column">
+              <div class="card">
+                <div class="card-header">Danh sách phòng đang thu hoạch</div>
+                <div class="card-body" style="padding:0;">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Phòng</th>
+                          <th>Flush</th>
+                          <th>Nhân sự (Crew)</th>
+                          <th>Picking Target</th>
+                          <th>Picked (kg)</th>
+                          <th>Trạng thái</th>
+                          <th>An toàn</th>
+                        </tr>
+                      </thead>
+                      <tbody id="harvest-active-table-body">
+                        <!-- Dynamically filled -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. COOL ROOM PANEL -->
+        <section id="panel-coolroom" class="tab-panel">
+          <div class="split-layout-horizontal">
+            <!-- Left: Inventory Stock & Order Planning -->
+            <div class="left-column">
+              <div class="card">
+                <div class="card-header">Kho lạnh - Tồn kho hiện tại</div>
+                <div class="card-body">
+                  <div class="stock-display">
+                    <div class="stock-item">
+                      <div class="stock-icon button"><i class="ti ti-circle-dot"></i></div>
+                      <div class="stock-info">
+                        <div class="stock-label">Button Size (Cỡ Nhỏ)</div>
+                        <div class="stock-qty" id="stock-button-qty">120 kg</div>
+                      </div>
+                    </div>
+                    <div class="stock-item">
+                      <div class="stock-icon medium"><i class="ti ti-circle"></i></div>
+                      <div class="stock-info">
+                        <div class="stock-label">Medium Size (Cỡ Vừa)</div>
+                        <div class="stock-qty" id="stock-medium-qty">240 kg</div>
+                      </div>
+                    </div>
+                    <div class="stock-item">
+                      <div class="stock-icon open"><i class="ti ti-shadow"></i></div>
+                      <div class="stock-info">
+                        <div class="stock-label">Open Size (Cỡ Lớn)</div>
+                        <div class="stock-qty" id="stock-open-qty">95 kg</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Create Picking Plan Form -->
+              <div class="card" style="margin-top:16px;">
+                <div class="card-header">Lập kế hoạch Picking gửi cho Harvest</div>
+                <div class="card-body">
+                  <form id="coolroom-picking-form" onsubmit="handleSendPickingPlan(event)">
+                    <div class="field-row">
+                      <div class="field">
+                        <label for="plan-plant">Plant</label>
+                        <select id="plan-plant" onchange="updatePickingRoomsList(this.value)">
+                          <option value="M2">Plant M2</option>
+                          <option value="M1">Plant M1</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="plan-room">Phòng thu hoạch</label>
+                        <select id="plan-room">
+                          <!-- Loaded dynamically -->
+                        </select>
+                      </div>
+                    </div>
+                    <div class="field-row">
+                      <div class="field">
+                        <label for="plan-size-button">Button Size (kg)</label>
+                        <input type="number" id="plan-size-button" value="50" min="0" required>
+                      </div>
+                      <div class="field">
+                        <label for="plan-size-medium">Medium Size (kg)</label>
+                        <input type="number" id="plan-size-medium" value="100" min="0" required>
+                      </div>
+                      <div class="field">
+                        <label for="plan-size-open">Open Size (kg)</label>
+                        <input type="number" id="plan-size-open" value="30" min="0" required>
+                      </div>
+                    </div>
+                    <div style="margin-top:12px;">
+                      <button type="submit" class="btn btn-primary w-full"><i class="ti ti-send"></i> Gửi Yêu Cầu Thu Hoạch</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Active Orders list -->
+            <div class="right-column">
+              <div class="card">
+                <div class="card-header">Đơn hàng xuất kho hôm nay (Orders List)</div>
+                <div class="card-body" style="padding:0;">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Mã Đơn</th>
+                          <th>Khách hàng</th>
+                          <th>Yêu cầu</th>
+                          <th>Tổng (kg)</th>
+                          <th>Trạng thái</th>
+                          <th>Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody id="coolroom-orders-table-body">
+                        <!-- Dynamically filled -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. MAINTENANCE PANEL -->
+        <section id="panel-maintenance" class="tab-panel">
+          <div class="split-layout-horizontal">
+            <!-- Left: Add Maintenance Job Form -->
+            <div class="left-column">
+              <div class="card">
+                <div class="card-header">Tạo lệnh bảo trì thiết bị</div>
+                <div class="card-body">
+                  <form id="maintenance-job-form" onsubmit="handleCreateMaintenanceJob(event)">
+                    <div class="field">
+                      <label for="maint-title">Tên công việc / Thiết bị lỗi <span class="required">*</span></label>
+                      <input type="text" id="maint-title" placeholder="VD: Sửa quạt gió điều hòa bị kẹt" required>
+                    </div>
+                    <div class="field-row">
+                      <div class="field">
+                        <label for="maint-plant">Khu vực (Plant)</label>
+                        <select id="maint-plant" onchange="updateMaintRoomsList(this.value)">
+                          <option value="M2">Plant M2</option>
+                          <option value="M1">Plant M1</option>
+                          <option value="CoolRoom">Kho Lạnh</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="maint-room">Phòng (Room)</label>
+                        <select id="maint-room">
+                          <!-- Loaded dynamically -->
+                        </select>
+                      </div>
+                    </div>
+                    <div class="field-row">
+                      <div class="field">
+                        <label for="maint-assignee">Người thực hiện</label>
+                        <select id="maint-assignee">
+                          <option value="Nam T.">Nam T. (Maintenance)</option>
+                          <option value="Lợi P.">Lợi P. (Maintenance)</option>
+                          <option value="Hoàng V.">Hoàng V. (Technician)</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="maint-priority">Độ ưu tiên</label>
+                        <select id="maint-priority">
+                          <option value="low">Thấp (Low)</option>
+                          <option value="normal" selected>Bình thường (Normal)</option>
+                          <option value="high">Cao (High)</option>
+                          <option value="urgent">Khẩn cấp (Urgent)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label for="maint-notes">Mô tả chi tiết sự cố</label>
+                      <textarea id="maint-notes" placeholder="Mô tả chi tiết tình trạng lỗi và dụng cụ cần chuẩn bị..."></textarea>
+                    </div>
+                    <div style="margin-top:12px;">
+                      <button type="submit" class="btn btn-primary w-full"><i class="ti ti-plus"></i> Tạo Lệnh Bảo Trì</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Maintenance Logs Board -->
+            <div class="right-column">
+              <div class="card">
+                <div class="card-header">Lịch sử và Lệnh bảo trì đang thực hiện</div>
+                <div class="card-body" style="padding:0;">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Thiết bị / Sự cố</th>
+                          <th>Khu vực</th>
+                          <th>Người sửa</th>
+                          <th>Ưu tiên</th>
+                          <th>Trạng thái</th>
+                          <th>Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody id="maintenance-table-body">
+                        <!-- Dynamically filled -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. TASKS PANEL (KANBAN & GANTT) -->
+        <section id="panel-tasks" class="tab-panel">
+          <!-- Room selection header in Tasks -->
+          <div class="control-row" style="margin-bottom:14px; border-bottom:0.5px solid var(--border-color); padding-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="label">Xem công việc phòng:</span>
+              <select id="tasks-room-selector" onchange="handleTasksRoomChange(this.value)" class="form-control" style="width:160px; display:inline-block;">
+                <!-- Dynamically loaded rooms -->
+              </select>
+            </div>
+            <div class="view-toggle">
+              <button class="btn btn-toggle active" id="btn-tasks-kanban" onclick="switchTasksView('kanban')"><i class="ti ti-layout-kanban"></i> Kanban</button>
+              <button class="btn btn-toggle" id="btn-tasks-gantt" onclick="switchTasksView('gantt')"><i class="ti ti-timeline"></i> Gantt Timeline</button>
+            </div>
+          </div>
+
+          <!-- KANBAN BOARD VIEW -->
+          <div id="tasks-kanban-view" class="tasks-view-panel active">
+            <div class="kanban-board">
+              <!-- To Do Column -->
+              <div class="kanban-col">
+                <div class="kanban-col-header">Chờ xử lý (To Do) <span class="kanban-count" id="kanban-count-todo">0</span></div>
+                <div class="kanban-cards" id="kanban-cards-todo"></div>
+              </div>
+              <!-- In Progress Column -->
+              <div class="kanban-col">
+                <div class="kanban-col-header">Đang làm (In Progress) <span class="kanban-count" id="kanban-count-inprog">0</span></div>
+                <div class="kanban-cards" id="kanban-cards-inprog"></div>
+              </div>
+              <!-- Review Column -->
+              <div class="kanban-col">
+                <div class="kanban-col-header">Kiểm tra (Review) <span class="kanban-count" id="kanban-count-review">0</span></div>
+                <div class="kanban-cards" id="kanban-cards-review"></div>
+              </div>
+              <!-- Done Column -->
+              <div class="kanban-col">
+                <div class="kanban-col-header">Hoàn thành (Done) <span class="kanban-count" id="kanban-count-done">0</span></div>
+                <div class="kanban-cards" id="kanban-cards-done"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GANTT TIMELINE VIEW -->
+          <div id="tasks-gantt-view" class="tasks-view-panel">
+            <div class="gantt-card">
+              <div class="legend">
+                <div class="leg-item"><span class="leg-swatch" style="background:#C0DD97;"></span> Đã xong</div>
+                <div class="leg-item"><span class="leg-swatch" style="background:#85B7EB;"></span> Đang làm</div>
+                <div class="leg-item"><span class="leg-swatch" style="background:#FAC775;"></span> Chờ duyệt</div>
+                <div class="leg-item"><span class="leg-swatch" style="background:#E2E0DA;"></span> Chờ làm</div>
+              </div>
+              <div class="gantt-container" id="gantt-chart-container">
+                <!-- Gantt chart SVG/HTML rendered dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Details overlay -->
+          <div class="task-detail-overlay" id="task-detail-overlay">
+            <!-- Dynamically populated detail card -->
+          </div>
+        </section>
+
+        <!-- 6. CHAT PANEL -->
+        <section id="panel-chat" class="tab-panel">
+          <div class="chat-container">
+            <!-- Inbox List -->
+            <div class="chat-inbox">
+              <div class="inbox-search">
+                <input type="text" placeholder="Tìm kiếm liên hệ hoặc nhóm..." id="chat-search-input">
+              </div>
+              <div class="inbox-list" id="chat-inbox-list">
+                <!-- Loaded dynamically -->
+              </div>
+            </div>
+
+            <!-- Messages Window -->
+            <div class="chat-window" id="chat-window-panel">
+              <div class="empty-state" style="height:100%;">
+                <i class="ti ti-brand-telegram"></i>
+                <p>Chọn một cuộc hội thoại để bắt đầu trò chuyện mã hóa E2EE</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. SAFETY PANEL -->
+        <section id="panel-safety" class="tab-panel">
+          <div class="split-layout-horizontal">
+            <!-- Left: Check In Log History & Emergency controls -->
+            <div class="left-column">
+              <div class="card">
+                <div class="card-header">Điều khiển an toàn nông trại</div>
+                <div class="card-body">
+                  <div class="btn-group-vertical">
+                    <button class="btn btn-danger w-full btn-lg" onclick="triggerEmergencyAlarm()"><i class="ti ti-alert-triangle"></i> Kích Hoạt Báo Động Khẩn Cấp (Emergency)</button>
+                    <button class="btn btn-warning w-full" style="margin-top:10px;" onclick="triggerSafetyCheckAll()"><i class="ti ti-shield-check"></i> Yêu Cầu Check-In Định Kỳ Toàn Bộ</button>
+                    <button class="btn btn-ghost w-full" style="margin-top:10px;" onclick="resetSafetyStats()"><i class="ti ti-refresh"></i> Khôi Phục Trạng Thái An Toàn</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Incident Reporting Form -->
+              <div class="card" style="margin-top:16px;">
+                <div class="card-header">Báo cáo sự cố an toàn lao động</div>
+                <div class="card-body">
+                  <form id="incident-report-form" onsubmit="handleReportIncident(event)">
+                    <div class="field">
+                      <label for="incident-room">Vị trí xảy ra sự cố</label>
+                      <input type="text" id="incident-room" placeholder="VD: Phòng 55 hoặc Kho Lạnh M1" required>
+                    </div>
+                    <div class="field">
+                      <label for="incident-desc">Nội dung sự cố</label>
+                      <textarea id="incident-desc" placeholder="Ghi nhận rõ tình trạng và mối nguy hiểm để kỹ thuật hỗ trợ..." required></textarea>
+                    </div>
+                    <div style="margin-top:10px;">
+                      <button type="submit" class="btn btn-danger w-full"><i class="ti ti-report"></i> Gửi Báo Cáo Sự Cố</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Live Safety Logs and Countdown timers -->
+            <div class="right-column">
+              <div class="card">
+                <div class="card-header">Nhật ký an toàn thời gian thực (Solo worker check-ins)</div>
+                <div class="card-body" style="padding:0;">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Nhân viên</th>
+                          <th>Phòng</th>
+                          <th>Vai trò</th>
+                          <th>Thời gian</th>
+                          <th>Hành động</th>
+                          <th>Định kỳ (Solo)</th>
+                        </tr>
+                      </thead>
+                      <tbody id="safety-logs-table-body">
+                        <!-- Dynamically filled -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Modal: Growing - New Job -->
+  <div id="modal-new-job" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Tạo Job Trồng Trọt Mới</h3>
+        <button class="close-btn" onclick="closeNewJobModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="new-job-form" onsubmit="handleCreateNewJob(event)">
+          <div class="field-row">
+            <div class="field">
+              <label for="new-job-plant">Plant</label>
+              <select id="new-job-plant" onchange="updateNewJobRoomsList(this.value)">
+                <option value="M2">Plant M2</option>
+                <option value="M1">Plant M1</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="new-job-room">Phòng</label>
+              <select id="new-job-room">
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Loại công việc (Job Type)</label>
+            <div class="job-type-grid">
+              <div class="job-type-card selected" data-job="filling" onclick="selectJobTypeCard(this, 'filling')">
+                <i class="ti ti-box"></i>
+                <div><div class="jtc-label">Filling</div><div class="jtc-sub">Nạp giá thể</div></div>
+              </div>
+              <div class="job-type-card" data-job="airing" onclick="selectJobTypeCard(this, 'airing')">
+                <i class="ti ti-wind"></i>
+                <div><div class="jtc-label">Airing</div><div class="jtc-sub">Bọc plastic floor wet</div></div>
+              </div>
+              <div class="job-type-card" data-job="cleanroom" onclick="selectJobTypeCard(this, 'cleanroom')">
+                <i class="ti ti-sparkles"></i>
+                <div><div class="jtc-label">Clean Room</div><div class="jtc-sub">Dọn phòng -> Thu hoạch</div></div>
+              </div>
+              <div class="job-type-card" data-job="watering" onclick="selectJobTypeCard(this, 'watering')">
+                <i class="ti ti-droplet"></i>
+                <div><div class="jtc-label">Watering</div><div class="jtc-sub">Tưới ẩm định kỳ</div></div>
+              </div>
+              <div class="job-type-card" data-job="prochloraz" onclick="selectJobTypeCard(this, 'prochloraz')">
+                <i class="ti ti-flask"></i>
+                <div><div class="jtc-label">Prochloraz</div><div class="jtc-sub">Phun hóa chất nấm</div></div>
+              </div>
+              <div class="job-type-card" data-job="packuptree" onclick="selectJobTypeCard(this, 'packuptree')">
+                <i class="ti ti-trees"></i>
+                <div><div class="jtc-label">Pack Up Tree</div><div class="jtc-sub">Dọn rễ thải cuối vụ</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Watering Subfield -->
+          <div class="job-subfield" id="job-subfield-watering" style="display:none;">
+            <div class="field-row">
+              <div class="field">
+                <label for="watering-plan">Phương án tưới</label>
+                <select id="watering-plan">
+                  <option value="2side">Tưới 2 bên giường (2 Side)</option>
+                  <option value="1side">Tưới 1 bên giường (1 Side)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="watering-volume">Lượng nước (L/m²)</label>
+                <input type="number" id="watering-volume" value="2" min="0.5" step="0.5">
+              </div>
+            </div>
+          </div>
+
+          <!-- Prochloraz Subfield -->
+          <div class="job-subfield" id="job-subfield-prochloraz" style="display:none;">
+            <div class="field-row">
+              <div class="field">
+                <label for="prochloraz-rate">Tỷ lệ hóa chất (g/m²)</label>
+                <input type="number" id="prochloraz-rate" value="1.3" min="0.5" step="0.1" oninput="calculateTotalChemical()">
+              </div>
+              <div class="field">
+                <label for="prochloraz-area">Diện tích phòng (m²)</label>
+                <input type="number" id="prochloraz-area" value="112" min="10" oninput="calculateTotalChemical()">
+              </div>
+            </div>
+            <div class="chemical-calc" id="chemical-total-display">Tổng lượng hóa chất cần chuẩn bị: 145.6 g</div>
+          </div>
+
+          <div class="field">
+            <label for="new-job-assignee">Người phụ trách</label>
+            <select id="new-job-assignee">
+              <option value="Minh T.">Minh T. (Growing Specialist)</option>
+              <option value="Lan N.">Lan N. (Growing Tech)</option>
+              <option value="Hùng V.">Hùng V. (Growing Staff)</option>
+              <option value="Phúc D.">Phúc D. (Growing Operator)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="new-job-notes">Ghi chú công việc</label>
+            <textarea id="new-job-notes" placeholder="Nhập các chú ý đặc biệt khi thực hiện công việc..."></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" onclick="closeNewJobModal()">Hủy</button>
+            <button type="submit" class="btn btn-primary">Tạo Công Việc</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
