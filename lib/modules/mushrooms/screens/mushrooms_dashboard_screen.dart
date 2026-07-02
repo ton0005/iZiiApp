@@ -2114,7 +2114,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
   Widget _buildCreateMaintenanceForm(bool isDark) {
     String title = '';
     String plantSelected = 'M2';
-    String roomSelected = '33';
+    String roomSelected = 'Room 33';
     String priority = 'normal';
     String assignee = 'Nam T.';
     String notes = '';
@@ -2147,7 +2147,17 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                           value: 'CoolRoom', child: Text('Kho Lạnh')),
                     ],
                     onChanged: (val) {
-                      if (val != null) setMaintState(() => plantSelected = val);
+                      if (val != null) {
+                        setMaintState(() {
+                          plantSelected = val;
+                          if (val == 'CoolRoom') {
+                            roomSelected = 'CR1';
+                          } else {
+                            roomSelected = _localRooms.keys.firstWhere(
+                                (k) => _localRooms[k]!['plant'] == val);
+                          }
+                        });
+                      }
                     },
                   ),
                 ),
@@ -2444,138 +2454,141 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.timeline, color: Colors.grey),
-              SizedBox(width: 8),
-              Text('Gantt Timeline Chart (Ngày 1 đến 18)',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          ),
-          const Divider(height: 24),
-          // Timeline numbers row
-          Row(
-            children: [
-              const SizedBox(
-                  width: 140,
-                  child: Text('Công việc (Jobs)',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 11,
-                          color: Colors.grey))),
-              Expanded(
-                child: Row(
-                  children: List.generate(
-                      18,
-                      (idx) => Expanded(
-                            child: Text('D${idx + 1}',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.bold)),
-                          )),
-                ),
-              )
-            ],
-          ),
-          const Divider(),
-          Expanded(
-            child: ListView.builder(
-              itemCount: jobs.length,
-              itemBuilder: (context, idx) {
-                final job = jobs[idx];
-                final status = job['status'] as String;
-
-                final startDay = idx * 2;
-                final duration = 3;
-
-                Color barColor = Colors.grey.shade300;
-                if (status == 'done')
-                  barColor = const Color(0xFFC0DD97);
-                else if (status == 'inprog')
-                  barColor = const Color(0xFF85B7EB);
-                else if (status == 'review') barColor = const Color(0xFFFAC775);
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 140,
-                        child: Row(
-                          children: [
-                            Icon(job['icon'] as IconData? ?? Icons.task_alt,
-                                size: 14, color: Colors.grey),
-                            const SizedBox(width: 6),
-                            Text(job['name'],
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            // Horizontal grid markers
-                            Row(
-                              children: List.generate(
-                                  18,
-                                  (idx) => Expanded(
-                                        child: Container(
-                                          height: 26,
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                  right: BorderSide(
-                                                      color: Colors
-                                                          .grey.shade200))),
-                                        ),
-                                      )),
-                            ),
-                            // Positioned bar
-                            LayoutBuilder(
-                              builder: (context, box) {
-                                final totalWidth = box.maxWidth;
-                                final leftOffset = (startDay / 18) * totalWidth;
-                                final barWidth = (duration / 18) * totalWidth;
-
-                                return Positioned(
-                                  left: leftOffset,
-                                  width: barWidth,
-                                  top: 3,
-                                  height: 20,
-                                  child: InkWell(
-                                    onTap: () =>
-                                        _showTaskDetailDialog(job, roomName),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: barColor,
-                                          borderRadius:
-                                              BorderRadius.circular(4)),
-                                      alignment: Alignment.center,
-                                      child: Text(job['name'],
-                                          style: const TextStyle(
-                                              fontSize: 9,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black87)),
-                                    ),
-                                  ),
-                                );
-                              },
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              },
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.timeline, color: Colors.grey),
+                SizedBox(width: 8),
+                Text('Gantt Timeline Chart (Ngày 1 đến 18)',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
             ),
-          )
-        ],
-      ),
+            const Divider(height: 24),
+            // Timeline numbers row
+            Row(
+              children: [
+                const SizedBox(
+                    width: 140,
+                    child: Text('Công việc (Jobs)',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                            color: Colors.grey))),
+                Expanded(
+                  child: Row(
+                    children: List.generate(
+                        18,
+                        (idx) => Expanded(
+                              child: Text('D${idx + 1}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold)),
+                            )),
+                  ),
+                )
+              ],
+            ),
+            const Divider(),
+            Expanded(
+              child: ListView.builder(
+                itemCount: jobs.length,
+                itemBuilder: (context, idx) {
+                  final job = jobs[idx];
+                  final status = job['status'] as String;
+
+                  final startDay = idx * 2;
+                  final duration = 3;
+
+                  Color barColor = Colors.grey.shade300;
+                  if (status == 'done')
+                    barColor = const Color(0xFFC0DD97);
+                  else if (status == 'inprog')
+                    barColor = const Color(0xFF85B7EB);
+                  else if (status == 'review')
+                    barColor = const Color(0xFFFAC775);
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 140,
+                          child: Row(
+                            children: [
+                              Icon(job['icon'] as IconData? ?? Icons.task_alt,
+                                  size: 14, color: Colors.grey),
+                              const SizedBox(width: 6),
+                              Text(job['name'],
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              // Horizontal grid markers
+                              Row(
+                                children: List.generate(
+                                    18,
+                                    (idx) => Expanded(
+                                          child: Container(
+                                            height: 26,
+                                            decoration: BoxDecoration(
+                                                border: Border(
+                                                    right: BorderSide(
+                                                        color: Colors
+                                                            .grey.shade200))),
+                                          ),
+                                        )),
+                              ),
+                              // Positioned bar
+                              LayoutBuilder(
+                                builder: (context, box) {
+                                  final totalWidth = box.maxWidth;
+                                  final leftOffset =
+                                      (startDay / 18) * totalWidth;
+                                  final barWidth = (duration / 18) * totalWidth;
+
+                                  return Positioned(
+                                    left: leftOffset,
+                                    width: barWidth,
+                                    top: 3,
+                                    height: 20,
+                                    child: InkWell(
+                                      onTap: () =>
+                                          _showTaskDetailDialog(job, roomName),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: barColor,
+                                            borderRadius:
+                                                BorderRadius.circular(4)),
+                                        alignment: Alignment.center,
+                                        child: Text(job['name'],
+                                            style: const TextStyle(
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black87)),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -2646,8 +2659,10 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
-                    border: Border(
-                        bottom: BorderSide(color: FarmColors.borderLight)),
+                    decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(color: FarmColors.borderLight)),
+                    ),
                     alignment: Alignment.centerLeft,
                     child: Text('Kênh mật mã E2EE: $_activeChatContact',
                         style: const TextStyle(fontWeight: FontWeight.bold)),
