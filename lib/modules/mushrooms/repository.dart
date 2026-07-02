@@ -12,14 +12,29 @@ class MushroomsRepository {
 
   Future<void> seedRoomsIfEmpty() async {
     try {
-      final countQuery = _db.select(_db.mushroomRooms);
-      final count = (await countQuery.get()).length;
-      if (count == 0) {
-        // Seed M2 standard Rooms 33 to 66
-        for (int i = 33; i <= 66; i++) {
+      final existingRooms = await _db.select(_db.mushroomRooms).get();
+      final existingNames = existingRooms.map((r) => r.name).toSet();
+
+      final allRoomsToSeed = [
+        // Plant M1
+        'Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6', 'Room 6A', 'Room 6B',
+        'Room 7', 'Room 8', 'Room 9', 'Room 10', 'Room 11', 'Room 12', 'Room 13', 'Room 14',
+        'Room 15', 'Room 16', 'Room 17', 'Room 18', 'Room 19', 'Room 20', 'Room 21', 'Room 22',
+        'Room 22A', 'Room 23', 'Room 24', 'Room 25', 'Room 26', 'Room 27', 'Room 28', 'Room 29',
+        'Room 30', 'Room 31', 'Room 32',
+        // Plant M2
+        'Room 33', 'Room 34', 'Room 35', 'Room 36', 'Room 37', 'Room 38', 'Room 39', 'Room 40',
+        'Room 41', 'Room 42', 'Room 43', 'Room 44', 'Room 45', 'Room 46', 'Room 47', 'Room 48',
+        'Room 49', 'Room 50', 'Room 51', 'Room 52', 'Room 52A', 'Room 53', 'Room 54', 'Room 55',
+        'Room 56', 'Room 57', 'Room 58', 'Room 59', 'Room 60', 'Room 61', 'Room 62', 'Room 63',
+        'Room 64', 'Room 65', 'Room 66'
+      ];
+
+      for (final r in allRoomsToSeed) {
+        if (!existingNames.contains(r)) {
           await _db.into(_db.mushroomRooms).insert(MushroomRoomsCompanion.insert(
             id: const Uuid().v4(),
-            name: 'Room $i',
+            name: r,
             status: const Value('idle'),
             currentStage: const Value('idle'),
             dayInCycle: const Value(1),
