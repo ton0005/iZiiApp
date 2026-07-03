@@ -11,8 +11,9 @@ class GrowingTabScreen extends StatefulWidget {
   final Function(String) onRoomFilterChanged;
   final Function(String?) onRoomSelected;
   final Function(String roomName, String jobType, String assignee, String notes, double? rate, double? area, String? wateringPlan, double? wateringVol) onJobCreated;
-  final Function(String roomName, int jobId, bool done) onJobStatusChanged;
+  final Function(String roomName, dynamic jobId, bool done) onJobStatusChanged;
   final Function(String roomName, String viewMode) onSwitchToTasks;
+  final Function(String roomName, String wateringPlan, String prochlorazRate) onStartCycle;
 
   const GrowingTabScreen({
     super.key,
@@ -27,6 +28,7 @@ class GrowingTabScreen extends StatefulWidget {
     required this.onJobCreated,
     required this.onJobStatusChanged,
     required this.onSwitchToTasks,
+    required this.onStartCycle,
   });
 
   @override
@@ -283,24 +285,34 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                     style: const TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
-            Row(
-              children: [
-                TextButton.icon(
-                  icon:
-                      const Icon(Icons.timeline, color: Colors.grey, size: 16),
-                  label: const Text('Timeline',
-                      style: TextStyle(color: Colors.grey)),
-                  onPressed: () => widget.onSwitchToTasks(roomName, 'gantt'),
-                ),
-                TextButton.icon(
-                  icon: const Icon(Icons.view_kanban,
-                      color: Colors.grey, size: 16),
-                  label: const Text('Kanban',
-                      style: TextStyle(color: Colors.grey)),
-                  onPressed: () => widget.onSwitchToTasks(roomName, 'kanban'),
-                )
-              ],
-            )
+            room['status'] == 'idle'
+                ? ElevatedButton.icon(
+                    icon: const Icon(Icons.play_arrow, color: Colors.white, size: 16),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: FarmColors.forestGreen,
+                      foregroundColor: Colors.white,
+                    ),
+                    label: const Text('Bắt đầu vụ mới'),
+                    onPressed: () => _showStartCycleDialog(context, roomName),
+                  )
+                : Row(
+                    children: [
+                      TextButton.icon(
+                        icon:
+                            const Icon(Icons.timeline, color: Colors.grey, size: 16),
+                        label: const Text('Timeline',
+                            style: TextStyle(color: Colors.grey)),
+                        onPressed: () => widget.onSwitchToTasks(roomName, 'gantt'),
+                      ),
+                      TextButton.icon(
+                        icon: const Icon(Icons.view_kanban,
+                            color: Colors.grey, size: 16),
+                        label: const Text('Kanban',
+                            style: TextStyle(color: Colors.grey)),
+                        onPressed: () => widget.onSwitchToTasks(roomName, 'kanban'),
+                      )
+                    ],
+                  )
           ],
         ),
         const Divider(height: 24),
@@ -337,7 +349,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
             itemBuilder: (context, idx) {
               final job = jobs[idx];
               final done = job['status'] == 'done';
-              final jobId = job['id'] as int;
+              final jobId = job['id'];
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
@@ -656,6 +668,48 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           },
         );
       },
+    );
+  }
+
+  void _showStartCycleDialog(BuildContext context, String roomName) {
+    String wateringPlan = '2 Side 2L/m2';
+    String prochlorazRate = '1.3g/m2';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Bắt đầu vụ mới - Phòng $roomName'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Kế hoạch tưới nước mặc định'),
+              initialValue: wateringPlan,
+              onChanged: (val) => wateringPlan = val,
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Tỷ lệ phun Prochloraz mặc định'),
+              initialValue: prochlorazRate,
+              onChanged: (val) => prochlorazRate = val,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
+            onPressed: () {
+              widget.onStartCycle(roomName, wateringPlan, prochlorazRate);
+              Navigator.pop(ctx);
+            },
+            child: const Text('Bắt đầu', style: TextStyle(color: Colors.white)),
+          )
+        ],
+      ),
     );
   }
 }

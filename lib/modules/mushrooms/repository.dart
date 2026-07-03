@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import '../../core/database/app_database.dart';
@@ -12,7 +13,7 @@ class MushroomsRepository {
 
   Future<void> seedRoomsIfEmpty() async {
     try {
-      final existingRooms = await _db.select(_db.mushroomRooms).get();
+      final existingRooms = await _db.select(_db.growRooms).get();
       final existingNames = existingRooms.map((r) => r.name).toSet();
 
       final allRoomsToSeed = [
@@ -32,7 +33,7 @@ class MushroomsRepository {
 
       for (final r in allRoomsToSeed) {
         if (!existingNames.contains(r)) {
-          await _db.into(_db.mushroomRooms).insert(MushroomRoomsCompanion.insert(
+          await _db.into(_db.growRooms).insert(GrowRoomsCompanion.insert(
             id: const Uuid().v4(),
             name: r,
             status: const Value('idle'),
@@ -48,7 +49,7 @@ class MushroomsRepository {
 
   Future<List<Map<String, dynamic>>> getRooms() async {
     await seedRoomsIfEmpty();
-    final query = _db.select(_db.mushroomRooms)
+    final query = _db.select(_db.growRooms)
       ..orderBy([(t) => OrderingTerm(expression: t.name)]);
     final rooms = await query.get();
     
@@ -58,12 +59,15 @@ class MushroomsRepository {
       'status': r.status,
       'current_stage': r.currentStage,
       'day_in_cycle': r.dayInCycle,
+      'targetYield': r.targetYield,
+      'pickedYield': r.pickedYield,
+      'pickingPlanJson': r.pickingPlanJson,
       'created_at': r.createdAt.toIso8601String(),
     }).toList();
   }
 
   Future<void> addNewRoom(String name) async {
-    await _db.into(_db.mushroomRooms).insert(MushroomRoomsCompanion.insert(
+    await _db.into(_db.growRooms).insert(GrowRoomsCompanion.insert(
       id: const Uuid().v4(),
       name: name,
       status: const Value('idle'),
@@ -103,8 +107,8 @@ class MushroomsRepository {
 
   Future<void> startNewCycle(String roomId, {String? wateringPlan, String? prochlorazRate}) async {
     // 1. Update room status and stage
-    await (_db.update(_db.mushroomRooms)..where((tbl) => tbl.id.equals(roomId))).write(
-      MushroomRoomsCompanion(
+    await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+      GrowRoomsCompanion(
         status: const Value('active'),
         currentStage: const Value('filling'),
         dayInCycle: const Value(1),
@@ -145,7 +149,7 @@ class MushroomsRepository {
 
   Future<void> addSpecialSoloJob(String roomId, String title, String assignee, int timeLimitMinutes) async {
     final jobId = const Uuid().v4();
-    final room = await (_db.select(_db.mushroomRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
+    final room = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
     final roomName = room?.name ?? 'Room';
     
     // Create new Task in Project & Task module automatically as part of Odoo integration
@@ -213,8 +217,8 @@ class MushroomsRepository {
     } catch (_) {}
 
     // Update room stage to special_solo & active
-    await (_db.update(_db.mushroomRooms)..where((tbl) => tbl.id.equals(roomId))).write(
-      const MushroomRoomsCompanion(
+    await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+      const GrowRoomsCompanion(
         status: Value('active'),
         currentStage: Value('special_solo'),
       ),
@@ -248,8 +252,8 @@ class MushroomsRepository {
 
     // Update room stage if it's in_progress
     if (newStatus == 'in_progress' && !job.isSoloJob) {
-      await (_db.update(_db.mushroomRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
-        MushroomRoomsCompanion(
+      await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+        GrowRoomsCompanion(
           status: const Value('active'),
           currentStage: Value(job.jobType),
           updatedAt: Value(DateTime.now()),
@@ -273,7 +277,7 @@ class MushroomsRepository {
     final jobId = const Uuid().v4();
     final taskId = const Uuid().v4();
 
-    final room = await (_db.select(_db.mushroomRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
+    final room = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
     final roomName = room?.name ?? 'Room';
 
     if (projectName != null && projectName.isNotEmpty) {
@@ -344,8 +348,8 @@ class MushroomsRepository {
 
       if (activeStandardJob != null) {
         // Revert room stage to the active standard job's stage
-        await (_db.update(_db.mushroomRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
-          MushroomRoomsCompanion(
+        await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+          GrowRoomsCompanion(
             status: const Value('active'),
             currentStage: Value(activeStandardJob.jobType),
           ),
@@ -356,8 +360,8 @@ class MushroomsRepository {
               ..where((tbl) => tbl.roomId.equals(job.roomId) & tbl.status.equals('in_progress')))
             .get();
         if (activeJobs.isEmpty) {
-          await (_db.update(_db.mushroomRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
-            const MushroomRoomsCompanion(
+          await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+            const GrowRoomsCompanion(
               status: Value('idle'),
               currentStage: Value('idle'),
             ),
@@ -377,8 +381,8 @@ class MushroomsRepository {
       final nextJob = allJobs[currentIndex + 1];
       await updateJobStatus(nextJob.id, 'in_progress');
     } else {
-      await (_db.update(_db.mushroomRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
-        const MushroomRoomsCompanion(
+      await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+        const GrowRoomsCompanion(
           status: Value('idle'),
           currentStage: Value('idle'),
           dayInCycle: Value(1),
@@ -421,10 +425,10 @@ class MushroomsRepository {
   }
 
   Future<void> incrementActiveRoomsCycleDays() async {
-    final activeRooms = await (_db.select(_db.mushroomRooms)..where((tbl) => tbl.status.equals('active'))).get();
+    final activeRooms = await (_db.select(_db.growRooms)..where((tbl) => tbl.status.equals('active'))).get();
     for (var room in activeRooms) {
-      await (_db.update(_db.mushroomRooms)..where((tbl) => tbl.id.equals(room.id))).write(
-        MushroomRoomsCompanion(dayInCycle: Value(room.dayInCycle + 1)),
+      await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(room.id))).write(
+        GrowRoomsCompanion(dayInCycle: Value(room.dayInCycle + 1)),
       );
     }
   }
@@ -561,6 +565,438 @@ class MushroomsRepository {
         eventType: 'safe',
         notes: 'Worker checked in safely, timer reset.',
       );
+    } catch (_) {}
+  }
+
+  // === INVENTORY (StockQuants & Products from Supply Chain) ===
+
+  Future<void> seedMushroomProducts() async {
+    try {
+      final existingProducts = await _db.select(_db.products).get();
+      final existingSkus = existingProducts.map((p) => p.sku).toSet();
+
+      final productsToSeed = [
+        {'sku': 'mushrooms_button', 'name': 'Button Mushrooms', 'price': 10.0, 'cost': 5.0, 'qty': 120.0},
+        {'sku': 'mushrooms_cup', 'name': 'Cup Mushrooms', 'price': 12.0, 'cost': 6.0, 'qty': 240.0},
+        {'sku': 'mushrooms_flat', 'name': 'Flat Mushrooms', 'price': 8.0, 'cost': 4.0, 'qty': 95.0},
+      ];
+
+      for (final p in productsToSeed) {
+        final sku = p['sku'] as String;
+        if (!existingSkus.contains(sku)) {
+          final productId = const Uuid().v4();
+          await _db.into(_db.products).insert(ProductsCompanion.insert(
+            id: productId,
+            sku: sku,
+            name: p['name'] as String,
+            price: p['price'] as double,
+            cost: p['cost'] as double,
+          ));
+
+          await _db.into(_db.stockQuants).insert(StockQuantsCompanion.insert(
+            id: const Uuid().v4(),
+            productId: productId,
+            locationId: 'cool_room',
+            quantity: p['qty'] as double,
+          ));
+        }
+      }
+    } catch (_) {}
+  }
+
+  Future<Map<String, double>> getMushroomStock() async {
+    await seedMushroomProducts();
+    final Map<String, double> stock = {
+      'button': 0.0,
+      'cup': 0.0,
+      'flat': 0.0,
+    };
+    try {
+      final products = await (_db.select(_db.products)
+        ..where((tbl) => tbl.sku.isIn(['mushrooms_button', 'mushrooms_cup', 'mushrooms_flat'])))
+        .get();
+      for (final p in products) {
+        final quants = await (_db.select(_db.stockQuants)
+          ..where((tbl) => tbl.productId.equals(p.id) & tbl.locationId.equals('cool_room')))
+          .get();
+        double qty = 0.0;
+        for (final q in quants) {
+          qty += q.quantity;
+        }
+        if (p.sku == 'mushrooms_button') stock['button'] = qty;
+        if (p.sku == 'mushrooms_cup') stock['cup'] = qty;
+        if (p.sku == 'mushrooms_flat') stock['flat'] = qty;
+      }
+    } catch (_) {}
+    return stock;
+  }
+
+  Future<void> updateMushroomStock(String size, double quantityDelta) async {
+    try {
+      final sku = 'mushrooms_$size';
+      final product = await (_db.select(_db.products)..where((tbl) => tbl.sku.equals(sku))).getSingleOrNull();
+      if (product != null) {
+        final quant = await (_db.select(_db.stockQuants)
+          ..where((tbl) => tbl.productId.equals(product.id) & tbl.locationId.equals('cool_room')))
+          .getSingleOrNull();
+        if (quant != null) {
+          await (_db.update(_db.stockQuants)..where((tbl) => tbl.id.equals(quant.id))).write(
+            StockQuantsCompanion(
+              quantity: Value(quant.quantity + quantityDelta),
+              updatedAt: Value(DateTime.now()),
+            ),
+          );
+        } else {
+          await _db.into(_db.stockQuants).insert(StockQuantsCompanion.insert(
+            id: const Uuid().v4(),
+            productId: product.id,
+            locationId: 'cool_room',
+            quantity: quantityDelta,
+          ));
+        }
+      }
+    } catch (_) {}
+  }
+
+  // === SALES DEALS (Orders from Sales CRM) ===
+
+  Future<void> seedMushroomDeals() async {
+    try {
+      final existingDeals = await _db.select(_db.deals).get();
+      final hasMushroomDeals = existingDeals.any((d) => d.title.startsWith('Monarto Order'));
+      if (hasMushroomDeals) return;
+
+      final contactsToSeed = [
+        {'name': 'Aeon Mall', 'phone': '0123456789', 'email': 'info@aeon.vn'},
+        {'name': 'Lotte Mart', 'phone': '0987654321', 'email': 'info@lotte.vn'},
+        {'name': 'Costa Supply', 'phone': '0555555555', 'email': 'info@costa.vn'},
+      ];
+      final Map<String, String> contactIds = {};
+      for (final c in contactsToSeed) {
+        final name = c['name'] as String;
+        var existingContact = await (_db.select(_db.contacts)..where((tbl) => tbl.name.equals(name))).getSingleOrNull();
+        if (existingContact == null) {
+          final contactId = const Uuid().v4();
+          await _db.into(_db.contacts).insert(ContactsCompanion.insert(
+            id: contactId,
+            name: name,
+            phone: Value(c['phone']),
+            email: Value(c['email']),
+            isCustomer: const Value(true),
+          ));
+          contactIds[name] = contactId;
+        } else {
+          contactIds[name] = existingContact.id;
+        }
+      }
+
+      final dealsToSeed = [
+        {
+          'id': 'ORD-001',
+          'title': 'Monarto Order Aeon Mall',
+          'contactName': 'Aeon Mall',
+          'amount': 1500.0,
+          'stage': 'proposal',
+        },
+        {
+          'id': 'ORD-002',
+          'title': 'Monarto Order Lotte Mart',
+          'contactName': 'Lotte Mart',
+          'amount': 1100.0,
+          'stage': 'proposal',
+        },
+        {
+          'id': 'ORD-003',
+          'title': 'Monarto Order Costa Supply',
+          'contactName': 'Costa Supply',
+          'amount': 500.0,
+          'stage': 'closed_won',
+        },
+      ];
+
+      for (final d in dealsToSeed) {
+        final contactId = contactIds[d['contactName'] as String]!;
+        await _db.into(_db.deals).insert(DealsCompanion.insert(
+          id: d['id'] as String,
+          title: d['title'] as String,
+          contactId: contactId,
+          amount: d['amount'] as double,
+          stage: Value(d['stage'] as String),
+        ));
+      }
+    } catch (_) {}
+  }
+
+  Future<List<Map<String, dynamic>>> getMushroomOrders() async {
+    await seedMushroomDeals();
+    final List<Map<String, dynamic>> orders = [];
+    try {
+      final query = _db.select(_db.deals)
+        ..where((tbl) => tbl.title.like('Monarto Order%'));
+      final deals = await query.get();
+      for (final d in deals) {
+        final contact = await (_db.select(_db.contacts)..where((tbl) => tbl.id.equals(d.contactId))).getSingleOrNull();
+        orders.add({
+          'id': d.id,
+          'customer': contact?.name ?? 'Khách hàng',
+          'req': d.id == 'ORD-001'
+              ? 'Button: 50kg, Cup: 100kg'
+              : d.id == 'ORD-002'
+                  ? 'Cup: 80kg, Flat: 30kg'
+                  : 'Flat: 50kg',
+          'total': d.amount,
+          'status': d.stage == 'closed_won' ? 'Delivered' : 'Pending',
+        });
+      }
+    } catch (_) {}
+    return orders;
+  }
+
+  Future<void> deliverMushroomOrder(String orderId) async {
+    try {
+      await (_db.update(_db.deals)..where((tbl) => tbl.id.equals(orderId))).write(
+        const DealsCompanion(stage: Value('closed_won')),
+      );
+    } catch (_) {}
+  }
+
+  // === ROOM PLANS ===
+
+  Future<void> updateRoomPickingPlan(String roomId, {double? targetYield, String? planJson}) async {
+    try {
+      await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+        GrowRoomsCompanion(
+          targetYield: targetYield != null ? Value(targetYield) : const Value.absent(),
+          pickedYield: targetYield != null ? const Value(0.0) : const Value.absent(),
+          pickingPlanJson: planJson != null ? Value(planJson) : const Value.absent(),
+        ),
+      );
+    } catch (_) {}
+  }
+
+  Future<void> updateRoomPickedYield(String roomId, double pickedYield) async {
+    try {
+      await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+        GrowRoomsCompanion(
+          pickedYield: Value(pickedYield),
+        ),
+      );
+    } catch (_) {}
+  }
+
+  Future<void> clearRoomPickingPlan(String roomId) async {
+    try {
+      await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+        const GrowRoomsCompanion(
+          targetYield: Value(0.0),
+          pickedYield: Value(0.0),
+          pickingPlanJson: Value(null),
+        ),
+      );
+    } catch (_) {}
+  }
+
+  // === MAINTENANCE TICKETS ===
+
+  Future<List<Map<String, dynamic>>> getMaintenanceTickets() async {
+    try {
+      final tickets = await _db.select(_db.mushroomMaintenanceTickets).get();
+      if (tickets.isEmpty) {
+        final defaultTickets = [
+          {
+            'id': 'MNT-101',
+            'title': 'Khử trùng quạt hút gió',
+            'plant': 'M2',
+            'room': '33',
+            'assignee': 'Nam T.',
+            'priority': 'normal',
+            'status': 'inprog',
+            'notes': 'Bảo trì bộ lọc khuẩn định kỳ.'
+          },
+          {
+            'id': 'MNT-102',
+            'title': 'Cân chỉnh cảm biến độ ẩm',
+            'plant': 'M1',
+            'room': '12',
+            'assignee': 'Lợi P.',
+            'priority': 'high',
+            'status': 'todo',
+            'notes': 'Cảm biến lệch 5% so với đo tay.'
+          }
+        ];
+        for (final t in defaultTickets) {
+          await _db.into(_db.mushroomMaintenanceTickets).insert(MushroomMaintenanceTicketsCompanion.insert(
+            id: t['id'] as String,
+            title: t['title'] as String,
+            plant: t['plant'] as String,
+            room: t['room'] as String,
+            assignee: t['assignee'] as String,
+            priority: t['priority'] as String,
+            status: Value(t['status'] as String),
+            notes: Value(t['notes'] as String?),
+          ));
+        }
+        return defaultTickets;
+      }
+      return tickets.map((t) => {
+        'id': t.id,
+        'title': t.title,
+        'plant': t.plant,
+        'room': t.room,
+        'assignee': t.assignee,
+        'priority': t.priority,
+        'status': t.status,
+        'notes': t.notes ?? '',
+      }).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> createMaintenanceTicket({
+    required String title,
+    required String plant,
+    required String room,
+    required String assignee,
+    required String priority,
+    required String notes,
+  }) async {
+    try {
+      final id = 'MNT-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}';
+      await _db.into(_db.mushroomMaintenanceTickets).insert(MushroomMaintenanceTicketsCompanion.insert(
+        id: id,
+        title: title,
+        plant: plant,
+        room: room,
+        assignee: assignee,
+        priority: priority,
+        status: const Value('todo'),
+        notes: Value(notes),
+      ));
+    } catch (_) {}
+  }
+
+  Future<void> updateMaintenanceTicketStatus(String id, String status) async {
+    try {
+      await (_db.update(_db.mushroomMaintenanceTickets)..where((tbl) => tbl.id.equals(id))).write(
+        MushroomMaintenanceTicketsCompanion(status: Value(status)),
+      );
+    } catch (_) {}
+  }
+
+  // === BLE CHAT MESSAGES ===
+
+  Future<List<Map<String, String>>> getChatHistory(String contact) async {
+    try {
+      final query = _db.select(_db.mushroomChatMessages)
+        ..where((tbl) => tbl.contact.equals(contact))
+        ..orderBy([(t) => OrderingTerm(expression: t.createdAt)]);
+      final msgs = await query.get();
+
+      if (msgs.isEmpty) {
+        final List<Map<String, String>> defaultMsgs = [];
+        if (contact == 'Growing Crew') {
+          defaultMsgs.addAll([
+            {'sender': 'Minh T.', 'text': 'Đã hoàn thành tưới nước phòng 33 sáng nay.', 'time': '08:30', 'role': 'Growing Specialist'},
+            {'sender': 'Vinh', 'text': 'Tốt lắm, kiểm tra độ ẩm phòng 34 luôn nhé.', 'time': '08:45', 'role': 'Growing Lead'},
+          ]);
+        } else if (contact == 'Sarah (Sales)') {
+          defaultMsgs.addAll([
+            {'sender': 'Sarah', 'text': 'Aeon Mall cần gấp 150kg nấm cỡ vừa vào chiều nay, kho đủ hàng không Trúc ơi?', 'time': '09:15', 'role': 'Sales Lead'},
+            {'sender': 'Trúc', 'text': 'Để mình lập kế hoạch picking gấp gửi cho Harvest.', 'time': '09:20', 'role': 'Cool Room Manager'},
+          ]);
+        } else if (contact == 'Mike (Site Manager)') {
+          defaultMsgs.addAll([
+            {'sender': 'Mike', 'text': 'Đã cập nhật hệ thống báo động an toàn cho branch mới.', 'time': '07:00', 'role': 'Site Manager'},
+          ]);
+        }
+        for (final m in defaultMsgs) {
+          await _db.into(_db.mushroomChatMessages).insert(MushroomChatMessagesCompanion.insert(
+            id: const Uuid().v4(),
+            sender: m['sender']!,
+            contact: contact,
+            textContent: m['text']!,
+            timeString: m['time']!,
+            role: m['role']!,
+          ));
+        }
+        return defaultMsgs;
+      }
+
+      return msgs.map((m) => {
+        'sender': m.sender,
+        'text': m.textContent,
+        'time': m.timeString,
+        'role': m.role,
+      }).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> sendChatMessage({
+    required String sender,
+    required String contact,
+    required String text,
+    required String role,
+  }) async {
+    try {
+      final timeStr = DateTime.now().toLocal().toString().substring(11, 16);
+      await _db.into(_db.mushroomChatMessages).insert(MushroomChatMessagesCompanion.insert(
+        id: const Uuid().v4(),
+        sender: sender,
+        contact: contact,
+        textContent: text,
+        timeString: timeStr,
+        role: role,
+      ));
+    } catch (_) {}
+  }
+
+  // === ROOM CREWS ===
+
+  Future<List<Map<String, String>>> getRoomCrews() async {
+    try {
+      final crews = await _db.select(_db.mushroomRoomCrews).get();
+      return crews.map((c) => {
+        'roomName': c.roomName,
+        'empName': c.empName,
+        'empId': c.empId,
+      }).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> checkInRoomCrew({
+    required String roomName,
+    required String empName,
+    required String empId,
+  }) async {
+    try {
+      await _db.into(_db.mushroomRoomCrews).insert(MushroomRoomCrewsCompanion.insert(
+        id: const Uuid().v4(),
+        roomName: roomName,
+        empName: empName,
+        empId: empId,
+      ));
+    } catch (_) {}
+  }
+
+  Future<void> checkOutRoomCrew({
+    required String roomName,
+    required String empId,
+  }) async {
+    try {
+      await (_db.delete(_db.mushroomRoomCrews)
+        ..where((tbl) => tbl.roomName.equals(roomName) & tbl.empId.equals(empId)))
+        .go();
+    } catch (_) {}
+  }
+
+  Future<void> clearRoomCrews() async {
+    try {
+      await _db.delete(_db.mushroomRoomCrews).go();
     } catch (_) {}
   }
 }

@@ -1,11 +1,14 @@
 import 'package:drift/drift.dart';
 
-class MushroomRooms extends Table {
+class GrowRooms extends Table {
   TextColumn get id => text()(); // UUID
   TextColumn get name => text()(); // e.g. "Room 33", "Grow Room 52A"
   TextColumn get status => text().withDefault(const Constant('idle'))(); // active, idle
   TextColumn get currentStage => text().withDefault(const Constant('idle'))(); // idle, filling, airing, floor_wet, clean_room, watering, clean_bed, prochloraz, packup_tree
   IntColumn get dayInCycle => integer().withDefault(const Constant(1))();
+  RealColumn get targetYield => real().withDefault(const Constant(0.0))();
+  RealColumn get pickedYield => real().withDefault(const Constant(0.0))();
+  TextColumn get pickingPlanJson => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -66,6 +69,43 @@ class MushroomSafetyCheckinLogs extends Table {
   RealColumn get gpsLongitude => real().nullable()();
   IntColumn get responseTimeSeconds => integer().nullable()();
   TextColumn get notes => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class MushroomMaintenanceTickets extends Table {
+  TextColumn get id => text()(); // MNT-xxx
+  TextColumn get title => text()();
+  TextColumn get plant => text()();
+  TextColumn get room => text()();
+  TextColumn get assignee => text()();
+  TextColumn get priority => text()(); // low, normal, high
+  TextColumn get status => text().withDefault(const Constant('todo'))(); // todo, inprog, done
+  TextColumn get notes => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class MushroomChatMessages extends Table {
+  TextColumn get id => text()();
+  TextColumn get sender => text()();
+  TextColumn get contact => text()(); // Growing Crew, Sarah, Mike
+  TextColumn get textContent => text()();
+  TextColumn get timeString => text()();
+  TextColumn get role => text()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class MushroomRoomCrews extends Table {
+  TextColumn get id => text()();
+  TextColumn get roomName => text()();
+  TextColumn get empName => text()();
+  TextColumn get empId => text()();
 
   @override
   Set<Column> get primaryKey => {id};

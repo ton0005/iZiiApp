@@ -23,7 +23,7 @@ class MushroomsModule implements IZiiModule {
   ModuleManifest get manifest => mushroomsManifest;
 
   @override
-  List<String> get tableNames => ['MushroomRooms', 'MushroomJobs'];
+  List<String> get tableNames => ['GrowRooms', 'MushroomJobs'];
 
   @override
   List<AgentTool> get agentTools => [

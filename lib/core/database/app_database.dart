@@ -56,10 +56,13 @@ part 'app_database.g.dart';
   RecordSharingPermissions,
   CommunityFeeds,
   UserShareModuleDefaults,
-  MushroomRooms,
+  GrowRooms,
   MushroomJobs,
   MushroomJobSafetyConfigs,
   MushroomSafetyCheckinLogs,
+  MushroomMaintenanceTickets,
+  MushroomChatMessages,
+  MushroomRoomCrews,
   ChatConversations,
   ChatParticipants,
   ChatMessages,
@@ -78,7 +81,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 18;
+  int get schemaVersion => 19;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -227,7 +230,7 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 12) {
             try {
-              await m.createTable(mushroomRooms);
+              await m.createTable(growRooms);
             } catch (_) {}
             try {
               await m.createTable(mushroomJobs);
@@ -313,6 +316,20 @@ class AppDatabase extends _$AppDatabase {
                   PRIMARY KEY (user_id, event_type)
                 );
               ''');
+            } catch (_) {}
+          }
+          if (from < 19) {
+            try {
+              await m.createTable(growRooms);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomMaintenanceTickets);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomChatMessages);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomRoomCrews);
             } catch (_) {}
           }
         },

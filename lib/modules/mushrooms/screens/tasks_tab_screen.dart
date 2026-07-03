@@ -8,7 +8,7 @@ class TasksTabScreen extends StatefulWidget {
   final String tasksViewMode;
   final Function(String) onRoomSelected;
   final Function(String) onViewModeChanged;
-  final Function(String, int, String) onJobStatusChanged;
+  final Function(String, dynamic, String) onJobStatusChanged;
 
   const TasksTabScreen({
     super.key,
@@ -178,7 +178,7 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
 
   void _showTaskDetailDialog(Map<String, dynamic> job, String roomName) {
     final status = job['status'] as String;
-    final jobId = job['id'] as int;
+    final jobId = job['id'];
 
     showDialog(
       context: context,

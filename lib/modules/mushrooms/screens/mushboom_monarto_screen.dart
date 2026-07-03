@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import '../bloc/mushrooms_bloc.dart';
+import '../repository.dart';
 
 // Import sub-screens
 import 'growing_tab_screen.dart';
@@ -194,6 +194,39 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   void initState() {
     super.initState();
     _bloc = MushroomsBloc()..add(LoadRoomsEvent());
+    _loadMushroomData();
+  }
+
+  Future<void> _loadMushroomData() async {
+    final repo = MushroomsRepository();
+    final stock = await repo.getMushroomStock();
+    final orders = await repo.getMushroomOrders();
+    final mntTickets = await repo.getMaintenanceTickets();
+    final crewChat = await repo.getChatHistory('Growing Crew');
+    final sarahChat = await repo.getChatHistory('Sarah (Sales)');
+    final mikeChat = await repo.getChatHistory('Mike (Site Manager)');
+    final crews = await repo.getRoomCrews();
+
+    setState(() {
+      _stockButton = stock['button'] ?? 120.0;
+      _stockMedium = stock['cup'] ?? 240.0;
+      _stockOpen = stock['flat'] ?? 95.0;
+
+      _orders.clear();
+      _orders.addAll(orders);
+
+      _maintenanceJobs.clear();
+      _maintenanceJobs.addAll(mntTickets);
+
+      _chatHistory['Growing Crew'] = crewChat;
+      _chatHistory['Sarah (Sales)'] = sarahChat;
+      _chatHistory['Mike (Site Manager)'] = mikeChat;
+
+      _roomCrews.clear();
+      for (final c in crews) {
+        _roomCrews.putIfAbsent(c['roomName']!, () => []).add(c['empName']!);
+      }
+    });
   }
 
   // Helper: check if a room belongs to M1 or M2
@@ -222,38 +255,10 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
           'day_in_cycle': r['day_in_cycle'] ?? 1,
           'cycle': 'Cycle 1',
           'area': '112 m²',
-          'targetYield': 0.0,
-          'pickedYield': 0.0,
-          'pickingPlan': null,
-          'jobs': [
-            {
-              'id': 1,
-              'name': 'Filling',
-              'icon': Icons.archive,
-              'status': 'done',
-              'assignee': 'Minh T.',
-              'date': '14 Jun',
-              'notes': 'Giá thể nấm chuẩn chất lượng.'
-            },
-            {
-              'id': 2,
-              'name': 'Airing',
-              'icon': Icons.wind_power,
-              'status': 'inprog',
-              'assignee': 'Lan N.',
-              'date': '15 Jun',
-              'notes': 'Bọc plastic giữ ẩm floor wet.'
-            },
-            {
-              'id': 3,
-              'name': 'Watering',
-              'icon': Icons.water_drop,
-              'status': 'todo',
-              'assignee': 'Hùng V.',
-              'date': '16 Jun',
-              'notes': 'Tưới nước định kỳ 2 Side.'
-            }
-          ]
+          'targetYield': r['targetYield'] ?? 0.0,
+          'pickedYield': r['pickedYield'] ?? 0.0,
+          'pickingPlan': r['pickingPlanJson'] != null ? jsonDecode(r['pickingPlanJson']) : null,
+          'jobs': []
         };
       } else {
         // Update stage & status from database
@@ -263,6 +268,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
             r['current_stage'] ?? _localRooms[name]!['current_stage'];
         _localRooms[name]!['day_in_cycle'] =
             r['day_in_cycle'] ?? _localRooms[name]!['day_in_cycle'];
+        _localRooms[name]!['targetYield'] =
+            r['targetYield'] ?? _localRooms[name]!['targetYield'];
+        _localRooms[name]!['pickedYield'] =
+            r['pickedYield'] ?? _localRooms[name]!['pickedYield'];
+        _localRooms[name]!['pickingPlan'] = r['pickingPlanJson'] != null
+            ? jsonDecode(r['pickingPlanJson'])
+            : null;
       }
     }
   }
@@ -287,6 +299,35 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
               }
               if (_tasksSelectedRoomName == null && _localRooms.isNotEmpty) {
                 _tasksSelectedRoomName = _selectedRoomName;
+              }
+            });
+
+            if (_selectedRoomName != null && state.selectedRoomId == null) {
+              final room = _localRooms[_selectedRoomName];
+              if (room != null) {
+                _bloc.add(LoadRoomDetailsEvent(room['id']));
+              }
+            }
+          }
+
+          if (state.selectedRoomId != null) {
+            setState(() {
+              final roomEntry = _localRooms.values.firstWhere((r) => r['id'] == state.selectedRoomId, orElse: () => {});
+              if (roomEntry.isNotEmpty) {
+                final rName = roomEntry['name'] as String;
+                _localRooms[rName]!['jobs'] = state.selectedRoomJobs.map((j) => {
+                  'id': j['id'],
+                  'name': j['name'],
+                  'icon': j['job_type'] == 'watering'
+                      ? Icons.water_drop
+                      : j['job_type'] == 'prochloraz'
+                          ? Icons.science
+                          : Icons.task_alt,
+                  'status': j['status'] == 'completed' ? 'done' : (j['status'] == 'in_progress' ? 'inprog' : 'todo'),
+                  'assignee': j['assignee'] ?? 'Chưa giao',
+                  'date': j['scheduled_at'] != null ? j['scheduled_at'].toString().substring(5, 10) : 'Hôm nay',
+                  'notes': j['plan_details'] ?? j['prochloraz_rate'] ?? '',
+                }).toList();
               }
             });
           }
@@ -661,10 +702,19 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
           });
         },
         onRoomFilterChanged: (filter) => setState(() => _roomFilter = filter),
-        onRoomSelected: (roomName) => setState(() => _selectedRoomName = roomName),
+        onRoomSelected: (roomName) {
+          setState(() {
+            _selectedRoomName = roomName;
+          });
+          final room = _localRooms[roomName];
+          if (room != null) {
+            _bloc.add(LoadRoomDetailsEvent(room['id']));
+          }
+        },
         onJobCreated: _onJobCreated,
         onJobStatusChanged: _onJobStatusChanged,
         onSwitchToTasks: _onSwitchToTasks,
+        onStartCycle: _onStartCycle,
       );
     }
     if (_activeTab == 'harvest') {
@@ -734,6 +784,17 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
   // --- Callbacks for State Updates ---
 
+  void _onStartCycle(String roomName, String wateringPlan, String prochlorazRate) {
+    final room = _localRooms[roomName];
+    if (room != null) {
+      _bloc.add(StartCycleEvent(
+        room['id'],
+        wateringPlan: wateringPlan,
+        prochlorazRate: prochlorazRate,
+      ));
+    }
+  }
+
   void _onJobCreated(
       String roomName,
       String jobType,
@@ -743,48 +804,41 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       double? area,
       String? wateringPlan,
       double? wateringVol) {
-    setState(() {
-      final room = _localRooms[roomName]!;
-      room['status'] = 'active';
-      room['current_stage'] = jobType;
-
-      String jobNotes = notes;
+    final room = _localRooms[roomName];
+    if (room != null) {
+      String planDetails = '';
       if (jobType == 'watering') {
-        jobNotes +=
-            ' [Tưới: ${wateringPlan == '2side' ? '2 Side' : '1 Side'} · $wateringVol L/m²]';
-      } else if (jobType == 'prochloraz') {
-        jobNotes += ' [Hóa chất: $rate g/m² · Diện tích: $area m²]';
+        planDetails = wateringPlan == '2side' ? '2 Side $wateringVol L/m²' : '1 Side $wateringVol L/m²';
+      }
+      String prochlorazRate = '';
+      if (jobType == 'prochloraz') {
+        prochlorazRate = '${rate}g/m²';
       }
 
-      final newJob = {
-        'id': room['jobs'].length + 1,
-        'name': jobType.toUpperCase(),
-        'icon': jobType == 'watering'
-            ? Icons.water_drop
-            : jobType == 'prochloraz'
-                ? Icons.science
-                : Icons.task_alt,
-        'status': 'todo',
-        'assignee': assignee,
-        'date': 'Hôm nay',
-        'notes': jobNotes
-      };
-      room['jobs'].add(newJob);
-    });
+      _bloc.add(CreateCustomJobEvent(
+        roomId: room['id'],
+        name: jobType.toUpperCase(),
+        jobType: jobType,
+        assignee: assignee,
+        priority: 'normal',
+        scheduledAt: DateTime.now(),
+        planDetails: planDetails,
+        prochlorazRate: prochlorazRate,
+        notes: notes,
+        projectName: 'Costa M2 Operations',
+      ));
+    }
   }
 
-  void _onJobStatusChanged(String roomName, int jobId, bool done) {
-    setState(() {
-      final room = _localRooms[roomName]!;
-      final List<Map<String, dynamic>> jobs =
-          List<Map<String, dynamic>>.from(room['jobs']);
-      for (var j in jobs) {
-        if (j['id'] == jobId) {
-          j['status'] = done ? 'done' : 'todo';
-          break;
-        }
-      }
-    });
+  void _onJobStatusChanged(String roomName, dynamic jobId, bool done) {
+    final room = _localRooms[roomName];
+    if (room != null) {
+      _bloc.add(UpdateJobStatusEvent(
+        jobId as String,
+        room['id'],
+        done ? 'completed' : 'todo',
+      ));
+    }
   }
 
   void _onSwitchToTasks(String roomName, String viewMode) {
@@ -795,7 +849,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     });
   }
 
-  void _onCheckIn(String code, String roomSelected) {
+  void _onCheckIn(String code, String roomSelected) async {
     const registry = {
       'EMP001': {'name': 'Minh T.', 'role': 'Growing Specialist'},
       'EMP002': {'name': 'Lan N.', 'role': 'Growing Specialist'},
@@ -809,24 +863,35 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       _showMsg('Không tìm thấy mã số nhân viên!');
       return;
     }
-    setState(() {
-      _roomCrews.putIfAbsent(roomSelected, () => []);
-      if (!_roomCrews[roomSelected]!.contains(emp['name'])) {
-        _roomCrews[roomSelected]!.add(emp['name']!);
-        _safetyLogs.insert(0, {
-          'empId': code,
-          'empName': emp['name'],
-          'room': roomSelected,
-          'role': emp['role'],
-          'time': DateTime.now().toLocal().toString().substring(11, 16),
-          'action': 'Check-in',
-          'solo': _roomCrews[roomSelected]!.length == 1
-        });
+    final repo = MushroomsRepository();
+    await repo.checkInRoomCrew(roomName: roomSelected, empName: emp['name']!, empId: code);
+
+    final crews = await repo.getRoomCrews();
+    final roomCrewNames = crews.where((c) => c['roomName'] == roomSelected).map((c) => c['empName']!).toList();
+    
+    await repo.logSafetyCheckin(
+      jobId: 'crew_checkin',
+      workerId: emp['name']!,
+      eventType: 'checkin',
+      notes: 'Checked in to Room $roomSelected. Solo status: ${roomCrewNames.length <= 1}',
+    );
+
+    if (roomCrewNames.length == 1) {
+      final room = _localRooms[roomSelected];
+      if (room != null) {
+        _bloc.add(AddSoloJobEvent(
+          roomId: room['id'],
+          title: 'Hái nấm một mình (Solo Picking)',
+          assignee: emp['name']!,
+          timeLimit: 45,
+        ));
       }
-    });
+    }
+
+    _loadMushroomData();
   }
 
-  void _onCheckOut(String code, String roomSelected) {
+  void _onCheckOut(String code, String roomSelected) async {
     const registry = {
       'EMP001': {'name': 'Minh T.', 'role': 'Growing Specialist'},
       'EMP002': {'name': 'Lan N.', 'role': 'Growing Specialist'},
@@ -840,156 +905,158 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       _showMsg('Không tìm thấy mã số nhân viên!');
       return;
     }
-    setState(() {
-      if (_roomCrews.containsKey(roomSelected) &&
-          _roomCrews[roomSelected]!.contains(emp['name'])) {
-        _roomCrews[roomSelected]!.remove(emp['name']);
-        _safetyLogs.insert(0, {
-          'empId': code,
-          'empName': emp['name'],
-          'room': roomSelected,
-          'role': emp['role'],
-          'time': DateTime.now().toLocal().toString().substring(11, 16),
-          'action': 'Check-out',
-          'solo': false
-        });
+    final repo = MushroomsRepository();
+    await repo.checkOutRoomCrew(roomName: roomSelected, empId: code);
+
+    await repo.logSafetyCheckin(
+      jobId: 'crew_checkout',
+      workerId: emp['name']!,
+      eventType: 'checkout',
+      notes: 'Checked out from Room $roomSelected.',
+    );
+
+    final room = _localRooms[roomSelected];
+    if (room != null) {
+      final List<Map<String, dynamic>> jobs = List<Map<String, dynamic>>.from(room['jobs']);
+      final activeSolo = jobs.firstWhere(
+        (j) => j['assignee'] == emp['name'] && j['notes']?.contains('Solo') == true && j['status'] != 'done',
+        orElse: () => {},
+      );
+      if (activeSolo.isNotEmpty) {
+        _bloc.add(CompleteJobEvent(activeSolo['id'], room['id']));
       }
-    });
+    }
+
+    _loadMushroomData();
   }
 
-  void _onPickedYieldUpdated(String name, double pickedVal) {
-    setState(() {
-      final room = _localRooms[name]!;
-      final targetVal = room['targetYield'] ?? 0.0;
-      room['pickedYield'] = pickedVal;
-      // Update stock if picking completed
-      if (pickedVal >= targetVal && targetVal > 0) {
-        final plan = room['pickingPlan'] as Map<String, dynamic>?;
-        if (plan != null) {
-          _stockButton += plan['button'];
-          _stockMedium += plan['medium'];
-          _stockOpen += plan['open'];
+  void _onPickedYieldUpdated(String name, double pickedVal) async {
+    final room = _localRooms[name];
+    if (room == null) return;
+    final targetVal = room['targetYield'] ?? 0.0;
+    final repo = MushroomsRepository();
+    await repo.updateRoomPickedYield(room['id'], pickedVal);
 
-          room['targetYield'] = 0.0;
-          room['pickedYield'] = 0.0;
-          room['pickingPlan'] = null;
-          _pickingPlans.removeWhere((p) => p['roomName'] == name);
-        }
+    if (pickedVal >= targetVal && targetVal > 0) {
+      final plan = room['pickingPlan'] as Map<String, dynamic>?;
+      if (plan != null) {
+        await repo.updateMushroomStock('button', plan['button']?.toDouble() ?? 0.0);
+        await repo.updateMushroomStock('cup', plan['medium']?.toDouble() ?? 0.0);
+        await repo.updateMushroomStock('flat', plan['open']?.toDouble() ?? 0.0);
+        await repo.clearRoomPickingPlan(room['id']);
       }
-    });
+    }
+    _loadMushroomData();
+    _bloc.add(LoadRoomsEvent());
   }
 
-  void _onSendPickingPlan(String roomSelected, int buttonVal, int mediumVal, int openVal) {
+  void _onSendPickingPlan(String roomSelected, int buttonVal, int mediumVal, int openVal) async {
     final total = buttonVal + mediumVal + openVal;
     if (total <= 0) {
       _showMsg('Vui lòng nhập sản lượng lớn hơn 0!');
       return;
     }
-    setState(() {
-      final plan = {
-        'id': DateTime.now().millisecondsSinceEpoch.toString(),
-        'roomName': roomSelected,
-        'plant': _activePlant,
-        'button': buttonVal,
-        'medium': mediumVal,
-        'open': openVal,
-        'sentAt': DateTime.now().toLocal().toString().substring(11, 16)
-      };
-      _pickingPlans.add(plan);
-      _localRooms[roomSelected]!['targetYield'] = total.toDouble();
-      _localRooms[roomSelected]!['pickingPlan'] = plan;
-    });
+    final room = _localRooms[roomSelected];
+    if (room == null) return;
+
+    final planMap = {
+      'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      'roomName': roomSelected,
+      'plant': _activePlant,
+      'button': buttonVal,
+      'medium': mediumVal,
+      'open': openVal,
+      'sentAt': DateTime.now().toLocal().toString().substring(11, 16)
+    };
+
+    final repo = MushroomsRepository();
+    await repo.updateRoomPickingPlan(
+      room['id'],
+      targetYield: total.toDouble(),
+      planJson: jsonEncode(planMap),
+    );
+
+    _loadMushroomData();
+    _bloc.add(LoadRoomsEvent());
     _showMsg('Đã tạo kế hoạch picking và gửi đến Harvest thành công!');
   }
 
-  void _onDeliverOrder(Map<String, dynamic> order) {
-    if (order['id'] == 'ORD-001') {
+  void _onDeliverOrder(Map<String, dynamic> order) async {
+    final repo = MushroomsRepository();
+    final orderId = order['id'] as String;
+
+    if (orderId == 'ORD-001') {
       if (_stockButton >= 50 && _stockMedium >= 100) {
-        setState(() {
-          _stockButton -= 50;
-          _stockMedium -= 100;
-          order['status'] = 'Delivered';
-        });
+        await repo.updateMushroomStock('button', -50.0);
+        await repo.updateMushroomStock('cup', -100.0);
+        await repo.deliverMushroomOrder(orderId);
+        _showMsg('Giao đơn hàng ORD-001 thành công!');
       } else {
-        _showMsg(
-            'Không đủ nấm tồn kho trong kho lạnh! Vui lòng lập thêm kế hoạch Picking.');
+        _showMsg('Không đủ nấm tồn kho trong kho lạnh! Vui lòng lập thêm kế hoạch Picking.');
       }
-    } else if (order['id'] == 'ORD-002') {
+    } else if (orderId == 'ORD-002') {
       if (_stockMedium >= 80 && _stockOpen >= 30) {
-        setState(() {
-          _stockMedium -= 80;
-          _stockOpen -= 30;
-          order['status'] = 'Delivered';
-        });
+        await repo.updateMushroomStock('cup', -80.0);
+        await repo.updateMushroomStock('flat', -30.0);
+        await repo.deliverMushroomOrder(orderId);
+        _showMsg('Giao đơn hàng ORD-002 thành công!');
       } else {
         _showMsg('Không đủ nấm tồn kho trong kho lạnh!');
       }
     }
+    _loadMushroomData();
   }
 
-  void _onCreateMaintenanceJob(String title, String plant, String room, String assignee, String priority, String notes) {
-    setState(() {
-      _maintenanceJobs.add({
-        'id': 'MNT-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
-        'title': title,
-        'plant': plant,
-        'room': room,
-        'assignee': assignee,
-        'priority': priority,
-        'status': 'todo',
-        'notes': notes
-      });
-    });
+  void _onCreateMaintenanceJob(String title, String plant, String room, String assignee, String priority, String notes) async {
+    final repo = MushroomsRepository();
+    await repo.createMaintenanceTicket(
+      title: title,
+      plant: plant,
+      room: room,
+      assignee: assignee,
+      priority: priority,
+      notes: notes,
+    );
+    _loadMushroomData();
     _showMsg('Đã tạo lệnh bảo trì mới thành công!');
   }
 
-  void _onUpdateMaintStatus(String jobId, String status) {
-    setState(() {
-      for (var mnt in _maintenanceJobs) {
-        if (mnt['id'] == jobId) {
-          mnt['status'] = status;
-          break;
-        }
-      }
-    });
+  void _onUpdateMaintStatus(String jobId, String status) async {
+    final repo = MushroomsRepository();
+    await repo.updateMaintenanceTicketStatus(jobId, status);
+    _loadMushroomData();
   }
 
-  void _onTaskStatusAdvanced(String roomName, int jobId, String nextStatus) {
-    setState(() {
-      final room = _localRooms[roomName]!;
-      final List<Map<String, dynamic>> jobs =
-          List<Map<String, dynamic>>.from(room['jobs']);
-      for (var j in jobs) {
-        if (j['id'] == jobId) {
-          j['status'] = nextStatus;
-          break;
-        }
-      }
-    });
+  void _onTaskStatusAdvanced(String roomName, dynamic jobId, String nextStatus) {
+    final room = _localRooms[roomName];
+    if (room != null) {
+      _bloc.add(UpdateJobStatusEvent(
+        jobId as String,
+        room['id'],
+        nextStatus == 'done' ? 'completed' : nextStatus,
+      ));
+    }
   }
 
-  void _onSendMessage(String text) {
-    setState(() {
-      _chatHistory[_activeChatContact]!.add({
-        'sender': 'Vinh',
-        'text': text,
-        'time': DateTime.now().toLocal().toString().substring(11, 16),
-        'role': _activeRole
-      });
-    });
+  void _onSendMessage(String text) async {
+    final repo = MushroomsRepository();
+    await repo.sendChatMessage(
+      sender: 'Vinh',
+      contact: _activeChatContact,
+      text: text,
+      role: _activeRole,
+    );
+    _loadMushroomData();
 
-    // Simulated Auto reply
-    if (_activeChatContact == 'Sarah (Sales)' &&
-        text.toLowerCase().contains('picking')) {
-      Timer(const Duration(seconds: 1), () {
-        setState(() {
-          _chatHistory['Sarah (Sales)']!.add({
-            'sender': 'Sarah',
-            'text': 'Tuyệt vời! Mình báo Aeon Mall xuất hóa đơn luôn.',
-            'time': DateTime.now().toLocal().toString().substring(11, 16),
-            'role': 'Sales Lead'
-          });
-        });
+    if (_activeChatContact == 'Sarah (Sales)' && text.toLowerCase().contains('picking')) {
+      Timer(const Duration(seconds: 1), () async {
+        await repo.sendChatMessage(
+          sender: 'Sarah',
+          contact: 'Sarah (Sales)',
+          text: 'Tuyệt vời! Mình báo Aeon Mall xuất hóa đơn luôn.',
+          role: 'Sales Lead',
+        );
+        _loadMushroomData();
       });
     }
   }
@@ -1017,11 +1084,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     _showMsg('Đã phát tín hiệu yêu cầu tất cả nhân sự xác minh check-in.');
   }
 
-  void _onResetSafety() {
+  void _onResetSafety() async {
+    final repo = MushroomsRepository();
+    await repo.clearRoomCrews();
     setState(() {
       _emergencyActive = false;
-      _roomCrews.clear();
     });
+    _loadMushroomData();
     _showMsg('Đã khôi phục các chỉ số an toàn.');
   }
 
