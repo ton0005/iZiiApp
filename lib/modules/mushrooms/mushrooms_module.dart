@@ -6,7 +6,7 @@ import '../../core/ai_agent/models/chat_models.dart';
 import '../../core/localization/app_localizations.dart';
 import 'bloc/mushrooms_bloc.dart';
 import 'repository.dart';
-import 'screens/mushrooms_dashboard_screen.dart';
+import 'screens/mushboom_monarto_screen.dart';
 
 const mushroomsManifest = ModuleManifest(
   id: 'izii.mushrooms',
@@ -157,7 +157,7 @@ class MushroomsModule implements IZiiModule {
   Map<String, WidgetBuilder> get routes => {
         '/mushrooms': (context) => BlocProvider(
               create: (context) => MushroomsBloc()..add(LoadRoomsEvent()),
-              child: const MushroomsDashboardScreen(),
+              child: const MushboomMonartoScreen(),
             ),
       };
 

@@ -1,0 +1,1041 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../bloc/mushrooms_bloc.dart';
+
+// Import sub-screens
+import 'growing_tab_screen.dart';
+import 'harvest_tab_screen.dart';
+import 'cool_room_tab_screen.dart';
+import 'maintenance_tab_screen.dart';
+import 'tasks_tab_screen.dart';
+import 'chat_tab_screen.dart';
+import 'safety_tab_screen.dart';
+
+// --- Premium color definitions ---
+class FarmColors {
+  static const Color forestGreen = Color(0xFF2D6A4F);
+  static const Color forestGreenLight = Color(0xFFE8F3EE);
+  static const Color forestGreenText = Color(0xFF1B4332);
+
+  static const Color harvestPurple = Color(0xFF7C3AED);
+  static const Color harvestPurpleLight = Color(0xFFF5F3FF);
+
+  static const Color coolBlue = Color(0xFF0284C7);
+  static const Color coolBlueLight = Color(0xFFF0F9FF);
+
+  static const Color maintenanceOrange = Color(0xFFD97706);
+  static const Color maintenanceOrangeLight = Color(0xFFFEF3C7);
+
+  static const Color borderLight = Color(0xFFE2E0D9);
+  static const Color borderStrong = Color(0xFFC8C5BC);
+  static const Color bgLight = Color(0xFFFAF9F6);
+  static const Color bgDark = Color(0xFF121212);
+}
+
+class MushboomMonartoScreen extends StatefulWidget {
+  const MushboomMonartoScreen({super.key});
+
+  @override
+  State<MushboomMonartoScreen> createState() =>
+      _MushboomMonartoScreenState();
+}
+
+class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
+  // Tab state
+  String _activeTab =
+      'growing'; // growing, harvest, coolroom, maintenance, tasks, chat, safety
+  String _activePlant = 'M2'; // M1 or M2
+  String? _selectedRoomName;
+  String _activeRole =
+      'Growing Lead'; // Vinh (Growing Lead), Hải (Harvest Supervisor), Trúc (Cool Room Manager), Nam (Maintenance Lead)
+  String _language = 'vi'; // vi or en
+  String _roomFilter = 'all'; // all, active, idle
+
+  String? _tasksSelectedRoomName;
+  String _tasksViewMode = 'kanban'; // kanban or gantt
+
+  String _activeChatContact = 'Growing Crew';
+
+  bool _emergencyActive = false;
+
+  // Local active state maps (synchronized with database where applicable)
+  final Map<String, Map<String, dynamic>> _localRooms = {};
+
+  // Picking plans sent from Cool Room to Harvest
+  final List<Map<String, dynamic>> _pickingPlans = [];
+
+  // Warehouse Stock (kg)
+  double _stockButton = 120;
+  double _stockMedium = 240;
+  double _stockOpen = 95;
+
+  // Orders Registry
+  final List<Map<String, dynamic>> _orders = [
+    {
+      'id': 'ORD-001',
+      'customer': 'Aeon Mall',
+      'req': 'Button: 50kg, Medium: 100kg',
+      'total': 150.0,
+      'status': 'Pending'
+    },
+    {
+      'id': 'ORD-002',
+      'customer': 'Lotte Mart',
+      'req': 'Medium: 80kg, Open: 30kg',
+      'total': 110.0,
+      'status': 'Pending'
+    },
+    {
+      'id': 'ORD-003',
+      'customer': 'Costa Supply',
+      'req': 'Open: 50kg',
+      'total': 50.0,
+      'status': 'Delivered'
+    }
+  ];
+
+  // Maintenance Logs
+  final List<Map<String, dynamic>> _maintenanceJobs = [
+    {
+      'id': 'MNT-101',
+      'title': 'Khử trùng quạt hút gió',
+      'plant': 'M2',
+      'room': '33',
+      'assignee': 'Nam T.',
+      'priority': 'normal',
+      'status': 'inprog',
+      'notes': 'Bảo trì bộ lọc khuẩn định kỳ.'
+    },
+    {
+      'id': 'MNT-102',
+      'title': 'Cân chỉnh cảm biến độ ẩm',
+      'plant': 'M1',
+      'room': '12',
+      'assignee': 'Lợi P.',
+      'priority': 'high',
+      'status': 'todo',
+      'notes': 'Cảm biến lệch 5% so với đo tay.'
+    }
+  ];
+
+  // Chat History
+  final Map<String, List<Map<String, String>>> _chatHistory = {
+    'Growing Crew': [
+      {
+        'sender': 'Minh T.',
+        'text': 'Đã hoàn thành tưới nước phòng 33 sáng nay.',
+        'time': '08:30',
+        'role': 'Growing Specialist'
+      },
+      {
+        'sender': 'Vinh',
+        'text': 'Tốt lắm, kiểm tra độ ẩm phòng 34 luôn nhé.',
+        'time': '08:45',
+        'role': 'Growing Lead'
+      }
+    ],
+    'Sarah (Sales)': [
+      {
+        'sender': 'Sarah',
+        'text':
+            'Aeon Mall cần gấp 150kg nấm cỡ vừa vào chiều nay, kho đủ hàng không Trúc ơi?',
+        'time': '09:15',
+        'role': 'Sales Lead'
+      },
+      {
+        'sender': 'Trúc',
+        'text': 'Để mình lập kế hoạch picking gấp gửi cho Harvest.',
+        'time': '09:20',
+        'role': 'Cool Room Manager'
+      }
+    ],
+    'Mike (Site Manager)': [
+      {
+        'sender': 'Mike',
+        'text': 'Đã cập nhật hệ thống báo động an toàn cho branch mới.',
+        'time': '07:00',
+        'role': 'Site Manager'
+      }
+    ]
+  };
+
+  // Safety Logs
+  final List<Map<String, dynamic>> _safetyLogs = [
+    {
+      'empId': 'EMP001',
+      'empName': 'Minh T.',
+      'room': '33',
+      'role': 'Growing Specialist',
+      'time': '08:00',
+      'action': 'Check-in',
+      'solo': false
+    },
+    {
+      'empId': 'EMP003',
+      'empName': 'Hùng V.',
+      'room': '44',
+      'role': 'Harvest Picker',
+      'time': '08:15',
+      'action': 'Check-in',
+      'solo': false
+    }
+  ];
+
+  // Room crews (Who is checked into which room)
+  final Map<String, List<String>> _roomCrews = {};
+
+  // BLoC
+  late MushroomsBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = MushroomsBloc()..add(LoadRoomsEvent());
+  }
+
+  // Helper: check if a room belongs to M1 or M2
+  String _getPlantFromRoomName(String name) {
+    final clean = name.replaceAll('Room ', '').trim();
+    if (clean == '6A' || clean == '6B' || clean == '22A') {
+      return 'M1';
+    }
+    final num = int.tryParse(clean.replaceAll(RegExp(r'[^0-9]'), ''));
+    if (num != null && num >= 33) {
+      return 'M2';
+    }
+    return 'M1';
+  }
+
+  void _syncDatabaseRooms(List<Map<String, dynamic>> dbRooms) {
+    for (var r in dbRooms) {
+      final name = r['name'] as String;
+      if (!_localRooms.containsKey(name)) {
+        _localRooms[name] = {
+          'id': r['id'],
+          'name': name,
+          'plant': _getPlantFromRoomName(name),
+          'status': r['status'] ?? 'idle',
+          'current_stage': r['current_stage'] ?? 'idle',
+          'day_in_cycle': r['day_in_cycle'] ?? 1,
+          'cycle': 'Cycle 1',
+          'area': '112 m²',
+          'targetYield': 0.0,
+          'pickedYield': 0.0,
+          'pickingPlan': null,
+          'jobs': [
+            {
+              'id': 1,
+              'name': 'Filling',
+              'icon': Icons.archive,
+              'status': 'done',
+              'assignee': 'Minh T.',
+              'date': '14 Jun',
+              'notes': 'Giá thể nấm chuẩn chất lượng.'
+            },
+            {
+              'id': 2,
+              'name': 'Airing',
+              'icon': Icons.wind_power,
+              'status': 'inprog',
+              'assignee': 'Lan N.',
+              'date': '15 Jun',
+              'notes': 'Bọc plastic giữ ẩm floor wet.'
+            },
+            {
+              'id': 3,
+              'name': 'Watering',
+              'icon': Icons.water_drop,
+              'status': 'todo',
+              'assignee': 'Hùng V.',
+              'date': '16 Jun',
+              'notes': 'Tưới nước định kỳ 2 Side.'
+            }
+          ]
+        };
+      } else {
+        // Update stage & status from database
+        _localRooms[name]!['status'] =
+            r['status'] ?? _localRooms[name]!['status'];
+        _localRooms[name]!['current_stage'] =
+            r['current_stage'] ?? _localRooms[name]!['current_stage'];
+        _localRooms[name]!['day_in_cycle'] =
+            r['day_in_cycle'] ?? _localRooms[name]!['day_in_cycle'];
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return BlocProvider.value(
+      value: _bloc,
+      child: BlocConsumer<MushroomsBloc, MushroomsState>(
+        listener: (context, state) {
+          if (state.rooms.isNotEmpty) {
+            setState(() {
+              _syncDatabaseRooms(state.rooms);
+              if (_selectedRoomName == null && _localRooms.isNotEmpty) {
+                // Find first room in plant
+                final firstRoom = _localRooms.values.firstWhere(
+                    (r) => r['plant'] == _activePlant,
+                    orElse: () => _localRooms.values.first);
+                _selectedRoomName = firstRoom['name'];
+              }
+              if (_tasksSelectedRoomName == null && _localRooms.isNotEmpty) {
+                _tasksSelectedRoomName = _selectedRoomName;
+              }
+            });
+          }
+        },
+        builder: (context, state) {
+          if (state.isLoading && _localRooms.isEmpty) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          return Scaffold(
+            backgroundColor: isDark ? FarmColors.bgDark : FarmColors.bgLight,
+            body: Column(
+              children: [
+                // Global Emergency Bar
+                if (_emergencyActive)
+                  Container(
+                    width: double.infinity,
+                    color: Colors.red,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(Icons.warning_amber_rounded,
+                                color: Colors.white),
+                            SizedBox(width: 8),
+                            Text(
+                              'CẢNH BÁO BÁO ĐỘNG KHẨN CẤP: Rò rỉ khí CO2 tại phòng 55! Hãy sơ tán lập tức.',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13),
+                            ),
+                          ],
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.red,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                          ),
+                          onPressed: () =>
+                              setState(() => _emergencyActive = false),
+                          child: const Text('Xác nhận',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isDesktop = constraints.maxWidth > 800;
+                      return Row(
+                        children: [
+                          if (isDesktop) _buildSidebar(isDark),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                _buildTopbar(isDark),
+                                Expanded(
+                                  child: _buildMainContent(isDark),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // --- Top Bar ---
+  Widget _buildTopbar(bool isDark) {
+    return Container(
+      height: 64,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        border: Border(
+            bottom: BorderSide(
+                color: isDark ? Colors.white10 : FarmColors.borderLight)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _getTabTitle(),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                _getTabSubtitle(),
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              )
+            ],
+          ),
+          Row(
+            children: [
+              // Language Switcher
+              TextButton.icon(
+                icon: const Icon(Icons.language, size: 18, color: Colors.grey),
+                label: Text(_language == 'vi' ? 'Tiếng Việt' : 'English',
+                    style: const TextStyle(color: Colors.grey)),
+                onPressed: () {
+                  setState(() {
+                    _language = _language == 'vi' ? 'en' : 'vi';
+                  });
+                },
+              ),
+              const SizedBox(width: 16),
+              // Role Selector Dropdown
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: FarmColors.borderStrong),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _activeRole,
+                    items: const [
+                      DropdownMenuItem(
+                          value: 'Growing Lead',
+                          child: Text('Vinh (Growing Lead)',
+                              style: TextStyle(fontSize: 13))),
+                      DropdownMenuItem(
+                          value: 'Harvest Supervisor',
+                          child: Text('Hải (Harvest Sup)',
+                              style: TextStyle(fontSize: 13))),
+                      DropdownMenuItem(
+                          value: 'Cool Room Manager',
+                          child: Text('Trúc (Cool Room Mgr)',
+                              style: TextStyle(fontSize: 13))),
+                      DropdownMenuItem(
+                          value: 'Maintenance Lead',
+                          child: Text('Nam (Maint Lead)',
+                              style: TextStyle(fontSize: 13))),
+                    ],
+                    onChanged: (val) {
+                      if (val != null) setState(() => _activeRole = val);
+                    },
+                  ),
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  String _getTabTitle() {
+    if (_activeTab == 'growing') {
+      return _language == 'vi' ? 'Trồng trọt (Growing)' : 'Growing Department';
+    }
+    if (_activeTab == 'harvest') {
+      return _language == 'vi' ? 'Thu hoạch (Harvest)' : 'Harvest Department';
+    }
+    if (_activeTab == 'coolroom') {
+      return _language == 'vi' ? 'Kho lạnh (Cool Room)' : 'Cool Room Warehouse';
+    }
+    if (_activeTab == 'maintenance') {
+      return _language == 'vi' ? 'Bảo trì (Maintenance)' : 'Maintenance Log';
+    }
+    if (_activeTab == 'tasks') {
+      return _language == 'vi'
+          ? 'Dự án & Công việc (Tasks)'
+          : 'Project & Tasks';
+    }
+    if (_activeTab == 'chat') {
+      return _language == 'vi' ? 'Trò chuyện (Chat)' : 'Encrypted Chat';
+    }
+    return _language == 'vi' ? 'An toàn lao động (Safety)' : 'Safety Dashboard';
+  }
+
+  String _getTabSubtitle() {
+    if (_activeTab == 'growing') return 'Costa Mushroom — Plant $_activePlant';
+    if (_activeTab == 'harvest') {
+      return 'Check-in nhân sự & Giám sát hái nấm thực tế';
+    }
+    if (_activeTab == 'coolroom') {
+      return 'Warehouse Inventory & Picking Plans Dispatcher';
+    }
+    if (_activeTab == 'maintenance') {
+      return 'Lịch sử bảo dưỡng & Báo lỗi kỹ thuật';
+    }
+    if (_activeTab == 'tasks') return 'Kanban Board & Gantt Chart Timeline';
+    if (_activeTab == 'chat') return 'Offline BLE P2P Chat Simulator';
+    return 'Solo Working Alerts & Incident Manager';
+  }
+
+  // --- Sidebar ---
+  Widget _buildSidebar(bool isDark) {
+    return Container(
+      width: 240,
+      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+      child: Column(
+        children: [
+          // Sidebar Logo Header
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      color: isDark ? Colors.white10 : FarmColors.borderLight)),
+            ),
+            alignment: Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.dashboard_rounded,
+                        color: FarmColors.forestGreen),
+                    SizedBox(width: 8),
+                    Text('iZiiApp',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: FarmColors.forestGreen)),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: const [
+                    Icon(Icons.call_split, size: 12, color: Colors.grey),
+                    SizedBox(width: 4),
+                    Text('mushroom-farm-fork',
+                        style: TextStyle(fontSize: 10, color: Colors.grey)),
+                  ],
+                )
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              children: [
+                _buildSidebarLabel(
+                    _language == 'vi' ? 'PHÒNG BAN' : 'DEPARTMENTS'),
+                _buildSidebarItem(
+                    'growing',
+                    Icons.corporate_fare_rounded,
+                    _language == 'vi' ? 'Trồng trọt (Growing)' : 'Growing',
+                    FarmColors.forestGreen),
+                _buildSidebarItem(
+                    'harvest',
+                    Icons.cut_rounded,
+                    _language == 'vi' ? 'Thu hoạch (Harvest)' : 'Harvest',
+                    FarmColors.harvestPurple),
+                _buildSidebarItem(
+                    'coolroom',
+                    Icons.ac_unit_rounded,
+                    _language == 'vi' ? 'Kho lạnh (Cool Room)' : 'Cool Room',
+                    FarmColors.coolBlue),
+                _buildSidebarItem(
+                    'maintenance',
+                    Icons.build_rounded,
+                    _language == 'vi' ? 'Bảo trì (Maintenance)' : 'Maintenance',
+                    FarmColors.maintenanceOrange),
+                const Divider(),
+                _buildSidebarLabel(
+                    _language == 'vi' ? 'HỆ THỐNG' : 'UTILITIES'),
+                _buildSidebarItem(
+                    'tasks',
+                    Icons.view_kanban_rounded,
+                    _language == 'vi' ? 'Công việc (Tasks)' : 'Tasks',
+                    Colors.blueGrey),
+                _buildSidebarItem(
+                    'chat',
+                    Icons.question_answer_rounded,
+                    _language == 'vi' ? 'Trò chuyện (Chat)' : 'Chat',
+                    Colors.blue),
+                _buildSidebarItem(
+                    'safety',
+                    Icons.shield_rounded,
+                    _language == 'vi' ? 'An toàn (Safety)' : 'Safety',
+                    Colors.redAccent),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSidebarLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Text(text,
+          style: const TextStyle(
+              fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey)),
+    );
+  }
+
+  Widget _buildSidebarItem(
+      String tabId, IconData icon, String label, Color indicatorColor) {
+    final isActive = _activeTab == tabId;
+    return InkWell(
+      onTap: () => switchTab(tabId),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: isActive
+              ? FarmColors.forestGreenLight.withOpacity(0.3)
+              : Colors.transparent,
+          border: isActive
+              ? Border(left: BorderSide(color: indicatorColor, width: 4))
+              : null,
+        ),
+        child: Row(
+          children: [
+            Icon(icon,
+                size: 20, color: isActive ? indicatorColor : Colors.grey),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                color: isActive ? indicatorColor : Colors.grey.shade700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void switchTab(String tabId) {
+    setState(() {
+      _activeTab = tabId;
+    });
+  }
+
+  // --- Main Content Switcher ---
+  Widget _buildMainContent(bool isDark) {
+    if (_activeTab == 'growing') {
+      return GrowingTabScreen(
+        isDark: isDark,
+        localRooms: _localRooms,
+        activePlant: _activePlant,
+        roomFilter: _roomFilter,
+        selectedRoomName: _selectedRoomName,
+        onPlantChanged: (plant) {
+          setState(() {
+            _activePlant = plant;
+            final firstRoom = _localRooms.values.firstWhere(
+                (r) => r['plant'] == plant,
+                orElse: () => _localRooms.values.first);
+            _selectedRoomName = firstRoom['name'];
+          });
+        },
+        onRoomFilterChanged: (filter) => setState(() => _roomFilter = filter),
+        onRoomSelected: (roomName) => setState(() => _selectedRoomName = roomName),
+        onJobCreated: _onJobCreated,
+        onJobStatusChanged: _onJobStatusChanged,
+        onSwitchToTasks: _onSwitchToTasks,
+      );
+    }
+    if (_activeTab == 'harvest') {
+      return HarvestTabScreen(
+        isDark: isDark,
+        localRooms: _localRooms,
+        roomCrews: _roomCrews,
+        pickingPlans: _pickingPlans,
+        onCheckIn: _onCheckIn,
+        onCheckOut: _onCheckOut,
+        onPickedYieldUpdated: _onPickedYieldUpdated,
+        onSafetyContact: _onTriggerSafetyContact,
+      );
+    }
+    if (_activeTab == 'coolroom') {
+      return CoolRoomTabScreen(
+        isDark: isDark,
+        localRooms: _localRooms,
+        activePlant: _activePlant,
+        stockButton: _stockButton,
+        stockMedium: _stockMedium,
+        stockOpen: _stockOpen,
+        orders: _orders,
+        onSendPickingPlan: _onSendPickingPlan,
+        onDeliverOrder: _onDeliverOrder,
+      );
+    }
+    if (_activeTab == 'maintenance') {
+      return MaintenanceTabScreen(
+        isDark: isDark,
+        localRooms: _localRooms,
+        maintenanceJobs: _maintenanceJobs,
+        onCreateMaintenanceJob: _onCreateMaintenanceJob,
+        onUpdateMaintStatus: _onUpdateMaintStatus,
+      );
+    }
+    if (_activeTab == 'tasks') {
+      return TasksTabScreen(
+        isDark: isDark,
+        localRooms: _localRooms,
+        tasksSelectedRoomName: _tasksSelectedRoomName,
+        tasksViewMode: _tasksViewMode,
+        onRoomSelected: (rName) => setState(() => _tasksSelectedRoomName = rName),
+        onViewModeChanged: (mode) => setState(() => _tasksViewMode = mode),
+        onJobStatusChanged: _onTaskStatusAdvanced,
+      );
+    }
+    if (_activeTab == 'chat') {
+      return ChatTabScreen(
+        isDark: isDark,
+        chatHistory: _chatHistory,
+        activeChatContact: _activeChatContact,
+        activeRole: _activeRole,
+        onContactSelected: (contact) => setState(() => _activeChatContact = contact),
+        onSendMessage: _onSendMessage,
+      );
+    }
+    return SafetyTabScreen(
+      isDark: isDark,
+      safetyLogs: _safetyLogs,
+      onTriggerEmergency: (active) => setState(() => _emergencyActive = active),
+      onTriggerSafetyCheckAll: _onTriggerSafetyCheckAll,
+      onResetSafety: _onResetSafety,
+      onReportIncident: _onReportIncident,
+    );
+  }
+
+  // --- Callbacks for State Updates ---
+
+  void _onJobCreated(
+      String roomName,
+      String jobType,
+      String assignee,
+      String notes,
+      double? rate,
+      double? area,
+      String? wateringPlan,
+      double? wateringVol) {
+    setState(() {
+      final room = _localRooms[roomName]!;
+      room['status'] = 'active';
+      room['current_stage'] = jobType;
+
+      String jobNotes = notes;
+      if (jobType == 'watering') {
+        jobNotes +=
+            ' [Tưới: ${wateringPlan == '2side' ? '2 Side' : '1 Side'} · $wateringVol L/m²]';
+      } else if (jobType == 'prochloraz') {
+        jobNotes += ' [Hóa chất: $rate g/m² · Diện tích: $area m²]';
+      }
+
+      final newJob = {
+        'id': room['jobs'].length + 1,
+        'name': jobType.toUpperCase(),
+        'icon': jobType == 'watering'
+            ? Icons.water_drop
+            : jobType == 'prochloraz'
+                ? Icons.science
+                : Icons.task_alt,
+        'status': 'todo',
+        'assignee': assignee,
+        'date': 'Hôm nay',
+        'notes': jobNotes
+      };
+      room['jobs'].add(newJob);
+    });
+  }
+
+  void _onJobStatusChanged(String roomName, int jobId, bool done) {
+    setState(() {
+      final room = _localRooms[roomName]!;
+      final List<Map<String, dynamic>> jobs =
+          List<Map<String, dynamic>>.from(room['jobs']);
+      for (var j in jobs) {
+        if (j['id'] == jobId) {
+          j['status'] = done ? 'done' : 'todo';
+          break;
+        }
+      }
+    });
+  }
+
+  void _onSwitchToTasks(String roomName, String viewMode) {
+    setState(() {
+      _tasksSelectedRoomName = roomName;
+      _activeTab = 'tasks';
+      _tasksViewMode = viewMode;
+    });
+  }
+
+  void _onCheckIn(String code, String roomSelected) {
+    const registry = {
+      'EMP001': {'name': 'Minh T.', 'role': 'Growing Specialist'},
+      'EMP002': {'name': 'Lan N.', 'role': 'Growing Specialist'},
+      'EMP003': {'name': 'Hùng V.', 'role': 'Harvest Picker'},
+      'EMP004': {'name': 'Phúc D.', 'role': 'Harvest Picker'},
+      'EMP005': {'name': 'Nam T.', 'role': 'Maintenance Specialist'},
+      'EMP006': {'name': 'Lợi P.', 'role': 'Maintenance Specialist'}
+    };
+    final emp = registry[code];
+    if (emp == null) {
+      _showMsg('Không tìm thấy mã số nhân viên!');
+      return;
+    }
+    setState(() {
+      _roomCrews.putIfAbsent(roomSelected, () => []);
+      if (!_roomCrews[roomSelected]!.contains(emp['name'])) {
+        _roomCrews[roomSelected]!.add(emp['name']!);
+        _safetyLogs.insert(0, {
+          'empId': code,
+          'empName': emp['name'],
+          'room': roomSelected,
+          'role': emp['role'],
+          'time': DateTime.now().toLocal().toString().substring(11, 16),
+          'action': 'Check-in',
+          'solo': _roomCrews[roomSelected]!.length == 1
+        });
+      }
+    });
+  }
+
+  void _onCheckOut(String code, String roomSelected) {
+    const registry = {
+      'EMP001': {'name': 'Minh T.', 'role': 'Growing Specialist'},
+      'EMP002': {'name': 'Lan N.', 'role': 'Growing Specialist'},
+      'EMP003': {'name': 'Hùng V.', 'role': 'Harvest Picker'},
+      'EMP004': {'name': 'Phúc D.', 'role': 'Harvest Picker'},
+      'EMP005': {'name': 'Nam T.', 'role': 'Maintenance Specialist'},
+      'EMP006': {'name': 'Lợi P.', 'role': 'Maintenance Specialist'}
+    };
+    final emp = registry[code];
+    if (emp == null) {
+      _showMsg('Không tìm thấy mã số nhân viên!');
+      return;
+    }
+    setState(() {
+      if (_roomCrews.containsKey(roomSelected) &&
+          _roomCrews[roomSelected]!.contains(emp['name'])) {
+        _roomCrews[roomSelected]!.remove(emp['name']);
+        _safetyLogs.insert(0, {
+          'empId': code,
+          'empName': emp['name'],
+          'room': roomSelected,
+          'role': emp['role'],
+          'time': DateTime.now().toLocal().toString().substring(11, 16),
+          'action': 'Check-out',
+          'solo': false
+        });
+      }
+    });
+  }
+
+  void _onPickedYieldUpdated(String name, double pickedVal) {
+    setState(() {
+      final room = _localRooms[name]!;
+      final targetVal = room['targetYield'] ?? 0.0;
+      room['pickedYield'] = pickedVal;
+      // Update stock if picking completed
+      if (pickedVal >= targetVal && targetVal > 0) {
+        final plan = room['pickingPlan'] as Map<String, dynamic>?;
+        if (plan != null) {
+          _stockButton += plan['button'];
+          _stockMedium += plan['medium'];
+          _stockOpen += plan['open'];
+
+          room['targetYield'] = 0.0;
+          room['pickedYield'] = 0.0;
+          room['pickingPlan'] = null;
+          _pickingPlans.removeWhere((p) => p['roomName'] == name);
+        }
+      }
+    });
+  }
+
+  void _onSendPickingPlan(String roomSelected, int buttonVal, int mediumVal, int openVal) {
+    final total = buttonVal + mediumVal + openVal;
+    if (total <= 0) {
+      _showMsg('Vui lòng nhập sản lượng lớn hơn 0!');
+      return;
+    }
+    setState(() {
+      final plan = {
+        'id': DateTime.now().millisecondsSinceEpoch.toString(),
+        'roomName': roomSelected,
+        'plant': _activePlant,
+        'button': buttonVal,
+        'medium': mediumVal,
+        'open': openVal,
+        'sentAt': DateTime.now().toLocal().toString().substring(11, 16)
+      };
+      _pickingPlans.add(plan);
+      _localRooms[roomSelected]!['targetYield'] = total.toDouble();
+      _localRooms[roomSelected]!['pickingPlan'] = plan;
+    });
+    _showMsg('Đã tạo kế hoạch picking và gửi đến Harvest thành công!');
+  }
+
+  void _onDeliverOrder(Map<String, dynamic> order) {
+    if (order['id'] == 'ORD-001') {
+      if (_stockButton >= 50 && _stockMedium >= 100) {
+        setState(() {
+          _stockButton -= 50;
+          _stockMedium -= 100;
+          order['status'] = 'Delivered';
+        });
+      } else {
+        _showMsg(
+            'Không đủ nấm tồn kho trong kho lạnh! Vui lòng lập thêm kế hoạch Picking.');
+      }
+    } else if (order['id'] == 'ORD-002') {
+      if (_stockMedium >= 80 && _stockOpen >= 30) {
+        setState(() {
+          _stockMedium -= 80;
+          _stockOpen -= 30;
+          order['status'] = 'Delivered';
+        });
+      } else {
+        _showMsg('Không đủ nấm tồn kho trong kho lạnh!');
+      }
+    }
+  }
+
+  void _onCreateMaintenanceJob(String title, String plant, String room, String assignee, String priority, String notes) {
+    setState(() {
+      _maintenanceJobs.add({
+        'id': 'MNT-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
+        'title': title,
+        'plant': plant,
+        'room': room,
+        'assignee': assignee,
+        'priority': priority,
+        'status': 'todo',
+        'notes': notes
+      });
+    });
+    _showMsg('Đã tạo lệnh bảo trì mới thành công!');
+  }
+
+  void _onUpdateMaintStatus(String jobId, String status) {
+    setState(() {
+      for (var mnt in _maintenanceJobs) {
+        if (mnt['id'] == jobId) {
+          mnt['status'] = status;
+          break;
+        }
+      }
+    });
+  }
+
+  void _onTaskStatusAdvanced(String roomName, int jobId, String nextStatus) {
+    setState(() {
+      final room = _localRooms[roomName]!;
+      final List<Map<String, dynamic>> jobs =
+          List<Map<String, dynamic>>.from(room['jobs']);
+      for (var j in jobs) {
+        if (j['id'] == jobId) {
+          j['status'] = nextStatus;
+          break;
+        }
+      }
+    });
+  }
+
+  void _onSendMessage(String text) {
+    setState(() {
+      _chatHistory[_activeChatContact]!.add({
+        'sender': 'Vinh',
+        'text': text,
+        'time': DateTime.now().toLocal().toString().substring(11, 16),
+        'role': _activeRole
+      });
+    });
+
+    // Simulated Auto reply
+    if (_activeChatContact == 'Sarah (Sales)' &&
+        text.toLowerCase().contains('picking')) {
+      Timer(const Duration(seconds: 1), () {
+        setState(() {
+          _chatHistory['Sarah (Sales)']!.add({
+            'sender': 'Sarah',
+            'text': 'Tuyệt vời! Mình báo Aeon Mall xuất hóa đơn luôn.',
+            'time': DateTime.now().toLocal().toString().substring(11, 16),
+            'role': 'Sales Lead'
+          });
+        });
+      });
+    }
+  }
+
+  void _onReportIncident(String location, String desc) {
+    _showMsg('Đã gửi báo cáo sự cố thành công tới Kỹ thuật trưởng và Supervisor.');
+  }
+
+  void _onTriggerSafetyContact(String roomNum) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Liên lạc an toàn'),
+        content: Text(
+            'Đang gửi tín hiệu yêu cầu check-in định kỳ và ping điện thoại của solo worker tại Phòng $roomNum...'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('Đóng'))
+        ],
+      ),
+    );
+  }
+
+  void _onTriggerSafetyCheckAll() {
+    _showMsg('Đã phát tín hiệu yêu cầu tất cả nhân sự xác minh check-in.');
+  }
+
+  void _onResetSafety() {
+    setState(() {
+      _emergencyActive = false;
+      _roomCrews.clear();
+    });
+    _showMsg('Đã khôi phục các chỉ số an toàn.');
+  }
+
+  void _showMsg(String msg) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Thông báo'),
+        content: Text(msg),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('OK'))
+        ],
+      ),
+    );
+  }
+}
