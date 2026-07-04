@@ -207,6 +207,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final sarahChat = await repo.getChatHistory('Sarah (Sales)');
     final mikeChat = await repo.getChatHistory('Mike (Site Manager)');
     final crews = await repo.getRoomCrews();
+    final safetyDbLogs = await repo.getAllSafetyLogs();
 
     setState(() {
       _stockButton = stock['button'] ?? 120.0;
@@ -227,6 +228,36 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       for (final c in crews) {
         _roomCrews.putIfAbsent(c['roomName']!, () => []).add(c['empName']!);
       }
+
+      _safetyLogs.clear();
+      _safetyLogs.addAll(safetyDbLogs.map((l) {
+        final timeStr = l['timestamp'] != null
+            ? DateTime.parse(l['timestamp'] as String).toLocal().toString().substring(11, 16)
+            : '00:00';
+        final isSolo = l['notes']?.contains('Alone') == true || l['event_type'] == 'start';
+        
+        String room = 'N/A';
+        final roomMatch = RegExp(r'Room\s+(\w+)').firstMatch(l['notes'] as String? ?? '');
+        if (roomMatch != null) {
+          room = roomMatch.group(1)!;
+        }
+
+        String action = 'System';
+        if (l['event_type'] == 'checkin') action = 'Check-in';
+        if (l['event_type'] == 'checkout') action = 'Check-out';
+        if (l['event_type'] == 'start') action = 'Start Solo';
+        if (l['event_type'] == 'complete') action = 'End Solo';
+
+        return {
+          'empId': l['worker_id'] ?? 'SYSTEM',
+          'empName': l['worker_id'] ?? 'System',
+          'room': room,
+          'role': isSolo ? 'Solo Worker' : 'Operator',
+          'time': timeStr,
+          'action': action,
+          'solo': isSolo,
+        };
+      }).toList());
     });
   }
 
@@ -318,6 +349,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                 _localRooms[rName]!['jobs'] = state.selectedRoomJobs.map((j) => {
                   'id': j['id'],
                   'name': j['name'],
+                  'job_type': j['job_type'],
                   'icon': j['job_type'] == 'watering'
                       ? Icons.water_drop
                       : j['job_type'] == 'prochloraz'
@@ -327,6 +359,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                   'assignee': j['assignee'] ?? 'Not Assigned',
                   'date': j['scheduled_at'] != null ? j['scheduled_at'].toString().substring(5, 10) : 'Today',
                   'notes': j['plan_details'] ?? j['prochloraz_rate'] ?? '',
+                  'is_solo_job': j['is_solo_job'],
+                  'time_limit_minutes': j['time_limit_minutes'],
+                  'started_at': j['started_at'],
+                  'co_level': j['co_level'],
+                  'co2_level': j['co2_level'],
+                  'check_in_time': j['check_in_time'],
+                  'check_out_time': j['check_out_time'],
                 }).toList();
               }
             });
@@ -746,7 +785,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         localRooms: _localRooms,
         tasksSelectedRoomName: _tasksSelectedRoomName,
         tasksViewMode: _tasksViewMode,
-        onRoomSelected: (rName) => setState(() => _tasksSelectedRoomName = rName),
+        onRoomSelected: (rName) {
+          setState(() => _tasksSelectedRoomName = rName);
+          final room = _localRooms[rName];
+          if (room != null) {
+            _bloc.add(LoadRoomDetailsEvent(room['id']));
+          }
+        },
         onViewModeChanged: (mode) => setState(() => _tasksViewMode = mode),
         onJobStatusChanged: _onTaskStatusAdvanced,
       );

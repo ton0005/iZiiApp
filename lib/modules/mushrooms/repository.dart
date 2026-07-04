@@ -531,6 +531,24 @@ class MushroomsRepository {
     );
   }
 
+  Future<List<Map<String, dynamic>>> getAllSafetyLogs() async {
+    try {
+      final query = _db.select(_db.mushroomSafetyCheckinLogs)
+        ..orderBy([(t) => OrderingTerm(expression: t.timestamp, mode: OrderingMode.desc)]);
+      final logs = await query.get();
+      return logs.map((l) => {
+        'id': l.id,
+        'job_id': l.jobId,
+        'worker_id': l.workerId,
+        'event_type': l.eventType,
+        'timestamp': l.timestamp.toIso8601String(),
+        'notes': l.notes ?? '',
+      }).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getSafetyLogs(String jobId) async {
     try {
       final query = _db.select(_db.mushroomSafetyCheckinLogs)
