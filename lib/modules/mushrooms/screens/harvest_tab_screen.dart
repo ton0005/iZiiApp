@@ -84,7 +84,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       const Icon(Icons.warning, color: Colors.red),
                       const SizedBox(width: 8),
                       Text(
-                          'Cảnh báo: Nhân viên đang làm việc đơn lẻ (Solo) tại Phòng $soloRoom (${soloWorker})!',
+                          'Warning: Worker performing Solo Picking at Room $soloRoom (${soloWorker})!',
                           style: const TextStyle(
                               color: Colors.red, fontWeight: FontWeight.bold)),
                     ],
@@ -94,7 +94,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white),
                     onPressed: () => widget.onSafetyContact(soloRoom!),
-                    child: const Text('Liên lạc khẩn cấp'),
+                    child: const Text('Emergency Contact'),
                   )
                 ],
               ),
@@ -133,7 +133,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       children: [
                         const Padding(
                           padding: EdgeInsets.all(16),
-                          child: Text('Danh sách phòng đang thu hoạch',
+                          child: Text('Active Harvesting Rooms',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 14)),
                         ),
@@ -142,7 +142,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                           child: activeRooms.isEmpty
                               ? const Center(
                                   child: Text(
-                                      'Chưa có phòng nào hoạt động thu hoạch.'))
+                                      'No rooms currently in harvest stage.'))
                               : _buildActiveRoomsTable(activeRooms),
                         )
                       ],
@@ -168,23 +168,23 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Check-in / Check-out phòng',
+          const Text('Room Check-in / Check-out',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
           const SizedBox(height: 12),
           TextFormField(
             controller: _empIdController,
             decoration: const InputDecoration(
-                labelText: 'Mã số nhân viên (Employee ID)',
+                labelText: 'Employee ID',
                 hintText: 'EMP003',
                 border: OutlineInputBorder()),
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            decoration: const InputDecoration(labelText: 'Phòng làm việc'),
+            decoration: const InputDecoration(labelText: 'Work Room'),
             value: _roomSelected,
             items: widget.localRooms.keys
                 .map((r) =>
-                    DropdownMenuItem(value: r, child: Text('Phòng $r')))
+                    DropdownMenuItem(value: r, child: Text('Room $r')))
                 .toList(),
             onChanged: (val) {
               if (val != null) {
@@ -238,13 +238,13 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Kế hoạch thu hoạch từ Kho Lạnh',
+          const Text('Picking Request from Cool Room',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
           const SizedBox(height: 12),
           Expanded(
             child: widget.pickingPlans.isEmpty
                 ? const Center(
-                    child: Text('Chưa có yêu cầu thu hoạch.',
+                    child: Text('No active picking requests.',
                         style: TextStyle(color: Colors.grey, fontSize: 12)))
                 : ListView.builder(
                     itemCount: widget.pickingPlans.length,
@@ -261,12 +261,12 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                'Phòng ${plan['roomName']} (Plant ${plan['plant']})',
+                                'Room ${plan['roomName']} (Plant ${plan['plant']})',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 12)),
                             const SizedBox(height: 4),
                             Text(
-                                'Cỡ nấm: Button: ${plan['button']}kg, Medium: ${plan['medium']}kg, Open: ${plan['open']}kg',
+                                'Mushrooms: Button: ${plan['button']}kg, Cup: ${plan['medium']}kg, Flat: ${plan['open']}kg',
                                 style: const TextStyle(
                                     fontSize: 11, color: Colors.grey)),
                           ],
@@ -285,13 +285,13 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
       scrollDirection: Axis.horizontal,
       child: DataTable(
         columns: const [
-          DataColumn(label: Text('Phòng')),
-          DataColumn(label: Text('Chu kỳ')),
-          DataColumn(label: Text('Nhân sự (Crew)')),
+          DataColumn(label: Text('Room')),
+          DataColumn(label: Text('Cycle')),
+          DataColumn(label: Text('Crew')),
           DataColumn(label: Text('Target (kg)')),
-          DataColumn(label: Text('Đã hái (kg)')),
-          DataColumn(label: Text('Trạng thái')),
-          DataColumn(label: Text('An toàn')),
+          DataColumn(label: Text('Harvested (kg)')),
+          DataColumn(label: Text('Status')),
+          DataColumn(label: Text('Safety')),
         ],
         rows: activeRooms.map((room) {
           final name = room['name'] as String;
@@ -311,7 +311,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
               DataCell(Text(name,
                   style: const TextStyle(fontWeight: FontWeight.bold))),
               DataCell(Text(room['cycle'] ?? 'Cycle 1')),
-              DataCell(Text(crew.isNotEmpty ? crew.join(', ') : 'Trống')),
+              DataCell(Text(crew.isNotEmpty ? crew.join(', ') : 'Empty')),
               DataCell(Text('${targetVal.toInt()} kg')),
               DataCell(
                 TextFormField(
@@ -333,7 +333,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       color:
                           done ? Colors.green.shade100 : Colors.blue.shade100,
                       borderRadius: BorderRadius.circular(12)),
-                  child: Text(done ? 'Hoàn thành' : 'Đang hái',
+                  child: Text(done ? 'Completed' : 'Picking',
                       style: TextStyle(
                           color: done
                               ? Colors.green.shade800

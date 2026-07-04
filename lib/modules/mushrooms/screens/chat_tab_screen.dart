@@ -75,7 +75,7 @@ class _ChatTabScreenState extends State<ChatTabScreen> {
                 children: [
                   const Padding(
                     padding: EdgeInsets.all(12),
-                    child: Text('Cuộc trò chuyện (E2EE)',
+                    child: Text('Encrypted Chat (E2EE)',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   const Divider(height: 1),
@@ -118,7 +118,7 @@ class _ChatTabScreenState extends State<ChatTabScreen> {
                           bottom: BorderSide(color: FarmColors.borderLight)),
                     ),
                     alignment: Alignment.centerLeft,
-                    child: Text('Kênh mật mã E2EE: ${widget.activeChatContact}',
+                    child: Text('E2EE Channel: ${widget.activeChatContact}',
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   Expanded(
@@ -179,7 +179,7 @@ class _ChatTabScreenState extends State<ChatTabScreen> {
                                               : Colors.black87,
                                           fontSize: 13)),
                                   const SizedBox(height: 2),
-                                  Text('${msg['time']} · E2EE Mật mã',
+                                  Text('${msg['time']} · E2EE Encrypted',
                                       style: TextStyle(
                                           fontSize: 8,
                                           color: isVinh
@@ -205,7 +205,7 @@ class _ChatTabScreenState extends State<ChatTabScreen> {
                           child: TextFormField(
                             controller: _chatInputController,
                             decoration: const InputDecoration(
-                                hintText: 'Nhập tin nhắn mật mã...',
+                                hintText: 'Enter encrypted message...',
                                 border: InputBorder.none),
                             onFieldSubmitted: (_) => _submit(),
                           ),

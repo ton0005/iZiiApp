@@ -74,18 +74,18 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Kho lạnh - Tồn kho hiện tại',
+                      const Text('Cold Room - Current Stock Inventory',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 13)),
                       const SizedBox(height: 16),
                       _buildStockRow(
-                          'Button Size (Cỡ Nhỏ)', widget.stockButton, Colors.orange),
+                          'Button Size', widget.stockButton, Colors.orange),
                       const SizedBox(height: 12),
                       _buildStockRow(
-                          'Medium Size (Cỡ Vừa)', widget.stockMedium, Colors.purple),
+                          'Cup Size', widget.stockMedium, Colors.purple),
                       const SizedBox(height: 12),
                       _buildStockRow(
-                          'Open Size (Cỡ Lớn)', widget.stockOpen, Colors.blue),
+                          'Flat Size', widget.stockOpen, Colors.blue),
                     ],
                   ),
                 ),
@@ -117,7 +117,7 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
                 children: [
                   const Padding(
                     padding: EdgeInsets.all(16),
-                    child: Text('Đơn hàng xuất kho hôm nay (Orders List)',
+                    child: Text('Today\'s Dispatched Orders',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 14)),
                   ),
@@ -130,7 +130,7 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
                         final isDelivered = order['status'] == 'Delivered';
                         return ListTile(
                           title: Text(
-                              '${order['customer']} — Đơn ${order['id']}',
+                              '${order['customer']} — Order ${order['id']}',
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: Text(order['req']),
@@ -144,10 +144,10 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
                               if (!isDelivered)
                                 ElevatedButton(
                                   onPressed: () => widget.onDeliverOrder(order),
-                                  child: const Text('Giao hàng'),
+                                  child: const Text('Deliver'),
                                 )
                               else
-                                const Text('Đã giao',
+                                const Text('Delivered',
                                     style: TextStyle(
                                         color: Colors.green,
                                         fontWeight: FontWeight.bold)),
@@ -191,16 +191,16 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Lập kế hoạch Picking gửi cho Harvest',
+        const Text('Create picking request for Harvest',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
-          decoration: const InputDecoration(labelText: 'Phòng thu hoạch'),
+          decoration: const InputDecoration(labelText: 'Harvest Room'),
           value: _roomSelected,
           items: widget.localRooms.keys
               .where((k) => widget.localRooms[k]!['plant'] == widget.activePlant)
               .map((r) =>
-                  DropdownMenuItem(value: r, child: Text('Phòng $r')))
+                  DropdownMenuItem(value: r, child: Text('Room $r')))
               .toList(),
           onChanged: (val) {
             if (val != null) {
@@ -216,13 +216,13 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
           onChanged: (val) => _buttonVal = int.tryParse(val) ?? 0,
         ),
         TextFormField(
-          decoration: const InputDecoration(labelText: 'Medium Size (kg)'),
+          decoration: const InputDecoration(labelText: 'Cup Size (kg)'),
           initialValue: _mediumVal.toString(),
           keyboardType: TextInputType.number,
           onChanged: (val) => _mediumVal = int.tryParse(val) ?? 0,
         ),
         TextFormField(
-          decoration: const InputDecoration(labelText: 'Open Size (kg)'),
+          decoration: const InputDecoration(labelText: 'Flat Size (kg)'),
           initialValue: _openVal.toString(),
           keyboardType: TextInputType.number,
           onChanged: (val) => _openVal = int.tryParse(val) ?? 0,
@@ -237,7 +237,7 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
             onPressed: () {
               widget.onSendPickingPlan(_roomSelected, _buttonVal, _mediumVal, _openVal);
             },
-            child: const Text('Gửi Yêu Cầu Thu Hoạch'),
+            child: const Text('Send Picking Request'),
           ),
         )
       ],

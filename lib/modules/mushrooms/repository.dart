@@ -738,7 +738,7 @@ class MushroomsRepository {
         final contact = await (_db.select(_db.contacts)..where((tbl) => tbl.id.equals(d.contactId))).getSingleOrNull();
         orders.add({
           'id': d.id,
-          'customer': contact?.name ?? 'Khách hàng',
+          'customer': contact?.name ?? 'Customer',
           'req': d.id == 'ORD-001'
               ? 'Button: 50kg, Cup: 100kg'
               : d.id == 'ORD-002'
@@ -805,23 +805,23 @@ class MushroomsRepository {
         final defaultTickets = [
           {
             'id': 'MNT-101',
-            'title': 'Khử trùng quạt hút gió',
+            'title': 'Sterilize Exhaust Fan',
             'plant': 'M2',
             'room': '33',
             'assignee': 'Nam T.',
             'priority': 'normal',
             'status': 'inprog',
-            'notes': 'Bảo trì bộ lọc khuẩn định kỳ.'
+            'notes': 'Periodic bacteria filter maintenance.'
           },
           {
             'id': 'MNT-102',
-            'title': 'Cân chỉnh cảm biến độ ẩm',
+            'title': 'Calibrate Humidity Sensor',
             'plant': 'M1',
             'room': '12',
             'assignee': 'Lợi P.',
             'priority': 'high',
             'status': 'todo',
-            'notes': 'Cảm biến lệch 5% so với đo tay.'
+            'notes': 'Sensor deviation of 5% compared to manual measurement.'
           }
         ];
         for (final t in defaultTickets) {
@@ -897,17 +897,17 @@ class MushroomsRepository {
         final List<Map<String, String>> defaultMsgs = [];
         if (contact == 'Growing Crew') {
           defaultMsgs.addAll([
-            {'sender': 'Minh T.', 'text': 'Đã hoàn thành tưới nước phòng 33 sáng nay.', 'time': '08:30', 'role': 'Growing Specialist'},
-            {'sender': 'Vinh', 'text': 'Tốt lắm, kiểm tra độ ẩm phòng 34 luôn nhé.', 'time': '08:45', 'role': 'Growing Lead'},
+            {'sender': 'Minh T.', 'text': 'Completed watering room 33 this morning.', 'time': '08:30', 'role': 'Growing Specialist'},
+            {'sender': 'Vinh', 'text': 'Great, please check the humidity of room 34 as well.', 'time': '08:45', 'role': 'Growing Lead'},
           ]);
         } else if (contact == 'Sarah (Sales)') {
           defaultMsgs.addAll([
-            {'sender': 'Sarah', 'text': 'Aeon Mall cần gấp 150kg nấm cỡ vừa vào chiều nay, kho đủ hàng không Trúc ơi?', 'time': '09:15', 'role': 'Sales Lead'},
-            {'sender': 'Trúc', 'text': 'Để mình lập kế hoạch picking gấp gửi cho Harvest.', 'time': '09:20', 'role': 'Cool Room Manager'},
+            {'sender': 'Sarah', 'text': 'Aeon Mall urgently needs 150kg of medium (cup) mushrooms this afternoon, does the cold room have enough stock?', 'time': '09:15', 'role': 'Sales Lead'},
+            {'sender': 'Trúc', 'text': 'Let me create an urgent picking plan to send to Harvest.', 'time': '09:20', 'role': 'Cool Room Manager'},
           ]);
         } else if (contact == 'Mike (Site Manager)') {
           defaultMsgs.addAll([
-            {'sender': 'Mike', 'text': 'Đã cập nhật hệ thống báo động an toàn cho branch mới.', 'time': '07:00', 'role': 'Site Manager'},
+            {'sender': 'Mike', 'text': 'Updated the safety alarm system for the new branch.', 'time': '07:00', 'role': 'Site Manager'},
           ]);
         }
         for (final m in defaultMsgs) {

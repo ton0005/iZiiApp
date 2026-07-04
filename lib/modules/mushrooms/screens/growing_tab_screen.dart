@@ -96,7 +96,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                   backgroundColor: FarmColors.forestGreen,
                   foregroundColor: Colors.white,
                 ),
-                label: const Text('Thêm Job Mới'),
+                label: const Text('Add New Job'),
                 onPressed: () => _showNewJobDialog(context),
               )
             ],
@@ -106,15 +106,15 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           Row(
             children: [
               _buildKpiCard(
-                  'TỔNG SỐ PHÒNG', '$totalCount', 'Phòng ${widget.activePlant}', false),
+                  'TOTAL ROOMS', '$totalCount', 'Room ${widget.activePlant}', false),
               const SizedBox(width: 12),
-              _buildKpiCard('ĐANG HOẠT ĐỘNG', '$activeCount',
-                  'Có chu kỳ hoạt động', false),
+              _buildKpiCard('ACTIVE ROOMS', '$activeCount',
+                  'In active cycle', false),
               const SizedBox(width: 12),
-              _buildKpiCard('ĐANG TRỐNG (IDLE)', '$idleCount',
-                  'Có thể bắt đầu vụ mới', false),
+              _buildKpiCard('IDLE ROOMS', '$idleCount',
+                  'Ready for new cycle', false),
               const SizedBox(width: 12),
-              _buildKpiCard('SỰ CỐ AN TOÀN', '0', 'Bình thường', false),
+              _buildKpiCard('SAFETY INCIDENTS', '0', 'Normal', false),
             ],
           ),
           const SizedBox(height: 16),
@@ -143,9 +143,9 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _buildFilterBtn('Tất cả', 'all'),
-                            _buildFilterBtn('Chạy', 'active'),
-                            _buildFilterBtn('Trống', 'idle'),
+                            _buildFilterBtn('All', 'all'),
+                            _buildFilterBtn('Active', 'active'),
+                            _buildFilterBtn('Idle', 'idle'),
                           ],
                         ),
                       ),
@@ -189,7 +189,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                     child: widget.selectedRoomName != null
                         ? _buildRoomDetailsPanel(widget.isDark, widget.selectedRoomName!)
                         : const Center(
-                            child: Text('Hãy chọn một phòng để xem chi tiết.')),
+                            child: Text('Select a room to view details.')),
                   ),
                 )
               ],
@@ -233,23 +233,23 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     }
     if (stage == 'watering') {
       bg = Colors.cyan;
-      name = 'TƯỚI NƯỚC';
+      name = 'WATERING';
     }
     if (stage == 'prochloraz') {
       bg = Colors.red;
-      name = 'PHUN NẤM';
+      name = 'PROCHLORAZ';
     }
     if (stage == 'packuptree') {
       bg = Colors.orange;
-      name = 'DỌN RỄ';
+      name = 'PACK UP TREE';
     }
     if (stage == 'cleanroom') {
       bg = Colors.green;
-      name = 'DỌN PHÒNG';
+      name = 'CLEAN ROOM';
     }
     if (stage == 'idle') {
       bg = Colors.grey.shade400;
-      name = 'TRỐNG';
+      name = 'IDLE';
     }
 
     return Container(
@@ -278,10 +278,10 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Phòng $roomName',
+                Text('Room $roomName',
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.bold)),
-                Text('Plant ${room['plant']} · Diện tích: ${room['area']}',
+                Text('Plant ${room['plant']} · Area: ${room['area']}',
                     style: const TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
@@ -292,7 +292,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       backgroundColor: FarmColors.forestGreen,
                       foregroundColor: Colors.white,
                     ),
-                    label: const Text('Bắt đầu vụ mới'),
+                    label: const Text('Start New Cycle'),
                     onPressed: () => _showStartCycleDialog(context, roomName),
                   )
                 : Row(
@@ -319,12 +319,12 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildMetaInfoBox('CHU KỲ', room['cycle']),
+            _buildMetaInfoBox('CYCLE', room['cycle']),
             _buildMetaInfoBox(
-                'NGÀY TRONG CHU KỲ', room['day_in_cycle'].toString()),
+                'DAY IN CYCLE', room['day_in_cycle'].toString()),
             _buildMetaInfoBox(
-                'GIAI ĐOẠN', room['current_stage'].toString().toUpperCase()),
-            _buildMetaInfoBox('TIẾN ĐỘ CHU KỲ', '${(progress * 100).toInt()}%'),
+                'STAGE', room['current_stage'].toString().toUpperCase()),
+            _buildMetaInfoBox('CYCLE PROGRESS', '${(progress * 100).toInt()}%'),
           ],
         ),
         const SizedBox(height: 10),
@@ -339,7 +339,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        const Text('DANH SÁCH PIPELINE CÔNG VIỆC',
+        const Text('PIPELINE JOB CHECKLIST',
             style: TextStyle(
                 fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey)),
         const SizedBox(height: 10),
@@ -482,7 +482,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           builder: (context, setDialogState) {
             final chemicalTotal = (rate * area).toStringAsFixed(1);
             return AlertDialog(
-              title: const Text('Tạo Job Trồng Trọt Mới',
+              title: const Text('Create New Growing Job',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               content: SizedBox(
                 width: 460,
@@ -491,13 +491,13 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(labelText: 'Phòng'),
+                        decoration: const InputDecoration(labelText: 'Room'),
                         value: roomSelected,
                         items: widget.localRooms.keys
                             .where(
                                 (k) => widget.localRooms[k]!['plant'] == widget.activePlant)
                             .map((r) => DropdownMenuItem(
-                                value: r, child: Text('Phòng $r')))
+                                value: r, child: Text('Room $r')))
                             .toList(),
                         onChanged: (val) {
                           if (val != null) {
@@ -508,24 +508,24 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
-                            labelText: 'Loại công việc (Job Type)'),
+                            labelText: 'Job Type'),
                         value: jobType,
                         items: const [
                           DropdownMenuItem(
                               value: 'filling',
-                              child: Text('Filling (Nạp giá thể)')),
+                              child: Text('Filling (Substrate Filling)')),
                           DropdownMenuItem(
                               value: 'airing',
                               child: Text('Airing (Plastic floor wet)')),
                           DropdownMenuItem(
                               value: 'watering',
-                              child: Text('Watering (Tưới nước)')),
+                              child: Text('Watering')),
                           DropdownMenuItem(
                               value: 'prochloraz',
-                              child: Text('Prochloraz (Phun nấm)')),
+                              child: Text('Prochloraz (Chemical spray)')),
                           DropdownMenuItem(
                               value: 'packuptree',
-                              child: Text('Pack Up Tree (Dọn rễ)')),
+                              child: Text('Pack Up Tree (Root cleanup)')),
                         ],
                         onChanged: (val) {
                           if (val != null) setDialogState(() => jobType = val);
@@ -535,15 +535,15 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         const SizedBox(height: 10),
                         DropdownButtonFormField<String>(
                           decoration: const InputDecoration(
-                              labelText: 'Phương án tưới'),
+                              labelText: 'Watering Plan'),
                           value: wateringPlan,
                           items: const [
                             DropdownMenuItem(
                                 value: '2side',
-                                child: Text('Tưới 2 bên giường (2 Side)')),
+                                child: Text('2 Side Watering')),
                             DropdownMenuItem(
                                 value: '1side',
-                                child: Text('Tưới 1 bên giường (1 Side)')),
+                                child: Text('1 Side Watering')),
                           ],
                           onChanged: (val) {
                             if (val != null) {
@@ -554,7 +554,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         const SizedBox(height: 10),
                         TextFormField(
                           decoration: const InputDecoration(
-                              labelText: 'Lượng nước (L/m²)'),
+                              labelText: 'Water Volume (L/m²)'),
                           initialValue: wateringVol.toString(),
                           keyboardType: TextInputType.number,
                           onChanged: (val) {
@@ -570,7 +570,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                             Expanded(
                               child: TextFormField(
                                 decoration: const InputDecoration(
-                                    labelText: 'Tỷ lệ hóa chất (g/m²)'),
+                                    labelText: 'Chemical Rate (g/m²)'),
                                 initialValue: rate.toString(),
                                 keyboardType: TextInputType.number,
                                 onChanged: (val) {
@@ -583,7 +583,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                             Expanded(
                               child: TextFormField(
                                 decoration: const InputDecoration(
-                                    labelText: 'Diện tích (m²)'),
+                                    labelText: 'Area (m²)'),
                                 initialValue: area.toString(),
                                 keyboardType: TextInputType.number,
                                 onChanged: (val) {
@@ -602,7 +602,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                               color: FarmColors.forestGreenLight,
                               borderRadius: BorderRadius.circular(4)),
                           child: Text(
-                            'Tổng hóa chất cần chuẩn bị: $chemicalTotal g',
+                            'Total chemical to prepare: $chemicalTotal g',
                             style: const TextStyle(
                                 color: FarmColors.forestGreenText,
                                 fontWeight: FontWeight.bold,
@@ -613,7 +613,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         decoration:
-                            const InputDecoration(labelText: 'Người phụ trách'),
+                            const InputDecoration(labelText: 'Assignee'),
                         value: assignee,
                         items: const [
                           DropdownMenuItem(
@@ -632,7 +632,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       const SizedBox(height: 10),
                       TextFormField(
                         decoration:
-                            const InputDecoration(labelText: 'Ghi chú thêm'),
+                            const InputDecoration(labelText: 'Additional Notes'),
                         onChanged: (val) => notes = val,
                       ),
                     ],
@@ -642,7 +642,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(dialogCtx),
-                  child: const Text('Hủy'),
+                  child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -661,7 +661,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                     Navigator.pop(dialogCtx);
                   },
                   child:
-                      const Text('Tạo', style: TextStyle(color: Colors.white)),
+                      const Text('Create', style: TextStyle(color: Colors.white)),
                 )
               ],
             );
@@ -678,18 +678,18 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Bắt đầu vụ mới - Phòng $roomName'),
+        title: Text('Start New Cycle - Room $roomName'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextFormField(
-              decoration: const InputDecoration(labelText: 'Kế hoạch tưới nước mặc định'),
+              decoration: const InputDecoration(labelText: 'Default Watering Plan'),
               initialValue: wateringPlan,
               onChanged: (val) => wateringPlan = val,
             ),
             const SizedBox(height: 10),
             TextFormField(
-              decoration: const InputDecoration(labelText: 'Tỷ lệ phun Prochloraz mặc định'),
+              decoration: const InputDecoration(labelText: 'Default Prochloraz Spray Rate'),
               initialValue: prochlorazRate,
               onChanged: (val) => prochlorazRate = val,
             ),
@@ -698,7 +698,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Hủy'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
@@ -706,7 +706,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               widget.onStartCycle(roomName, wateringPlan, prochlorazRate);
               Navigator.pop(ctx);
             },
-            child: const Text('Bắt đầu', style: TextStyle(color: Colors.white)),
+            child: const Text('Start', style: TextStyle(color: Colors.white)),
           )
         ],
       ),

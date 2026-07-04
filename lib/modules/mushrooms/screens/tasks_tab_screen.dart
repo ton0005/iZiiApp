@@ -41,14 +41,14 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
             children: [
               Row(
                 children: [
-                  const Text('Xem công việc phòng: ',
+                  const Text('View tasks for Room: ',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   if (activeRoomName != null)
                     DropdownButton<String>(
                       value: activeRoomName,
                       items: widget.localRooms.keys
                           .map((r) =>
-                              DropdownMenuItem(value: r, child: Text('Phòng $r')))
+                              DropdownMenuItem(value: r, child: Text('Room $r')))
                           .toList(),
                       onChanged: (val) {
                         if (val != null) {
@@ -92,7 +92,7 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
                 ? (widget.tasksViewMode == 'kanban'
                     ? _buildKanbanView(widget.isDark, activeRoomName)
                     : _buildGanttView(widget.isDark, activeRoomName))
-                : const Center(child: Text('Không có phòng nào khả dụng.')),
+                : const Center(child: Text('No rooms available.')),
           )
         ],
       ),
@@ -188,12 +188,12 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Trạng thái: ${status.toUpperCase()}',
+            Text('Status: ${status.toUpperCase()}',
                 style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
-            Text('Người phụ trách: ${job['assignee']}'),
+            Text('Assignee: ${job['assignee']}'),
             const SizedBox(height: 6),
-            Text('Ghi chú: ${job['notes'] ?? ''}'),
+            Text('Notes: ${job['notes'] ?? ''}'),
           ],
         ),
         actions: [
@@ -211,10 +211,10 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
                 widget.onJobStatusChanged(roomName, jobId, nextStatus);
                 Navigator.pop(ctx);
               },
-              child: const Text('Tiến hành tiếp'),
+              child: const Text('Move to Next Stage'),
             ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const Text('Đóng'))
+              onPressed: () => Navigator.pop(ctx), child: const Text('Close'))
         ],
       ),
     );
@@ -235,7 +235,7 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
               children: [
                 Icon(Icons.timeline, color: Colors.grey),
                 SizedBox(width: 8),
-                Text('Gantt Timeline Chart (Ngày 1 đến 18)',
+                Text('Gantt Timeline Chart (Day 1 to 18)',
                     style: TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
@@ -245,7 +245,7 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
               children: [
                 const SizedBox(
                     width: 140,
-                    child: Text('Công việc (Jobs)',
+                    child: Text('Jobs',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 11,

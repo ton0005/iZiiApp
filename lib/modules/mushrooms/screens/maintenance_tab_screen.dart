@@ -77,7 +77,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                 children: [
                   const Padding(
                     padding: EdgeInsets.all(16),
-                    child: Text('Lệnh bảo trì đang thực hiện',
+                    child: Text('Active Maintenance Tickets',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 14)),
                   ),
@@ -93,7 +93,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: Text(
-                              'Vị trí: Plant ${mnt['plant']} · Phòng ${mnt['room']} · Ghi chú: ${mnt['notes']}'),
+                              'Location: Plant ${mnt['plant']} · Room ${mnt['room']} · Notes: ${mnt['notes']}'),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -130,8 +130,8 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                                     widget.onUpdateMaintStatus(mnt['id'], nextStatus);
                                   },
                                   child: Text(status == 'todo'
-                                      ? 'Bắt đầu'
-                                      : 'Hoàn tất'),
+                                      ? 'Start'
+                                      : 'Complete'),
                                 )
                             ],
                           ),
@@ -150,14 +150,14 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
 
   Widget _buildMaintStatusBadge(String status) {
     if (status == 'done') {
-      return const Text('Đã sửa xong',
+      return const Text('Resolved',
           style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold));
     }
     if (status == 'inprog') {
-      return const Text('Đang tiến hành',
+      return const Text('In Progress',
           style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold));
     }
-    return const Text('Chờ xử lý', style: TextStyle(color: Colors.grey));
+    return const Text('Pending', style: TextStyle(color: Colors.grey));
   }
 
   Widget _buildCreateForm(bool isDark) {
@@ -166,27 +166,27 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Tạo lệnh bảo trì thiết bị',
+            const Text('Create Maintenance Ticket',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
             const SizedBox(height: 12),
             TextFormField(
               controller: _titleController,
               decoration: const InputDecoration(
-                  labelText: 'Tên thiết bị / Sự cố',
-                  hintText: 'VD: Sửa quạt gió bị kẹt'),
+                  labelText: 'Device / Issue Description',
+                  hintText: 'e.g. Fix jammed exhaust fan'),
             ),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(labelText: 'Khu vực'),
+                    decoration: const InputDecoration(labelText: 'Area / Location'),
                     value: _plantSelected,
                     items: const [
                       DropdownMenuItem(value: 'M1', child: Text('Plant M1')),
                       DropdownMenuItem(value: 'M2', child: Text('Plant M2')),
                       DropdownMenuItem(
-                          value: 'CoolRoom', child: Text('Kho Lạnh')),
+                          value: 'CoolRoom', child: Text('Cold Room')),
                     ],
                     onChanged: (val) {
                       if (val != null) {
@@ -206,7 +206,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(labelText: 'Phòng'),
+                    decoration: const InputDecoration(labelText: 'Room'),
                     value: _roomSelected,
                     items: _plantSelected == 'CoolRoom'
                         ? const [
@@ -230,7 +230,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: 'Người thực hiện'),
+              decoration: const InputDecoration(labelText: 'Assignee'),
               value: _assignee,
               items: const [
                 DropdownMenuItem(
@@ -246,13 +246,13 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: 'Độ ưu tiên'),
+              decoration: const InputDecoration(labelText: 'Priority'),
               value: _priority,
               items: const [
-                DropdownMenuItem(value: 'low', child: Text('Thấp (Low)')),
+                DropdownMenuItem(value: 'low', child: Text('Low')),
                 DropdownMenuItem(
-                    value: 'normal', child: Text('Bình thường (Normal)')),
-                DropdownMenuItem(value: 'high', child: Text('Cao (High)')),
+                    value: 'normal', child: Text('Normal')),
+                DropdownMenuItem(value: 'high', child: Text('High')),
               ],
               onChanged: (val) {
                 if (val != null) {
@@ -264,7 +264,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
             TextFormField(
               controller: _notesController,
               decoration:
-                  const InputDecoration(labelText: 'Mô tả chi tiết lỗi'),
+                  const InputDecoration(labelText: 'Detailed Error Description'),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -280,7 +280,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                   _titleController.clear();
                   _notesController.clear();
                 },
-                child: const Text('Tạo Lệnh Bảo Trì'),
+                child: const Text('Create Ticket'),
               ),
             )
           ],

@@ -55,7 +55,7 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
                   ),
                   child: Column(
                     children: [
-                      const Text('Điều khiển an toàn nông trại',
+                      const Text('Farm Safety Controls',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 13)),
                       const SizedBox(height: 12),
@@ -67,21 +67,21 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
                             foregroundColor: Colors.white,
                             minimumSize: const Size.fromHeight(42)),
                         onPressed: () => widget.onTriggerEmergency(true),
-                        label: const Text('KÍCH HOẠT BÁO ĐỘNG ĐỎ'),
+                        label: const Text('TRIGGER RED ALERT'),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             minimumSize: const Size.fromHeight(42)),
                         onPressed: widget.onTriggerSafetyCheckAll,
-                        child: const Text('Yêu Cầu Check-In Định Kỳ'),
+                        child: const Text('Request Routine Check-In'),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             minimumSize: const Size.fromHeight(42)),
                         onPressed: widget.onResetSafety,
-                        child: const Text('Khôi Phục Trạng Thái An Toàn'),
+                        child: const Text('Restore Safe Status'),
                       ),
                     ],
                   ),
@@ -114,7 +114,7 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
                 children: [
                   const Padding(
                     padding: EdgeInsets.all(16),
-                    child: Text('Nhật ký an toàn (Check-in / Check-out / Solo)',
+                    child: Text('Safety Logs (Check-In / Check-Out / Solo)',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 14)),
                   ),
@@ -146,9 +146,9 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
             color: log['action'] == 'Check-in' ? Colors.green : Colors.grey,
           ),
           title: Text(
-              '${log['empName']} (${log['empId']}) — Phòng ${log['room']}',
+              '${log['empName']} (${log['empId']}) — Room ${log['room']}',
               style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text('Vai trò: ${log['role']} · Thời gian: ${log['time']}'),
+          subtitle: Text('Role: ${log['role']} · Time: ${log['time']}'),
           trailing: isSolo
               ? const Row(
                   mainAxisSize: MainAxisSize.min,
@@ -170,19 +170,19 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Báo cáo sự cố an toàn lao động',
+        const Text('Report Safety Incident',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         const SizedBox(height: 12),
         TextFormField(
           controller: _locationController,
           decoration: const InputDecoration(
-              labelText: 'Vị trí xảy ra sự cố',
-              hintText: 'VD: Phòng 55 hoặc Kho Lạnh M1'),
+              labelText: 'Incident Location',
+              hintText: 'e.g. Room 55 or Cold Room M1'),
         ),
         const SizedBox(height: 10),
         TextFormField(
           controller: _descController,
-          decoration: const InputDecoration(labelText: 'Mô tả chi tiết sự cố'),
+          decoration: const InputDecoration(labelText: 'Detailed Incident Description'),
         ),
         const SizedBox(height: 16),
         SizedBox(
@@ -198,7 +198,7 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
               _locationController.clear();
               _descController.clear();
             },
-            child: const Text('Gửi Báo Cáo Sự Cố'),
+            child: const Text('Submit Incident Report'),
           ),
         )
       ],

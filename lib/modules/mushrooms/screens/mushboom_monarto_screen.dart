@@ -52,7 +52,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   String? _lastLoadedRoomId;
   String _activeRole =
       'Growing Lead'; // Vinh (Growing Lead), Hải (Harvest Supervisor), Trúc (Cool Room Manager), Nam (Maintenance Lead)
-  String _language = 'vi'; // vi or en
+  String _language = 'en'; // vi or en
   String _roomFilter = 'all'; // all, active, idle
 
   String? _tasksSelectedRoomName;
@@ -324,8 +324,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                           ? Icons.science
                           : Icons.task_alt,
                   'status': j['status'] == 'completed' ? 'done' : (j['status'] == 'in_progress' ? 'inprog' : 'todo'),
-                  'assignee': j['assignee'] ?? 'Chưa giao',
-                  'date': j['scheduled_at'] != null ? j['scheduled_at'].toString().substring(5, 10) : 'Hôm nay',
+                  'assignee': j['assignee'] ?? 'Not Assigned',
+                  'date': j['scheduled_at'] != null ? j['scheduled_at'].toString().substring(5, 10) : 'Today',
                   'notes': j['plan_details'] ?? j['prochloraz_rate'] ?? '',
                 }).toList();
               }
@@ -359,7 +359,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                                 color: Colors.white),
                             SizedBox(width: 8),
                             Text(
-                              'CẢNH BÁO BÁO ĐỘNG KHẨN CẤP: Rò rỉ khí CO2 tại phòng 55! Hãy sơ tán lập tức.',
+                              'EMERGENCY WARNING: CO2 leak detected in Room 55! Evacuate immediately.',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -376,7 +376,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                           ),
                           onPressed: () =>
                               setState(() => _emergencyActive = false),
-                          child: const Text('Xác nhận',
+                          child: const Text('Confirm',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
@@ -445,18 +445,6 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
           ),
           Row(
             children: [
-              // Language Switcher
-              TextButton.icon(
-                icon: const Icon(Icons.language, size: 18, color: Colors.grey),
-                label: Text(_language == 'vi' ? 'Tiếng Việt' : 'English',
-                    style: const TextStyle(color: Colors.grey)),
-                onPressed: () {
-                  setState(() {
-                    _language = _language == 'vi' ? 'en' : 'vi';
-                  });
-                },
-              ),
-              const SizedBox(width: 16),
               // Role Selector Dropdown
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -525,13 +513,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   String _getTabSubtitle() {
     if (_activeTab == 'growing') return 'Costa Mushroom — Plant $_activePlant';
     if (_activeTab == 'harvest') {
-      return 'Check-in nhân sự & Giám sát hái nấm thực tế';
+      return 'Staff Check-In & Real-time Harvest Supervision';
     }
     if (_activeTab == 'coolroom') {
       return 'Warehouse Inventory & Picking Plans Dispatcher';
     }
     if (_activeTab == 'maintenance') {
-      return 'Lịch sử bảo dưỡng & Báo lỗi kỹ thuật';
+      return 'Maintenance History & Technical Error Reports';
     }
     if (_activeTab == 'tasks') return 'Kanban Board & Gantt Chart Timeline';
     if (_activeTab == 'chat') return 'Offline BLE P2P Chat Simulator';
@@ -861,7 +849,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     };
     final emp = registry[code];
     if (emp == null) {
-      _showMsg('Không tìm thấy mã số nhân viên!');
+      _showMsg('Employee code not found!');
       return;
     }
     final repo = MushroomsRepository();
@@ -882,7 +870,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       if (room != null) {
         _bloc.add(AddSoloJobEvent(
           roomId: room['id'],
-          title: 'Hái nấm một mình (Solo Picking)',
+          title: 'Solo Picking',
           assignee: emp['name']!,
           timeLimit: 45,
         ));
@@ -903,7 +891,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     };
     final emp = registry[code];
     if (emp == null) {
-      _showMsg('Không tìm thấy mã số nhân viên!');
+      _showMsg('Employee code not found!');
       return;
     }
     final repo = MushroomsRepository();
