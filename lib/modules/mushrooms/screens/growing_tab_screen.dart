@@ -36,6 +36,8 @@ class GrowingTabScreen extends StatefulWidget {
 }
 
 class _GrowingTabScreenState extends State<GrowingTabScreen> {
+  bool _isAscending = true;
+
   @override
   Widget build(BuildContext context) {
     // KPI Data
@@ -56,6 +58,27 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
       if (widget.roomFilter == 'idle') return r['status'] == 'idle';
       return true;
     }).toList();
+
+    int parseRoomNumber(String name) {
+      final exp = RegExp(r'\d+');
+      final match = exp.firstMatch(name);
+      if (match != null) {
+        return int.tryParse(match.group(0)!) ?? 0;
+      }
+      return 0;
+    }
+
+    roomsFiltered.sort((a, b) {
+      final nameA = a['name'] as String? ?? '';
+      final nameB = b['name'] as String? ?? '';
+      final numA = parseRoomNumber(nameA);
+      final numB = parseRoomNumber(nameB);
+      if (_isAscending) {
+        return numA.compareTo(numB);
+      } else {
+        return numB.compareTo(numA);
+      }
+    });
 
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -134,18 +157,39 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                   child: Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                         decoration: const BoxDecoration(
                           border: Border(
                               bottom:
                                   BorderSide(color: FarmColors.borderLight)),
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _buildFilterBtn('All', 'all'),
-                            _buildFilterBtn('Active', 'active'),
-                            _buildFilterBtn('Idle', 'idle'),
+                            Row(
+                              children: [
+                                _buildFilterBtn('All', 'all'),
+                                const SizedBox(width: 4),
+                                _buildFilterBtn('Active', 'active'),
+                                const SizedBox(width: 4),
+                                _buildFilterBtn('Idle', 'idle'),
+                              ],
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                _isAscending
+                                    ? Icons.arrow_upward_rounded
+                                    : Icons.arrow_downward_rounded,
+                                size: 18,
+                                color: FarmColors.forestGreen,
+                              ),
+                              tooltip: _isAscending ? 'Sort: Ascending' : 'Sort: Descending',
+                              onPressed: () {
+                                setState(() {
+                                  _isAscending = !_isAscending;
+                                });
+                              },
+                            ),
                           ],
                         ),
                       ),
