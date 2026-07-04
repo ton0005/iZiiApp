@@ -49,6 +49,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       'growing'; // growing, harvest, coolroom, maintenance, tasks, chat, safety
   String _activePlant = 'M2'; // M1 or M2
   String? _selectedRoomName;
+  String? _lastLoadedRoomId;
   String _activeRole =
       'Growing Lead'; // Vinh (Growing Lead), Hải (Harvest Supervisor), Trúc (Cool Room Manager), Nam (Maintenance Lead)
   String _language = 'vi'; // vi or en
@@ -302,11 +303,10 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
               }
             });
 
-            if (_selectedRoomName != null && state.selectedRoomId == null) {
-              final room = _localRooms[_selectedRoomName];
-              if (room != null) {
-                _bloc.add(LoadRoomDetailsEvent(room['id']));
-              }
+            final room = _localRooms[_selectedRoomName];
+            if (room != null && room['id'] != _lastLoadedRoomId) {
+              _lastLoadedRoomId = room['id'];
+              _bloc.add(LoadRoomDetailsEvent(room['id']));
             }
           }
 
@@ -707,7 +707,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
             _selectedRoomName = roomName;
           });
           final room = _localRooms[roomName];
-          if (room != null) {
+          if (room != null && room['id'] != _lastLoadedRoomId) {
+            _lastLoadedRoomId = room['id'];
             _bloc.add(LoadRoomDetailsEvent(room['id']));
           }
         },
