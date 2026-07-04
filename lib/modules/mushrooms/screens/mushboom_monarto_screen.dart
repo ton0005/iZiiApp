@@ -39,8 +39,7 @@ class MushboomMonartoScreen extends StatefulWidget {
   const MushboomMonartoScreen({super.key});
 
   @override
-  State<MushboomMonartoScreen> createState() =>
-      _MushboomMonartoScreenState();
+  State<MushboomMonartoScreen> createState() => _MushboomMonartoScreenState();
 }
 
 class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
@@ -207,7 +206,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final sarahChat = await repo.getChatHistory('Sarah (Sales)');
     final mikeChat = await repo.getChatHistory('Mike (Site Manager)');
     final crews = await repo.getRoomCrews();
-    final safetyDbLogs = await repo.getAllSafetyLogs();
+    final soloJobs = await repo.getAllSoloJobs();
 
     setState(() {
       _stockButton = stock['button'] ?? 120.0;
@@ -230,34 +229,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       }
 
       _safetyLogs.clear();
-      _safetyLogs.addAll(safetyDbLogs.map((l) {
-        final timeStr = l['timestamp'] != null
-            ? DateTime.parse(l['timestamp'] as String).toLocal().toString().substring(11, 16)
-            : '00:00';
-        final isSolo = l['notes']?.contains('Alone') == true || l['event_type'] == 'start';
-        
-        String room = 'N/A';
-        final roomMatch = RegExp(r'Room\s+(\w+)').firstMatch(l['notes'] as String? ?? '');
-        if (roomMatch != null) {
-          room = roomMatch.group(1)!;
-        }
-
-        String action = 'System';
-        if (l['event_type'] == 'checkin') action = 'Check-in';
-        if (l['event_type'] == 'checkout') action = 'Check-out';
-        if (l['event_type'] == 'start') action = 'Start Solo';
-        if (l['event_type'] == 'complete') action = 'End Solo';
-
-        return {
-          'empId': l['worker_id'] ?? 'SYSTEM',
-          'empName': l['worker_id'] ?? 'System',
-          'room': room,
-          'role': isSolo ? 'Solo Worker' : 'Operator',
-          'time': timeStr,
-          'action': action,
-          'solo': isSolo,
-        };
-      }).toList());
+      _safetyLogs.addAll(soloJobs);
     });
   }
 
@@ -289,7 +261,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
           'area': '112 m²',
           'targetYield': r['targetYield'] ?? 0.0,
           'pickedYield': r['pickedYield'] ?? 0.0,
-          'pickingPlan': r['pickingPlanJson'] != null ? jsonDecode(r['pickingPlanJson']) : null,
+          'pickingPlan': r['pickingPlanJson'] != null
+              ? jsonDecode(r['pickingPlanJson'])
+              : null,
           'jobs': []
         };
       } else {
@@ -343,32 +317,44 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
           if (state.selectedRoomId != null) {
             setState(() {
-              final roomEntry = _localRooms.values.firstWhere((r) => r['id'] == state.selectedRoomId, orElse: () => {});
+              final roomEntry = _localRooms.values.firstWhere(
+                  (r) => r['id'] == state.selectedRoomId,
+                  orElse: () => {});
               if (roomEntry.isNotEmpty) {
                 final rName = roomEntry['name'] as String;
-                _localRooms[rName]!['jobs'] = state.selectedRoomJobs.map((j) => {
-                  'id': j['id'],
-                  'name': j['name'],
-                  'job_type': j['job_type'],
-                  'icon': j['job_type'] == 'watering'
-                      ? Icons.water_drop
-                      : j['job_type'] == 'prochloraz'
-                          ? Icons.science
-                          : Icons.task_alt,
-                  'status': j['status'] == 'completed' ? 'done' : (j['status'] == 'in_progress' ? 'inprog' : 'todo'),
-                  'assignee': j['assignee'] ?? 'Not Assigned',
-                  'date': j['scheduled_at'] != null ? j['scheduled_at'].toString().substring(5, 10) : 'Today',
-                  'notes': j['plan_details'] ?? j['prochloraz_rate'] ?? '',
-                  'is_solo_job': j['is_solo_job'],
-                  'time_limit_minutes': j['time_limit_minutes'],
-                  'started_at': j['started_at'],
-                  'co_level': j['co_level'],
-                  'co2_level': j['co2_level'],
-                  'check_in_time': j['check_in_time'],
-                  'check_out_time': j['check_out_time'],
-                }).toList();
+                _localRooms[rName]!['jobs'] = state.selectedRoomJobs
+                    .map((j) => {
+                          'id': j['id'],
+                          'name': j['name'],
+                          'job_type': j['job_type'],
+                          'icon': j['job_type'] == 'watering'
+                              ? Icons.water_drop
+                              : j['job_type'] == 'prochloraz'
+                                  ? Icons.science
+                                  : Icons.task_alt,
+                          'status': j['status'] == 'completed'
+                              ? 'done'
+                              : (j['status'] == 'in_progress'
+                                  ? 'inprog'
+                                  : 'todo'),
+                          'assignee': j['assignee'] ?? 'Not Assigned',
+                          'date': j['scheduled_at'] != null
+                              ? j['scheduled_at'].toString().substring(5, 10)
+                              : 'Today',
+                          'notes':
+                              j['plan_details'] ?? j['prochloraz_rate'] ?? '',
+                          'is_solo_job': j['is_solo_job'],
+                          'time_limit_minutes': j['time_limit_minutes'],
+                          'started_at': j['started_at'],
+                          'co_level': j['co_level'],
+                          'co2_level': j['co2_level'],
+                          'check_in_time': j['check_in_time'],
+                          'check_out_time': j['check_out_time'],
+                        })
+                    .toList();
               }
             });
+            _loadMushroomData();
           }
         },
         builder: (context, state) {
@@ -398,7 +384,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                                 color: Colors.white),
                             SizedBox(width: 8),
                             Text(
-                              'EMERGENCY WARNING: CO2 leak detected in Room 55! Evacuate immediately.',
+                              'EMERGENCY WARNING:... detected in Room ...! Evacuate immediately.',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -708,6 +694,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     setState(() {
       _activeTab = tabId;
     });
+    _loadMushroomData();
   }
 
   // --- Main Content Switcher ---
@@ -813,7 +800,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
   // --- Callbacks for State Updates ---
 
-  void _onStartCycle(String roomName, String wateringPlan, String prochlorazRate) {
+  void _onStartCycle(
+      String roomName, String wateringPlan, String prochlorazRate) {
     final room = _localRooms[roomName];
     if (room != null) {
       _bloc.add(StartCycleEvent(
@@ -825,19 +813,19 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   }
 
   void _onJobCreated(
-      String roomName,
-      String jobType,
-      String assignee,
-      String notes,
-      double? rate,
-      double? area,
-      String? wateringPlan,
-      double? wateringVol, {
-      int? timeLimit,
-      double? coLevel,
-      double? co2Level,
-      DateTime? checkInTime,
-      DateTime? checkOutTime,
+    String roomName,
+    String jobType,
+    String assignee,
+    String notes,
+    double? rate,
+    double? area,
+    String? wateringPlan,
+    double? wateringVol, {
+    int? timeLimit,
+    double? coLevel,
+    double? co2Level,
+    DateTime? checkInTime,
+    DateTime? checkOutTime,
   }) {
     final room = _localRooms[roomName];
     if (room != null) {
@@ -856,7 +844,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       }
       String planDetails = '';
       if (jobType == 'watering') {
-        planDetails = wateringPlan == '2side' ? '2 Side $wateringVol L/m²' : '1 Side $wateringVol L/m²';
+        planDetails = wateringPlan == '2side'
+            ? '2 Side $wateringVol L/m²'
+            : '1 Side $wateringVol L/m²';
       }
       String prochlorazRate = '';
       if (jobType == 'prochloraz') {
@@ -912,16 +902,21 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       return;
     }
     final repo = MushroomsRepository();
-    await repo.checkInRoomCrew(roomName: roomSelected, empName: emp['name']!, empId: code);
+    await repo.checkInRoomCrew(
+        roomName: roomSelected, empName: emp['name']!, empId: code);
 
     final crews = await repo.getRoomCrews();
-    final roomCrewNames = crews.where((c) => c['roomName'] == roomSelected).map((c) => c['empName']!).toList();
-    
+    final roomCrewNames = crews
+        .where((c) => c['roomName'] == roomSelected)
+        .map((c) => c['empName']!)
+        .toList();
+
     await repo.logSafetyCheckin(
       jobId: 'crew_checkin',
       workerId: emp['name']!,
       eventType: 'checkin',
-      notes: 'Checked in to Room $roomSelected. Solo status: ${roomCrewNames.length <= 1}',
+      notes:
+          'Checked in to Room $roomSelected. Solo status: ${roomCrewNames.length <= 1}',
     );
 
     if (roomCrewNames.length == 1) {
@@ -965,9 +960,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
     final room = _localRooms[roomSelected];
     if (room != null) {
-      final List<Map<String, dynamic>> jobs = List<Map<String, dynamic>>.from(room['jobs']);
+      final List<Map<String, dynamic>> jobs =
+          List<Map<String, dynamic>>.from(room['jobs']);
       final activeSolo = jobs.firstWhere(
-        (j) => j['assignee'] == emp['name'] && j['notes']?.contains('Solo') == true && j['status'] != 'done',
+        (j) =>
+            j['assignee'] == emp['name'] &&
+            j['notes']?.contains('Solo') == true &&
+            j['status'] != 'done',
         orElse: () => {},
       );
       if (activeSolo.isNotEmpty) {
@@ -988,8 +987,10 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (pickedVal >= targetVal && targetVal > 0) {
       final plan = room['pickingPlan'] as Map<String, dynamic>?;
       if (plan != null) {
-        await repo.updateMushroomStock('button', plan['button']?.toDouble() ?? 0.0);
-        await repo.updateMushroomStock('cup', plan['medium']?.toDouble() ?? 0.0);
+        await repo.updateMushroomStock(
+            'button', plan['button']?.toDouble() ?? 0.0);
+        await repo.updateMushroomStock(
+            'cup', plan['medium']?.toDouble() ?? 0.0);
         await repo.updateMushroomStock('flat', plan['open']?.toDouble() ?? 0.0);
         await repo.clearRoomPickingPlan(room['id']);
       }
@@ -998,7 +999,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     _bloc.add(LoadRoomsEvent());
   }
 
-  void _onSendPickingPlan(String roomSelected, int buttonVal, int mediumVal, int openVal) async {
+  void _onSendPickingPlan(
+      String roomSelected, int buttonVal, int mediumVal, int openVal) async {
     final total = buttonVal + mediumVal + openVal;
     if (total <= 0) {
       _showMsg('Vui lòng nhập sản lượng lớn hơn 0!');
@@ -1040,7 +1042,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         await repo.deliverMushroomOrder(orderId);
         _showMsg('Giao đơn hàng ORD-001 thành công!');
       } else {
-        _showMsg('Không đủ nấm tồn kho trong kho lạnh! Vui lòng lập thêm kế hoạch Picking.');
+        _showMsg(
+            'Không đủ nấm tồn kho trong kho lạnh! Vui lòng lập thêm kế hoạch Picking.');
       }
     } else if (orderId == 'ORD-002') {
       if (_stockMedium >= 80 && _stockOpen >= 30) {
@@ -1055,7 +1058,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     _loadMushroomData();
   }
 
-  void _onCreateMaintenanceJob(String title, String plant, String room, String assignee, String priority, String notes) async {
+  void _onCreateMaintenanceJob(String title, String plant, String room,
+      String assignee, String priority, String notes) async {
     final repo = MushroomsRepository();
     await repo.createMaintenanceTicket(
       title: title,
@@ -1075,7 +1079,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     _loadMushroomData();
   }
 
-  void _onTaskStatusAdvanced(String roomName, dynamic jobId, String nextStatus) {
+  void _onTaskStatusAdvanced(
+      String roomName, dynamic jobId, String nextStatus) {
     final room = _localRooms[roomName];
     if (room != null) {
       _bloc.add(UpdateJobStatusEvent(
@@ -1096,7 +1101,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     );
     _loadMushroomData();
 
-    if (_activeChatContact == 'Sarah (Sales)' && text.toLowerCase().contains('picking')) {
+    if (_activeChatContact == 'Sarah (Sales)' &&
+        text.toLowerCase().contains('picking')) {
       Timer(const Duration(seconds: 1), () async {
         await repo.sendChatMessage(
           sender: 'Sarah',
@@ -1110,7 +1116,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   }
 
   void _onReportIncident(String location, String desc) {
-    _showMsg('Đã gửi báo cáo sự cố thành công tới Kỹ thuật trưởng và Supervisor.');
+    _showMsg(
+        'Đã gửi báo cáo sự cố thành công tới Kỹ thuật trưởng và Supervisor.');
   }
 
   void _onTriggerSafetyContact(String roomNum) {

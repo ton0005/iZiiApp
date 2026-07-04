@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 class SafetyTabScreen extends StatefulWidget {
@@ -25,9 +26,21 @@ class SafetyTabScreen extends StatefulWidget {
 class _SafetyTabScreenState extends State<SafetyTabScreen> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
+  Timer? _countdownTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _locationController.dispose();
     _descController.dispose();
     super.dispose();
@@ -114,7 +127,7 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
                 children: [
                   const Padding(
                     padding: EdgeInsets.all(16),
-                    child: Text('Safety Logs (Check-In / Check-Out / Solo)',
+                    child: Text('Alone Worker Sessions (Gas Safety & Live Countdown)',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 14)),
                   ),
@@ -132,35 +145,167 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
   }
 
   Widget _buildSafetyLogsTable() {
+    if (widget.safetyLogs.isEmpty) {
+      return const Center(child: Text('No active alone worker sessions.'));
+    }
     return ListView.builder(
       itemCount: widget.safetyLogs.length,
       itemBuilder: (context, idx) {
-        final log = widget.safetyLogs[idx];
-        final isSolo = log['solo'] as bool;
-        return ListTile(
-          selected: isSolo,
-          selectedColor: Colors.red,
-          selectedTileColor: Colors.red.shade50,
-          leading: Icon(
-            log['action'] == 'Check-in' ? Icons.login : Icons.logout,
-            color: log['action'] == 'Check-in' ? Colors.green : Colors.grey,
+        final job = widget.safetyLogs[idx];
+        final done = job['status'] == 'done' || job['status'] == 'completed';
+        final isAlarm = job['alarm_triggered'] == true;
+
+        String getTimerString() {
+          if (done) {
+            return 'Completed';
+          }
+          if (job['started_at'] == null) {
+            return 'Pending';
+          }
+          final startedAt = DateTime.parse(job['started_at'] as String);
+          final limitMins = job['time_limit_minutes'] as int;
+          final deadline = startedAt.add(Duration(minutes: limitMins));
+          final remaining = deadline.difference(DateTime.now());
+          if (remaining.isNegative) {
+            return 'EXPIRED (ALARM)';
+          }
+          final mins = remaining.inMinutes;
+          final secs = remaining.inSeconds % 60;
+          return '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+        }
+
+        final timerStr = getTimerString();
+        final isExpired = timerStr.contains('EXPIRED') || isAlarm;
+
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          color: isExpired
+              ? Colors.red.withOpacity(0.08)
+              : (widget.isDark ? const Color(0xFF2E2E2E) : Colors.grey.shade50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: isExpired
+                  ? Colors.red
+                  : (done ? Colors.green : Colors.grey.shade300),
+              width: isExpired ? 1.5 : 1,
+            ),
           ),
-          title: Text(
-              '${log['empName']} (${log['empId']}) — Room ${log['room']}',
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text('Role: ${log['role']} · Time: ${log['time']}'),
-          trailing: isSolo
-              ? const Row(
-                  mainAxisSize: MainAxisSize.min,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.timer_outlined, color: Colors.red, size: 14),
-                    SizedBox(width: 4),
-                    Text('Solo Timer: 45m',
-                        style: TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.bold)),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Icon(
+                            isExpired
+                                ? Icons.warning_rounded
+                                : (done ? Icons.check_circle_rounded : Icons.timer_outlined),
+                            color: isExpired
+                                ? Colors.red
+                                : (done ? Colors.green : Colors.blue),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '${job['assignee']} — Room ${job['room_name']}',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isExpired
+                            ? Colors.red
+                            : (done ? Colors.green : Colors.orange),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        isExpired
+                            ? 'ALARM'
+                            : (done ? 'COMPLETED' : 'ACTIVE'),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ],
-                )
-              : null,
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    if (job['co_level'] != null) ...[
+                      Icon(Icons.warning_amber_rounded,
+                          size: 14, color: Colors.amber.shade700),
+                      const SizedBox(width: 4),
+                      Text('CO: ${job['co_level']} ppm',
+                          style: const TextStyle(fontSize: 12)),
+                      const SizedBox(width: 20),
+                    ],
+                    if (job['co2_level'] != null) ...[
+                      Icon(Icons.cloud_queue_rounded,
+                          size: 14, color: Colors.blue.shade700),
+                      const SizedBox(width: 4),
+                      Text('CO₂: ${job['co2_level']} ppm',
+                          style: const TextStyle(fontSize: 12)),
+                      const SizedBox(width: 20),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    if (job['check_in_time'] != null) ...[
+                      Text(
+                        'Check In: ${DateTime.parse(job['check_in_time'] as String).toLocal().toString().substring(11, 16)}',
+                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      const SizedBox(width: 20),
+                    ],
+                    if (job['check_out_time'] != null) ...[
+                      Text(
+                        'Check Out: ${DateTime.parse(job['check_out_time'] as String).toLocal().toString().substring(11, 16)}',
+                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                    ],
+                  ],
+                ),
+                if (!done) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Limit: ${job['time_limit_minutes']} mins',
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                      Text(
+                        'Remaining: $timerStr',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: isExpired ? Colors.red : Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
         );
       },
     );

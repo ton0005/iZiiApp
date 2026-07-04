@@ -549,6 +549,42 @@ class MushroomsRepository {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getAllSoloJobs() async {
+    try {
+      final query = _db.select(_db.mushroomJobs)
+        ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]);
+      final jobs = await query.get();
+
+      final rooms = await getRooms();
+      final roomMap = {for (var r in rooms) r['id']: r['name']};
+
+      return jobs
+          .where((j) => j.isSoloJob == true || j.jobType == 'alone_worker')
+          .map((j) => <String, dynamic>{
+        'id': j.id,
+        'room_id': j.roomId,
+        'room_name': roomMap[j.roomId] ?? 'N/A',
+        'job_type': j.jobType,
+        'name': j.name,
+        'status': j.status,
+        'assignee': j.assignee ?? '',
+        'plan_details': j.planDetails ?? '',
+        'completed_at': j.completedAt?.toIso8601String(),
+        'is_solo_job': j.isSoloJob,
+        'time_limit_minutes': j.timeLimitMinutes ?? 0,
+        'started_at': j.startedAt?.toIso8601String(),
+        'alarm_triggered': j.alarmTriggered,
+        'co_level': j.coLevel,
+        'co2_level': j.co2Level,
+        'check_in_time': j.checkInTime?.toIso8601String(),
+        'check_out_time': j.checkOutTime?.toIso8601String(),
+        'created_at': j.createdAt.toIso8601String(),
+      }).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getSafetyLogs(String jobId) async {
     try {
       final query = _db.select(_db.mushroomSafetyCheckinLogs)
