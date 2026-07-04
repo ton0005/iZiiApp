@@ -15042,6 +15042,30 @@ class $MushroomJobsTable extends MushroomJobs
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('normal'));
+  static const VerificationMeta _coLevelMeta =
+      const VerificationMeta('coLevel');
+  @override
+  late final GeneratedColumn<double> coLevel = GeneratedColumn<double>(
+      'co_level', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _co2LevelMeta =
+      const VerificationMeta('co2Level');
+  @override
+  late final GeneratedColumn<double> co2Level = GeneratedColumn<double>(
+      'co2_level', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _checkInTimeMeta =
+      const VerificationMeta('checkInTime');
+  @override
+  late final GeneratedColumn<DateTime> checkInTime = GeneratedColumn<DateTime>(
+      'check_in_time', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _checkOutTimeMeta =
+      const VerificationMeta('checkOutTime');
+  @override
+  late final GeneratedColumn<DateTime> checkOutTime = GeneratedColumn<DateTime>(
+      'check_out_time', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -15074,6 +15098,10 @@ class $MushroomJobsTable extends MushroomJobs
         alarmTriggered,
         scheduledAt,
         priority,
+        coLevel,
+        co2Level,
+        checkInTime,
+        checkOutTime,
         createdAt,
         updatedAt
       ];
@@ -15174,6 +15202,26 @@ class $MushroomJobsTable extends MushroomJobs
       context.handle(_priorityMeta,
           priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta));
     }
+    if (data.containsKey('co_level')) {
+      context.handle(_coLevelMeta,
+          coLevel.isAcceptableOrUnknown(data['co_level']!, _coLevelMeta));
+    }
+    if (data.containsKey('co2_level')) {
+      context.handle(_co2LevelMeta,
+          co2Level.isAcceptableOrUnknown(data['co2_level']!, _co2LevelMeta));
+    }
+    if (data.containsKey('check_in_time')) {
+      context.handle(
+          _checkInTimeMeta,
+          checkInTime.isAcceptableOrUnknown(
+              data['check_in_time']!, _checkInTimeMeta));
+    }
+    if (data.containsKey('check_out_time')) {
+      context.handle(
+          _checkOutTimeMeta,
+          checkOutTime.isAcceptableOrUnknown(
+              data['check_out_time']!, _checkOutTimeMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -15223,6 +15271,14 @@ class $MushroomJobsTable extends MushroomJobs
           .read(DriftSqlType.dateTime, data['${effectivePrefix}scheduled_at']),
       priority: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}priority']),
+      coLevel: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}co_level']),
+      co2Level: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}co2_level']),
+      checkInTime: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}check_in_time']),
+      checkOutTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}check_out_time']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -15253,6 +15309,10 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
   final bool alarmTriggered;
   final DateTime? scheduledAt;
   final String? priority;
+  final double? coLevel;
+  final double? co2Level;
+  final DateTime? checkInTime;
+  final DateTime? checkOutTime;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const MushroomJob(
@@ -15272,6 +15332,10 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       required this.alarmTriggered,
       this.scheduledAt,
       this.priority,
+      this.coLevel,
+      this.co2Level,
+      this.checkInTime,
+      this.checkOutTime,
       required this.createdAt,
       this.updatedAt});
   @override
@@ -15310,6 +15374,18 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
     }
     if (!nullToAbsent || priority != null) {
       map['priority'] = Variable<String>(priority);
+    }
+    if (!nullToAbsent || coLevel != null) {
+      map['co_level'] = Variable<double>(coLevel);
+    }
+    if (!nullToAbsent || co2Level != null) {
+      map['co2_level'] = Variable<double>(co2Level);
+    }
+    if (!nullToAbsent || checkInTime != null) {
+      map['check_in_time'] = Variable<DateTime>(checkInTime);
+    }
+    if (!nullToAbsent || checkOutTime != null) {
+      map['check_out_time'] = Variable<DateTime>(checkOutTime);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
@@ -15354,6 +15430,18 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       priority: priority == null && nullToAbsent
           ? const Value.absent()
           : Value(priority),
+      coLevel: coLevel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(coLevel),
+      co2Level: co2Level == null && nullToAbsent
+          ? const Value.absent()
+          : Value(co2Level),
+      checkInTime: checkInTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(checkInTime),
+      checkOutTime: checkOutTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(checkOutTime),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -15381,6 +15469,10 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       alarmTriggered: serializer.fromJson<bool>(json['alarmTriggered']),
       scheduledAt: serializer.fromJson<DateTime?>(json['scheduledAt']),
       priority: serializer.fromJson<String?>(json['priority']),
+      coLevel: serializer.fromJson<double?>(json['coLevel']),
+      co2Level: serializer.fromJson<double?>(json['co2Level']),
+      checkInTime: serializer.fromJson<DateTime?>(json['checkInTime']),
+      checkOutTime: serializer.fromJson<DateTime?>(json['checkOutTime']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -15405,6 +15497,10 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       'alarmTriggered': serializer.toJson<bool>(alarmTriggered),
       'scheduledAt': serializer.toJson<DateTime?>(scheduledAt),
       'priority': serializer.toJson<String?>(priority),
+      'coLevel': serializer.toJson<double?>(coLevel),
+      'co2Level': serializer.toJson<double?>(co2Level),
+      'checkInTime': serializer.toJson<DateTime?>(checkInTime),
+      'checkOutTime': serializer.toJson<DateTime?>(checkOutTime),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -15427,6 +15523,10 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
           bool? alarmTriggered,
           Value<DateTime?> scheduledAt = const Value.absent(),
           Value<String?> priority = const Value.absent(),
+          Value<double?> coLevel = const Value.absent(),
+          Value<double?> co2Level = const Value.absent(),
+          Value<DateTime?> checkInTime = const Value.absent(),
+          Value<DateTime?> checkOutTime = const Value.absent(),
           DateTime? createdAt,
           Value<DateTime?> updatedAt = const Value.absent()}) =>
       MushroomJob(
@@ -15450,6 +15550,11 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
         alarmTriggered: alarmTriggered ?? this.alarmTriggered,
         scheduledAt: scheduledAt.present ? scheduledAt.value : this.scheduledAt,
         priority: priority.present ? priority.value : this.priority,
+        coLevel: coLevel.present ? coLevel.value : this.coLevel,
+        co2Level: co2Level.present ? co2Level.value : this.co2Level,
+        checkInTime: checkInTime.present ? checkInTime.value : this.checkInTime,
+        checkOutTime:
+            checkOutTime.present ? checkOutTime.value : this.checkOutTime,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
       );
@@ -15482,6 +15587,13 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       scheduledAt:
           data.scheduledAt.present ? data.scheduledAt.value : this.scheduledAt,
       priority: data.priority.present ? data.priority.value : this.priority,
+      coLevel: data.coLevel.present ? data.coLevel.value : this.coLevel,
+      co2Level: data.co2Level.present ? data.co2Level.value : this.co2Level,
+      checkInTime:
+          data.checkInTime.present ? data.checkInTime.value : this.checkInTime,
+      checkOutTime: data.checkOutTime.present
+          ? data.checkOutTime.value
+          : this.checkOutTime,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -15506,6 +15618,10 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
           ..write('alarmTriggered: $alarmTriggered, ')
           ..write('scheduledAt: $scheduledAt, ')
           ..write('priority: $priority, ')
+          ..write('coLevel: $coLevel, ')
+          ..write('co2Level: $co2Level, ')
+          ..write('checkInTime: $checkInTime, ')
+          ..write('checkOutTime: $checkOutTime, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -15513,25 +15629,30 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id,
-      roomId,
-      jobType,
-      name,
-      status,
-      assignee,
-      planDetails,
-      prochlorazRate,
-      completedAt,
-      linkedTaskId,
-      isSoloJob,
-      timeLimitMinutes,
-      startedAt,
-      alarmTriggered,
-      scheduledAt,
-      priority,
-      createdAt,
-      updatedAt);
+  int get hashCode => Object.hashAll([
+        id,
+        roomId,
+        jobType,
+        name,
+        status,
+        assignee,
+        planDetails,
+        prochlorazRate,
+        completedAt,
+        linkedTaskId,
+        isSoloJob,
+        timeLimitMinutes,
+        startedAt,
+        alarmTriggered,
+        scheduledAt,
+        priority,
+        coLevel,
+        co2Level,
+        checkInTime,
+        checkOutTime,
+        createdAt,
+        updatedAt
+      ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -15552,6 +15673,10 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
           other.alarmTriggered == this.alarmTriggered &&
           other.scheduledAt == this.scheduledAt &&
           other.priority == this.priority &&
+          other.coLevel == this.coLevel &&
+          other.co2Level == this.co2Level &&
+          other.checkInTime == this.checkInTime &&
+          other.checkOutTime == this.checkOutTime &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -15573,6 +15698,10 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
   final Value<bool> alarmTriggered;
   final Value<DateTime?> scheduledAt;
   final Value<String?> priority;
+  final Value<double?> coLevel;
+  final Value<double?> co2Level;
+  final Value<DateTime?> checkInTime;
+  final Value<DateTime?> checkOutTime;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -15593,6 +15722,10 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
     this.alarmTriggered = const Value.absent(),
     this.scheduledAt = const Value.absent(),
     this.priority = const Value.absent(),
+    this.coLevel = const Value.absent(),
+    this.co2Level = const Value.absent(),
+    this.checkInTime = const Value.absent(),
+    this.checkOutTime = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -15614,6 +15747,10 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
     this.alarmTriggered = const Value.absent(),
     this.scheduledAt = const Value.absent(),
     this.priority = const Value.absent(),
+    this.coLevel = const Value.absent(),
+    this.co2Level = const Value.absent(),
+    this.checkInTime = const Value.absent(),
+    this.checkOutTime = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -15638,6 +15775,10 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
     Expression<bool>? alarmTriggered,
     Expression<DateTime>? scheduledAt,
     Expression<String>? priority,
+    Expression<double>? coLevel,
+    Expression<double>? co2Level,
+    Expression<DateTime>? checkInTime,
+    Expression<DateTime>? checkOutTime,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -15659,6 +15800,10 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
       if (alarmTriggered != null) 'alarm_triggered': alarmTriggered,
       if (scheduledAt != null) 'scheduled_at': scheduledAt,
       if (priority != null) 'priority': priority,
+      if (coLevel != null) 'co_level': coLevel,
+      if (co2Level != null) 'co2_level': co2Level,
+      if (checkInTime != null) 'check_in_time': checkInTime,
+      if (checkOutTime != null) 'check_out_time': checkOutTime,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -15682,6 +15827,10 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
       Value<bool>? alarmTriggered,
       Value<DateTime?>? scheduledAt,
       Value<String?>? priority,
+      Value<double?>? coLevel,
+      Value<double?>? co2Level,
+      Value<DateTime?>? checkInTime,
+      Value<DateTime?>? checkOutTime,
       Value<DateTime>? createdAt,
       Value<DateTime?>? updatedAt,
       Value<int>? rowid}) {
@@ -15702,6 +15851,10 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
       alarmTriggered: alarmTriggered ?? this.alarmTriggered,
       scheduledAt: scheduledAt ?? this.scheduledAt,
       priority: priority ?? this.priority,
+      coLevel: coLevel ?? this.coLevel,
+      co2Level: co2Level ?? this.co2Level,
+      checkInTime: checkInTime ?? this.checkInTime,
+      checkOutTime: checkOutTime ?? this.checkOutTime,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -15759,6 +15912,18 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
     if (priority.present) {
       map['priority'] = Variable<String>(priority.value);
     }
+    if (coLevel.present) {
+      map['co_level'] = Variable<double>(coLevel.value);
+    }
+    if (co2Level.present) {
+      map['co2_level'] = Variable<double>(co2Level.value);
+    }
+    if (checkInTime.present) {
+      map['check_in_time'] = Variable<DateTime>(checkInTime.value);
+    }
+    if (checkOutTime.present) {
+      map['check_out_time'] = Variable<DateTime>(checkOutTime.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -15790,6 +15955,10 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
           ..write('alarmTriggered: $alarmTriggered, ')
           ..write('scheduledAt: $scheduledAt, ')
           ..write('priority: $priority, ')
+          ..write('coLevel: $coLevel, ')
+          ..write('co2Level: $co2Level, ')
+          ..write('checkInTime: $checkInTime, ')
+          ..write('checkOutTime: $checkOutTime, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -29112,6 +29281,10 @@ typedef $$MushroomJobsTableCreateCompanionBuilder = MushroomJobsCompanion
   Value<bool> alarmTriggered,
   Value<DateTime?> scheduledAt,
   Value<String?> priority,
+  Value<double?> coLevel,
+  Value<double?> co2Level,
+  Value<DateTime?> checkInTime,
+  Value<DateTime?> checkOutTime,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
   Value<int> rowid,
@@ -29134,6 +29307,10 @@ typedef $$MushroomJobsTableUpdateCompanionBuilder = MushroomJobsCompanion
   Value<bool> alarmTriggered,
   Value<DateTime?> scheduledAt,
   Value<String?> priority,
+  Value<double?> coLevel,
+  Value<double?> co2Level,
+  Value<DateTime?> checkInTime,
+  Value<DateTime?> checkOutTime,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
   Value<int> rowid,
@@ -29198,6 +29375,18 @@ class $$MushroomJobsTableFilterComposer
 
   ColumnFilters<String> get priority => $composableBuilder(
       column: $table.priority, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get coLevel => $composableBuilder(
+      column: $table.coLevel, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get co2Level => $composableBuilder(
+      column: $table.co2Level, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get checkInTime => $composableBuilder(
+      column: $table.checkInTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get checkOutTime => $composableBuilder(
+      column: $table.checkOutTime, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -29267,6 +29456,19 @@ class $$MushroomJobsTableOrderingComposer
   ColumnOrderings<String> get priority => $composableBuilder(
       column: $table.priority, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<double> get coLevel => $composableBuilder(
+      column: $table.coLevel, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get co2Level => $composableBuilder(
+      column: $table.co2Level, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get checkInTime => $composableBuilder(
+      column: $table.checkInTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get checkOutTime => $composableBuilder(
+      column: $table.checkOutTime,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
@@ -29331,6 +29533,18 @@ class $$MushroomJobsTableAnnotationComposer
   GeneratedColumn<String> get priority =>
       $composableBuilder(column: $table.priority, builder: (column) => column);
 
+  GeneratedColumn<double> get coLevel =>
+      $composableBuilder(column: $table.coLevel, builder: (column) => column);
+
+  GeneratedColumn<double> get co2Level =>
+      $composableBuilder(column: $table.co2Level, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get checkInTime => $composableBuilder(
+      column: $table.checkInTime, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get checkOutTime => $composableBuilder(
+      column: $table.checkOutTime, builder: (column) => column);
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -29380,6 +29594,10 @@ class $$MushroomJobsTableTableManager extends RootTableManager<
             Value<bool> alarmTriggered = const Value.absent(),
             Value<DateTime?> scheduledAt = const Value.absent(),
             Value<String?> priority = const Value.absent(),
+            Value<double?> coLevel = const Value.absent(),
+            Value<double?> co2Level = const Value.absent(),
+            Value<DateTime?> checkInTime = const Value.absent(),
+            Value<DateTime?> checkOutTime = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -29401,6 +29619,10 @@ class $$MushroomJobsTableTableManager extends RootTableManager<
             alarmTriggered: alarmTriggered,
             scheduledAt: scheduledAt,
             priority: priority,
+            coLevel: coLevel,
+            co2Level: co2Level,
+            checkInTime: checkInTime,
+            checkOutTime: checkOutTime,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,
@@ -29422,6 +29644,10 @@ class $$MushroomJobsTableTableManager extends RootTableManager<
             Value<bool> alarmTriggered = const Value.absent(),
             Value<DateTime?> scheduledAt = const Value.absent(),
             Value<String?> priority = const Value.absent(),
+            Value<double?> coLevel = const Value.absent(),
+            Value<double?> co2Level = const Value.absent(),
+            Value<DateTime?> checkInTime = const Value.absent(),
+            Value<DateTime?> checkOutTime = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -29443,6 +29669,10 @@ class $$MushroomJobsTableTableManager extends RootTableManager<
             alarmTriggered: alarmTriggered,
             scheduledAt: scheduledAt,
             priority: priority,
+            coLevel: coLevel,
+            co2Level: co2Level,
+            checkInTime: checkInTime,
+            checkOutTime: checkOutTime,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,

@@ -102,6 +102,10 @@ class MushroomsRepository {
       'scheduled_at': j.scheduledAt?.toIso8601String(),
       'priority': j.priority ?? 'normal',
       'created_at': j.createdAt.toIso8601String(),
+      'co_level': j.coLevel,
+      'co2_level': j.co2Level,
+      'check_in_time': j.checkInTime?.toIso8601String(),
+      'check_out_time': j.checkOutTime?.toIso8601String(),
     }).toList();
   }
 
@@ -147,7 +151,16 @@ class MushroomsRepository {
     }
   }
 
-  Future<void> addSpecialSoloJob(String roomId, String title, String assignee, int timeLimitMinutes) async {
+  Future<void> addSpecialSoloJob(
+    String roomId,
+    String title,
+    String assignee,
+    int timeLimitMinutes, {
+    double? coLevel,
+    double? co2Level,
+    DateTime? checkInTime,
+    DateTime? checkOutTime,
+  }) async {
     final jobId = const Uuid().v4();
     final room = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
     final roomName = room?.name ?? 'Room';
@@ -171,7 +184,7 @@ class MushroomsRepository {
         id: taskId,
         projectId: project.id,
         title: '$title ($roomName)',
-        description: Value('Công việc làm một mình (Solo) tại phòng nuôi trồng. Giới hạn: $timeLimitMinutes phút. Người thực hiện: $assignee'),
+        description: Value('Alone Worker (Solo) at Grow Room. Limit: $timeLimitMinutes mins. Operator: $assignee. CO: ${coLevel ?? 0} ppm, CO2: ${co2Level ?? 0} ppm'),
         status: const Value('in_progress'),
         priority: const Value('high'),
       ));
@@ -180,7 +193,7 @@ class MushroomsRepository {
     await _db.into(_db.mushroomJobs).insert(MushroomJobsCompanion.insert(
       id: jobId,
       roomId: roomId,
-      jobType: 'special_solo',
+      jobType: 'alone_worker',
       name: title,
       status: const Value('in_progress'),
       assignee: Value(assignee),
@@ -189,6 +202,10 @@ class MushroomsRepository {
       startedAt: Value(DateTime.now()),
       alarmTriggered: const Value(false),
       linkedTaskId: Value(taskId),
+      coLevel: Value(coLevel),
+      co2Level: Value(co2Level),
+      checkInTime: Value(checkInTime),
+      checkOutTime: Value(checkOutTime),
     ));
 
     try {
@@ -210,17 +227,17 @@ class MushroomsRepository {
           jobId: jobId,
           workerId: assignee,
           eventType: 'start',
-          notes: Value('Solo job started with limit $timeLimitMinutes mins'),
+          notes: Value('Alone Worker job started. Limit: $timeLimitMinutes mins. CO: $coLevel ppm, CO2: $co2Level ppm'),
           timestamp: Value(DateTime.now()),
         ),
       );
     } catch (_) {}
 
-    // Update room stage to special_solo & active
+    // Update room stage to alone_worker & active
     await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
       const GrowRoomsCompanion(
         status: Value('active'),
-        currentStage: Value('special_solo'),
+        currentStage: Value('alone_worker'),
       ),
     );
   }

@@ -787,9 +787,28 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       double? rate,
       double? area,
       String? wateringPlan,
-      double? wateringVol) {
+      double? wateringVol, {
+      int? timeLimit,
+      double? coLevel,
+      double? co2Level,
+      DateTime? checkInTime,
+      DateTime? checkOutTime,
+  }) {
     final room = _localRooms[roomName];
     if (room != null) {
+      if (jobType == 'alone_worker') {
+        _bloc.add(AddSoloJobEvent(
+          roomId: room['id'],
+          title: 'Alone Worker (Solo)',
+          assignee: assignee,
+          timeLimit: timeLimit ?? 45,
+          coLevel: coLevel,
+          co2Level: co2Level,
+          checkInTime: checkInTime,
+          checkOutTime: checkOutTime,
+        ));
+        return;
+      }
       String planDetails = '';
       if (jobType == 'watering') {
         planDetails = wateringPlan == '2side' ? '2 Side $wateringVol L/m²' : '1 Side $wateringVol L/m²';

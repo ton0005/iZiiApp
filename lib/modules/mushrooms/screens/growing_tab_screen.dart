@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'mushboom_monarto_screen.dart'; // For FarmColors and shared definitions
 
@@ -10,7 +11,21 @@ class GrowingTabScreen extends StatefulWidget {
   final Function(String) onPlantChanged;
   final Function(String) onRoomFilterChanged;
   final Function(String?) onRoomSelected;
-  final Function(String roomName, String jobType, String assignee, String notes, double? rate, double? area, String? wateringPlan, double? wateringVol) onJobCreated;
+  final Function(
+    String roomName,
+    String jobType,
+    String assignee,
+    String notes,
+    double? rate,
+    double? area,
+    String? wateringPlan,
+    double? wateringVol, {
+    int? timeLimit,
+    double? coLevel,
+    double? co2Level,
+    DateTime? checkInTime,
+    DateTime? checkOutTime,
+  }) onJobCreated;
   final Function(String roomName, dynamic jobId, bool done) onJobStatusChanged;
   final Function(String roomName, String viewMode) onSwitchToTasks;
   final Function(String roomName, String wateringPlan, String prochlorazRate) onStartCycle;
@@ -37,6 +52,23 @@ class GrowingTabScreen extends StatefulWidget {
 
 class _GrowingTabScreenState extends State<GrowingTabScreen> {
   bool _isAscending = true;
+  Timer? _countdownTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -395,6 +427,25 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               final done = job['status'] == 'done';
               final jobId = job['id'];
 
+              String getTimerString() {
+                if (job['status'] == 'completed' || job['status'] == 'done') {
+                  return 'Completed';
+                }
+                if (job['started_at'] == null) {
+                  return 'Pending';
+                }
+                final startedAt = DateTime.parse(job['started_at'] as String);
+                final limitMins = job['time_limit_minutes'] as int;
+                final deadline = startedAt.add(Duration(minutes: limitMins));
+                final remaining = deadline.difference(DateTime.now());
+                if (remaining.isNegative) {
+                  return 'EXPIRED (ALARM)';
+                }
+                final mins = remaining.inMinutes;
+                final secs = remaining.inSeconds % 60;
+                return '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+              }
+
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding:
@@ -408,6 +459,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Checkbox(
                           value: done,
@@ -429,6 +481,59 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                             Text(job['notes'] ?? '',
                                 style: const TextStyle(
                                     fontSize: 11, color: Colors.grey)),
+                            if (job['is_solo_job'] == true || job['job_type'] == 'alone_worker' || job['job_type'] == 'special_solo') ...[
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  if (job['co_level'] != null) ...[
+                                    Icon(Icons.warning_amber_rounded, size: 12, color: Colors.amber.shade700),
+                                    const SizedBox(width: 4),
+                                    Text('CO: ${job['co_level']} ppm', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                    const SizedBox(width: 12),
+                                  ],
+                                  if (job['co2_level'] != null) ...[
+                                    Icon(Icons.cloud_queue_rounded, size: 12, color: Colors.blue.shade700),
+                                    const SizedBox(width: 4),
+                                    Text('CO₂: ${job['co2_level']} ppm', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                    const SizedBox(width: 12),
+                                  ],
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  if (job['check_in_time'] != null) ...[
+                                    Text('Check In: ${DateTime.parse(job['check_in_time'] as String).toLocal().toString().substring(11, 16)}', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                    const SizedBox(width: 12),
+                                  ],
+                                  if (job['check_out_time'] != null) ...[
+                                    Text('Check Out: ${DateTime.parse(job['check_out_time'] as String).toLocal().toString().substring(11, 16)}', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                  ],
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Builder(
+                                builder: (context) {
+                                  final timerStr = getTimerString();
+                                  final isExpired = timerStr.contains('EXPIRED');
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: isExpired ? Colors.red.withOpacity(0.1) : FarmColors.forestGreenLight,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      'Time Remaining: $timerStr',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: isExpired ? Colors.red : FarmColors.forestGreenText,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              ),
+                            ],
                           ],
                         ),
                       ],
@@ -519,6 +624,13 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     double rate = 1.3;
     double area = 112.0;
 
+    // Alone worker fields
+    int timeLimit = 45;
+    double coLevel = 0.0;
+    double co2Level = 0.0;
+    DateTime checkInTime = DateTime.now();
+    DateTime? checkOutTime;
+
     showDialog(
       context: context,
       builder: (dialogCtx) {
@@ -570,6 +682,9 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                           DropdownMenuItem(
                               value: 'packuptree',
                               child: Text('Pack Up Tree (Root cleanup)')),
+                          DropdownMenuItem(
+                              value: 'alone_worker',
+                              child: Text('Alone Worker (Working alone)')),
                         ],
                         onChanged: (val) {
                           if (val != null) setDialogState(() => jobType = val);
@@ -654,6 +769,115 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                           ),
                         )
                       ],
+                      if (jobType == 'alone_worker') ...[
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                              labelText: 'Time Limit (minutes)'),
+                          initialValue: timeLimit.toString(),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            setDialogState(() =>
+                                timeLimit = int.tryParse(val) ?? 45);
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                decoration: const InputDecoration(
+                                    labelText: 'CO Level (ppm)'),
+                                initialValue: coLevel.toString(),
+                                keyboardType: TextInputType.number,
+                                onChanged: (val) {
+                                  setDialogState(() =>
+                                      coLevel = double.tryParse(val) ?? 0.0);
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextFormField(
+                                decoration: const InputDecoration(
+                                    labelText: 'CO2 Level (ppm)'),
+                                initialValue: co2Level.toString(),
+                                keyboardType: TextInputType.number,
+                                onChanged: (val) {
+                                  setDialogState(() =>
+                                      co2Level = double.tryParse(val) ?? 0.0);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: () async {
+                                  final picked = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.fromDateTime(checkInTime),
+                                  );
+                                  if (picked != null) {
+                                    final now = DateTime.now();
+                                    setDialogState(() {
+                                      checkInTime = DateTime(
+                                        now.year,
+                                        now.month,
+                                        now.day,
+                                        picked.hour,
+                                        picked.minute,
+                                      );
+                                    });
+                                  }
+                                },
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                      labelText: 'Check In Time'),
+                                  child: Text(
+                                    '${checkInTime.hour.toString().padLeft(2, '0')}:${checkInTime.minute.toString().padLeft(2, '0')}',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () async {
+                                  final picked = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.fromDateTime(checkOutTime ?? DateTime.now().add(const Duration(minutes: 45))),
+                                  );
+                                  if (picked != null) {
+                                    final now = DateTime.now();
+                                    setDialogState(() {
+                                      checkOutTime = DateTime(
+                                        now.year,
+                                        now.month,
+                                        now.day,
+                                        picked.hour,
+                                        picked.minute,
+                                      );
+                                    });
+                                  }
+                                },
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                      labelText: 'Check Out Time'),
+                                  child: Text(
+                                    checkOutTime != null
+                                        ? '${checkOutTime!.hour.toString().padLeft(2, '0')}:${checkOutTime!.minute.toString().padLeft(2, '0')}'
+                                        : 'Not set',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         decoration:
@@ -691,7 +915,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: FarmColors.forestGreen),
-                  onPressed: () {
+                   onPressed: () {
                     widget.onJobCreated(
                       roomSelected,
                       jobType,
@@ -701,6 +925,11 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       jobType == 'prochloraz' ? area : null,
                       jobType == 'watering' ? wateringPlan : null,
                       jobType == 'watering' ? wateringVol : null,
+                      timeLimit: jobType == 'alone_worker' ? timeLimit : null,
+                      coLevel: jobType == 'alone_worker' ? coLevel : null,
+                      co2Level: jobType == 'alone_worker' ? co2Level : null,
+                      checkInTime: jobType == 'alone_worker' ? checkInTime : null,
+                      checkOutTime: jobType == 'alone_worker' ? checkOutTime : null,
                     );
                     Navigator.pop(dialogCtx);
                   },

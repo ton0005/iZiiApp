@@ -19,7 +19,7 @@ class GrowRooms extends Table {
 class MushroomJobs extends Table {
   TextColumn get id => text()(); // UUID
   TextColumn get roomId => text()();
-  TextColumn get jobType => text()(); // filling, airing, floor_wet, clean_room, watering, clean_bed, prochloraz, packup_tree, special_solo
+  TextColumn get jobType => text()(); // filling, airing, floor_wet, clean_room, watering, clean_bed, prochloraz, packup_tree, special_solo, alone_worker
   TextColumn get name => text()(); // Display name
   TextColumn get status => text().withDefault(const Constant('pending'))(); // pending, in_progress, completed
   TextColumn get assignee => text().nullable()(); // Staff name
@@ -37,6 +37,12 @@ class MushroomJobs extends Table {
   // --- Scheduling and Prioritization Fields ---
   DateTimeColumn get scheduledAt => dateTime().nullable()();
   TextColumn get priority => text().nullable().withDefault(const Constant('normal'))(); // low, normal, high, urgent
+
+  // --- Gas Levels and Timestamps ---
+  RealColumn get coLevel => real().nullable()();
+  RealColumn get co2Level => real().nullable()();
+  DateTimeColumn get checkInTime => dateTime().nullable()();
+  DateTimeColumn get checkOutTime => dateTime().nullable()();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();

@@ -25,11 +25,20 @@ class AddSoloJobEvent extends MushroomsEvent {
   final String title;
   final String assignee;
   final int timeLimit;
+  final double? coLevel;
+  final double? co2Level;
+  final DateTime? checkInTime;
+  final DateTime? checkOutTime;
+
   AddSoloJobEvent({
     required this.roomId,
     required this.title,
     required this.assignee,
     required this.timeLimit,
+    this.coLevel,
+    this.co2Level,
+    this.checkInTime,
+    this.checkOutTime,
   });
 }
 
@@ -210,6 +219,10 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
         event.title,
         event.assignee,
         event.timeLimit,
+        coLevel: event.coLevel,
+        co2Level: event.co2Level,
+        checkInTime: event.checkInTime,
+        checkOutTime: event.checkOutTime,
       );
       final rooms = await _repository.getRooms();
       final jobs = await _repository.getJobsForRoom(event.roomId);
