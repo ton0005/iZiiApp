@@ -13,7 +13,8 @@ import '../theme/chat_theme.dart';
 import 'conversation_screen.dart';
 
 class ChatInboxScreen extends StatefulWidget {
-  const ChatInboxScreen({super.key});
+  final bool embedded;
+  const ChatInboxScreen({super.key, this.embedded = false});
 
   @override
   State<ChatInboxScreen> createState() => _ChatInboxScreenState();
@@ -49,6 +50,10 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
       body = _buildTwoPanelLayout(isDark);
     } else {
       body = _buildMobileLayout(isDark);
+    }
+
+    if (widget.embedded) {
+      return body;
     }
 
     return Scaffold(

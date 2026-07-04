@@ -754,11 +754,6 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'chat') {
       return ChatTabScreen(
         isDark: isDark,
-        chatHistory: _chatHistory,
-        activeChatContact: _activeChatContact,
-        activeRole: _activeRole,
-        onContactSelected: (contact) => setState(() => _activeChatContact = contact),
-        onSendMessage: _onSendMessage,
       );
     }
     return SafetyTabScreen(
