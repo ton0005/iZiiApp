@@ -17996,6 +17996,272 @@ class MushroomRoomCrewsCompanion extends UpdateCompanion<MushroomRoomCrew> {
   }
 }
 
+class $MushroomEmployeesTable extends MushroomEmployees
+    with TableInfo<$MushroomEmployeesTable, MushroomEmployee> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomEmployeesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+      'role', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, role, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_employees';
+  @override
+  VerificationContext validateIntegrity(Insertable<MushroomEmployee> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+          _roleMeta, role.isAcceptableOrUnknown(data['role']!, _roleMeta));
+    } else if (isInserting) {
+      context.missing(_roleMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomEmployee map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomEmployee(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      role: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}role'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $MushroomEmployeesTable createAlias(String alias) {
+    return $MushroomEmployeesTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomEmployee extends DataClass
+    implements Insertable<MushroomEmployee> {
+  final String id;
+  final String name;
+  final String role;
+  final DateTime createdAt;
+  const MushroomEmployee(
+      {required this.id,
+      required this.name,
+      required this.role,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['role'] = Variable<String>(role);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  MushroomEmployeesCompanion toCompanion(bool nullToAbsent) {
+    return MushroomEmployeesCompanion(
+      id: Value(id),
+      name: Value(name),
+      role: Value(role),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory MushroomEmployee.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomEmployee(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      role: serializer.fromJson<String>(json['role']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'role': serializer.toJson<String>(role),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  MushroomEmployee copyWith(
+          {String? id, String? name, String? role, DateTime? createdAt}) =>
+      MushroomEmployee(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        role: role ?? this.role,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  MushroomEmployee copyWithCompanion(MushroomEmployeesCompanion data) {
+    return MushroomEmployee(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      role: data.role.present ? data.role.value : this.role,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomEmployee(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('role: $role, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, role, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomEmployee &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.role == this.role &&
+          other.createdAt == this.createdAt);
+}
+
+class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> role;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const MushroomEmployeesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.role = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomEmployeesCompanion.insert({
+    required String id,
+    required String name,
+    required String role,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        role = Value(role);
+  static Insertable<MushroomEmployee> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? role,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (role != null) 'role': role,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomEmployeesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<String>? role,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return MushroomEmployeesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomEmployeesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('role: $role, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ChatConversationsTable extends ChatConversations
     with TableInfo<$ChatConversationsTable, ChatConversation> {
   @override
@@ -21768,6 +22034,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MushroomChatMessagesTable(this);
   late final $MushroomRoomCrewsTable mushroomRoomCrews =
       $MushroomRoomCrewsTable(this);
+  late final $MushroomEmployeesTable mushroomEmployees =
+      $MushroomEmployeesTable(this);
   late final $ChatConversationsTable chatConversations =
       $ChatConversationsTable(this);
   late final $ChatParticipantsTable chatParticipants =
@@ -21829,6 +22097,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         mushroomMaintenanceTickets,
         mushroomChatMessages,
         mushroomRoomCrews,
+        mushroomEmployees,
         chatConversations,
         chatParticipants,
         chatMessages,
@@ -30769,6 +31038,166 @@ typedef $$MushroomRoomCrewsTableProcessedTableManager = ProcessedTableManager<
     ),
     MushroomRoomCrew,
     PrefetchHooks Function()>;
+typedef $$MushroomEmployeesTableCreateCompanionBuilder
+    = MushroomEmployeesCompanion Function({
+  required String id,
+  required String name,
+  required String role,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+typedef $$MushroomEmployeesTableUpdateCompanionBuilder
+    = MushroomEmployeesCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<String> role,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$MushroomEmployeesTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomEmployeesTable> {
+  $$MushroomEmployeesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get role => $composableBuilder(
+      column: $table.role, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomEmployeesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomEmployeesTable> {
+  $$MushroomEmployeesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get role => $composableBuilder(
+      column: $table.role, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomEmployeesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomEmployeesTable> {
+  $$MushroomEmployeesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$MushroomEmployeesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomEmployeesTable,
+    MushroomEmployee,
+    $$MushroomEmployeesTableFilterComposer,
+    $$MushroomEmployeesTableOrderingComposer,
+    $$MushroomEmployeesTableAnnotationComposer,
+    $$MushroomEmployeesTableCreateCompanionBuilder,
+    $$MushroomEmployeesTableUpdateCompanionBuilder,
+    (
+      MushroomEmployee,
+      BaseReferences<_$AppDatabase, $MushroomEmployeesTable, MushroomEmployee>
+    ),
+    MushroomEmployee,
+    PrefetchHooks Function()> {
+  $$MushroomEmployeesTableTableManager(
+      _$AppDatabase db, $MushroomEmployeesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomEmployeesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomEmployeesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomEmployeesTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> role = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomEmployeesCompanion(
+            id: id,
+            name: name,
+            role: role,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            required String role,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomEmployeesCompanion.insert(
+            id: id,
+            name: name,
+            role: role,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomEmployeesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $MushroomEmployeesTable,
+    MushroomEmployee,
+    $$MushroomEmployeesTableFilterComposer,
+    $$MushroomEmployeesTableOrderingComposer,
+    $$MushroomEmployeesTableAnnotationComposer,
+    $$MushroomEmployeesTableCreateCompanionBuilder,
+    $$MushroomEmployeesTableUpdateCompanionBuilder,
+    (
+      MushroomEmployee,
+      BaseReferences<_$AppDatabase, $MushroomEmployeesTable, MushroomEmployee>
+    ),
+    MushroomEmployee,
+    PrefetchHooks Function()>;
 typedef $$ChatConversationsTableCreateCompanionBuilder
     = ChatConversationsCompanion Function({
   required String id,
@@ -32782,6 +33211,8 @@ class $AppDatabaseManager {
       $$MushroomChatMessagesTableTableManager(_db, _db.mushroomChatMessages);
   $$MushroomRoomCrewsTableTableManager get mushroomRoomCrews =>
       $$MushroomRoomCrewsTableTableManager(_db, _db.mushroomRoomCrews);
+  $$MushroomEmployeesTableTableManager get mushroomEmployees =>
+      $$MushroomEmployeesTableTableManager(_db, _db.mushroomEmployees);
   $$ChatConversationsTableTableManager get chatConversations =>
       $$ChatConversationsTableTableManager(_db, _db.chatConversations);
   $$ChatParticipantsTableTableManager get chatParticipants =>

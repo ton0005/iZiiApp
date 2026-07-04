@@ -45,6 +45,54 @@ class MushroomsRepository {
     } catch (_) {}
   }
 
+  Future<void> seedEmployeesIfEmpty() async {
+    try {
+      final existing = await _db.select(_db.mushroomEmployees).get();
+      if (existing.isEmpty) {
+        final defaults = [
+          {'id': 'EMP001', 'name': 'Minh T.', 'role': 'Growing Specialist'},
+          {'id': 'EMP002', 'name': 'Lan N.', 'role': 'Growing Specialist'},
+          {'id': 'EMP003', 'name': 'Hùng V.', 'role': 'Harvest Picker'},
+          {'id': 'EMP004', 'name': 'Phúc D.', 'role': 'Harvest Picker'},
+          {'id': 'EMP005', 'name': 'Nam T.', 'role': 'Maintenance Specialist'},
+          {'id': 'EMP006', 'name': 'Lợi P.', 'role': 'Maintenance Specialist'},
+        ];
+        for (final emp in defaults) {
+          await _db.into(_db.mushroomEmployees).insert(MushroomEmployeesCompanion.insert(
+            id: emp['id']!,
+            name: emp['name']!,
+            role: emp['role']!,
+            createdAt: Value(DateTime.now()),
+          ));
+        }
+      }
+    } catch (_) {}
+  }
+
+  Future<List<Map<String, dynamic>>> getEmployees() async {
+    await seedEmployeesIfEmpty();
+    final query = _db.select(_db.mushroomEmployees)
+      ..orderBy([(t) => OrderingTerm(expression: t.id)]);
+    final list = await query.get();
+    return list.map((e) => {
+      'id': e.id,
+      'name': e.name,
+      'role': e.role,
+      'createdAt': e.createdAt.toIso8601String(),
+    }).toList();
+  }
+
+  Future<void> addEmployee(String id, String name, String role) async {
+    await _db.into(_db.mushroomEmployees).insertOnConflictUpdate(
+      MushroomEmployeesCompanion.insert(
+        id: id,
+        name: name,
+        role: role,
+        createdAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   // === ROOMS ===
 
   Future<List<Map<String, dynamic>>> getRooms() async {

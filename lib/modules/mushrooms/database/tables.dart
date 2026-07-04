@@ -117,3 +117,13 @@ class MushroomRoomCrews extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class MushroomEmployees extends Table {
+  TextColumn get id => text()(); // UUID or Employee ID (e.g. EMP001)
+  TextColumn get name => text()();
+  TextColumn get role => text()(); // Picker, Box Mover, Growing Specialist, etc.
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+

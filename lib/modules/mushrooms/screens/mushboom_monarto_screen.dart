@@ -13,6 +13,7 @@ import 'maintenance_tab_screen.dart';
 import 'tasks_tab_screen.dart';
 import 'chat_tab_screen.dart';
 import 'safety_tab_screen.dart';
+import 'employees_tab_screen.dart';
 
 // --- Premium color definitions ---
 class FarmColors {
@@ -187,6 +188,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   // Room crews (Who is checked into which room)
   final Map<String, List<String>> _roomCrews = {};
 
+  // Employees Registry
+  final List<Map<String, dynamic>> _employees = [];
+
   // BLoC
   late MushroomsBloc _bloc;
 
@@ -207,6 +211,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final mikeChat = await repo.getChatHistory('Mike (Site Manager)');
     final crews = await repo.getRoomCrews();
     final soloJobs = await repo.getAllSoloJobs();
+    final dbEmployees = await repo.getEmployees();
 
     setState(() {
       _stockButton = stock['button'] ?? 120.0;
@@ -230,6 +235,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
       _safetyLogs.clear();
       _safetyLogs.addAll(soloJobs);
+
+      _employees.clear();
+      _employees.addAll(dbEmployees);
     });
   }
 
@@ -639,6 +647,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                     Icons.shield_rounded,
                     _language == 'vi' ? 'An toàn (Safety)' : 'Safety',
                     Colors.redAccent),
+                _buildSidebarItem(
+                    'employees',
+                    Icons.badge_rounded,
+                    _language == 'vi' ? 'Nhân sự (Employees)' : 'Employees',
+                    Colors.teal),
               ],
             ),
           )
@@ -788,14 +801,25 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         isDark: isDark,
       );
     }
-    return SafetyTabScreen(
-      isDark: isDark,
-      safetyLogs: _safetyLogs,
-      onTriggerEmergency: (active) => setState(() => _emergencyActive = active),
-      onTriggerSafetyCheckAll: _onTriggerSafetyCheckAll,
-      onResetSafety: _onResetSafety,
-      onReportIncident: _onReportIncident,
-    );
+    if (_activeTab == 'safety') {
+      return SafetyTabScreen(
+        isDark: isDark,
+        safetyLogs: _safetyLogs,
+        onTriggerEmergency: (active) => setState(() => _emergencyActive = active),
+        onTriggerSafetyCheckAll: _onTriggerSafetyCheckAll,
+        onResetSafety: _onResetSafety,
+        onReportIncident: _onReportIncident,
+      );
+    }
+    if (_activeTab == 'employees') {
+      return EmployeesTabScreen(
+        isDark: isDark,
+        employees: _employees,
+        onAddEmployee: _onAddEmployee,
+        onImportEmployees: _onImportEmployees,
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   // --- Callbacks for State Updates ---
@@ -888,20 +912,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   }
 
   void _onCheckIn(String code, String roomSelected) async {
-    const registry = {
-      'EMP001': {'name': 'Minh T.', 'role': 'Growing Specialist'},
-      'EMP002': {'name': 'Lan N.', 'role': 'Growing Specialist'},
-      'EMP003': {'name': 'Hùng V.', 'role': 'Harvest Picker'},
-      'EMP004': {'name': 'Phúc D.', 'role': 'Harvest Picker'},
-      'EMP005': {'name': 'Nam T.', 'role': 'Maintenance Specialist'},
-      'EMP006': {'name': 'Lợi P.', 'role': 'Maintenance Specialist'}
-    };
-    final emp = registry[code];
-    if (emp == null) {
+    final repo = MushroomsRepository();
+    final dbEmployees = await repo.getEmployees();
+    final emp = dbEmployees.firstWhere((e) => e['id'] == code, orElse: () => {});
+    if (emp.isEmpty) {
       _showMsg('Employee code not found!');
       return;
     }
-    final repo = MushroomsRepository();
     await repo.checkInRoomCrew(
         roomName: roomSelected, empName: emp['name']!, empId: code);
 
@@ -935,20 +952,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   }
 
   void _onCheckOut(String code, String roomSelected) async {
-    const registry = {
-      'EMP001': {'name': 'Minh T.', 'role': 'Growing Specialist'},
-      'EMP002': {'name': 'Lan N.', 'role': 'Growing Specialist'},
-      'EMP003': {'name': 'Hùng V.', 'role': 'Harvest Picker'},
-      'EMP004': {'name': 'Phúc D.', 'role': 'Harvest Picker'},
-      'EMP005': {'name': 'Nam T.', 'role': 'Maintenance Specialist'},
-      'EMP006': {'name': 'Lợi P.', 'role': 'Maintenance Specialist'}
-    };
-    final emp = registry[code];
-    if (emp == null) {
+    final repo = MushroomsRepository();
+    final dbEmployees = await repo.getEmployees();
+    final emp = dbEmployees.firstWhere((e) => e['id'] == code, orElse: () => {});
+    if (emp.isEmpty) {
       _showMsg('Employee code not found!');
       return;
     }
-    final repo = MushroomsRepository();
     await repo.checkOutRoomCrew(roomName: roomSelected, empId: code);
 
     await repo.logSafetyCheckin(
@@ -1147,6 +1157,20 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     });
     _loadMushroomData();
     _showMsg('Đã khôi phục các chỉ số an toàn.');
+  }
+
+  void _onAddEmployee(String id, String name, String role) async {
+    final repo = MushroomsRepository();
+    await repo.addEmployee(id, name, role);
+    _loadMushroomData();
+  }
+
+  void _onImportEmployees(List<Map<String, String>> list) async {
+    final repo = MushroomsRepository();
+    for (var emp in list) {
+      await repo.addEmployee(emp['id']!, emp['name']!, emp['role']!);
+    }
+    _loadMushroomData();
   }
 
   void _showMsg(String msg) {
