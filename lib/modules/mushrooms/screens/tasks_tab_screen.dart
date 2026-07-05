@@ -41,14 +41,15 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
             children: [
               Row(
                 children: [
-                  const Text('View tasks for Room: ',
+                  const Text('View tasks for Grow Room: ',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   if (activeRoomName != null)
                     DropdownButton<String>(
                       value: activeRoomName,
                       items: widget.localRooms.keys
-                          .map((r) =>
-                              DropdownMenuItem(value: r, child: Text('Room $r')))
+                          .map((r) => DropdownMenuItem(
+                              value: r,
+                              child: Text(r.replaceAll('Room', 'Grow Room'))))
                           .toList(),
                       onChanged: (val) {
                         if (val != null) {

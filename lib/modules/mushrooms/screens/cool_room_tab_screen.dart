@@ -38,16 +38,16 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
   @override
   void initState() {
     super.initState();
-    _roomSelected = widget.localRooms.keys
-        .firstWhere((k) => widget.localRooms[k]!['plant'] == widget.activePlant);
+    _roomSelected = widget.localRooms.keys.firstWhere(
+        (k) => widget.localRooms[k]!['plant'] == widget.activePlant);
   }
 
   @override
   void didUpdateWidget(covariant CoolRoomTabScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.activePlant != widget.activePlant) {
-      _roomSelected = widget.localRooms.keys
-          .firstWhere((k) => widget.localRooms[k]!['plant'] == widget.activePlant);
+      _roomSelected = widget.localRooms.keys.firstWhere(
+          (k) => widget.localRooms[k]!['plant'] == widget.activePlant);
     }
   }
 
@@ -67,7 +67,8 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                    color:
+                        widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
                     border: Border.all(color: FarmColors.borderLight),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -94,7 +95,8 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                    color:
+                        widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
                     border: Border.all(color: FarmColors.borderLight),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -198,9 +200,10 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
           decoration: const InputDecoration(labelText: 'Harvest Room'),
           value: _roomSelected,
           items: widget.localRooms.keys
-              .where((k) => widget.localRooms[k]!['plant'] == widget.activePlant)
-              .map((r) =>
-                  DropdownMenuItem(value: r, child: Text('Room $r')))
+              .where(
+                  (k) => widget.localRooms[k]!['plant'] == widget.activePlant)
+              .map((r) => DropdownMenuItem(
+                  value: r, child: Text(r.replaceAll('Room', 'Grow Room'))))
               .toList(),
           onChanged: (val) {
             if (val != null) {
@@ -235,7 +238,8 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
                 backgroundColor: FarmColors.coolBlue,
                 foregroundColor: Colors.white),
             onPressed: () {
-              widget.onSendPickingPlan(_roomSelected, _buttonVal, _mediumVal, _openVal);
+              widget.onSendPickingPlan(
+                  _roomSelected, _buttonVal, _mediumVal, _openVal);
             },
             child: const Text('Send Picking Request'),
           ),

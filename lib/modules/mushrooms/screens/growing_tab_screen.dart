@@ -28,7 +28,8 @@ class GrowingTabScreen extends StatefulWidget {
   }) onJobCreated;
   final Function(String roomName, dynamic jobId, bool done) onJobStatusChanged;
   final Function(String roomName, String viewMode) onSwitchToTasks;
-  final Function(String roomName, String wateringPlan, String prochlorazRate) onStartCycle;
+  final Function(String roomName, String wateringPlan, String prochlorazRate)
+      onStartCycle;
 
   const GrowingTabScreen({
     super.key,
@@ -77,7 +78,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
         .where((r) => r['plant'] == widget.activePlant)
         .length;
     final activeCount = widget.localRooms.values
-        .where((r) => r['plant'] == widget.activePlant && r['status'] == 'active')
+        .where(
+            (r) => r['plant'] == widget.activePlant && r['status'] == 'active')
         .length;
     final idleCount = widget.localRooms.values
         .where((r) => r['plant'] == widget.activePlant && r['status'] == 'idle')
@@ -160,14 +162,14 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           // KPIs Grid Row
           Row(
             children: [
+              _buildKpiCard('TOTAL ROOMS', '$totalCount',
+                  'Room ${widget.activePlant}', false),
+              const SizedBox(width: 12),
               _buildKpiCard(
-                  'TOTAL ROOMS', '$totalCount', 'Room ${widget.activePlant}', false),
+                  'ACTIVE ROOMS', '$activeCount', 'In active cycle', false),
               const SizedBox(width: 12),
-              _buildKpiCard('ACTIVE ROOMS', '$activeCount',
-                  'In active cycle', false),
-              const SizedBox(width: 12),
-              _buildKpiCard('IDLE ROOMS', '$idleCount',
-                  'Ready for new cycle', false),
+              _buildKpiCard(
+                  'IDLE ROOMS', '$idleCount', 'Ready for new cycle', false),
               const SizedBox(width: 12),
               _buildKpiCard('SAFETY INCIDENTS', '0', 'Normal', false),
             ],
@@ -182,14 +184,16 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                 Container(
                   width: 320,
                   decoration: BoxDecoration(
-                    color: widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                    color:
+                        widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
                     border: Border.all(color: FarmColors.borderLight),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
                         decoration: const BoxDecoration(
                           border: Border(
                               bottom:
@@ -215,7 +219,9 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                                 size: 18,
                                 color: FarmColors.forestGreen,
                               ),
-                              tooltip: _isAscending ? 'Sort: Ascending' : 'Sort: Descending',
+                              tooltip: _isAscending
+                                  ? 'Sort: Ascending'
+                                  : 'Sort: Descending',
                               onPressed: () {
                                 setState(() {
                                   _isAscending = !_isAscending;
@@ -234,17 +240,20 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                             final isSel = widget.selectedRoomName == name;
                             final stage = room['current_stage'] as String;
 
-                            return ListTile(
-                              selected: isSel,
-                              selectedColor: FarmColors.forestGreenText,
-                              selectedTileColor:
-                                  FarmColors.forestGreenLight.withOpacity(0.4),
-                              title: Text(name,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13)),
-                              trailing: _buildStageBadge(stage),
-                              onTap: () => widget.onRoomSelected(name),
+                            return Material(
+                              color: Colors.transparent,
+                              child: ListTile(
+                                selected: isSel,
+                                selectedColor: FarmColors.forestGreenText,
+                                selectedTileColor:
+                                    FarmColors.forestGreenLight.withOpacity(0.4),
+                                title: Text(name.replaceAll('Room', 'Grow Room'),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13)),
+                                trailing: _buildStageBadge(stage),
+                                onTap: () => widget.onRoomSelected(name),
+                              ),
                             );
                           },
                         ),
@@ -258,12 +267,15 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                      color: widget.isDark
+                          ? const Color(0xFF1E1E1E)
+                          : Colors.white,
                       border: Border.all(color: FarmColors.borderLight),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: widget.selectedRoomName != null
-                        ? _buildRoomDetailsPanel(widget.isDark, widget.selectedRoomName!)
+                        ? _buildRoomDetailsPanel(
+                            widget.isDark, widget.selectedRoomName!)
                         : const Center(
                             child: Text('Select a room to view details.')),
                   ),
@@ -354,7 +366,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Room $roomName',
+                Text(roomName.replaceAll('Room', 'Grow Room'),
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.bold)),
                 Text('Plant ${room['plant']} · Area: ${room['area']}',
@@ -363,7 +375,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
             ),
             room['status'] == 'idle'
                 ? ElevatedButton.icon(
-                    icon: const Icon(Icons.play_arrow, color: Colors.white, size: 16),
+                    icon: const Icon(Icons.play_arrow,
+                        color: Colors.white, size: 16),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: FarmColors.forestGreen,
                       foregroundColor: Colors.white,
@@ -374,18 +387,20 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                 : Row(
                     children: [
                       TextButton.icon(
-                        icon:
-                            const Icon(Icons.timeline, color: Colors.grey, size: 16),
+                        icon: const Icon(Icons.timeline,
+                            color: Colors.grey, size: 16),
                         label: const Text('Timeline',
                             style: TextStyle(color: Colors.grey)),
-                        onPressed: () => widget.onSwitchToTasks(roomName, 'gantt'),
+                        onPressed: () =>
+                            widget.onSwitchToTasks(roomName, 'gantt'),
                       ),
                       TextButton.icon(
                         icon: const Icon(Icons.view_kanban,
                             color: Colors.grey, size: 16),
                         label: const Text('Kanban',
                             style: TextStyle(color: Colors.grey)),
-                        onPressed: () => widget.onSwitchToTasks(roomName, 'kanban'),
+                        onPressed: () =>
+                            widget.onSwitchToTasks(roomName, 'kanban'),
                       )
                     ],
                   )
@@ -396,8 +411,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildMetaInfoBox('CYCLE', room['cycle']),
-            _buildMetaInfoBox(
-                'DAY IN CYCLE', room['day_in_cycle'].toString()),
+            _buildMetaInfoBox('DAY IN CYCLE', room['day_in_cycle'].toString()),
             _buildMetaInfoBox(
                 'STAGE', room['current_stage'].toString().toUpperCase()),
             _buildMetaInfoBox('CYCLE PROGRESS', '${(progress * 100).toInt()}%'),
@@ -464,7 +478,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         Checkbox(
                           value: done,
                           onChanged: (val) {
-                            widget.onJobStatusChanged(roomName, jobId, val ?? false);
+                            widget.onJobStatusChanged(
+                                roomName, jobId, val ?? false);
                           },
                         ),
                         const SizedBox(width: 8),
@@ -481,20 +496,28 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                             Text(job['notes'] ?? '',
                                 style: const TextStyle(
                                     fontSize: 11, color: Colors.grey)),
-                            if (job['is_solo_job'] == true || job['job_type'] == 'alone_worker' || job['job_type'] == 'special_solo') ...[
+                            if (job['is_solo_job'] == true ||
+                                job['job_type'] == 'alone_worker' ||
+                                job['job_type'] == 'special_solo') ...[
                               const SizedBox(height: 6),
                               Row(
                                 children: [
                                   if (job['co_level'] != null) ...[
-                                    Icon(Icons.warning_amber_rounded, size: 12, color: Colors.amber.shade700),
+                                    Icon(Icons.warning_amber_rounded,
+                                        size: 12, color: Colors.amber.shade700),
                                     const SizedBox(width: 4),
-                                    Text('CO: ${job['co_level']} ppm', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                    Text('CO: ${job['co_level']} ppm',
+                                        style: const TextStyle(
+                                            fontSize: 11, color: Colors.grey)),
                                     const SizedBox(width: 12),
                                   ],
                                   if (job['co2_level'] != null) ...[
-                                    Icon(Icons.cloud_queue_rounded, size: 12, color: Colors.blue.shade700),
+                                    Icon(Icons.cloud_queue_rounded,
+                                        size: 12, color: Colors.blue.shade700),
                                     const SizedBox(width: 4),
-                                    Text('CO₂: ${job['co2_level']} ppm', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                    Text('CO₂: ${job['co2_level']} ppm',
+                                        style: const TextStyle(
+                                            fontSize: 11, color: Colors.grey)),
                                     const SizedBox(width: 12),
                                   ],
                                 ],
@@ -503,36 +526,45 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                               Row(
                                 children: [
                                   if (job['check_in_time'] != null) ...[
-                                    Text('Check In: ${DateTime.parse(job['check_in_time'] as String).toLocal().toString().substring(11, 16)}', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                    Text(
+                                        'Check In: ${DateTime.parse(job['check_in_time'] as String).toLocal().toString().substring(11, 16)}',
+                                        style: const TextStyle(
+                                            fontSize: 10, color: Colors.grey)),
                                     const SizedBox(width: 12),
                                   ],
                                   if (job['check_out_time'] != null) ...[
-                                    Text('Check Out: ${DateTime.parse(job['check_out_time'] as String).toLocal().toString().substring(11, 16)}', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                    Text(
+                                        'Check Out: ${DateTime.parse(job['check_out_time'] as String).toLocal().toString().substring(11, 16)}',
+                                        style: const TextStyle(
+                                            fontSize: 10, color: Colors.grey)),
                                   ],
                                 ],
                               ),
                               const SizedBox(height: 6),
-                              Builder(
-                                builder: (context) {
-                                  final timerStr = getTimerString();
-                                  final isExpired = timerStr.contains('EXPIRED');
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: isExpired ? Colors.red.withOpacity(0.1) : FarmColors.forestGreenLight,
-                                      borderRadius: BorderRadius.circular(4),
+                              Builder(builder: (context) {
+                                final timerStr = getTimerString();
+                                final isExpired = timerStr.contains('EXPIRED');
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: isExpired
+                                        ? Colors.red.withOpacity(0.1)
+                                        : FarmColors.forestGreenLight,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    'Time Remaining: $timerStr',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: isExpired
+                                          ? Colors.red
+                                          : FarmColors.forestGreenText,
                                     ),
-                                    child: Text(
-                                      'Time Remaining: $timerStr',
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: isExpired ? Colors.red : FarmColors.forestGreenText,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              ),
+                                  ),
+                                );
+                              }),
                             ],
                           ],
                         ),
@@ -611,8 +643,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   // Dialog: Add New Job
   void _showNewJobDialog(BuildContext context) {
     String jobType = 'filling';
-    String roomSelected = widget.localRooms.keys
-        .firstWhere((k) => widget.localRooms[k]!['plant'] == widget.activePlant);
+    String roomSelected = widget.localRooms.keys.firstWhere(
+        (k) => widget.localRooms[k]!['plant'] == widget.activePlant);
     String assignee = 'Minh T.';
     String notes = '';
 
@@ -647,13 +679,16 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(labelText: 'Room'),
+                        decoration:
+                            const InputDecoration(labelText: 'GrowRoom'),
                         value: roomSelected,
                         items: widget.localRooms.keys
-                            .where(
-                                (k) => widget.localRooms[k]!['plant'] == widget.activePlant)
+                            .where((k) =>
+                                widget.localRooms[k]!['plant'] ==
+                                widget.activePlant)
                             .map((r) => DropdownMenuItem(
-                                value: r, child: Text('Room $r')))
+                                value: r,
+                                child: Text(r.replaceAll('Room', 'Grow Room'))))
                             .toList(),
                         onChanged: (val) {
                           if (val != null) {
@@ -663,8 +698,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       ),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                            labelText: 'Job Type'),
+                        decoration:
+                            const InputDecoration(labelText: 'Job Type'),
                         value: jobType,
                         items: const [
                           DropdownMenuItem(
@@ -674,8 +709,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                               value: 'airing',
                               child: Text('Airing (Plastic floor wet)')),
                           DropdownMenuItem(
-                              value: 'watering',
-                              child: Text('Watering')),
+                              value: 'watering', child: Text('Watering')),
                           DropdownMenuItem(
                               value: 'prochloraz',
                               child: Text('Prochloraz (Chemical spray)')),
@@ -693,16 +727,14 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       if (jobType == 'watering') ...[
                         const SizedBox(height: 10),
                         DropdownButtonFormField<String>(
-                          decoration: const InputDecoration(
-                              labelText: 'Watering Plan'),
+                          decoration:
+                              const InputDecoration(labelText: 'Watering Plan'),
                           value: wateringPlan,
                           items: const [
                             DropdownMenuItem(
-                                value: '2side',
-                                child: Text('2 Side Watering')),
+                                value: '2side', child: Text('2 Side Watering')),
                             DropdownMenuItem(
-                                value: '1side',
-                                child: Text('1 Side Watering')),
+                                value: '1side', child: Text('1 Side Watering')),
                           ],
                           onChanged: (val) {
                             if (val != null) {
@@ -777,8 +809,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                           initialValue: timeLimit.toString(),
                           keyboardType: TextInputType.number,
                           onChanged: (val) {
-                            setDialogState(() =>
-                                timeLimit = int.tryParse(val) ?? 45);
+                            setDialogState(
+                                () => timeLimit = int.tryParse(val) ?? 45);
                           },
                         ),
                         const SizedBox(height: 10),
@@ -819,7 +851,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                                 onTap: () async {
                                   final picked = await showTimePicker(
                                     context: context,
-                                    initialTime: TimeOfDay.fromDateTime(checkInTime),
+                                    initialTime:
+                                        TimeOfDay.fromDateTime(checkInTime),
                                   );
                                   if (picked != null) {
                                     final now = DateTime.now();
@@ -849,7 +882,10 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                                 onTap: () async {
                                   final picked = await showTimePicker(
                                     context: context,
-                                    initialTime: TimeOfDay.fromDateTime(checkOutTime ?? DateTime.now().add(const Duration(minutes: 45))),
+                                    initialTime: TimeOfDay.fromDateTime(
+                                        checkOutTime ??
+                                            DateTime.now().add(
+                                                const Duration(minutes: 45))),
                                   );
                                   if (picked != null) {
                                     final now = DateTime.now();
@@ -899,8 +935,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
-                        decoration:
-                            const InputDecoration(labelText: 'Additional Notes'),
+                        decoration: const InputDecoration(
+                            labelText: 'Additional Notes'),
                         onChanged: (val) => notes = val,
                       ),
                     ],
@@ -915,7 +951,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: FarmColors.forestGreen),
-                   onPressed: () {
+                  onPressed: () {
                     widget.onJobCreated(
                       roomSelected,
                       jobType,
@@ -928,13 +964,15 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       timeLimit: jobType == 'alone_worker' ? timeLimit : null,
                       coLevel: jobType == 'alone_worker' ? coLevel : null,
                       co2Level: jobType == 'alone_worker' ? co2Level : null,
-                      checkInTime: jobType == 'alone_worker' ? checkInTime : null,
-                      checkOutTime: jobType == 'alone_worker' ? checkOutTime : null,
+                      checkInTime:
+                          jobType == 'alone_worker' ? checkInTime : null,
+                      checkOutTime:
+                          jobType == 'alone_worker' ? checkOutTime : null,
                     );
                     Navigator.pop(dialogCtx);
                   },
-                  child:
-                      const Text('Create', style: TextStyle(color: Colors.white)),
+                  child: const Text('Create',
+                      style: TextStyle(color: Colors.white)),
                 )
               ],
             );
@@ -951,18 +989,21 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Start New Cycle - Room $roomName'),
+        title: Text(
+            'Start New Cycle - ${roomName.replaceAll('Room', 'Grow Room')}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextFormField(
-              decoration: const InputDecoration(labelText: 'Default Watering Plan'),
+              decoration:
+                  const InputDecoration(labelText: 'Default Watering Plan'),
               initialValue: wateringPlan,
               onChanged: (val) => wateringPlan = val,
             ),
             const SizedBox(height: 10),
             TextFormField(
-              decoration: const InputDecoration(labelText: 'Default Prochloraz Spray Rate'),
+              decoration: const InputDecoration(
+                  labelText: 'Default Prochloraz Spray Rate'),
               initialValue: prochlorazRate,
               onChanged: (val) => prochlorazRate = val,
             ),
@@ -974,7 +1015,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: FarmColors.forestGreen),
             onPressed: () {
               widget.onStartCycle(roomName, wateringPlan, prochlorazRate);
               Navigator.pop(ctx);

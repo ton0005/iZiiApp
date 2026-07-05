@@ -5,7 +5,8 @@ class MaintenanceTabScreen extends StatefulWidget {
   final bool isDark;
   final Map<String, Map<String, dynamic>> localRooms;
   final List<Map<String, dynamic>> maintenanceJobs;
-  final Function(String title, String plant, String room, String assignee, String priority, String notes) onCreateMaintenanceJob;
+  final Function(String title, String plant, String room, String assignee,
+      String priority, String notes) onCreateMaintenanceJob;
   final Function(String jobId, String newStatus) onUpdateMaintStatus;
 
   const MaintenanceTabScreen({
@@ -93,7 +94,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: Text(
-                              'Location: Plant ${mnt['plant']} · Room ${mnt['room']} · Notes: ${mnt['notes']}'),
+                              'Location: Plant ${mnt['plant']} · ${mnt['room'].toString().replaceAll('Room', 'Grow Room')} · Notes: ${mnt['notes']}'),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -127,11 +128,11 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                                     } else if (status == 'inprog') {
                                       nextStatus = 'done';
                                     }
-                                    widget.onUpdateMaintStatus(mnt['id'], nextStatus);
+                                    widget.onUpdateMaintStatus(
+                                        mnt['id'], nextStatus);
                                   },
-                                  child: Text(status == 'todo'
-                                      ? 'Start'
-                                      : 'Complete'),
+                                  child: Text(
+                                      status == 'todo' ? 'Start' : 'Complete'),
                                 )
                             ],
                           ),
@@ -180,7 +181,8 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(labelText: 'Area / Location'),
+                    decoration:
+                        const InputDecoration(labelText: 'Area / Location'),
                     value: _plantSelected,
                     items: const [
                       DropdownMenuItem(value: 'M1', child: Text('Plant M1')),
@@ -206,18 +208,20 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(labelText: 'Room'),
+                    decoration: const InputDecoration(labelText: 'Grow Room'),
                     value: _roomSelected,
                     items: _plantSelected == 'CoolRoom'
-                        ? const [
+                        ? const <DropdownMenuItem<String>>[
                             DropdownMenuItem(value: 'CR1', child: Text('CR 1')),
                             DropdownMenuItem(value: 'CR2', child: Text('CR 2'))
                           ]
                         : widget.localRooms.keys
                             .where((k) =>
-                                widget.localRooms[k]!['plant'] == _plantSelected)
+                                widget.localRooms[k]!['plant'] ==
+                                _plantSelected)
                             .map((r) => DropdownMenuItem(
-                                value: r, child: Text('Room $r')))
+                                value: r,
+                                child: Text(r.replaceAll('Room', 'Grow Room'))))
                             .toList(),
                     onChanged: (val) {
                       if (val != null) {
@@ -250,8 +254,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
               value: _priority,
               items: const [
                 DropdownMenuItem(value: 'low', child: Text('Low')),
-                DropdownMenuItem(
-                    value: 'normal', child: Text('Normal')),
+                DropdownMenuItem(value: 'normal', child: Text('Normal')),
                 DropdownMenuItem(value: 'high', child: Text('High')),
               ],
               onChanged: (val) {
@@ -263,8 +266,8 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _notesController,
-              decoration:
-                  const InputDecoration(labelText: 'Detailed Error Description'),
+              decoration: const InputDecoration(
+                  labelText: 'Detailed Error Description'),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -276,7 +279,8 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                 onPressed: () {
                   final title = _titleController.text.trim();
                   final notes = _notesController.text.trim();
-                  widget.onCreateMaintenanceJob(title, _plantSelected, _roomSelected, _assignee, _priority, notes);
+                  widget.onCreateMaintenanceJob(title, _plantSelected,
+                      _roomSelected, _assignee, _priority, notes);
                   _titleController.clear();
                   _notesController.clear();
                 },

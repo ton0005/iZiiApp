@@ -43,6 +43,90 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     super.dispose();
   }
 
+  void _showScanCardDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Scan Employee Card'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 200,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.camera_alt_outlined,
+                          color: Colors.white, size: 40),
+                      SizedBox(height: 10),
+                      Text('[ CAMERA VIEWFINDER LIVE ]',
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'monospace')),
+                      SizedBox(height: 6),
+                      Text('Align employee card barcode in frame',
+                          style:
+                              TextStyle(color: Colors.white54, fontSize: 10)),
+                    ],
+                  ),
+                  Positioned(
+                    top: 40,
+                    bottom: 40,
+                    left: 20,
+                    right: 20,
+                    child: CustomPaint(
+                      painter: _BorderPainter(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Align the worker badge or card to the scanner frame to auto-detect ID.',
+              style: TextStyle(fontSize: 11, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: FarmColors.forestGreen),
+            onPressed: () {
+              // Simulate scanner detecting one of the employee IDs
+              // Let's pick EMP003 (Hùng V.) as a nice checkin default simulator
+              setState(() {
+                _empIdController.text = 'EMP003';
+              });
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Successfully scanned Employee ID: EMP003')),
+              );
+            },
+            child: const Text('Simulate Scan',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Check if any room has only 1 picker checked in
@@ -84,7 +168,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       const Icon(Icons.warning, color: Colors.red),
                       const SizedBox(width: 8),
                       Text(
-                          'Warning: Worker performing Solo Picking at Room $soloRoom (${soloWorker})!',
+                          'Warning: Worker performing Solo Picking at $soloRoom (${soloWorker})!',
                           style: const TextStyle(
                               color: Colors.red, fontWeight: FontWeight.bold)),
                     ],
@@ -124,7 +208,9 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                      color: widget.isDark
+                          ? const Color(0xFF1E1E1E)
+                          : Colors.white,
                       border: Border.all(color: FarmColors.borderLight),
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -168,23 +254,29 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Room Check-in / Check-out',
+          const Text('Grow Room Check-in / Check-out',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
           const SizedBox(height: 12),
           TextFormField(
             controller: _empIdController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
                 labelText: 'Employee ID',
                 hintText: 'EMP003',
-                border: OutlineInputBorder()),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.qr_code_scanner,
+                      color: FarmColors.forestGreen),
+                  tooltip: 'Scan ID Card',
+                  onPressed: _showScanCardDialog,
+                )),
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            decoration: const InputDecoration(labelText: 'Work Room'),
+            decoration: const InputDecoration(labelText: 'Grow Room'),
             value: _roomSelected,
             items: widget.localRooms.keys
-                .map((r) =>
-                    DropdownMenuItem(value: r, child: Text('Room $r')))
+                .map((r) => DropdownMenuItem(
+                    value: r, child: Text(r.replaceAll('Room', 'Grow Room'))))
                 .toList(),
             onChanged: (val) {
               if (val != null) {
@@ -261,7 +353,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                'Room ${plan['roomName']} (Plant ${plan['plant']})',
+                                '${plan['roomName'].toString().replaceAll('Room', 'Grow Room')} (Plant ${plan['plant']})',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 12)),
                             const SizedBox(height: 4),
@@ -285,7 +377,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
       scrollDirection: Axis.horizontal,
       child: DataTable(
         columns: const [
-          DataColumn(label: Text('Room')),
+          DataColumn(label: Text('Grow Room')),
           DataColumn(label: Text('Cycle')),
           DataColumn(label: Text('Crew')),
           DataColumn(label: Text('Target (kg)')),
@@ -360,4 +452,44 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
       ),
     );
   }
+}
+
+class _BorderPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.red
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    final path = Path()
+      // Top Left Corner
+      ..moveTo(0, 20)
+      ..lineTo(0, 0)
+      ..lineTo(20, 0)
+      // Top Right Corner
+      ..moveTo(size.width - 20, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width, 20)
+      // Bottom Right Corner
+      ..moveTo(size.width, size.height - 20)
+      ..lineTo(size.width, size.height)
+      ..lineTo(size.width - 20, size.height)
+      // Bottom Left Corner
+      ..moveTo(20, size.height)
+      ..lineTo(0, size.height)
+      ..lineTo(0, size.height - 20);
+
+    canvas.drawPath(path, paint);
+
+    // Draw scanning laser
+    final laserPaint = Paint()
+      ..color = Colors.green.withOpacity(0.5)
+      ..strokeWidth = 1.5;
+    canvas.drawLine(Offset(0, size.height / 2),
+        Offset(size.width, size.height / 2), laserPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

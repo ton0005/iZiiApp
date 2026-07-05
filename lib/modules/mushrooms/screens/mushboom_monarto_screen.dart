@@ -291,6 +291,12 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
             : null;
       }
     }
+    _pickingPlans.clear();
+    for (final room in _localRooms.values) {
+      if (room['pickingPlan'] != null) {
+        _pickingPlans.add(Map<String, dynamic>.from(room['pickingPlan']));
+      }
+    }
   }
 
   @override
@@ -805,7 +811,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       return SafetyTabScreen(
         isDark: isDark,
         safetyLogs: _safetyLogs,
-        onTriggerEmergency: (active) => setState(() => _emergencyActive = active),
+        onTriggerEmergency: (active) =>
+            setState(() => _emergencyActive = active),
         onTriggerSafetyCheckAll: _onTriggerSafetyCheckAll,
         onResetSafety: _onResetSafety,
         onReportIncident: _onReportIncident,
@@ -914,9 +921,18 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   void _onCheckIn(String code, String roomSelected) async {
     final repo = MushroomsRepository();
     final dbEmployees = await repo.getEmployees();
-    final emp = dbEmployees.firstWhere((e) => e['id'] == code, orElse: () => {});
-    if (emp.isEmpty) {
+    final matches = dbEmployees.where((e) => e['id'] == code);
+    if (matches.isEmpty) {
       _showMsg('Employee code not found!');
+      return;
+    }
+    final emp = matches.first;
+    final existingCrews = await repo.getRoomCrews();
+    final alreadyCheckedIn = existingCrews.where((c) => c['empId'] == code);
+    if (alreadyCheckedIn.isNotEmpty) {
+      final oldRoom = alreadyCheckedIn.first['roomName']!;
+      _showMsg(
+          'Nhân viên ${emp['name']} đang check-in tại Grow Room ${oldRoom.replaceAll('Room', '')}. Vui lòng check-out trước!');
       return;
     }
     await repo.checkInRoomCrew(
@@ -933,7 +949,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       workerId: emp['name']!,
       eventType: 'checkin',
       notes:
-          'Checked in to Room $roomSelected. Solo status: ${roomCrewNames.length <= 1}',
+          'Checked in to $roomSelected. Solo status: ${roomCrewNames.length <= 1}',
     );
 
     if (roomCrewNames.length == 1) {
@@ -946,6 +962,19 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
           timeLimit: 45,
         ));
       }
+    } else if (roomCrewNames.length >= 2) {
+      final room = _localRooms[roomSelected];
+      if (room != null) {
+        final jobs = await repo.getJobsForRoom(room['id']);
+        final activeSoloPickingJobs = jobs.where((j) =>
+            j['job_type'] == 'alone_worker' &&
+            j['name'] == 'Solo Picking' &&
+            j['status'] == 'in_progress');
+        for (final job in activeSoloPickingJobs) {
+          _bloc
+              .add(CompleteJobEvent(job['id'] as String, room['id'] as String));
+        }
+      }
     }
 
     _loadMushroomData();
@@ -954,11 +983,12 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   void _onCheckOut(String code, String roomSelected) async {
     final repo = MushroomsRepository();
     final dbEmployees = await repo.getEmployees();
-    final emp = dbEmployees.firstWhere((e) => e['id'] == code, orElse: () => {});
-    if (emp.isEmpty) {
+    final matches = dbEmployees.where((e) => e['id'] == code);
+    if (matches.isEmpty) {
       _showMsg('Employee code not found!');
       return;
     }
+    final emp = matches.first;
     await repo.checkOutRoomCrew(roomName: roomSelected, empId: code);
 
     await repo.logSafetyCheckin(
@@ -1136,7 +1166,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       builder: (ctx) => AlertDialog(
         title: const Text('Liên lạc an toàn'),
         content: Text(
-            'Đang gửi tín hiệu yêu cầu check-in định kỳ và ping điện thoại của solo worker tại Phòng $roomNum...'),
+            'Sending periodic check‑in signals and pinging the solo worker’s phone at ${roomNum.replaceAll('Room', 'Grow Room')}...'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx), child: const Text('Đóng'))

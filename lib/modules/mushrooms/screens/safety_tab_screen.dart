@@ -213,7 +213,7 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              '${job['assignee']} — Room ${job['room_name']}',
+                              '${job['assignee']} — ${job['room_name'].toString().replaceAll('Room', 'Grow Room')}',
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 14),
                               overflow: TextOverflow.ellipsis,

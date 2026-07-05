@@ -167,59 +167,62 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                                 decoration: BoxDecoration(
                                   border: Border(bottom: BorderSide(color: widget.isDark ? Colors.white10 : Colors.grey.shade100)),
                                 ),
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                                  title: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          emp['id'],
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', fontSize: 13),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                                    title: Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 2,
+                                          child: Text(
+                                            emp['id'],
+                                            style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', fontSize: 13),
+                                          ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Text(
-                                          emp['name'],
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Text(
+                                            emp['name'],
+                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                          ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Container(
-                                          alignment: Alignment.centerLeft,
-                                          child: Chip(
-                                            labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: -4),
-                                            padding: EdgeInsets.zero,
-                                            backgroundColor: emp['role'].toString().contains('Specialist')
-                                                ? Colors.blue.withOpacity(0.1)
-                                                : (emp['role'].toString().contains('Picker')
-                                                    ? Colors.green.withOpacity(0.1)
-                                                    : Colors.orange.withOpacity(0.1)),
-                                            label: Text(
-                                              emp['role'],
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                                color: emp['role'].toString().contains('Specialist')
-                                                    ? Colors.blue.shade800
-                                                    : (emp['role'].toString().contains('Picker')
-                                                        ? Colors.green.shade800
-                                                        : Colors.orange.shade800),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Container(
+                                            alignment: Alignment.centerLeft,
+                                            child: Chip(
+                                              labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: -4),
+                                              padding: EdgeInsets.zero,
+                                              backgroundColor: emp['role'].toString().contains('Specialist')
+                                                  ? Colors.blue.withOpacity(0.1)
+                                                  : (emp['role'].toString().contains('Picker')
+                                                      ? Colors.green.withOpacity(0.1)
+                                                      : Colors.orange.withOpacity(0.1)),
+                                              label: Text(
+                                                emp['role'],
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: emp['role'].toString().contains('Specialist')
+                                                      ? Colors.blue.shade800
+                                                      : (emp['role'].toString().contains('Picker')
+                                                          ? Colors.green.shade800
+                                                          : Colors.orange.shade800),
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          timeStr,
-                                          style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                        Expanded(
+                                          flex: 2,
+                                          child: Text(
+                                            timeStr,
+                                            style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );

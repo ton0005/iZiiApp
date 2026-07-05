@@ -7,6 +7,8 @@ import '../../core/localization/app_localizations.dart';
 import 'bloc/mushrooms_bloc.dart';
 import 'repository.dart';
 import 'screens/mushboom_monarto_screen.dart';
+import 'screens/mushrooms_dashboard_screen.dart';
+import 'dart:io' show Platform;
 
 const mushroomsManifest = ModuleManifest(
   id: 'izii.mushrooms',
@@ -157,7 +159,9 @@ class MushroomsModule implements IZiiModule {
   Map<String, WidgetBuilder> get routes => {
         '/mushrooms': (context) => BlocProvider(
               create: (context) => MushroomsBloc()..add(LoadRoomsEvent()),
-              child: const MushboomMonartoScreen(),
+              child: Platform.isWindows || Platform.isMacOS
+                  ? const MushboomMonartoScreen()
+                  : const MushroomsDashboardScreen(),
             ),
       };
 

@@ -143,7 +143,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
             final filteredRooms = state.rooms.where((r) {
               if (_activeFilter == 'active') return r['status'] == 'active';
               if (_activeFilter == 'idle') return r['status'] == 'idle';
-              // 'alerts' filter will show rooms currently in special_solo or active stages that have alerts (for demo we filter by active solo alarm status)
+              // 'alerts' filter will show rooms currently in alone_worker or active stages that have alerts (for demo we filter by active solo alarm status)
               return true;
             }).toList();
 
@@ -238,7 +238,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                             // Custom color coding based on stage
                             Color statusColor = Colors.grey;
                             if (isRoomActive) {
-                              if (currentStage == 'special_solo') {
+                              if (currentStage == 'alone_worker') {
                                 statusColor = Colors.red;
                               } else {
                                 statusColor = Colors.green;
@@ -252,7 +252,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                   side: BorderSide(
-                                    color: currentStage == 'special_solo'
+                                    color: currentStage == 'alone_worker'
                                         ? Colors.redAccent
                                             .withValues(alpha: 0.6)
                                         : Colors.transparent,
@@ -320,7 +320,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                             ),
                                           ],
                                         ),
-                                        if (currentStage == 'special_solo')
+                                        if (currentStage == 'alone_worker')
                                           Row(
                                             children: [
                                               const Icon(Icons.warning_amber_rounded,
@@ -365,10 +365,10 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                               .withValues(alpha: 0.1),
                                           valueColor: AlwaysStoppedAnimation<
                                                   Color>(
-                                              currentStage == 'special_solo'
-                                                  ? Colors.orange
-                                                  : const Color(0xFF0EA5E9)),
-                                          minHeight: 4,
+                                               currentStage == 'alone_worker'
+                                                   ? Colors.orange
+                                                   : const Color(0xFF0EA5E9)),
+                                           minHeight: 4,
                                         ),
                                       )
                                     ],
@@ -515,7 +515,7 @@ class _NewJobDialogContent extends StatefulWidget {
 class _NewJobDialogContentState extends State<_NewJobDialogContent> {
   String? _selectedRoomId;
   String _selectedJobType =
-      'filling'; // filling, airing, floor_wet, clean_room, watering, clean_bed, prochloraz, packup_tree, special_solo
+      'filling'; // filling, airing, floor_wet, clean_room, watering, clean_bed, prochloraz, packup_tree, alone_worker
 
   // Watering
   String _wateringPlan = '2side'; // 2side, 1side, custom
@@ -524,6 +524,12 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
   // Prochloraz
   double _prochlorazRate = 1.3;
   double _prochlorazArea = 112.0;
+
+  // Alone Worker / Solo Safety
+  double _coLevel = 0.0;
+  double _co2Level = 0.0;
+  DateTime? _checkInTime;
+  DateTime? _checkOutTime;
 
   // Schedule
   DateTime _selectedDate = DateTime.now();
@@ -566,6 +572,16 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
     if (picked != null) {
       setState(() => _selectedTime = picked);
     }
+  }
+
+  Future<DateTime?> showTimeOfDaySelector(BuildContext context, DateTime initial) async {
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: initial.hour, minute: initial.minute),
+    );
+    if (pickedTime == null) return null;
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, pickedTime.hour, pickedTime.minute);
   }
 
   @override
@@ -641,19 +657,19 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                         value: 'packup_tree',
                         child: Text(context.tr('mushrooms_job_packup_tree'))),
                     DropdownMenuItem(
-                        value: 'special_solo',
-                        child: Text(context.tr('mushrooms_job_special_solo'))),
+                        value: 'alone_worker',
+                        child: const Text('Alone Worker')),
                   ],
                   onChanged: (val) {
                     if (val != null) {
-                      setState(() {
+                       setState(() {
                         _selectedJobType = val;
-                        if (val == 'special_solo') {
-                          _titleController.text = 'Việc Solo đặc biệt';
+                        if (val == 'alone_worker') {
+                          _titleController.text = 'Alone Worker (Solo)';
                         } else {
                           _titleController.text = '';
                         }
-                      });
+                       });
                     }
                   },
                 ),
@@ -731,15 +747,67 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                   const SizedBox(height: 12),
                 ],
 
-                if (_selectedJobType == 'special_solo') ...[
+                if (_selectedJobType == 'alone_worker') ...[
                   TextFormField(
                     initialValue: _soloTimeLimit.toString(),
-                    decoration: InputDecoration(
-                        labelText: context.tr('mushrooms_dialog_solo_time_limit'),
-                        border: const OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                        labelText: 'Time Limit (minutes)',
+                        border: OutlineInputBorder()),
                     keyboardType: TextInputType.number,
                     onChanged: (val) => setState(
                         () => _soloTimeLimit = int.tryParse(val) ?? 45),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    initialValue: _coLevel.toString(),
+                    decoration: const InputDecoration(
+                        labelText: 'CO Level (ppm)',
+                        border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (val) => setState(
+                        () => _coLevel = double.tryParse(val) ?? 0.0),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    initialValue: _co2Level.toString(),
+                    decoration: const InputDecoration(
+                        labelText: 'CO2 Level (ppm)',
+                        border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (val) => setState(
+                        () => _co2Level = double.tryParse(val) ?? 0.0),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () async {
+                            final picked = await showTimeOfDaySelector(context, _checkInTime ?? DateTime.now());
+                            if (picked != null) {
+                              setState(() => _checkInTime = picked);
+                            }
+                          },
+                          child: Text(_checkInTime == null
+                              ? 'Set Check-In'
+                              : 'In: ${_checkInTime!.hour.toString().padLeft(2, '0')}:${_checkInTime!.minute.toString().padLeft(2, '0')}'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () async {
+                            final picked = await showTimeOfDaySelector(context, _checkOutTime ?? DateTime.now().add(Duration(minutes: _soloTimeLimit)));
+                            if (picked != null) {
+                              setState(() => _checkOutTime = picked);
+                            }
+                          },
+                          child: Text(_checkOutTime == null
+                              ? 'Set Check-Out'
+                              : 'Out: ${_checkOutTime!.hour.toString().padLeft(2, '0')}:${_checkOutTime!.minute.toString().padLeft(2, '0')}'),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -855,7 +923,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                         '${_prochlorazRate}g/m² · ${_prochlorazArea.toInt()}m²';
                   }
 
-                  if (_selectedJobType == 'special_solo') {
+                  if (_selectedJobType == 'alone_worker') {
                     context.read<MushroomsBloc>().add(AddSoloJobEvent(
                           roomId: _selectedRoomId!,
                           title: finalTitle,
@@ -863,6 +931,10 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                               ? 'Solo Worker'
                               : _assigneeController.text,
                           timeLimit: _soloTimeLimit,
+                          coLevel: _coLevel,
+                          co2Level: _co2Level,
+                          checkInTime: _checkInTime,
+                          checkOutTime: _checkOutTime,
                         ));
                   } else {
                     context.read<MushroomsBloc>().add(CreateCustomJobEvent(
@@ -953,7 +1025,7 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
           final jobs = state.selectedRoomJobs;
           final soloJobs = jobs
               .where((j) =>
-                  j['job_type'] == 'special_solo' && j['status'] == 'in_progress')
+                  j['job_type'] == 'alone_worker' && j['status'] == 'in_progress')
               .toList();
           for (var sj in soloJobs) {
             final limit = sj['time_limit_minutes'] as int;
@@ -1001,10 +1073,10 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
         final jobs = state.selectedRoomJobs;
         final soloJobs = jobs
             .where((j) =>
-                j['job_type'] == 'special_solo' && j['status'] == 'in_progress')
+                j['job_type'] == 'alone_worker' && j['status'] == 'in_progress')
             .toList();
         final pipelineJobs =
-            jobs.where((j) => j['job_type'] != 'special_solo').toList();
+            jobs.where((j) => j['job_type'] != 'alone_worker').toList();
 
         return DefaultTabController(
           length: 2,
@@ -1150,6 +1222,16 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
                     style: const TextStyle(fontSize: 12),
                   ),
                 ),
+              if (job['job_type'] == 'alone_worker') ...[
+                const SizedBox(height: 8),
+                Text('CO Level: ${job['co_level'] ?? 0.0} ppm'),
+                const SizedBox(height: 8),
+                Text('CO2 Level: ${job['co2_level'] ?? 0.0} ppm'),
+                const SizedBox(height: 8),
+                Text('Check-In Time: ${job['check_in_time'] != null ? job['check_in_time'].toString().substring(11, 16) : 'N/A'}'),
+                const SizedBox(height: 8),
+                Text('Check-Out Time: ${job['check_out_time'] != null ? job['check_out_time'].toString().substring(11, 16) : 'N/A'}'),
+              ],
             ],
           ),
           actions: [
@@ -1297,6 +1379,24 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
                     _formatScheduledDate(scheduledAtStr),
                     style: const TextStyle(fontSize: 10, color: Colors.grey),
                   ),
+                ],
+              ),
+            ],
+            if (job['job_type'] == 'alone_worker') ...[
+              const SizedBox(height: 6),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('CO: ${job['co_level'] ?? 0.0} ppm', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                  Text('CO2: ${job['co2_level'] ?? 0.0} ppm', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('In: ${job['check_in_time'] != null ? job['check_in_time'].toString().substring(11, 16) : 'N/A'}', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                  Text('Out: ${job['check_out_time'] != null ? job['check_out_time'].toString().substring(11, 16) : 'N/A'}', style: const TextStyle(fontSize: 10, color: Colors.grey)),
                 ],
               ),
             ],
@@ -1488,6 +1588,22 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(context.tr('mushrooms_sheet_worker').replaceAll('{worker}', sj['assignee']),
                       style: const TextStyle(fontSize: 13)),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('CO Level: ${sj['co_level'] ?? 0.0} ppm', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text('CO2 Level: ${sj['co2_level'] ?? 0.0} ppm', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Check-In: ${sj['check_in_time'] != null ? sj['check_in_time'].toString().substring(11, 16) : 'N/A'}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text('Check-Out: ${sj['check_out_time'] != null ? sj['check_out_time'].toString().substring(11, 16) : 'N/A'}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    ],
+                  ),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
