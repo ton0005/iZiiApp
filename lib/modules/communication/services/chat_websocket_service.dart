@@ -36,12 +36,11 @@ class ChatWebSocketService {
 
     try {
       final baseUrl = await _settingsService.getSyncServerUrl();
-      // Convert http/https to ws/wss
-      String wsUrl = baseUrl.replaceFirst('http://', 'ws://').replaceFirst('https://', 'wss://');
-      if (!wsUrl.endsWith('/')) {
-        wsUrl += '/';
-      }
-      wsUrl += 'chat';
+      // Sanitize and reconstruct the WebSocket URL using Uri parser to ignore hashes/paths/trailing slashes
+      final uri = Uri.parse(baseUrl.trim());
+      final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
+      final portStr = uri.hasPort ? ':${uri.port}' : '';
+      final wsUrl = '$scheme://${uri.host}$portStr/chat';
 
       print('[ChatWS] Connecting to $wsUrl ...');
       _channel = WebSocketChannel.connect(Uri.parse(wsUrl));

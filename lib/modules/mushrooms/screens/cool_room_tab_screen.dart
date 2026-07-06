@@ -11,6 +11,7 @@ class CoolRoomTabScreen extends StatefulWidget {
   final List<Map<String, dynamic>> orders;
   final Function(String, int, int, int) onSendPickingPlan;
   final Function(Map<String, dynamic>) onDeliverOrder;
+  final Function(String) onPlantChanged;
 
   const CoolRoomTabScreen({
     super.key,
@@ -23,6 +24,7 @@ class CoolRoomTabScreen extends StatefulWidget {
     required this.orders,
     required this.onSendPickingPlan,
     required this.onDeliverOrder,
+    required this.onPlantChanged,
   });
 
   @override
@@ -55,114 +57,148 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left: Stock display & Create Plan Form
-          SizedBox(
-            width: 350,
-            child: Column(
+          // Plant Selection Buttons (M1 / M2)
+          Row(
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: widget.activePlant == 'M2'
+                      ? FarmColors.forestGreen
+                      : Colors.grey,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => widget.onPlantChanged('M2'),
+                child: const Text('Plant M2 (Rooms 33-66)'),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: widget.activePlant == 'M1'
+                      ? FarmColors.forestGreen
+                      : Colors.grey,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => widget.onPlantChanged('M1'),
+                child: const Text('Plant M1 (Rooms 1-32)'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Stock inventory gauges card
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color:
-                        widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                    border: Border.all(color: FarmColors.borderLight),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                // Left: Stock display & Create Plan Form
+                SizedBox(
+                  width: 350,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Cold Room - Current Stock Inventory',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 13)),
+                      // Stock inventory gauges card
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color:
+                              widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                          border: Border.all(color: FarmColors.borderLight),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Cold Room - Current Stock Inventory',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 13)),
+                            const SizedBox(height: 16),
+                            _buildStockRow(
+                                'Button Size', widget.stockButton, Colors.orange),
+                            const SizedBox(height: 12),
+                            _buildStockRow(
+                                'Cup Size', widget.stockMedium, Colors.purple),
+                            const SizedBox(height: 12),
+                            _buildStockRow(
+                                'Flat Size', widget.stockOpen, Colors.blue),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 16),
-                      _buildStockRow(
-                          'Button Size', widget.stockButton, Colors.orange),
-                      const SizedBox(height: 12),
-                      _buildStockRow(
-                          'Cup Size', widget.stockMedium, Colors.purple),
-                      const SizedBox(height: 12),
-                      _buildStockRow(
-                          'Flat Size', widget.stockOpen, Colors.blue),
+                      // Create plan card
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color:
+                              widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                          border: Border.all(color: FarmColors.borderLight),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: _buildCreatePickingPlanCard(widget.isDark),
+                      )
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                // Create plan card
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color:
-                        widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                    border: Border.all(color: FarmColors.borderLight),
-                    borderRadius: BorderRadius.circular(12),
+                const SizedBox(width: 16),
+                // Right: Orders list
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                      border: Border.all(color: FarmColors.borderLight),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text('Today\'s Dispatched Orders',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 14)),
+                        ),
+                        const Divider(height: 1),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: widget.orders.length,
+                            itemBuilder: (context, idx) {
+                              final order = widget.orders[idx];
+                              final isDelivered = order['status'] == 'Delivered';
+                              return ListTile(
+                                title: Text(
+                                    '${order['customer']} — Order ${order['id']}',
+                                    style:
+                                        const TextStyle(fontWeight: FontWeight.bold)),
+                                subtitle: Text(order['req']),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('${order['total']} kg',
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(width: 16),
+                                    if (!isDelivered)
+                                      ElevatedButton(
+                                        onPressed: () => widget.onDeliverOrder(order),
+                                        child: const Text('Deliver'),
+                                      )
+                                    else
+                                      const Text('Delivered',
+                                          style: TextStyle(
+                                              color: Colors.green,
+                                              fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                  child: _buildCreatePickingPlanCard(widget.isDark),
                 )
               ],
             ),
           ),
-          const SizedBox(width: 16),
-          // Right: Orders list
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                border: Border.all(color: FarmColors.borderLight),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text('Today\'s Dispatched Orders',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14)),
-                  ),
-                  const Divider(height: 1),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: widget.orders.length,
-                      itemBuilder: (context, idx) {
-                        final order = widget.orders[idx];
-                        final isDelivered = order['status'] == 'Delivered';
-                        return ListTile(
-                          title: Text(
-                              '${order['customer']} — Order ${order['id']}',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(order['req']),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('${order['total']} kg',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 16),
-                              if (!isDelivered)
-                                ElevatedButton(
-                                  onPressed: () => widget.onDeliverOrder(order),
-                                  child: const Text('Deliver'),
-                                )
-                              else
-                                const Text('Delivered',
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )
         ],
       ),
     );

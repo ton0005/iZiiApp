@@ -202,4 +202,25 @@ Do cơ sở dữ liệu trên server được lưu trong bộ nhớ tạm thời
 *   **Khắc phục Race Condition**: Đổi thứ tự thực thi: Đăng ký lắng nghe sự kiện phản hồi `onValueReceived.listen` và bật `setNotifyValue(true)` **trước** khi ghi Message 1. Việc này ngăn việc phản hồi nhanh của peer bị mất trong khi client chưa kịp lắng nghe.
 *   **Lưu khóa Public Key giải mã chuẩn**: Cập nhật `NoiseHandshakeService` để đóng gói khóa công khai tĩnh `remoteStaticPublicKey` (đã giải mã) vào `NoiseSessionKeys` trả về sau khi hoàn tất handshake. Từ đó `BleDeviceDiscoveryService` lấy và ghi nhận đúng khoá công khai sạch vào cơ sở dữ liệu `local_ble_peers`.
 
+---
+
+# Cấu hình Máy chủ Đồng bộ Standalone (Windows 10, 11)
+
+Tôi đã hoàn tất việc thiết lập máy chủ đồng bộ tinh gọn và cơ sở dữ liệu SQLite cục bộ (WAL Mode) trên Windows 10/11 cho dự án **iZiiApp**, cho phép máy chủ hoạt động độc lập và duy trì tính toàn vẹn dữ liệu lâu dài thay thế cho bản in-memory cũ.
+
+## Các tệp đã tạo mới:
+*   [NEW] [db_init.py](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/db_init.py): Script Python cấu hình chế độ WAL và khởi tạo 5 bảng cơ sở dữ liệu cần thiết cho đồng bộ, quản lý thiết bị, tin nhắn và thông báo.
+*   [NEW] [app.py](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/app.py): Ứng dụng ASGI viết trên nền tảng **FastAPI**, cung cấp tất cả REST API endpoints tương thích ngược với `sync_server.py` và tích hợp bộ xử lý WebSocket chat relay.
+*   [NEW] [run_server.bat](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/run_server.bat): File batch khởi chạy máy chủ tức thì chỉ với một click (tự động chạy `db_init.py` trước khi bật máy chủ trên port `8080`).
+*   [NEW] [start_background.vbs](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/start_background.vbs): VBScript script hỗ trợ chạy ẩn máy chủ uvicorn trong nền mà không hiển thị màn hình CMD.
+
+## Cách chạy thử nghiệm:
+1.  **Chạy máy chủ trực tiếp:** Nhấp đúp chuột vào tệp [run_server.bat](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/run_server.bat). Màn hình CMD sẽ hiển thị và máy chủ sẽ trực tiếp lắng nghe cổng `8080` (cả API và WebSocket `/chat`).
+2.  **Chạy ngầm dưới nền:** Nhấp đúp chuột vào tệp [start_background.vbs](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/start_background.vbs). Máy chủ sẽ chạy hoàn toàn ẩn trong Task Manager.
+3.  **Tắt tiến trình chạy ngầm:** Mở PowerShell và chạy lệnh:
+    ```powershell
+    Get-Process -Name python | Where-Object {$_.CommandLine -like "*uvicorn*"} | Stop-Process -Force
+    ```
+
+
 

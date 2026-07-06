@@ -11,6 +11,9 @@ class HarvestTabScreen extends StatefulWidget {
   final Function(String, double) onPickedYieldUpdated;
   final Function(String) onSafetyContact;
 
+  final String activePlant;
+  final Function(String) onPlantChanged;
+
   const HarvestTabScreen({
     super.key,
     required this.isDark,
@@ -21,6 +24,8 @@ class HarvestTabScreen extends StatefulWidget {
     required this.onCheckOut,
     required this.onPickedYieldUpdated,
     required this.onSafetyContact,
+    required this.activePlant,
+    required this.onPlantChanged,
   });
 
   @override
@@ -34,7 +39,19 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
   @override
   void initState() {
     super.initState();
-    _roomSelected = widget.localRooms.keys.first;
+    _roomSelected = widget.localRooms.keys.firstWhere(
+        (k) => widget.localRooms[k]!['plant'] == widget.activePlant,
+        orElse: () => widget.localRooms.keys.first);
+  }
+
+  @override
+  void didUpdateWidget(covariant HarvestTabScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.activePlant != widget.activePlant) {
+      _roomSelected = widget.localRooms.keys.firstWhere(
+          (k) => widget.localRooms[k]!['plant'] == widget.activePlant,
+          orElse: () => widget.localRooms.keys.first);
+    }
   }
 
   @override
@@ -150,7 +167,35 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Plant Selection Buttons (M1 / M2)
+          Row(
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: widget.activePlant == 'M2'
+                      ? FarmColors.forestGreen
+                      : Colors.grey,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => widget.onPlantChanged('M2'),
+                child: const Text('Plant M2 (Rooms 33-66)'),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: widget.activePlant == 'M1'
+                      ? FarmColors.forestGreen
+                      : Colors.grey,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => widget.onPlantChanged('M1'),
+                child: const Text('Plant M1 (Rooms 1-32)'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
           // Solo Warning banner
           if (soloRoom != null)
             Container(
@@ -275,6 +320,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
             decoration: const InputDecoration(labelText: 'Grow Room'),
             value: _roomSelected,
             items: widget.localRooms.keys
+                .where((k) => widget.localRooms[k]!['plant'] == widget.activePlant)
                 .map((r) => DropdownMenuItem(
                     value: r, child: Text(r.replaceAll('Room', 'Grow Room'))))
                 .toList(),

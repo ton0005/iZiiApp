@@ -725,15 +725,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         activePlant: _activePlant,
         roomFilter: _roomFilter,
         selectedRoomName: _selectedRoomName,
-        onPlantChanged: (plant) {
-          setState(() {
-            _activePlant = plant;
-            final firstRoom = _localRooms.values.firstWhere(
-                (r) => r['plant'] == plant,
-                orElse: () => _localRooms.values.first);
-            _selectedRoomName = firstRoom['name'];
-          });
-        },
+        onPlantChanged: _onPlantChanged,
         onRoomFilterChanged: (filter) => setState(() => _roomFilter = filter),
         onRoomSelected: (roomName) {
           setState(() {
@@ -761,6 +753,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         onCheckOut: _onCheckOut,
         onPickedYieldUpdated: _onPickedYieldUpdated,
         onSafetyContact: _onTriggerSafetyContact,
+        activePlant: _activePlant,
+        onPlantChanged: _onPlantChanged,
       );
     }
     if (_activeTab == 'coolroom') {
@@ -774,6 +768,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         orders: _orders,
         onSendPickingPlan: _onSendPickingPlan,
         onDeliverOrder: _onDeliverOrder,
+        onPlantChanged: _onPlantChanged,
       );
     }
     if (_activeTab == 'maintenance') {
@@ -1037,6 +1032,16 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     }
     _loadMushroomData();
     _bloc.add(LoadRoomsEvent());
+  }
+
+  void _onPlantChanged(String plant) {
+    setState(() {
+      _activePlant = plant;
+      final firstRoom = _localRooms.values.firstWhere(
+          (r) => r['plant'] == plant,
+          orElse: () => _localRooms.values.first);
+      _selectedRoomName = firstRoom['name'];
+    });
   }
 
   void _onSendPickingPlan(
