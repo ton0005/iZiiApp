@@ -166,5 +166,24 @@ class ProjectRepository {
       'id': id,
       'status': status,
     });
+
+    // Also update any linked MushroomJob
+    try {
+      final job = await (_db.select(_db.mushroomJobs)..where((tbl) => tbl.linkedTaskId.equals(id))).getSingleOrNull();
+      if (job != null) {
+        final nextJobStatus = status == 'done' ? 'completed' : status;
+        await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(job.id))).write(
+          MushroomJobsCompanion(
+            status: Value(nextJobStatus),
+            completedAt: status == 'done' ? Value(DateTime.now()) : const Value.absent(),
+          ),
+        );
+        SyncService().queueMutation('mushroom_jobs', 'update', {
+          'id': job.id,
+          'status': nextJobStatus,
+          'completedAt': status == 'done' ? DateTime.now().toIso8601String() : null,
+        });
+      }
+    } catch (_) {}
   }
 }

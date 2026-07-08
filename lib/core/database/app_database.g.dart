@@ -18017,6 +18017,12 @@ class $MushroomEmployeesTable extends MushroomEmployees
   late final GeneratedColumn<String> role = GeneratedColumn<String>(
       'role', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _departmentMeta =
+      const VerificationMeta('department');
+  @override
+  late final GeneratedColumn<String> department = GeneratedColumn<String>(
+      'department', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -18026,7 +18032,7 @@ class $MushroomEmployeesTable extends MushroomEmployees
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
   @override
-  List<GeneratedColumn> get $columns => [id, name, role, createdAt];
+  List<GeneratedColumn> get $columns => [id, name, role, department, createdAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -18054,6 +18060,12 @@ class $MushroomEmployeesTable extends MushroomEmployees
     } else if (isInserting) {
       context.missing(_roleMeta);
     }
+    if (data.containsKey('department')) {
+      context.handle(
+          _departmentMeta,
+          department.isAcceptableOrUnknown(
+              data['department']!, _departmentMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -18073,6 +18085,8 @@ class $MushroomEmployeesTable extends MushroomEmployees
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       role: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}role'])!,
+      department: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}department']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -18089,11 +18103,13 @@ class MushroomEmployee extends DataClass
   final String id;
   final String name;
   final String role;
+  final String? department;
   final DateTime createdAt;
   const MushroomEmployee(
       {required this.id,
       required this.name,
       required this.role,
+      this.department,
       required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -18101,6 +18117,9 @@ class MushroomEmployee extends DataClass
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     map['role'] = Variable<String>(role);
+    if (!nullToAbsent || department != null) {
+      map['department'] = Variable<String>(department);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -18110,6 +18129,9 @@ class MushroomEmployee extends DataClass
       id: Value(id),
       name: Value(name),
       role: Value(role),
+      department: department == null && nullToAbsent
+          ? const Value.absent()
+          : Value(department),
       createdAt: Value(createdAt),
     );
   }
@@ -18121,6 +18143,7 @@ class MushroomEmployee extends DataClass
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       role: serializer.fromJson<String>(json['role']),
+      department: serializer.fromJson<String?>(json['department']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -18131,16 +18154,22 @@ class MushroomEmployee extends DataClass
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'role': serializer.toJson<String>(role),
+      'department': serializer.toJson<String?>(department),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
   MushroomEmployee copyWith(
-          {String? id, String? name, String? role, DateTime? createdAt}) =>
+          {String? id,
+          String? name,
+          String? role,
+          Value<String?> department = const Value.absent(),
+          DateTime? createdAt}) =>
       MushroomEmployee(
         id: id ?? this.id,
         name: name ?? this.name,
         role: role ?? this.role,
+        department: department.present ? department.value : this.department,
         createdAt: createdAt ?? this.createdAt,
       );
   MushroomEmployee copyWithCompanion(MushroomEmployeesCompanion data) {
@@ -18148,6 +18177,8 @@ class MushroomEmployee extends DataClass
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       role: data.role.present ? data.role.value : this.role,
+      department:
+          data.department.present ? data.department.value : this.department,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -18158,13 +18189,14 @@ class MushroomEmployee extends DataClass
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('role: $role, ')
+          ..write('department: $department, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, role, createdAt);
+  int get hashCode => Object.hash(id, name, role, department, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -18172,6 +18204,7 @@ class MushroomEmployee extends DataClass
           other.id == this.id &&
           other.name == this.name &&
           other.role == this.role &&
+          other.department == this.department &&
           other.createdAt == this.createdAt);
 }
 
@@ -18179,12 +18212,14 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
   final Value<String> id;
   final Value<String> name;
   final Value<String> role;
+  final Value<String?> department;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const MushroomEmployeesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.role = const Value.absent(),
+    this.department = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -18192,6 +18227,7 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
     required String id,
     required String name,
     required String role,
+    this.department = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
@@ -18201,6 +18237,7 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? role,
+    Expression<String>? department,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -18208,6 +18245,7 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (role != null) 'role': role,
+      if (department != null) 'department': department,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -18217,12 +18255,14 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
       {Value<String>? id,
       Value<String>? name,
       Value<String>? role,
+      Value<String?>? department,
       Value<DateTime>? createdAt,
       Value<int>? rowid}) {
     return MushroomEmployeesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       role: role ?? this.role,
+      department: department ?? this.department,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -18240,6 +18280,9 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
     if (role.present) {
       map['role'] = Variable<String>(role.value);
     }
+    if (department.present) {
+      map['department'] = Variable<String>(department.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -18255,6 +18298,7 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('role: $role, ')
+          ..write('department: $department, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -31043,6 +31087,7 @@ typedef $$MushroomEmployeesTableCreateCompanionBuilder
   required String id,
   required String name,
   required String role,
+  Value<String?> department,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -31051,6 +31096,7 @@ typedef $$MushroomEmployeesTableUpdateCompanionBuilder
   Value<String> id,
   Value<String> name,
   Value<String> role,
+  Value<String?> department,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -31072,6 +31118,9 @@ class $$MushroomEmployeesTableFilterComposer
 
   ColumnFilters<String> get role => $composableBuilder(
       column: $table.role, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get department => $composableBuilder(
+      column: $table.department, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -31095,6 +31144,9 @@ class $$MushroomEmployeesTableOrderingComposer
   ColumnOrderings<String> get role => $composableBuilder(
       column: $table.role, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get department => $composableBuilder(
+      column: $table.department, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 }
@@ -31116,6 +31168,9 @@ class $$MushroomEmployeesTableAnnotationComposer
 
   GeneratedColumn<String> get role =>
       $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<String> get department => $composableBuilder(
+      column: $table.department, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -31152,6 +31207,7 @@ class $$MushroomEmployeesTableTableManager extends RootTableManager<
             Value<String> id = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String> role = const Value.absent(),
+            Value<String?> department = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -31159,6 +31215,7 @@ class $$MushroomEmployeesTableTableManager extends RootTableManager<
             id: id,
             name: name,
             role: role,
+            department: department,
             createdAt: createdAt,
             rowid: rowid,
           ),
@@ -31166,6 +31223,7 @@ class $$MushroomEmployeesTableTableManager extends RootTableManager<
             required String id,
             required String name,
             required String role,
+            Value<String?> department = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -31173,6 +31231,7 @@ class $$MushroomEmployeesTableTableManager extends RootTableManager<
             id: id,
             name: name,
             role: role,
+            department: department,
             createdAt: createdAt,
             rowid: rowid,
           ),

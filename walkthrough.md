@@ -152,14 +152,25 @@ Tôi đã tích hợp `SyncService().queueMutation(...)` trực tiếp vào tầ
 
 Tôi đã thực hiện nâng cấp lớn cho Sync Server (Python) và iZiiApp (Flutter) để sửa lỗi nâng cấp giao thức WebSocket và hỗ trợ đồng bộ dữ liệu mượt mà giữa MacBook Air, Samsung A36 và Windows.
 
-## Những thay đổi chính:
+## Những thay đổi chính
 
 ### 1. Nâng cấp Sync Server sang chế độ Đa Luồng & Hỗ trợ WebSocket
 *   **Kiến trúc Đa luồng (`ThreadedHTTPServer`)**: Thay thế HTTP Server đơn luồng truyền thống bằng server đa luồng kế thừa từ `socketserver.ThreadingMixIn` để duy trì kết nối WebSocket lâu dài mà không gây nghẽn hoặc đứng server khi xử lý các API HTTP thông thường.
 *   **Giao thức WebSocket (RFC 6455)**:
-    *   Thêm route `/chat` để tự động phát hiện và thực hiện quá trình bắt tay nâng cấp giao thức (Switching Protocols 101) bằng mã hóa SHA-1 + Base64 khóa `Sec-WebSocket-Key`.
-    *   Hỗ trợ đọc và giải mã các khung truyền (frame parsing) từ client (bóc tách Masking Key).
-    *   Hỗ trợ phản hồi các gói tin Ping/Pong và Close.
+    *   Thêm route `/chat` để tự động phát hiện và thực hiện9.  **Kiểm tra Quản lý Roles**:
+    *   Vào tab **Employees** -> Bấm nút **Manage Roles** ở toolbar phía trên.
+    *   Thêm một vai trò mới (ví dụ: `Packer Supervisor`).
+    *   Mở hộp thoại **Add Employee** hoặc **Edit Employee**, kiểm tra xem vai trò mới `Packer Supervisor` đã xuất hiện trong danh sách lựa chọn của Dropdown Role hay chưa.
+    *   Xác nhận việc xóa vai trò tùy chỉnh hoạt động bình thường.
+10. **Kiểm tra Sơ đồ Mặt bằng (Floor Map Dashboard) Costa Mushrooms**:
+    *   Vào phân hệ **Costa Mushrooms** -> Tab **Growing**.
+    *   Xác nhận sơ đồ các phòng nuôi trồng hiển thị dưới dạng bản đồ sàn (Floor Map) trực quan, chia thành hai hàng song song (Line trên / Line dưới) với một lối đi trung chuyển chính giữa có vạch kẻ vàng dashed.
+    *   Xác nhận lối đi **MID corridor** hiển thị rõ ràng ngăn cách các phân khu phòng vật lý.
+    *   Chuyển đổi qua lại giữa **Plant M1** và **Plant M2**, xác nhận cách bố trí số phòng và sắp xếp dãy phòng thay đổi khớp 100% với sơ đồ mặt bằng thực tế nông trại.
+    *   Bấm chọn một ô phòng bất kỳ, xác nhận đường viền phòng sáng lên và bảng chi tiết phòng bên tay phải lập tức tải thông tin chi tiết.
+    *   Lọc thử theo trạng thái (All / Active / Idle) ở góc phải sơ đồ, kiểm tra xem các ô phòng không khớp có tự động mờ đi (giảm opacity) hay không.
+    *   Thực hiện Check-In một nhân viên vào phòng hái nấm ở tab **Harvest**, quay lại tab **Growing** và xác nhận ô phòng tương ứng hiển thị đúng số lượng nhân sự trực ca thời gian thực (ví dụ: `👥 2 pickers`).
+
 *   **Trình chuyển tiếp thời gian thực (Relay Broker)**: Duy trì danh sách Client Socket trực tuyến (`ws_clients`) để tự động truyền (broadcast) các sự kiện thời gian thực (trạng thái gõ phím typing, xác nhận đã đọc/nhận tin nhắn, cập nhật trạng thái thiết bị).
 
 ### 2. Sửa lỗi Unhandled Exception ở Flutter Client
@@ -221,6 +232,23 @@ Tôi đã hoàn tất việc thiết lập máy chủ đồng bộ tinh gọn v�
     ```powershell
     Get-Process -Name python | Where-Object {$_.CommandLine -like "*uvicorn*"} | Stop-Process -Force
     ```
+
+---
+
+# Đóng gói Ứng dụng Client Windows (Release & Portable)
+
+Tôi đã biên dịch phiên bản release chính thức cho client chạy trên hệ điều hành Windows và đóng gói thành hai hình thức lưu trữ đặt tại thư mục **`dist/`**:
+
+## Các tệp đóng gói phân phối:
+1.  **Windows App Installer (`.msix` format):**
+    *   📁 Đường dẫn: **[dist/izii_app_installer.msix](file:///C:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/dist/izii_app_installer.msix)**
+    *   💾 Dung lượng: **~17.8 MB**
+    *   📝 *Đặc điểm:* File cài đặt tiêu chuẩn của Windows 10/11. Khi người dùng nhấp đúp sẽ mở cửa sổ cài đặt Windows App Installer, tự động tích hợp phím tắt trên Desktop, Start Menu và hỗ trợ gỡ cài đặt sạch sẽ trong App Settings.
+2.  **Portable ZIP Package (`.zip` format):**
+    *   📁 Đường dẫn: **[dist/izii_app_portable.zip](file:///C:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/dist/izii_app_portable.zip)**
+    *   💾 Dung lượng: **~16.3 MB**
+    *   📝 *Đặc điểm:* Phiên bản chạy trực tiếp không cần cài đặt. Người dùng chỉ cần giải nén file ZIP này và chạy file `izii_app.exe` là ứng dụng sẽ khởi động ngay lập tức, cực kỳ hữu ích khi đi demo nhanh trên máy tính của khách hàng để bỏ qua các bước cài đặt hệ thống.
+
 
 
 

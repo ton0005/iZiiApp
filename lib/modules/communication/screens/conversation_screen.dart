@@ -158,13 +158,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 future: DeviceDiscoveryService().getOnlineDevices(),
                 builder: (context, onlineSnapshot) {
                   final onlineDevices = onlineSnapshot.data ?? [];
-                  final isE2ee =
+                  final isServerOnline =
                       onlineDevices.any((d) => d.userId == companion.id);
+                  final isE2ee = isServerOnline;
 
                   return BlocBuilder<ChatBloc, ChatState>(
                     builder: (context, state) {
                       final isBleConnected = BleDeviceDiscoveryService().isUserConnectedBle(companion.id);
-                      final presence = isBleConnected 
+                      final presence = (isBleConnected || isServerOnline)
                           ? ChatPresenceState.onlineSynced 
                           : (state.userPresenceMap[companion.id] ?? ChatPresenceState.offline);
                       final isTyping = state

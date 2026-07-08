@@ -349,6 +349,8 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
         return Icons.account_balance_rounded;
       case 'chat_bubble_outline_rounded':
         return Icons.chat_bubble_outline_rounded;
+      case 'agriculture_rounded':
+        return Icons.agriculture_rounded;
       default:
         return Icons.sync_alt_rounded;
     }
@@ -368,6 +370,17 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
         return ['accounts', 'journal_entries', 'payroll_events'];
       case 'in_app_chat':
         return ['chat_conversations', 'chat_participants', 'chat_messages'];
+      case 'mushroom_farm':
+        return [
+          'grow_rooms',
+          'mushroom_jobs',
+          'mushroom_job_safety_configs',
+          'mushroom_safety_checkin_logs',
+          'mushroom_maintenance_tickets',
+          'mushroom_chat_messages',
+          'mushroom_room_crews',
+          'mushroom_employees'
+        ];
       default:
         return [];
     }

@@ -1410,6 +1410,7 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
       Color color, String targetStatus) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return DragTarget<Map<String, dynamic>>(
+      onWillAcceptWithDetails: (details) => true,
       onAcceptWithDetails: (details) {
         final job = details.data;
         if (job['status'] != targetStatus) {

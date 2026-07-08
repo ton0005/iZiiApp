@@ -5,6 +5,7 @@ import 'mushboom_monarto_screen.dart'; // For FarmColors and shared definitions
 class GrowingTabScreen extends StatefulWidget {
   final bool isDark;
   final Map<String, Map<String, dynamic>> localRooms;
+  final Map<String, List<String>> roomCrews;
   final String activePlant;
   final String roomFilter;
   final String? selectedRoomName;
@@ -35,6 +36,7 @@ class GrowingTabScreen extends StatefulWidget {
     super.key,
     required this.isDark,
     required this.localRooms,
+    required this.roomCrews,
     required this.activePlant,
     required this.roomFilter,
     required this.selectedRoomName,
@@ -52,8 +54,107 @@ class GrowingTabScreen extends StatefulWidget {
 }
 
 class _GrowingTabScreenState extends State<GrowingTabScreen> {
+  // Layout representation grids
+  static const List<String?> m2TopRow = [
+    'Room 33',
+    'Room 34',
+    'Room 35',
+    'Room 36',
+    'Room 37',
+    'Room 38',
+    'Room 39',
+    'Room 40',
+    'Room 41',
+    'Room 42',
+    'Room 43',
+    'Room 44',
+    'corridor',
+    'Room 45',
+    'Room 46',
+    'Room 47',
+    'Room 48',
+    'Room 49',
+    'Room 50',
+    'Room 51',
+    'Room 52',
+    'Room 52A'
+  ];
+
+  static const List<String?> m2BottomRow = [
+    'Room 66',
+    'Room 65',
+    'Room 64',
+    'Room 63',
+    'Room 62',
+    'Room 61',
+    'Room 60',
+    'Room 59',
+    'Room 58',
+    null,
+    null,
+    null,
+    'corridor',
+    null,
+    null,
+    null,
+    'Room 57',
+    'Room 56',
+    'Room 55',
+    'Room 54',
+    'Room 53',
+    null
+  ];
+
+  static const List<String?> m1TopRow = [
+    'Room 1',
+    'Room 2',
+    'Room 3',
+    'Room 4',
+    'Room 5',
+    'Room 6',
+    'Room 6A',
+    'Room 6B',
+    null,
+    null,
+    'corridor',
+    'Room 7',
+    'Room 8',
+    'Room 9',
+    'Room 10',
+    'Room 11',
+    'Room 12',
+    'Room 13',
+    'Room 14',
+    null
+  ];
+
+  static const List<String?> m1BottomRow = [
+    'Room 32',
+    'Room 31',
+    'Room 30',
+    'Room 29',
+    'Room 28',
+    'Room 27',
+    'Room 26',
+    'Room 25',
+    'Room 24',
+    'Room 23',
+    'corridor',
+    'Room 22A',
+    'Room 22',
+    'Room 21',
+    'Room 20',
+    'Room 19',
+    'Room 18',
+    'Room 17',
+    'Room 16',
+    'Room 15'
+  ];
+
   bool _isAscending = true;
   Timer? _countdownTimer;
+  bool _isMapMaximized = false;
+  final ScrollController _horizontalScrollController = ScrollController();
 
   @override
   void initState() {
@@ -68,51 +169,23 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   @override
   void dispose() {
     _countdownTimer?.cancel();
+    _horizontalScrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     // KPI Data
-    final totalCount = widget.localRooms.values
+    final plantRooms = widget.localRooms.values
         .where((r) => r['plant'] == widget.activePlant)
-        .length;
-    final activeCount = widget.localRooms.values
-        .where(
-            (r) => r['plant'] == widget.activePlant && r['status'] == 'active')
-        .length;
-    final idleCount = widget.localRooms.values
-        .where((r) => r['plant'] == widget.activePlant && r['status'] == 'idle')
-        .length;
-
-    // Filters
-    final roomsFiltered = widget.localRooms.values.where((r) {
-      if (r['plant'] != widget.activePlant) return false;
-      if (widget.roomFilter == 'active') return r['status'] == 'active';
-      if (widget.roomFilter == 'idle') return r['status'] == 'idle';
-      return true;
-    }).toList();
-
-    int parseRoomNumber(String name) {
-      final exp = RegExp(r'\d+');
-      final match = exp.firstMatch(name);
-      if (match != null) {
-        return int.tryParse(match.group(0)!) ?? 0;
-      }
-      return 0;
-    }
-
-    roomsFiltered.sort((a, b) {
-      final nameA = a['name'] as String? ?? '';
-      final nameB = b['name'] as String? ?? '';
-      final numA = parseRoomNumber(nameA);
-      final numB = parseRoomNumber(nameB);
-      if (_isAscending) {
-        return numA.compareTo(numB);
-      } else {
-        return numB.compareTo(numA);
-      }
-    });
+        .toList();
+    final totalCount = plantRooms.length;
+    final activeCount = plantRooms.where((r) => r['status'] == 'active').length;
+    final idleCount = plantRooms.where((r) => r['status'] == 'idle').length;
+    final harvestCount = plantRooms.where((r) {
+      final stage = (r['current_stage'] ?? '').toString().toLowerCase();
+      return stage == 'harvest' || stage == 'harvesting' || stage == 'picking';
+    }).length;
 
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -165,13 +238,12 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               _buildKpiCard('TOTAL ROOMS', '$totalCount',
                   'Room ${widget.activePlant}', false),
               const SizedBox(width: 12),
-              _buildKpiCard(
-                  'ACTIVE ROOMS', '$activeCount', 'In active cycle', false),
+              _buildKpiCard('ACTIVE CYCLE', '$activeCount', 'Growing', false),
+              const SizedBox(width: 12),
+              _buildKpiCard('IDLE ROOMS', '$idleCount', 'Ready to Seed', false),
               const SizedBox(width: 12),
               _buildKpiCard(
-                  'IDLE ROOMS', '$idleCount', 'Ready for new cycle', false),
-              const SizedBox(width: 12),
-              _buildKpiCard('SAFETY INCIDENTS', '0', 'Normal', false),
+                  'PENDING HARVEST', '$harvestCount', 'Ready to Pick', false),
             ],
           ),
           const SizedBox(height: 16),
@@ -180,91 +252,24 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Left: Rooms grid
-                Container(
-                  width: 320,
-                  decoration: BoxDecoration(
-                    color:
-                        widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                    border: Border.all(color: FarmColors.borderLight),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 6),
-                        decoration: const BoxDecoration(
-                          border: Border(
-                              bottom:
-                                  BorderSide(color: FarmColors.borderLight)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                _buildFilterBtn('All', 'all'),
-                                const SizedBox(width: 4),
-                                _buildFilterBtn('Active', 'active'),
-                                const SizedBox(width: 4),
-                                _buildFilterBtn('Idle', 'idle'),
-                              ],
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                _isAscending
-                                    ? Icons.arrow_upward_rounded
-                                    : Icons.arrow_downward_rounded,
-                                size: 18,
-                                color: FarmColors.forestGreen,
-                              ),
-                              tooltip: _isAscending
-                                  ? 'Sort: Ascending'
-                                  : 'Sort: Descending',
-                              onPressed: () {
-                                setState(() {
-                                  _isAscending = !_isAscending;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: roomsFiltered.length,
-                          itemBuilder: (context, idx) {
-                            final room = roomsFiltered[idx];
-                            final name = room['name'] as String;
-                            final isSel = widget.selectedRoomName == name;
-                            final stage = room['current_stage'] as String;
-
-                            return Material(
-                              color: Colors.transparent,
-                              child: ListTile(
-                                selected: isSel,
-                                selectedColor: FarmColors.forestGreenText,
-                                selectedTileColor:
-                                    FarmColors.forestGreenLight.withOpacity(0.4),
-                                title: Text(name.replaceAll('Room', 'Grow Room'),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13)),
-                                trailing: _buildStageBadge(stage),
-                                onTap: () => widget.onRoomSelected(name),
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                // Right: Details Panel
+                // Left: Visual Floor Map (Expanded)
                 Expanded(
                   child: Container(
+                    decoration: BoxDecoration(
+                      color: widget.isDark
+                          ? const Color(0xFF1E1E1E)
+                          : Colors.white,
+                      border: Border.all(color: FarmColors.borderLight),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: _buildFloorMap(),
+                  ),
+                ),
+                if (!_isMapMaximized) ...[
+                  const SizedBox(width: 16),
+                  // Right: Details Panel (Fixed width 400)
+                  Container(
+                    width: 400,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: widget.isDark
@@ -277,15 +282,483 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         ? _buildRoomDetailsPanel(
                             widget.isDark, widget.selectedRoomName!)
                         : const Center(
-                            child: Text('Select a room to view details.')),
+                            child: Text(
+                              'Select a room from the floor map to view details.',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
                   ),
-                )
+                ],
               ],
             ),
           )
         ],
       ),
     );
+  }
+
+  Widget _buildFloorMap() {
+    final topRow = widget.activePlant == 'M2' ? m2TopRow : m1TopRow;
+    final bottomRow = widget.activePlant == 'M2' ? m2BottomRow : m1BottomRow;
+    final int columnCount = topRow.length;
+
+    // Calculate width of each column (max of top cell width and bottom cell width)
+    final List<double> columnWidths = List.generate(columnCount, (i) {
+      final topName = topRow[i];
+      final bottomName = bottomRow[i];
+
+      final topWidth = _getRoomBaseWidth(topName);
+      final bottomWidth = _getRoomBaseWidth(bottomName);
+
+      return topWidth > bottomWidth ? topWidth : bottomWidth;
+    });
+
+    // Total width is sum of each column's width + 12px horizontal margin (6px left, 6px right)
+    final double totalCorridorWidth =
+        columnWidths.fold(0.0, (sum, w) => sum + w + 12.0);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Title & Filter Status summary
+        _buildFloorMapHeader(),
+        // Scrollable physical layout
+        Expanded(
+          child: Scrollbar(
+            controller: _horizontalScrollController,
+            thumbVisibility: true,
+            trackVisibility: true,
+            scrollbarOrientation: ScrollbarOrientation.bottom,
+            child: SingleChildScrollView(
+              controller: _horizontalScrollController,
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(
+                  left: 20, right: 20, top: 10, bottom: 24),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Top Line of Rooms
+                    Row(
+                      children: List.generate(columnCount, (i) {
+                        return _buildCell(topRow[i], columnWidths[i], true);
+                      }),
+                    ),
+                    const SizedBox(height: 12),
+                    // Central Walkway Corridor (Running horizontally through the whole plant)
+                    _buildCentralCorridor(totalCorridorWidth),
+                    const SizedBox(height: 12),
+                    // Bottom Line of Rooms
+                    Row(
+                      children: List.generate(columnCount, (i) {
+                        return _buildCell(bottomRow[i], columnWidths[i], false);
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Stage color Legend at the bottom
+        _buildLegend(),
+      ],
+    );
+  }
+
+  Widget _buildFloorMapHeader() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.map_rounded,
+                  color: FarmColors.forestGreen, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                'Plant ${widget.activePlant} Floor Map Layout',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              _buildFilterBtn('All', 'all'),
+              const SizedBox(width: 4),
+              _buildFilterBtn('Active', 'active'),
+              const SizedBox(width: 4),
+              _buildFilterBtn('Idle', 'idle'),
+              const SizedBox(width: 12),
+              const SizedBox(
+                height: 20,
+                child: VerticalDivider(width: 1, color: Colors.grey),
+              ),
+              const SizedBox(width: 12),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: Icon(
+                  _isMapMaximized
+                      ? Icons.fullscreen_exit_rounded
+                      : Icons.fullscreen_rounded,
+                  color: FarmColors.forestGreen,
+                  size: 20,
+                ),
+                tooltip:
+                    _isMapMaximized ? 'Exit Full Screen' : 'Full Screen Map',
+                onPressed: () {
+                  setState(() {
+                    _isMapMaximized = !_isMapMaximized;
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCentralCorridor(double corridorWidth) {
+    return Container(
+      width: corridorWidth,
+      height: 28,
+      decoration: BoxDecoration(
+        color: widget.isDark ? const Color(0xFF222222) : Colors.grey.shade200,
+        border: Border.all(color: FarmColors.borderLight),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Dashed logistics center line using CustomPaint
+          CustomPaint(
+            size: Size(corridorWidth, 2),
+            painter: DashedLinePainter(
+              color: Colors.amber.withOpacity(0.5),
+            ),
+          ),
+          // Logistics walkway text label
+          Positioned(
+            left: 20,
+            child: Text(
+              'MAIN LOGISTICS TRANSPORT CORRIDOR',
+              style: TextStyle(
+                fontSize: 8,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+                color: widget.isDark ? Colors.white30 : Colors.black38,
+              ),
+            ),
+          ),
+          Positioned(
+            right: 20,
+            child: Text(
+              'MAIN LOGISTICS TRANSPORT CORRIDOR',
+              style: TextStyle(
+                fontSize: 8,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+                color: widget.isDark ? Colors.white30 : Colors.black38,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCell(String? roomName, double colW, bool isTopLine) {
+    if (roomName == null) {
+      // Blank layout space
+      return Container(
+        width: colW,
+        height: 115,
+        margin: const EdgeInsets.symmetric(horizontal: 6),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          border: Border.all(color: Colors.transparent),
+        ),
+      );
+    }
+
+    if (roomName == 'corridor') {
+      // Vertical MID corridor separating the line segments
+      return Container(
+        width: colW,
+        height: 115,
+        margin: const EdgeInsets.symmetric(horizontal: 6),
+        decoration: BoxDecoration(
+          color: widget.isDark ? Colors.grey.shade900 : Colors.grey.shade100,
+          border: Border.all(color: FarmColors.borderStrong, width: 1),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        alignment: Alignment.center,
+        child: RotatedBox(
+          quarterTurns: 3,
+          child: Text(
+            'MID WALKWAY',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: widget.isDark ? Colors.white24 : Colors.black26,
+              letterSpacing: 2,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Room Lookup
+    final room = widget.localRooms[roomName];
+    if (room == null) return const SizedBox.shrink();
+
+    // Check filter matching
+    final isFilterMatch = widget.roomFilter == 'all' ||
+        (widget.roomFilter == 'active' && room['status'] == 'active') ||
+        (widget.roomFilter == 'idle' && room['status'] == 'idle');
+
+    final double opacity = isFilterMatch ? 1.0 : 0.15;
+    final isSelected = widget.selectedRoomName == roomName;
+    final stage = (room['current_stage'] ?? 'idle') as String;
+    final stageColor = _getStageColor(stage);
+
+    // Pickers Checked-In
+    final crew = widget.roomCrews[roomName] ?? [];
+    final hasCrew = crew.isNotEmpty;
+
+    final double roomWidth = _isSmallRoom(roomName) ? 48.0 : 96.0;
+
+    return Container(
+      width: colW,
+      height: 115,
+      margin: const EdgeInsets.symmetric(horizontal: 6),
+      alignment: Alignment.center,
+      child: Opacity(
+        opacity: opacity,
+        child: SizedBox(
+          width: roomWidth,
+          height: 115,
+          child: InkWell(
+            onTap: isFilterMatch ? () => widget.onRoomSelected(roomName) : null,
+            borderRadius: BorderRadius.circular(10),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? (widget.isDark
+                        ? const Color(0xFF2A2A2A)
+                        : Colors.amber.shade50)
+                    : (widget.isDark ? const Color(0xFF1E1E1E) : Colors.white),
+                border: Border.all(
+                  color: isSelected
+                      ? FarmColors.forestGreen
+                      : FarmColors.borderLight,
+                  width: isSelected ? 3 : 1,
+                ),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                            color: FarmColors.forestGreen.withOpacity(0.3),
+                            blurRadius: 8,
+                            spreadRadius: 1)
+                      ]
+                    : null,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Top section: Room number & select state indicator
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          roomName.replaceAll('Room ', ''),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 13),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isSelected)
+                        const Icon(Icons.check_circle,
+                            color: FarmColors.forestGreen, size: 12),
+                    ],
+                  ),
+                  const Spacer(),
+
+                  // Real-time Pickers Count Badge
+                  if (hasCrew)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade600,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.people_alt_rounded,
+                              color: Colors.white, size: 8),
+                          const SizedBox(width: 2),
+                          Flexible(
+                            child: Text(
+                              '${crew.length}${roomWidth < 60 ? 'p' : ' pickers'}',
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 7),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  // Bottom section: Stage Badge
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: stageColor.withOpacity(0.15),
+                      border: Border.all(color: stageColor, width: 1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      stage.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: roomWidth < 60 ? 6 : 8,
+                        fontWeight: FontWeight.bold,
+                        color: stageColor,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool _isSmallRoom(String roomName) {
+    final cleanName = roomName.replaceAll('Room ', '');
+    const smalls = {
+      '6A',
+      '6B',
+      '12',
+      '13',
+      '14',
+      '15',
+      '22A',
+      '40',
+      '41',
+      '46',
+      '47',
+      '52',
+      '52A',
+      '55',
+      '56',
+      '57'
+    };
+    return smalls.contains(cleanName);
+  }
+
+  double _getRoomBaseWidth(String? name) {
+    if (name == null) return 0.0;
+    if (name == 'corridor') return 60.0;
+    return _isSmallRoom(name) ? 48.0 : 96.0;
+  }
+
+  Widget _buildLegend() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      decoration: BoxDecoration(
+        color: widget.isDark ? Colors.white10 : Colors.grey.shade50,
+        border: const Border(top: BorderSide(color: FarmColors.borderLight)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'STAGE LEGEND:',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 16,
+              runSpacing: 8,
+              children: [
+                _buildLegendItem('Filling', const Color(0xFFF59E0B)),
+                _buildLegendItem('Airing', const Color(0xFF06B6D4)),
+                _buildLegendItem('Watering', const Color(0xFF3B82F6)),
+                _buildLegendItem('Prochloraz', const Color(0xFF8B5CF6)),
+                _buildLegendItem('Harvest', const Color(0xFFEF4444)),
+                _buildLegendItem('Clean room', const Color(0xFF10B981)),
+                _buildLegendItem('Idle', const Color(0xFF6B7280)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(label,
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  Color _getStageColor(String stage) {
+    switch (stage.toLowerCase()) {
+      case 'filling':
+        return const Color(0xFFF59E0B); // Amber
+      case 'airing':
+        return const Color(0xFF06B6D4); // Cyan
+      case 'watering':
+        return const Color(0xFF3B82F6); // Blue
+      case 'prochloraz':
+        return const Color(0xFF8B5CF6); // Purple
+      case 'clean room':
+      case 'clean':
+        return const Color(0xFF10B981); // Emerald Green
+      case 'picking':
+      case 'harvesting':
+      case 'harvest':
+        return const Color(0xFFEF4444); // Red/Rose
+      case 'idle':
+      default:
+        return const Color(0xFF6B7280); // Grey
+    }
   }
 
   Widget _buildFilterBtn(String label, String value) {
@@ -1027,4 +1500,29 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
       ),
     );
   }
+}
+
+class DashedLinePainter extends CustomPainter {
+  final Color color;
+  DashedLinePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = size.height
+      ..style = PaintingStyle.stroke;
+
+    const double dashWidth = 8;
+    const double dashSpace = 8;
+    double startX = 4;
+    while (startX < size.width) {
+      canvas.drawLine(Offset(startX, size.height / 2),
+          Offset(startX + dashWidth, size.height / 2), paint);
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

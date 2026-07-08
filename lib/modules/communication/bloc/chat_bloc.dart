@@ -103,6 +103,8 @@ class SendEncryptedMessageEvent extends ChatEvent {
 /// Track 3: Process encrypted messages pulled from the server
 class PullEncryptedMessagesEvent extends ChatEvent {}
 
+class RefreshPresenceEvent extends ChatEvent {}
+
 // --- States ---
 class ChatState extends Equatable {
   final List<ChatConversation> conversations;
@@ -203,6 +205,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<SwitchUserEvent>(_onSwitchUser);
     on<SendEncryptedMessageEvent>(_onSendEncryptedMessage);
     on<PullEncryptedMessagesEvent>(_onPullEncryptedMessages);
+    on<RefreshPresenceEvent>(_onRefreshPresence);
 
     _init();
   }
@@ -303,10 +306,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
     });
 
-    // Periodic polling for E2EE messages and HTTP Sync
+    // Periodic polling for E2EE messages, HTTP Sync and Presence
     _pullTimer?.cancel();
     _pullTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       add(PullEncryptedMessagesEvent());
+      add(RefreshPresenceEvent());
       SyncService().triggerSync();
     });
   }
@@ -700,6 +704,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     await SettingsService().saveActiveUserId(event.userId);
     _currentUserId = event.userId;
+    
+    // Re-register device and start heartbeat with the new active user ID
+    try {
+      final discoveryService = DeviceDiscoveryService();
+      await discoveryService.registerDevice();
+      discoveryService.startHeartbeat();
+    } catch (_) {}
+
     _wsService.disconnect();
     _wsService.setUserId(event.userId);
     _wsService.connect();
@@ -928,5 +940,31 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     } catch (e) {
       print('[E2EE] Error pulling encrypted messages: $e');
     }
+  }
+
+  Future<void> _onRefreshPresence(
+    RefreshPresenceEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    try {
+      final onlineDevices = await DeviceDiscoveryService().getOnlineDevices();
+      final updatedMap = Map<String, ChatPresenceState>.from(state.userPresenceMap);
+      
+      // Clear older onlineSynced entries (to reflect current status)
+      for (var userId in updatedMap.keys.toList()) {
+        if (updatedMap[userId] == ChatPresenceState.onlineSynced) {
+          updatedMap[userId] = ChatPresenceState.offline;
+        }
+      }
+      
+      // Mark all currently online users
+      for (var dev in onlineDevices) {
+        if (dev.userId != _currentUserId) {
+          updatedMap[dev.userId] = ChatPresenceState.onlineSynced;
+        }
+      }
+      
+      emit(state.copyWith(userPresenceMap: updatedMap));
+    } catch (_) {}
   }
 }

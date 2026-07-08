@@ -126,53 +126,95 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
 
   Widget _buildKanbanCol(String title, List<Map<String, dynamic>> list,
       Color labelColor, String roomName) {
+    // Map column titles to status string matching database values
+    String colStatus = 'todo';
+    if (title == 'In Progress') colStatus = 'inprog';
+    if (title == 'Review') colStatus = 'review';
+    if (title == 'Done') colStatus = 'done';
+
     return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: FarmColors.borderLight),
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                  border:
-                      Border(bottom: BorderSide(color: labelColor, width: 3))),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 13)),
-                  Text('${list.length}',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.grey)),
-                ],
+      child: DragTarget<Map<String, dynamic>>(
+        onWillAcceptWithDetails: (details) {
+          return details.data['status'] != colStatus;
+        },
+        onAcceptWithDetails: (details) {
+          final job = details.data;
+          widget.onJobStatusChanged(roomName, job['id'], colStatus);
+        },
+        builder: (context, candidateData, rejectedData) {
+          final isOver = candidateData.isNotEmpty;
+          return Container(
+            decoration: BoxDecoration(
+              color: isOver
+                  ? labelColor.withOpacity(0.12)
+                  : Colors.grey.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isOver ? labelColor : FarmColors.borderLight,
+                width: isOver ? 2.0 : 1.0,
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: list.length,
-                itemBuilder: (context, idx) {
-                  final job = list[idx];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      title: Text(job['name'],
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                      border:
+                          Border(bottom: BorderSide(color: labelColor, width: 3))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(title,
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 13)),
-                      subtitle: Text(job['assignee']),
-                      onTap: () => _showTaskDetailDialog(job, roomName),
-                    ),
-                  );
-                },
-              ),
-            )
-          ],
-        ),
+                      Text('${list.length}',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.grey)),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: list.length,
+                    itemBuilder: (context, idx) {
+                      final job = list[idx];
+                      final cardWidget = Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          title: Text(job['name'],
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 13)),
+                          subtitle: Text(job['assignee']),
+                          onTap: () => _showTaskDetailDialog(job, roomName),
+                        ),
+                      );
+
+                      return Draggable<Map<String, dynamic>>(
+                        data: job,
+                        feedback: Material(
+                          color: Colors.transparent,
+                          child: SizedBox(
+                            width: 220,
+                            child: Opacity(
+                              opacity: 0.85,
+                              child: cardWidget,
+                            ),
+                          ),
+                        ),
+                        childWhenDragging: Opacity(
+                          opacity: 0.3,
+                          child: cardWidget,
+                        ),
+                        child: cardWidget,
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }

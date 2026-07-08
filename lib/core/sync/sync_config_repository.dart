@@ -31,6 +31,14 @@ class SyncConfigRepository {
     'chat_conversations': 'in_app_chat',
     'chat_participants': 'in_app_chat',
     'chat_messages': 'in_app_chat',
+    'grow_rooms': 'mushroom_farm',
+    'mushroom_jobs': 'mushroom_farm',
+    'mushroom_job_safety_configs': 'mushroom_farm',
+    'mushroom_safety_checkin_logs': 'mushroom_farm',
+    'mushroom_maintenance_tickets': 'mushroom_farm',
+    'mushroom_chat_messages': 'mushroom_farm',
+    'mushroom_room_crews': 'mushroom_farm',
+    'mushroom_employees': 'mushroom_farm',
   };
 
   /// Lists of modules and metadata
@@ -80,6 +88,14 @@ class SyncConfigRepository {
       'name_en': 'In-App Chat',
       'name_vi': 'Trò chuyện & Hợp tác',
       'icon': 'chat_bubble_outline_rounded',
+      'default_enabled': true,
+      'is_always_on': false,
+    },
+    {
+      'key': 'mushroom_farm',
+      'name_en': 'Mushroom Farm',
+      'name_vi': 'Trang trại Nấm',
+      'icon': 'agriculture_rounded',
       'default_enabled': true,
       'is_always_on': false,
     },

@@ -187,7 +187,7 @@ async def sync_push(payload: PushPayload):
     now = datetime.now().isoformat()
     
     print(f"\n{'='*50}")
-    print(f"📥 [PUSH] Nhận được {len(payload.mutations)} thay đổi lúc {now}")
+    print(f"📥 [PUSH] Received {len(payload.mutations)} changes at {now}")
     print(f"{'='*50}")
     
     try:
@@ -197,7 +197,7 @@ async def sync_push(payload: PushPayload):
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (m.id, m.client_id, m.table, m.operation, json.dumps(m.data), now))
             
-            print(f"   [{i+1}] 🔹 Bảng: {m.table} | Thao tác: {m.operation}")
+            print(f"   [{i+1}] 🔹 Table: {m.table} | Operation: {m.operation}")
             for key, val in m.data.items():
                 val_str = str(val)[:80]
                 print(f"       - {key}: {val_str}")
@@ -216,9 +216,9 @@ async def sync_pull(since: Optional[str] = None):
     cursor = conn.cursor()
     now = datetime.now().isoformat()
     
-    print(f"\n📤 [PULL] Thiết bị đang tải về các cập nhật mới...")
+    print(f"\n📤 [PULL] The device is downloading new updates...")
     if since:
-        print(f"   🕐 Lọc từ: {since}")
+        print(f"   🕐 Filtered since: {since}")
         
     try:
         if since:
@@ -238,7 +238,7 @@ async def sync_pull(since: Optional[str] = None):
                 "server_received_at": r["server_received_at"]
             })
             
-        print(f"   📦 Gửi {len(updates)} bản ghi")
+        print(f"   📦 Sending {len(updates)} records")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
@@ -656,6 +656,23 @@ class ConnectionManager:
 
 ws_manager = ConnectionManager()
 
+def log_latency(event_type: str, sent_at_str: str):
+    try:
+        if not sent_at_str:
+            return
+        # Parse timezone-aware ISO string
+        client_dt = datetime.fromisoformat(sent_at_str.replace('Z', '+00:00'))
+        server_dt = datetime.now(client_dt.tzinfo)
+        diff = server_dt - client_dt
+        latency_ms = diff.total_seconds() * 1000
+        
+        log_path = r"C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\server\testlog.txt"
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(f"[{datetime.now().isoformat()}] EVENT: {event_type} | Sent: {sent_at_str} | Recv: {datetime.now().isoformat()} | Latency: {latency_ms:.2f} ms\n")
+    except Exception as e:
+        print(f"Error logging latency: {str(e)}")
+
 @app.websocket("/chat")
 async def websocket_endpoint(websocket: WebSocket):
     await ws_manager.connect(websocket)
@@ -663,6 +680,19 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_text()
             print(f"💬 [WS] Broadcast message: {data[:120]}...")
+            
+            # Log latency measurement for events containing 'sent_at' or 'timestamp'
+            try:
+                payload = json.loads(data)
+                event = payload.get("event")
+                msg_data = payload.get("data", {})
+                if isinstance(msg_data, dict):
+                    sent_at = msg_data.get("sent_at") or msg_data.get("timestamp")
+                    if sent_at:
+                        log_latency(f"WS_{event}", sent_at)
+            except Exception:
+                pass
+                
             await ws_manager.broadcast(data, exclude=websocket)
     except WebSocketDisconnect:
         ws_manager.disconnect(websocket)

@@ -14,6 +14,7 @@ import 'tasks_tab_screen.dart';
 import 'chat_tab_screen.dart';
 import 'safety_tab_screen.dart';
 import 'employees_tab_screen.dart';
+import 'departments_tab_screen.dart';
 
 // --- Premium color definitions ---
 class FarmColors {
@@ -350,7 +351,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                               ? 'done'
                               : (j['status'] == 'in_progress'
                                   ? 'inprog'
-                                  : 'todo'),
+                                  : (j['status'] == 'review'
+                                      ? 'review'
+                                      : 'todo')),
                           'assignee': j['assignee'] ?? 'Not Assigned',
                           'date': j['scheduled_at'] != null
                               ? j['scheduled_at'].toString().substring(5, 10)
@@ -546,6 +549,12 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'chat') {
       return _language == 'vi' ? 'Trò chuyện (Chat)' : 'Encrypted Chat';
     }
+    if (_activeTab == 'employees') {
+      return _language == 'vi' ? 'Nhân sự (Employees)' : 'Employee Registry';
+    }
+    if (_activeTab == 'departments') {
+      return _language == 'vi' ? 'Phòng ban (Departments)' : 'Department Directory';
+    }
     return _language == 'vi' ? 'An toàn lao động (Safety)' : 'Safety Dashboard';
   }
 
@@ -562,6 +571,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     }
     if (_activeTab == 'tasks') return 'Kanban Board & Gantt Chart Timeline';
     if (_activeTab == 'chat') return 'Offline BLE P2P Chat Simulator';
+    if (_activeTab == 'employees') return 'Staff & Specialist Registry';
+    if (_activeTab == 'departments') return 'Manage business department listings';
     return 'Solo Working Alerts & Incident Manager';
   }
 
@@ -584,19 +595,12 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
-                  children: [
-                    Icon(Icons.dashboard_rounded,
-                        color: FarmColors.forestGreen),
-                    SizedBox(width: 8),
-                    Text('iZiiApp',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: FarmColors.forestGreen)),
-                  ],
+                Image.asset(
+                  'assets/images/costa-tag-logo-green.png',
+                  height: 40,
+                  fit: BoxFit.contain,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Row(
                   children: const [
                     Icon(Icons.call_split, size: 12, color: Colors.grey),
@@ -658,9 +662,45 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                     Icons.badge_rounded,
                     _language == 'vi' ? 'Nhân sự (Employees)' : 'Employees',
                     Colors.teal),
+                _buildSidebarItem(
+                    'departments',
+                    Icons.lan_rounded,
+                    _language == 'vi' ? 'Phòng ban (Departments)' : 'Departments',
+                    Colors.indigo),
               ],
             ),
-          )
+          ),
+
+          // Bottom Left Logo
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: isDark ? Colors.white10 : FarmColors.borderLight,
+                ),
+              ),
+            ),
+            alignment: Alignment.centerLeft,
+            child: const Row(
+              children: [
+                Icon(
+                  Icons.dashboard_rounded,
+                  color: FarmColors.forestGreen,
+                  size: 20,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'iZiiApp',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: FarmColors.forestGreen,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -722,6 +762,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       return GrowingTabScreen(
         isDark: isDark,
         localRooms: _localRooms,
+        roomCrews: _roomCrews,
         activePlant: _activePlant,
         roomFilter: _roomFilter,
         selectedRoomName: _selectedRoomName,
@@ -818,7 +859,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         isDark: isDark,
         employees: _employees,
         onAddEmployee: _onAddEmployee,
+        onEditEmployee: _onEditEmployee,
         onImportEmployees: _onImportEmployees,
+      );
+    }
+    if (_activeTab == 'departments') {
+      return DepartmentsTabScreen(
+        isDark: isDark,
       );
     }
     return const SizedBox.shrink();
@@ -1128,10 +1175,15 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       String roomName, dynamic jobId, String nextStatus) {
     final room = _localRooms[roomName];
     if (room != null) {
+      String dbStatus = 'todo';
+      if (nextStatus == 'inprog') dbStatus = 'in_progress';
+      if (nextStatus == 'review') dbStatus = 'review';
+      if (nextStatus == 'done' || nextStatus == 'completed') dbStatus = 'completed';
+
       _bloc.add(UpdateJobStatusEvent(
         jobId as String,
         room['id'],
-        nextStatus == 'done' ? 'completed' : nextStatus,
+        dbStatus,
       ));
     }
   }
@@ -1194,16 +1246,22 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     _showMsg('Đã khôi phục các chỉ số an toàn.');
   }
 
-  void _onAddEmployee(String id, String name, String role) async {
+  void _onAddEmployee(String id, String name, String role, [String? department]) async {
     final repo = MushroomsRepository();
-    await repo.addEmployee(id, name, role);
+    await repo.addEmployee(id, name, role, department);
+    _loadMushroomData();
+  }
+
+  void _onEditEmployee(String id, String name, String role, [String? department]) async {
+    final repo = MushroomsRepository();
+    await repo.updateEmployee(id, name, role, department);
     _loadMushroomData();
   }
 
   void _onImportEmployees(List<Map<String, String>> list) async {
     final repo = MushroomsRepository();
     for (var emp in list) {
-      await repo.addEmployee(emp['id']!, emp['name']!, emp['role']!);
+      await repo.addEmployee(emp['id']!, emp['name']!, emp['role']!, emp['department']);
     }
     _loadMushroomData();
   }

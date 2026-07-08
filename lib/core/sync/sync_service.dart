@@ -325,6 +325,22 @@ class SyncService {
         return _upsertChatParticipant(data);
       case 'chat_messages':
         return _upsertChatMessage(data);
+      case 'grow_rooms':
+        return _upsertGrowRoom(data);
+      case 'mushroom_jobs':
+        return _upsertMushroomJob(data);
+      case 'mushroom_job_safety_configs':
+        return _upsertMushroomJobSafetyConfig(data);
+      case 'mushroom_safety_checkin_logs':
+        return _upsertMushroomSafetyCheckinLog(data);
+      case 'mushroom_maintenance_tickets':
+        return _upsertMushroomMaintenanceTicket(data);
+      case 'mushroom_chat_messages':
+        return _upsertMushroomChatMessage(data);
+      case 'mushroom_room_crews':
+        return _upsertMushroomRoomCrew(data);
+      case 'mushroom_employees':
+        return _upsertMushroomEmployee(data);
       default:
         _log('   ⚠️ Bảng "$table" chưa được hỗ trợ đồng bộ PULL.');
         return false;
@@ -542,6 +558,19 @@ class SyncService {
         customFields: Value(customFields),
       ),
     );
+
+    // Sync task status changes to linked local MushroomJobs
+    try {
+      final status = data['status'] as String? ?? 'todo';
+      final nextJobStatus = status == 'done' ? 'completed' : status;
+      await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.linkedTaskId.equals(id))).write(
+        MushroomJobsCompanion(
+          status: Value(nextJobStatus),
+          completedAt: status == 'done' ? Value(DateTime.now()) : const Value.absent(),
+        ),
+      );
+    } catch (_) {}
+
     return true;
   }
 
@@ -686,6 +715,175 @@ class SyncService {
     } catch (e) {
       _log('⚠️ Lỗi kích hoạt đồng bộ BLE tức thời: $e');
     }
+  }
+
+  // ──────────────── UPSERT methods for Mushroom Farm module ────────────────
+
+  Future<bool> _upsertGrowRoom(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.growRooms).insertOnConflictUpdate(
+      GrowRoom(
+        id: id,
+        name: data['name'] as String? ?? '',
+        status: data['status'] as String? ?? 'idle',
+        currentStage: data['current_stage'] as String? ?? 'idle',
+        dayInCycle: (data['day_in_cycle'] as num?)?.toInt() ?? 1,
+        targetYield: (data['targetYield'] as num?)?.toDouble() ?? 0.0,
+        pickedYield: (data['pickedYield'] as num?)?.toDouble() ?? 0.0,
+        pickingPlanJson: data['pickingPlanJson'] as String?,
+        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
+        updatedAt: data['updated_at'] != null ? DateTime.tryParse(data['updated_at'].toString()) : null,
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomJob(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomJobs).insertOnConflictUpdate(
+      MushroomJob(
+        id: id,
+        roomId: data['roomId'] as String? ?? '',
+        jobType: data['jobType'] as String? ?? '',
+        name: data['name'] as String? ?? '',
+        status: data['status'] as String? ?? 'pending',
+        assignee: data['assignee'] as String?,
+        planDetails: data['planDetails'] as String?,
+        prochlorazRate: data['prochlorazRate'] as String?,
+        completedAt: data['completedAt'] != null ? DateTime.tryParse(data['completedAt'].toString()) : null,
+        linkedTaskId: data['linkedTaskId'] as String?,
+        isSoloJob: data['isSoloJob'] as bool? ?? false,
+        timeLimitMinutes: (data['timeLimitMinutes'] as num?)?.toInt(),
+        startedAt: data['startedAt'] != null ? DateTime.tryParse(data['startedAt'].toString()) : null,
+        alarmTriggered: data['alarmTriggered'] as bool? ?? false,
+        scheduledAt: data['scheduledAt'] != null ? DateTime.tryParse(data['scheduledAt'].toString()) : null,
+        priority: data['priority'] as String? ?? 'normal',
+        coLevel: (data['co_level'] as num?)?.toDouble(),
+        co2Level: (data['co2_level'] as num?)?.toDouble(),
+        checkInTime: data['check_in_time'] != null ? DateTime.tryParse(data['check_in_time'].toString()) : null,
+        checkOutTime: data['check_out_time'] != null ? DateTime.tryParse(data['check_out_time'].toString()) : null,
+        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
+        updatedAt: data['updated_at'] != null ? DateTime.tryParse(data['updated_at'].toString()) : null,
+      ),
+    );
+
+    // Sync status to local Tasks if linked
+    try {
+      final status = data['status'] as String? ?? 'pending';
+      final taskStatus = status == 'completed' ? 'done' : status;
+      if (data['linkedTaskId'] != null && (data['linkedTaskId'] as String).isNotEmpty) {
+        await (_db.update(_db.tasks)..where((tbl) => tbl.id.equals(data['linkedTaskId'] as String))).write(
+          TasksCompanion(
+            status: Value(taskStatus),
+          ),
+        );
+      }
+    } catch (_) {}
+
+    return true;
+  }
+
+  Future<bool> _upsertMushroomJobSafetyConfig(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomJobSafetyConfigs).insertOnConflictUpdate(
+      MushroomJobSafetyConfig(
+        id: id,
+        jobId: data['jobId'] as String? ?? '',
+        checkInIntervalMinutes: (data['checkInIntervalMinutes'] as num?)?.toInt() ?? 30,
+        gracePeriodMinutes: (data['gracePeriodMinutes'] as num?)?.toInt() ?? 5,
+        escalationTarget: data['escalationTarget'] as String? ?? 'supervisor',
+        autoStartOnJobBegin: data['autoStartOnJobBegin'] as bool? ?? true,
+        alarmType: data['alarmType'] as String? ?? 'push_inapp',
+        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomSafetyCheckinLog(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomSafetyCheckinLogs).insertOnConflictUpdate(
+      MushroomSafetyCheckinLog(
+        id: id,
+        jobId: data['jobId'] as String? ?? '',
+        workerId: data['workerId'] as String? ?? '',
+        eventType: data['eventType'] as String? ?? 'safe',
+        timestamp: data['timestamp'] != null ? DateTime.tryParse(data['timestamp'].toString()) ?? DateTime.now() : DateTime.now(),
+        gpsLatitude: (data['gpsLatitude'] as num?)?.toDouble(),
+        gpsLongitude: (data['gpsLongitude'] as num?)?.toDouble(),
+        responseTimeSeconds: (data['responseTimeSeconds'] as num?)?.toInt(),
+        notes: data['notes'] as String?,
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomMaintenanceTicket(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomMaintenanceTickets).insertOnConflictUpdate(
+      MushroomMaintenanceTicket(
+        id: id,
+        title: data['title'] as String? ?? '',
+        plant: data['plant'] as String? ?? '',
+        room: data['room'] as String? ?? '',
+        assignee: data['assignee'] as String? ?? '',
+        priority: data['priority'] as String? ?? '',
+        status: data['status'] as String? ?? 'todo',
+        notes: data['notes'] as String?,
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomChatMessage(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomChatMessages).insertOnConflictUpdate(
+      MushroomChatMessage(
+        id: id,
+        sender: data['sender'] as String? ?? '',
+        contact: data['contact'] as String? ?? '',
+        textContent: data['textContent'] as String? ?? '',
+        timeString: data['timeString'] as String? ?? '',
+        role: data['role'] as String? ?? '',
+        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomRoomCrew(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomRoomCrews).insertOnConflictUpdate(
+      MushroomRoomCrew(
+        id: id,
+        roomName: data['roomName'] as String? ?? '',
+        empName: data['empName'] as String? ?? '',
+        empId: data['empId'] as String? ?? '',
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomEmployee(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomEmployees).insertOnConflictUpdate(
+      MushroomEmployee(
+        id: id,
+        name: data['name'] as String? ?? '',
+        role: data['role'] as String? ?? '',
+        department: data['department'] as String?,
+        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
+      ),
+    );
+    return true;
   }
 }
 

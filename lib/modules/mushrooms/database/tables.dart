@@ -121,6 +121,7 @@ class MushroomEmployees extends Table {
   TextColumn get id => text()(); // UUID or Employee ID (e.g. EMP001)
   TextColumn get name => text()();
   TextColumn get role => text()(); // Picker, Box Mover, Growing Specialist, etc.
+  TextColumn get department => text().nullable()(); // Department name
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
