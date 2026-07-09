@@ -89,51 +89,110 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                       itemBuilder: (context, idx) {
                         final mnt = widget.maintenanceJobs[idx];
                         final status = mnt['status'] as String;
-                        return ListTile(
-                          title: Text(mnt['title'],
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(
-                              'Location: Plant ${mnt['plant']} · ${mnt['room'].toString().replaceAll('Room', 'Grow Room')} · Notes: ${mnt['notes']}'),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
+                        final priority = mnt['priority'] as String;
+
+                        Color priorityBg = priority == 'high' ? Colors.red.shade100 : Colors.amber.shade100;
+                        Color priorityText = priority == 'high' ? Colors.red : Colors.orange;
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: widget.isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade50,
+                            border: Border.all(color: FarmColors.borderLight),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: mnt['priority'] == 'high'
-                                      ? Colors.red.shade100
-                                      : Colors.amber.shade100,
-                                  borderRadius: BorderRadius.circular(4),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      mnt['title'],
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.location_on_rounded, size: 12, color: Colors.grey),
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Text(
+                                            'Plant ${mnt['plant']} · ${mnt['room'].toString().replaceAll('Room', 'Grow Room')}',
+                                            style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    if (mnt['notes'] != null && mnt['notes'].toString().isNotEmpty) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Notes: ${mnt['notes']}',
+                                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ],
                                 ),
-                                child: Text(
-                                    mnt['priority'].toString().toUpperCase(),
-                                    style: TextStyle(
-                                        color: mnt['priority'] == 'high'
-                                            ? Colors.red
-                                            : Colors.orange,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold)),
                               ),
-                              const SizedBox(width: 8),
-                              _buildMaintStatusBadge(status),
-                              const SizedBox(width: 10),
-                              if (status != 'done')
-                                ElevatedButton(
-                                  onPressed: () {
-                                    String nextStatus = 'todo';
-                                    if (status == 'todo') {
-                                      nextStatus = 'inprog';
-                                    } else if (status == 'inprog') {
-                                      nextStatus = 'done';
-                                    }
-                                    widget.onUpdateMaintStatus(
-                                        mnt['id'], nextStatus);
-                                  },
-                                  child: Text(
-                                      status == 'todo' ? 'Start' : 'Complete'),
-                                )
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: priorityBg,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          priority.toUpperCase(),
+                                          style: TextStyle(
+                                            color: priorityText,
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _buildMaintStatusBadge(status),
+                                    ],
+                                  ),
+                                  if (status != 'done') ...[
+                                    const SizedBox(height: 6),
+                                    SizedBox(
+                                      height: 28,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          String nextStatus = 'todo';
+                                          if (status == 'todo') {
+                                            nextStatus = 'inprog';
+                                          } else if (status == 'inprog') {
+                                            nextStatus = 'done';
+                                          }
+                                          widget.onUpdateMaintStatus(mnt['id'], nextStatus);
+                                        },
+                                        child: Text(
+                                          status == 'todo' ? 'Start' : 'Complete',
+                                          style: const TextStyle(fontSize: 11),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
                             ],
                           ),
                         );

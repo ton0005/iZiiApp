@@ -18306,6 +18306,360 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
   }
 }
 
+class $MushroomYieldSurveysTable extends MushroomYieldSurveys
+    with TableInfo<$MushroomYieldSurveysTable, MushroomYieldSurvey> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomYieldSurveysTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _roomNameMeta =
+      const VerificationMeta('roomName');
+  @override
+  late final GeneratedColumn<String> roomName = GeneratedColumn<String>(
+      'room_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _strainMeta = const VerificationMeta('strain');
+  @override
+  late final GeneratedColumn<String> strain = GeneratedColumn<String>(
+      'strain', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _cycleMeta = const VerificationMeta('cycle');
+  @override
+  late final GeneratedColumn<int> cycle = GeneratedColumn<int>(
+      'cycle', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _expectedYieldMeta =
+      const VerificationMeta('expectedYield');
+  @override
+  late final GeneratedColumn<double> expectedYield = GeneratedColumn<double>(
+      'expected_yield', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _surveyedAtMeta =
+      const VerificationMeta('surveyedAt');
+  @override
+  late final GeneratedColumn<DateTime> surveyedAt = GeneratedColumn<DateTime>(
+      'surveyed_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, roomName, strain, cycle, expectedYield, surveyedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_yield_surveys';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MushroomYieldSurvey> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('room_name')) {
+      context.handle(_roomNameMeta,
+          roomName.isAcceptableOrUnknown(data['room_name']!, _roomNameMeta));
+    } else if (isInserting) {
+      context.missing(_roomNameMeta);
+    }
+    if (data.containsKey('strain')) {
+      context.handle(_strainMeta,
+          strain.isAcceptableOrUnknown(data['strain']!, _strainMeta));
+    } else if (isInserting) {
+      context.missing(_strainMeta);
+    }
+    if (data.containsKey('cycle')) {
+      context.handle(
+          _cycleMeta, cycle.isAcceptableOrUnknown(data['cycle']!, _cycleMeta));
+    } else if (isInserting) {
+      context.missing(_cycleMeta);
+    }
+    if (data.containsKey('expected_yield')) {
+      context.handle(
+          _expectedYieldMeta,
+          expectedYield.isAcceptableOrUnknown(
+              data['expected_yield']!, _expectedYieldMeta));
+    } else if (isInserting) {
+      context.missing(_expectedYieldMeta);
+    }
+    if (data.containsKey('surveyed_at')) {
+      context.handle(
+          _surveyedAtMeta,
+          surveyedAt.isAcceptableOrUnknown(
+              data['surveyed_at']!, _surveyedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomYieldSurvey map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomYieldSurvey(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      roomName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}room_name'])!,
+      strain: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}strain'])!,
+      cycle: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}cycle'])!,
+      expectedYield: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}expected_yield'])!,
+      surveyedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}surveyed_at'])!,
+    );
+  }
+
+  @override
+  $MushroomYieldSurveysTable createAlias(String alias) {
+    return $MushroomYieldSurveysTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomYieldSurvey extends DataClass
+    implements Insertable<MushroomYieldSurvey> {
+  final String id;
+  final String roomName;
+  final String strain;
+  final int cycle;
+  final double expectedYield;
+  final DateTime surveyedAt;
+  const MushroomYieldSurvey(
+      {required this.id,
+      required this.roomName,
+      required this.strain,
+      required this.cycle,
+      required this.expectedYield,
+      required this.surveyedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['room_name'] = Variable<String>(roomName);
+    map['strain'] = Variable<String>(strain);
+    map['cycle'] = Variable<int>(cycle);
+    map['expected_yield'] = Variable<double>(expectedYield);
+    map['surveyed_at'] = Variable<DateTime>(surveyedAt);
+    return map;
+  }
+
+  MushroomYieldSurveysCompanion toCompanion(bool nullToAbsent) {
+    return MushroomYieldSurveysCompanion(
+      id: Value(id),
+      roomName: Value(roomName),
+      strain: Value(strain),
+      cycle: Value(cycle),
+      expectedYield: Value(expectedYield),
+      surveyedAt: Value(surveyedAt),
+    );
+  }
+
+  factory MushroomYieldSurvey.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomYieldSurvey(
+      id: serializer.fromJson<String>(json['id']),
+      roomName: serializer.fromJson<String>(json['roomName']),
+      strain: serializer.fromJson<String>(json['strain']),
+      cycle: serializer.fromJson<int>(json['cycle']),
+      expectedYield: serializer.fromJson<double>(json['expectedYield']),
+      surveyedAt: serializer.fromJson<DateTime>(json['surveyedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'roomName': serializer.toJson<String>(roomName),
+      'strain': serializer.toJson<String>(strain),
+      'cycle': serializer.toJson<int>(cycle),
+      'expectedYield': serializer.toJson<double>(expectedYield),
+      'surveyedAt': serializer.toJson<DateTime>(surveyedAt),
+    };
+  }
+
+  MushroomYieldSurvey copyWith(
+          {String? id,
+          String? roomName,
+          String? strain,
+          int? cycle,
+          double? expectedYield,
+          DateTime? surveyedAt}) =>
+      MushroomYieldSurvey(
+        id: id ?? this.id,
+        roomName: roomName ?? this.roomName,
+        strain: strain ?? this.strain,
+        cycle: cycle ?? this.cycle,
+        expectedYield: expectedYield ?? this.expectedYield,
+        surveyedAt: surveyedAt ?? this.surveyedAt,
+      );
+  MushroomYieldSurvey copyWithCompanion(MushroomYieldSurveysCompanion data) {
+    return MushroomYieldSurvey(
+      id: data.id.present ? data.id.value : this.id,
+      roomName: data.roomName.present ? data.roomName.value : this.roomName,
+      strain: data.strain.present ? data.strain.value : this.strain,
+      cycle: data.cycle.present ? data.cycle.value : this.cycle,
+      expectedYield: data.expectedYield.present
+          ? data.expectedYield.value
+          : this.expectedYield,
+      surveyedAt:
+          data.surveyedAt.present ? data.surveyedAt.value : this.surveyedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomYieldSurvey(')
+          ..write('id: $id, ')
+          ..write('roomName: $roomName, ')
+          ..write('strain: $strain, ')
+          ..write('cycle: $cycle, ')
+          ..write('expectedYield: $expectedYield, ')
+          ..write('surveyedAt: $surveyedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, roomName, strain, cycle, expectedYield, surveyedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomYieldSurvey &&
+          other.id == this.id &&
+          other.roomName == this.roomName &&
+          other.strain == this.strain &&
+          other.cycle == this.cycle &&
+          other.expectedYield == this.expectedYield &&
+          other.surveyedAt == this.surveyedAt);
+}
+
+class MushroomYieldSurveysCompanion
+    extends UpdateCompanion<MushroomYieldSurvey> {
+  final Value<String> id;
+  final Value<String> roomName;
+  final Value<String> strain;
+  final Value<int> cycle;
+  final Value<double> expectedYield;
+  final Value<DateTime> surveyedAt;
+  final Value<int> rowid;
+  const MushroomYieldSurveysCompanion({
+    this.id = const Value.absent(),
+    this.roomName = const Value.absent(),
+    this.strain = const Value.absent(),
+    this.cycle = const Value.absent(),
+    this.expectedYield = const Value.absent(),
+    this.surveyedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomYieldSurveysCompanion.insert({
+    required String id,
+    required String roomName,
+    required String strain,
+    required int cycle,
+    required double expectedYield,
+    this.surveyedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        roomName = Value(roomName),
+        strain = Value(strain),
+        cycle = Value(cycle),
+        expectedYield = Value(expectedYield);
+  static Insertable<MushroomYieldSurvey> custom({
+    Expression<String>? id,
+    Expression<String>? roomName,
+    Expression<String>? strain,
+    Expression<int>? cycle,
+    Expression<double>? expectedYield,
+    Expression<DateTime>? surveyedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (roomName != null) 'room_name': roomName,
+      if (strain != null) 'strain': strain,
+      if (cycle != null) 'cycle': cycle,
+      if (expectedYield != null) 'expected_yield': expectedYield,
+      if (surveyedAt != null) 'surveyed_at': surveyedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomYieldSurveysCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? roomName,
+      Value<String>? strain,
+      Value<int>? cycle,
+      Value<double>? expectedYield,
+      Value<DateTime>? surveyedAt,
+      Value<int>? rowid}) {
+    return MushroomYieldSurveysCompanion(
+      id: id ?? this.id,
+      roomName: roomName ?? this.roomName,
+      strain: strain ?? this.strain,
+      cycle: cycle ?? this.cycle,
+      expectedYield: expectedYield ?? this.expectedYield,
+      surveyedAt: surveyedAt ?? this.surveyedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (roomName.present) {
+      map['room_name'] = Variable<String>(roomName.value);
+    }
+    if (strain.present) {
+      map['strain'] = Variable<String>(strain.value);
+    }
+    if (cycle.present) {
+      map['cycle'] = Variable<int>(cycle.value);
+    }
+    if (expectedYield.present) {
+      map['expected_yield'] = Variable<double>(expectedYield.value);
+    }
+    if (surveyedAt.present) {
+      map['surveyed_at'] = Variable<DateTime>(surveyedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomYieldSurveysCompanion(')
+          ..write('id: $id, ')
+          ..write('roomName: $roomName, ')
+          ..write('strain: $strain, ')
+          ..write('cycle: $cycle, ')
+          ..write('expectedYield: $expectedYield, ')
+          ..write('surveyedAt: $surveyedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ChatConversationsTable extends ChatConversations
     with TableInfo<$ChatConversationsTable, ChatConversation> {
   @override
@@ -22080,6 +22434,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MushroomRoomCrewsTable(this);
   late final $MushroomEmployeesTable mushroomEmployees =
       $MushroomEmployeesTable(this);
+  late final $MushroomYieldSurveysTable mushroomYieldSurveys =
+      $MushroomYieldSurveysTable(this);
   late final $ChatConversationsTable chatConversations =
       $ChatConversationsTable(this);
   late final $ChatParticipantsTable chatParticipants =
@@ -22142,6 +22498,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         mushroomChatMessages,
         mushroomRoomCrews,
         mushroomEmployees,
+        mushroomYieldSurveys,
         chatConversations,
         chatParticipants,
         chatMessages,
@@ -31257,6 +31614,201 @@ typedef $$MushroomEmployeesTableProcessedTableManager = ProcessedTableManager<
     ),
     MushroomEmployee,
     PrefetchHooks Function()>;
+typedef $$MushroomYieldSurveysTableCreateCompanionBuilder
+    = MushroomYieldSurveysCompanion Function({
+  required String id,
+  required String roomName,
+  required String strain,
+  required int cycle,
+  required double expectedYield,
+  Value<DateTime> surveyedAt,
+  Value<int> rowid,
+});
+typedef $$MushroomYieldSurveysTableUpdateCompanionBuilder
+    = MushroomYieldSurveysCompanion Function({
+  Value<String> id,
+  Value<String> roomName,
+  Value<String> strain,
+  Value<int> cycle,
+  Value<double> expectedYield,
+  Value<DateTime> surveyedAt,
+  Value<int> rowid,
+});
+
+class $$MushroomYieldSurveysTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomYieldSurveysTable> {
+  $$MushroomYieldSurveysTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get roomName => $composableBuilder(
+      column: $table.roomName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get strain => $composableBuilder(
+      column: $table.strain, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get cycle => $composableBuilder(
+      column: $table.cycle, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get expectedYield => $composableBuilder(
+      column: $table.expectedYield, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get surveyedAt => $composableBuilder(
+      column: $table.surveyedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomYieldSurveysTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomYieldSurveysTable> {
+  $$MushroomYieldSurveysTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get roomName => $composableBuilder(
+      column: $table.roomName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get strain => $composableBuilder(
+      column: $table.strain, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get cycle => $composableBuilder(
+      column: $table.cycle, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get expectedYield => $composableBuilder(
+      column: $table.expectedYield,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get surveyedAt => $composableBuilder(
+      column: $table.surveyedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomYieldSurveysTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomYieldSurveysTable> {
+  $$MushroomYieldSurveysTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get roomName =>
+      $composableBuilder(column: $table.roomName, builder: (column) => column);
+
+  GeneratedColumn<String> get strain =>
+      $composableBuilder(column: $table.strain, builder: (column) => column);
+
+  GeneratedColumn<int> get cycle =>
+      $composableBuilder(column: $table.cycle, builder: (column) => column);
+
+  GeneratedColumn<double> get expectedYield => $composableBuilder(
+      column: $table.expectedYield, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get surveyedAt => $composableBuilder(
+      column: $table.surveyedAt, builder: (column) => column);
+}
+
+class $$MushroomYieldSurveysTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomYieldSurveysTable,
+    MushroomYieldSurvey,
+    $$MushroomYieldSurveysTableFilterComposer,
+    $$MushroomYieldSurveysTableOrderingComposer,
+    $$MushroomYieldSurveysTableAnnotationComposer,
+    $$MushroomYieldSurveysTableCreateCompanionBuilder,
+    $$MushroomYieldSurveysTableUpdateCompanionBuilder,
+    (
+      MushroomYieldSurvey,
+      BaseReferences<_$AppDatabase, $MushroomYieldSurveysTable,
+          MushroomYieldSurvey>
+    ),
+    MushroomYieldSurvey,
+    PrefetchHooks Function()> {
+  $$MushroomYieldSurveysTableTableManager(
+      _$AppDatabase db, $MushroomYieldSurveysTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomYieldSurveysTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomYieldSurveysTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomYieldSurveysTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> roomName = const Value.absent(),
+            Value<String> strain = const Value.absent(),
+            Value<int> cycle = const Value.absent(),
+            Value<double> expectedYield = const Value.absent(),
+            Value<DateTime> surveyedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomYieldSurveysCompanion(
+            id: id,
+            roomName: roomName,
+            strain: strain,
+            cycle: cycle,
+            expectedYield: expectedYield,
+            surveyedAt: surveyedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String roomName,
+            required String strain,
+            required int cycle,
+            required double expectedYield,
+            Value<DateTime> surveyedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomYieldSurveysCompanion.insert(
+            id: id,
+            roomName: roomName,
+            strain: strain,
+            cycle: cycle,
+            expectedYield: expectedYield,
+            surveyedAt: surveyedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomYieldSurveysTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $MushroomYieldSurveysTable,
+        MushroomYieldSurvey,
+        $$MushroomYieldSurveysTableFilterComposer,
+        $$MushroomYieldSurveysTableOrderingComposer,
+        $$MushroomYieldSurveysTableAnnotationComposer,
+        $$MushroomYieldSurveysTableCreateCompanionBuilder,
+        $$MushroomYieldSurveysTableUpdateCompanionBuilder,
+        (
+          MushroomYieldSurvey,
+          BaseReferences<_$AppDatabase, $MushroomYieldSurveysTable,
+              MushroomYieldSurvey>
+        ),
+        MushroomYieldSurvey,
+        PrefetchHooks Function()>;
 typedef $$ChatConversationsTableCreateCompanionBuilder
     = ChatConversationsCompanion Function({
   required String id,
@@ -33272,6 +33824,8 @@ class $AppDatabaseManager {
       $$MushroomRoomCrewsTableTableManager(_db, _db.mushroomRoomCrews);
   $$MushroomEmployeesTableTableManager get mushroomEmployees =>
       $$MushroomEmployeesTableTableManager(_db, _db.mushroomEmployees);
+  $$MushroomYieldSurveysTableTableManager get mushroomYieldSurveys =>
+      $$MushroomYieldSurveysTableTableManager(_db, _db.mushroomYieldSurveys);
   $$ChatConversationsTableTableManager get chatConversations =>
       $$ChatConversationsTableTableManager(_db, _db.chatConversations);
   $$ChatParticipantsTableTableManager get chatParticipants =>

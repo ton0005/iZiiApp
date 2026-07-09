@@ -9,7 +9,7 @@ class CoolRoomTabScreen extends StatefulWidget {
   final double stockMedium;
   final double stockOpen;
   final List<Map<String, dynamic>> orders;
-  final Function(String, int, int, int) onSendPickingPlan;
+  final Function(String, int, int, int, [String]) onSendPickingPlan;
   final Function(Map<String, dynamic>) onDeliverOrder;
   final Function(String) onPlantChanged;
 
@@ -36,21 +36,53 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
   int _buttonVal = 50;
   int _mediumVal = 100;
   int _openVal = 30;
+  String _mushroomType = 'White';
 
   @override
   void initState() {
     super.initState();
     _roomSelected = widget.localRooms.keys.firstWhere(
-        (k) => widget.localRooms[k]!['plant'] == widget.activePlant);
+        (k) => widget.localRooms[k]!['plant'] == widget.activePlant,
+        orElse: () => 'Room 1');
   }
 
   @override
   void didUpdateWidget(covariant CoolRoomTabScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.activePlant != widget.activePlant) {
-      _roomSelected = widget.localRooms.keys.firstWhere(
-          (k) => widget.localRooms[k]!['plant'] == widget.activePlant);
+      setState(() {
+        _roomSelected = widget.localRooms.keys.firstWhere(
+            (k) => widget.localRooms[k]!['plant'] == widget.activePlant,
+            orElse: () => 'Room 1');
+      });
     }
+  }
+
+  Map<String, int> _parseOrderRequirements(String req) {
+    int button = 0;
+    int medium = 0;
+    int open = 0;
+
+    final regexButton = RegExp(r'(\d+)\s*kg\s*Button', caseSensitive: false);
+    final regexCup = RegExp(r'(\d+)\s*kg\s*Cup', caseSensitive: false);
+    final regexFlat = RegExp(r'(\d+)\s*kg\s*Flat', caseSensitive: false);
+
+    final matchButton = regexButton.firstMatch(req);
+    if (matchButton != null) {
+      button = int.tryParse(matchButton.group(1) ?? '0') ?? 0;
+    }
+
+    final matchCup = regexCup.firstMatch(req);
+    if (matchCup != null) {
+      medium = int.tryParse(matchCup.group(1) ?? '0') ?? 0;
+    }
+
+    final matchFlat = regexFlat.firstMatch(req);
+    if (matchFlat != null) {
+      open = int.tryParse(matchFlat.group(1) ?? '0') ?? 0;
+    }
+
+    return {'button': button, 'medium': medium, 'open': open};
   }
 
   @override
@@ -176,11 +208,31 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold)),
                                     const SizedBox(width: 16),
-                                    if (!isDelivered)
+                                    if (!isDelivered) ...[
+                                      ElevatedButton.icon(
+                                        icon: const Icon(Icons.send_rounded, size: 14),
+                                        label: const Text('Send to Harvest'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: FarmColors.forestGreen,
+                                          foregroundColor: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          final parsed = _parseOrderRequirements(order['req']);
+                                          final defaultRoom = widget.localRooms.keys.firstWhere(
+                                              (k) => widget.localRooms[k]!['plant'] == widget.activePlant,
+                                              orElse: () => 'Room 1');
+                                          final hasBrown = order['req']?.toString().toLowerCase().contains('brown') ?? false;
+                                          final type = hasBrown ? 'Brown' : 'White';
+                                          widget.onSendPickingPlan(
+                                              defaultRoom, parsed['button']!, parsed['medium']!, parsed['open']!, type);
+                                        },
+                                      ),
+                                      const SizedBox(width: 8),
                                       ElevatedButton(
                                         onPressed: () => widget.onDeliverOrder(order),
                                         child: const Text('Deliver'),
-                                      )
+                                      ),
+                                    ]
                                     else
                                       const Text('Delivered',
                                           style: TextStyle(
@@ -233,17 +285,15 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
-          decoration: const InputDecoration(labelText: 'Harvest Room'),
-          value: _roomSelected,
-          items: widget.localRooms.keys
-              .where(
-                  (k) => widget.localRooms[k]!['plant'] == widget.activePlant)
-              .map((r) => DropdownMenuItem(
-                  value: r, child: Text(r.replaceAll('Room', 'Grow Room'))))
-              .toList(),
+          decoration: const InputDecoration(labelText: 'Mushroom Type'),
+          value: _mushroomType,
+          items: const [
+            DropdownMenuItem(value: 'White', child: Text('White (Button/Cup/Flat)')),
+            DropdownMenuItem(value: 'Brown', child: Text('Brown (Swiss Brown/Portobello)')),
+          ],
           onChanged: (val) {
             if (val != null) {
-              setState(() => _roomSelected = val);
+              setState(() => _mushroomType = val);
             }
           },
         ),
@@ -275,7 +325,7 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
                 foregroundColor: Colors.white),
             onPressed: () {
               widget.onSendPickingPlan(
-                  _roomSelected, _buttonVal, _mediumVal, _openVal);
+                  _roomSelected, _buttonVal, _mediumVal, _openVal, _mushroomType);
             },
             child: const Text('Send Picking Request'),
           ),

@@ -9,6 +9,7 @@ class GrowingTabScreen extends StatefulWidget {
   final String activePlant;
   final String roomFilter;
   final String? selectedRoomName;
+  final List<Map<String, dynamic>> employees;
   final Function(String) onPlantChanged;
   final Function(String) onRoomFilterChanged;
   final Function(String?) onRoomSelected;
@@ -40,6 +41,7 @@ class GrowingTabScreen extends StatefulWidget {
     required this.activePlant,
     required this.roomFilter,
     required this.selectedRoomName,
+    required this.employees,
     required this.onPlantChanged,
     required this.onRoomFilterChanged,
     required this.onRoomSelected,
@@ -191,11 +193,14 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          // Control buttons Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 12,
+            runSpacing: 10,
             children: [
-              Row(
+              Wrap(
+                spacing: 10,
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -207,7 +212,6 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                     onPressed: () => widget.onPlantChanged('M2'),
                     child: const Text('Plant M2 (Rooms 33-66)'),
                   ),
-                  const SizedBox(width: 10),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: widget.activePlant == 'M1'
@@ -370,10 +374,14 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   Widget _buildFloorMapHeader() {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 12,
+        runSpacing: 10,
         children: [
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.map_rounded,
                   color: FarmColors.forestGreen, size: 18),
@@ -386,6 +394,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
             ],
           ),
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               _buildFilterBtn('All', 'all'),
               const SizedBox(width: 4),
@@ -720,21 +729,33 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   }
 
   Widget _buildLegendItem(String label, Color color) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
+    return Text.rich(
+      TextSpan(
+        children: [
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Container(
+              width: 10,
+              height: 10,
+              margin: const EdgeInsets.only(right: 6),
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
           ),
-        ),
-        const SizedBox(width: 6),
-        Text(label,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-      ],
+          TextSpan(
+            text: label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: widget.isDark ? Colors.white70 : Colors.black87,
+            ),
+          ),
+        ],
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -1115,10 +1136,15 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
 
   // Dialog: Add New Job
   void _showNewJobDialog(BuildContext context) {
+    final growingEmployees = widget.employees
+        .where((e) => e['department']?.toString().toLowerCase() == 'growing')
+        .toList();
     String jobType = 'filling';
     String roomSelected = widget.localRooms.keys.firstWhere(
         (k) => widget.localRooms[k]!['plant'] == widget.activePlant);
-    String assignee = 'Minh T.';
+    String assignee = growingEmployees.isNotEmpty
+        ? (growingEmployees.first['name'] as String)
+        : 'Minh T.';
     String notes = '';
 
     // Watering fields
@@ -1392,16 +1418,17 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         decoration:
                             const InputDecoration(labelText: 'Assignee'),
                         value: assignee,
-                        items: const [
-                          DropdownMenuItem(
-                              value: 'Minh T.', child: Text('Minh T.')),
-                          DropdownMenuItem(
-                              value: 'Lan N.', child: Text('Lan N.')),
-                          DropdownMenuItem(
-                              value: 'Hùng V.', child: Text('Hùng V.')),
-                          DropdownMenuItem(
-                              value: 'Phúc D.', child: Text('Phúc D.')),
-                        ],
+                        items: growingEmployees.isNotEmpty
+                            ? growingEmployees
+                                .map((e) => DropdownMenuItem<String>(
+                                      value: e['name'] as String,
+                                      child: Text('${e['name']} (${e['role']})'),
+                                    ))
+                                .toList()
+                            : const [
+                                DropdownMenuItem(
+                                    value: 'Minh T.', child: Text('Minh T. (Default)')),
+                              ],
                         onChanged: (val) {
                           if (val != null) setDialogState(() => assignee = val);
                         },

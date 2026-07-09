@@ -27,17 +27,26 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   List<String> _roles = [];
+  List<Map<String, dynamic>> _departments = [];
 
   @override
   void initState() {
     super.initState();
     _loadRoles();
+    _loadDepartments();
   }
 
   Future<void> _loadRoles() async {
     final list = await _repo.getRoles();
     setState(() {
       _roles = list;
+    });
+  }
+
+  Future<void> _loadDepartments() async {
+    final list = await _repo.getDepartments();
+    setState(() {
+      _departments = list;
     });
   }
 
@@ -224,21 +233,25 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                                             child: Chip(
                                               labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: -4),
                                               padding: EdgeInsets.zero,
-                                              backgroundColor: emp['role'].toString().contains('Specialist')
-                                                  ? Colors.blue.withOpacity(0.1)
-                                                  : (emp['role'].toString().contains('Picker')
-                                                      ? Colors.green.withOpacity(0.1)
-                                                      : Colors.orange.withOpacity(0.1)),
+                                              backgroundColor: widget.isDark
+                                                  ? FarmColors.forestGreen
+                                                  : (emp['role'].toString().contains('Specialist')
+                                                      ? Colors.blue.withOpacity(0.1)
+                                                      : (emp['role'].toString().contains('Picker')
+                                                          ? Colors.green.withOpacity(0.1)
+                                                          : Colors.orange.withOpacity(0.1))),
                                               label: Text(
                                                 emp['role'],
                                                 style: TextStyle(
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.bold,
-                                                  color: emp['role'].toString().contains('Specialist')
-                                                      ? Colors.blue.shade800
-                                                      : (emp['role'].toString().contains('Picker')
-                                                          ? Colors.green.shade800
-                                                          : Colors.orange.shade800),
+                                                  color: widget.isDark
+                                                      ? Colors.white
+                                                      : (emp['role'].toString().contains('Specialist')
+                                                          ? Colors.blue.shade800
+                                                          : (emp['role'].toString().contains('Picker')
+                                                              ? Colors.green.shade800
+                                                              : Colors.orange.shade800)),
                                                 ),
                                               ),
                                             ),
@@ -284,12 +297,40 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
     );
   }
 
+  List<DropdownMenuItem<String>> _getDepartmentItems() {
+    final depts = _departments.isNotEmpty
+        ? _departments
+        : [
+            {'id': 'DEP001', 'name': 'Harvesting', 'description': 'Responsible for mushroom picking and grading'},
+            {'id': 'DEP002', 'name': 'Growing', 'description': 'Responsible for watering, composting and climate control'},
+            {'id': 'DEP003', 'name': 'Maintenance', 'description': 'Responsible for mechanical repairs and cleaning'},
+            {'id': 'DEP004', 'name': 'Sales', 'description': 'Responsible for retail orders and shipping logistics'},
+          ];
+
+    return depts.map((dept) {
+      return DropdownMenuItem<String>(
+        value: dept['name'] as String,
+        child: Text(
+          '${dept['name']} (${dept['id']})',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+        ),
+      );
+    }).toList();
+  }
+
   void _showEditEmployeeDialog(Map<String, dynamic> emp) {
     final formKey = GlobalKey<FormState>();
     final id = emp['id'] as String;
     String name = emp['name'] as String;
     String role = emp['role'] as String;
     String department = emp['department']?.toString() ?? 'Harvesting';
+
+    final deptsList = _departments.isNotEmpty
+        ? _departments.map((d) => d['name'] as String).toList()
+        : ['Harvesting', 'Growing', 'Maintenance', 'Sales'];
+    if (!deptsList.contains(department)) {
+      department = deptsList.first;
+    }
 
     final dropDownItems = _roles.isNotEmpty
         ? _roles
@@ -334,12 +375,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Department'),
                 value: department,
-                items: const [
-                  DropdownMenuItem(value: 'Harvesting', child: Text('Harvesting')),
-                  DropdownMenuItem(value: 'Growing', child: Text('Growing')),
-                  DropdownMenuItem(value: 'Maintenance', child: Text('Maintenance')),
-                  DropdownMenuItem(value: 'Sales', child: Text('Sales')),
-                ],
+                items: _getDepartmentItems(),
                 onChanged: (val) => department = val!,
               ),
             ],
@@ -468,7 +504,10 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
     String id = '';
     String name = '';
     String role = _roles.isNotEmpty ? _roles.first : 'Harvest Picker';
-    String department = 'Harvesting';
+    final deptsList = _departments.isNotEmpty
+        ? _departments.map((d) => d['name'] as String).toList()
+        : ['Harvesting', 'Growing', 'Maintenance', 'Sales'];
+    String department = deptsList.contains('Harvesting') ? 'Harvesting' : deptsList.first;
 
     final dropDownItems = _roles.isNotEmpty
         ? _roles
@@ -507,12 +546,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Department'),
                 value: department,
-                items: const [
-                  DropdownMenuItem(value: 'Harvesting', child: Text('Harvesting')),
-                  DropdownMenuItem(value: 'Growing', child: Text('Growing')),
-                  DropdownMenuItem(value: 'Maintenance', child: Text('Maintenance')),
-                  DropdownMenuItem(value: 'Sales', child: Text('Sales')),
-                ],
+                items: _getDepartmentItems(),
                 onChanged: (val) => department = val!,
               ),
             ],

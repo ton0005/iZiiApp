@@ -64,6 +64,7 @@ part 'app_database.g.dart';
   MushroomChatMessages,
   MushroomRoomCrews,
   MushroomEmployees,
+  MushroomYieldSurveys,
   ChatConversations,
   ChatParticipants,
   ChatMessages,
@@ -82,7 +83,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 22;
+  int get schemaVersion => 23;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -355,6 +356,11 @@ class AppDatabase extends _$AppDatabase {
           if (from < 22) {
             try {
               await m.addColumn(mushroomEmployees, mushroomEmployees.department);
+            } catch (_) {}
+          }
+          if (from < 23) {
+            try {
+              await m.createTable(mushroomYieldSurveys);
             } catch (_) {}
           }
         },

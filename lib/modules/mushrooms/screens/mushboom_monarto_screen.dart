@@ -718,32 +718,42 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   Widget _buildSidebarItem(
       String tabId, IconData icon, String label, Color indicatorColor) {
     final isActive = _activeTab == tabId;
-    return InkWell(
-      onTap: () => switchTab(tabId),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(
-          color: isActive
-              ? FarmColors.forestGreenLight.withOpacity(0.3)
-              : Colors.transparent,
-          border: isActive
-              ? Border(left: BorderSide(color: indicatorColor, width: 4))
-              : null,
-        ),
-        child: Row(
-          children: [
-            Icon(icon,
-                size: 20, color: isActive ? indicatorColor : Colors.grey),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                color: isActive ? indicatorColor : Colors.grey.shade700,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color? bgCol = isActive
+        ? (isDark ? FarmColors.forestGreen : FarmColors.forestGreenLight.withOpacity(0.4))
+        : null;
+
+    final Color textIconCol = isActive
+        ? (isDark ? Colors.white : FarmColors.forestGreenText)
+        : Colors.grey.shade600;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+      child: InkWell(
+        onTap: () => switchTab(tabId),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: bgCol,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Icon(icon,
+                  size: 20, color: textIconCol),
+              const SizedBox(width: 12),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                  color: textIconCol,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -766,6 +776,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         activePlant: _activePlant,
         roomFilter: _roomFilter,
         selectedRoomName: _selectedRoomName,
+        employees: _employees,
         onPlantChanged: _onPlantChanged,
         onRoomFilterChanged: (filter) => setState(() => _roomFilter = filter),
         onRoomSelected: (roomName) {
@@ -1092,7 +1103,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   }
 
   void _onSendPickingPlan(
-      String roomSelected, int buttonVal, int mediumVal, int openVal) async {
+      String roomSelected, int buttonVal, int mediumVal, int openVal, [String mushroomType = 'White']) async {
     final total = buttonVal + mediumVal + openVal;
     if (total <= 0) {
       _showMsg('Vui lòng nhập sản lượng lớn hơn 0!');
@@ -1108,6 +1119,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       'button': buttonVal,
       'medium': mediumVal,
       'open': openVal,
+      'mushroomType': mushroomType,
       'sentAt': DateTime.now().toLocal().toString().substring(11, 16)
     };
 

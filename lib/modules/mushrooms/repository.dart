@@ -1232,6 +1232,111 @@ class MushroomsRepository {
     } catch (_) {}
   }
 
+  // === YIELD SURVEYS & PLANNING ===
+
+  Future<void> seedYieldSurveysIfEmpty() async {
+    try {
+      final list = await _db.select(_db.mushroomYieldSurveys).get();
+      if (list.isEmpty) {
+        final mockSurveys = [
+          {'roomName': 'Room 1', 'strain': 'Button', 'cycle': 1, 'expectedYield': 80.0},
+          {'roomName': 'Room 2', 'strain': 'Cup', 'cycle': 2, 'expectedYield': 110.0},
+          {'roomName': 'Room 33', 'strain': 'Cup', 'cycle': 2, 'expectedYield': 120.0},
+          {'roomName': 'Room 34', 'strain': 'Button', 'cycle': 1, 'expectedYield': 95.0},
+          {'roomName': 'Room 35', 'strain': 'Flat', 'cycle': 3, 'expectedYield': 70.0},
+          {'roomName': 'Room 52', 'strain': 'Cup', 'cycle': 1, 'expectedYield': 150.0},
+        ];
+
+        for (var s in mockSurveys) {
+          final id = '${DateTime.now().millisecondsSinceEpoch}_${s['roomName']}';
+          await _db.into(_db.mushroomYieldSurveys).insert(
+            MushroomYieldSurveysCompanion.insert(
+              id: id,
+              roomName: s['roomName'] as String,
+              strain: s['strain'] as String,
+              cycle: s['cycle'] as int,
+              expectedYield: s['expectedYield'] as double,
+              surveyedAt: Value(DateTime.now()),
+            ),
+          );
+        }
+      }
+    } catch (_) {}
+  }
+
+  Future<List<Map<String, dynamic>>> getYieldSurveys() async {
+    await seedYieldSurveysIfEmpty();
+    try {
+      final query = _db.select(_db.mushroomYieldSurveys)
+        ..orderBy([(t) => OrderingTerm(expression: t.roomName)]);
+      final list = await query.get();
+      return list.map((e) => {
+        'id': e.id,
+        'roomName': e.roomName,
+        'strain': e.strain,
+        'cycle': e.cycle,
+        'expectedYield': e.expectedYield,
+        'surveyedAt': e.surveyedAt.toIso8601String(),
+      }).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> saveAllocatedRoomPlan(String roomName, double targetYield, String planJson) async {
+    try {
+      final roomQuery = await (_db.select(_db.growRooms)..where((tbl) => tbl.name.equals(roomName))).get();
+      if (roomQuery.isNotEmpty) {
+        final rId = roomQuery.first.id;
+        await updateRoomPickingPlan(rId, targetYield: targetYield, planJson: planJson);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> clearRoomPlanByName(String roomName) async {
+    try {
+      final roomQuery = await (_db.select(_db.growRooms)..where((tbl) => tbl.name.equals(roomName))).get();
+      if (roomQuery.isNotEmpty) {
+        await clearRoomPickingPlan(roomQuery.first.id);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> addScheduledPickingJob({
+    required String roomId,
+    required String pickerName,
+    required DateTime scheduledTime,
+    required String notes,
+  }) async {
+    final jobId = const Uuid().v4();
+    try {
+      await _db.into(_db.mushroomJobs).insert(
+        MushroomJobsCompanion.insert(
+          id: jobId,
+          roomId: roomId,
+          jobType: 'picking',
+          name: 'Manual Picking Task',
+          status: const Value('pending'),
+          assignee: Value(pickerName),
+          scheduledAt: Value(scheduledTime),
+          planDetails: Value(notes),
+        ),
+      );
+
+      await SyncService().queueMutation('mushroom_jobs', 'insert', {
+        'id': jobId,
+        'roomId': roomId,
+        'jobType': 'picking',
+        'name': 'Manual Picking Task',
+        'status': 'pending',
+        'assignee': pickerName,
+        'scheduled_at': scheduledTime.toIso8601String(),
+        'plan_details': notes,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+    } catch (_) {}
+  }
+
   // === MAINTENANCE TICKETS ===
 
   Future<List<Map<String, dynamic>>> getMaintenanceTickets() async {

@@ -128,3 +128,15 @@ class MushroomEmployees extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class MushroomYieldSurveys extends Table {
+  TextColumn get id => text()();
+  TextColumn get roomName => text()();
+  TextColumn get strain => text()(); // Button, Cup, Flat
+  IntColumn get cycle => integer()();
+  RealColumn get expectedYield => real()();
+  DateTimeColumn get surveyedAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
