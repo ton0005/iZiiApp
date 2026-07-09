@@ -26,6 +26,14 @@ class TasksTabScreen extends StatefulWidget {
 }
 
 class _TasksTabScreenState extends State<TasksTabScreen> {
+  final ScrollController _ganttScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _ganttScrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final activeRoomName = widget.tasksSelectedRoomName ??
@@ -311,99 +319,103 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
             ),
             const Divider(),
             Expanded(
-              child: ListView.builder(
-                itemCount: jobs.length,
-                itemBuilder: (context, idx) {
-                  final job = jobs[idx];
-                  final status = job['status'] as String;
+              child: Scrollbar(
+                controller: _ganttScrollController,
+                thumbVisibility: true,
+                child: ListView.builder(
+                  controller: _ganttScrollController,
+                  itemCount: jobs.length,
+                  itemBuilder: (context, idx) {
+                    final job = jobs[idx];
+                    final status = job['status'] as String;
 
-                  final startDay = idx * 2;
-                  final duration = 3;
+                    final startDay = idx * 2;
+                    final duration = 3;
 
-                  Color barColor = Colors.grey.shade300;
-                  if (status == 'done') {
-                    barColor = const Color(0xFFC0DD97);
-                  } else if (status == 'inprog') {
-                    barColor = const Color(0xFF85B7EB);
-                  } else if (status == 'review') {
-                    barColor = const Color(0xFFFAC775);
-                  }
+                    Color barColor = Colors.grey.shade300;
+                    if (status == 'done') {
+                      barColor = const Color(0xFFC0DD97);
+                    } else if (status == 'inprog') {
+                      barColor = const Color(0xFF85B7EB);
+                    } else if (status == 'review') {
+                      barColor = const Color(0xFFFAC775);
+                    }
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 140,
-                          child: Row(
-                            children: [
-                              Icon(job['icon'] as IconData? ?? Icons.task_alt,
-                                  size: 14, color: Colors.grey),
-                              const SizedBox(width: 6),
-                              Text(job['name'],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12)),
-                            ],
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 140,
+                            child: Row(
+                              children: [
+                                Icon(job['icon'] as IconData? ?? Icons.task_alt,
+                                    size: 14, color: Colors.grey),
+                                const SizedBox(width: 6),
+                                Text(job['name'],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12)),
+                              ],
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: Stack(
-                            children: [
-                              // Horizontal grid markers
-                              Row(
-                                children: List.generate(
-                                    18,
-                                    (idx) => Expanded(
-                                          child: Container(
-                                            height: 26,
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    right: BorderSide(
-                                                        color: Colors
-                                                            .grey.shade200))),
-                                          ),
-                                        )),
-                              ),
-                              // Positioned bar
-                              LayoutBuilder(
-                                builder: (context, box) {
-                                  final totalWidth = box.maxWidth;
-                                  final leftOffset =
-                                      (startDay / 18) * totalWidth;
-                                  final barWidth = (duration / 18) * totalWidth;
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, box) {
+                                final totalWidth = box.maxWidth;
+                                final leftOffset = (startDay / 18) * totalWidth;
+                                final barWidth = (duration / 18) * totalWidth;
 
-                                  return Positioned(
-                                    left: leftOffset,
-                                    width: barWidth,
-                                    top: 3,
-                                    height: 20,
-                                    child: InkWell(
-                                      onTap: () =>
-                                          _showTaskDetailDialog(job, roomName),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color: barColor,
-                                            borderRadius:
-                                                BorderRadius.circular(4)),
-                                        alignment: Alignment.center,
-                                        child: Text(job['name'],
-                                            style: const TextStyle(
-                                                fontSize: 9,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black87)),
+                                return Stack(
+                                  children: [
+                                    // Horizontal grid markers
+                                    Row(
+                                      children: List.generate(
+                                          18,
+                                          (idx) => Expanded(
+                                                child: Container(
+                                                  height: 26,
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          right: BorderSide(
+                                                              color: Colors
+                                                                  .grey.shade200))),
+                                                ),
+                                              )),
+                                    ),
+                                    // Positioned bar
+                                    Positioned(
+                                      left: leftOffset,
+                                      width: barWidth,
+                                      top: 3,
+                                      height: 20,
+                                      child: InkWell(
+                                        onTap: () =>
+                                            _showTaskDetailDialog(job, roomName),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: barColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(4)),
+                                          alignment: Alignment.center,
+                                          child: Text(job['name'],
+                                              style: const TextStyle(
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black87)),
+                                        ),
                                       ),
                                     ),
-                                  );
-                                },
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  );
-                },
+                                  ],
+                                );
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             )
           ],

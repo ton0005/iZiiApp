@@ -60,6 +60,9 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
   // Available time slots
   final List<String> _timeSlots = ['06:00', '08:00', '10:00', '12:00', '14:00'];
 
+  final ScrollController _ganttSchedHorizController = ScrollController();
+  final ScrollController _ganttSchedVertController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -103,6 +106,24 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     });
   }
 
+  Map<String, dynamic> _findYieldSurvey(String roomName) {
+    for (final s in _yieldSurveys) {
+      if (s['roomName'] == roomName) {
+        return s;
+      }
+    }
+    return <String, dynamic>{};
+  }
+
+  Map<String, dynamic> _findEmployee(String code) {
+    for (final e in _employees) {
+      if (e['id']?.toString().toUpperCase() == code.toUpperCase()) {
+        return e;
+      }
+    }
+    return <String, dynamic>{};
+  }
+
   @override
   void didUpdateWidget(covariant HarvestTabScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -126,6 +147,8 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     for (final c in _allocControllers.values) {
       c.dispose();
     }
+    _ganttSchedHorizController.dispose();
+    _ganttSchedVertController.dispose();
     super.dispose();
   }
 
@@ -432,7 +455,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       foregroundColor: Colors.white),
                   onPressed: () {
                     final code = _empIdController.text.trim().toUpperCase();
-                    final emp = _employees.firstWhere((e) => e['id']?.toString().toUpperCase() == code, orElse: () => {});
+                    final emp = _findEmployee(code);
                     if (emp.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Employee ID not found!')),
@@ -459,7 +482,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       foregroundColor: Colors.white),
                   onPressed: () {
                     final code = _empIdController.text.trim().toUpperCase();
-                    final emp = _employees.firstWhere((e) => e['id']?.toString().toUpperCase() == code, orElse: () => {});
+                    final emp = _findEmployee(code);
                     if (emp.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Employee ID not found!')),
@@ -714,7 +737,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                                   : (widget.isDark ? Colors.white10 : Colors.grey.shade50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
+                                side: BorderSide(
                                   color: isSelected
                                       ? FarmColors.forestGreen
                                       : (widget.isDark ? Colors.white24 : Colors.grey.shade300),
@@ -952,7 +975,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
               itemCount: activePlantRooms.length,
               itemBuilder: (context, idx) {
                 final rName = activePlantRooms[idx];
-                final survey = _yieldSurveys.firstWhere((s) => s['roomName'] == rName, orElse: () => {});
+                final survey = _findYieldSurvey(rName);
                 final strain = survey.isNotEmpty ? survey['strain'] as String : 'Cup';
                 final expected = survey.isNotEmpty ? (survey['expectedYield'] as double).toInt() : 0;
 
@@ -1035,7 +1058,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     for (final roomName in _orderAllocControllers.keys) {
       final val = int.tryParse(_orderAllocControllers[roomName]?['allocated']?.text.trim() ?? '') ?? 0;
       if (val > 0) {
-        final survey = _yieldSurveys.firstWhere((s) => s['roomName'] == roomName, orElse: () => {});
+        final survey = _findYieldSurvey(roomName);
         final strain = survey.isNotEmpty ? survey['strain'] as String : 'Cup';
 
         final planMap = {
@@ -1079,7 +1102,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
 
     int totalExpectedSurveyYield = 0;
     for (final rName in activePlantRooms) {
-      final s = _yieldSurveys.firstWhere((s) => s['roomName'] == rName, orElse: () => {});
+      final s = _findYieldSurvey(rName);
       if (s.isNotEmpty) {
         totalExpectedSurveyYield += (s['expectedYield'] as double).toInt();
       }
@@ -1097,7 +1120,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
 
     for (int i = 0; i < activePlantRooms.length; i++) {
       final rName = activePlantRooms[i];
-      final s = _yieldSurveys.firstWhere((s) => s['roomName'] == rName, orElse: () => {});
+      final s = _findYieldSurvey(rName);
       if (s.isNotEmpty) {
         final expected = (s['expectedYield'] as double).toInt();
         int allocatedRoomVal = ((expected / totalExpectedSurveyYield) * totalOrderQty).round();
@@ -1301,7 +1324,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
               itemCount: activePlantRooms.length,
               itemBuilder: (c, idx) {
                 final rName = activePlantRooms[idx];
-                final survey = _yieldSurveys.firstWhere((s) => s['roomName'] == rName, orElse: () => {});
+                final survey = _findYieldSurvey(rName);
                 final strain = survey.isNotEmpty ? survey['strain'] as String : 'Cup';
                 final cycle = survey.isNotEmpty ? survey['cycle'] as int : 1;
 
@@ -1406,7 +1429,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
       final val = double.tryParse(textVal) ?? 0.0;
       if (val > 0) {
         totalAllocated += val.toInt();
-        final survey = _yieldSurveys.firstWhere((s) => s['roomName'] == roomName, orElse: () => {});
+        final survey = _findYieldSurvey(roomName);
         final strain = survey.isNotEmpty ? survey['strain'] as String : 'Cup';
 
         final planMap = {
@@ -1576,103 +1599,115 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                   ),
                   const VerticalDivider(width: 16),
                   Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SingleChildScrollView(
-                        child: Table(
-                          defaultColumnWidth: const FixedColumnWidth(100),
-                          border: TableBorder.all(color: widget.isDark ? Colors.white24 : Colors.grey.shade300, borderRadius: BorderRadius.circular(4)),
-                          children: [
-                            TableRow(
-                              decoration: BoxDecoration(color: widget.isDark ? Colors.white10 : Colors.grey.shade100),
+                    child: Scrollbar(
+                      controller: _ganttSchedHorizController,
+                      thumbVisibility: true,
+                      notificationPredicate: (notif) => notif.depth == 1,
+                      child: Scrollbar(
+                        controller: _ganttSchedVertController,
+                        thumbVisibility: true,
+                        notificationPredicate: (notif) => notif.depth == 0,
+                        child: SingleChildScrollView(
+                          controller: _ganttSchedHorizController,
+                          scrollDirection: Axis.horizontal,
+                          child: SingleChildScrollView(
+                            controller: _ganttSchedVertController,
+                            child: Table(
+                              defaultColumnWidth: const FixedColumnWidth(100),
+                              border: TableBorder.all(color: widget.isDark ? Colors.white24 : Colors.grey.shade300, borderRadius: BorderRadius.circular(4)),
                               children: [
-                                const TableCell(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(8),
-                                    child: Text('Room', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
-                                  ),
-                                ),
-                                ..._timeSlots.map((slot) => TableCell(
+                                TableRow(
+                                  decoration: BoxDecoration(color: widget.isDark ? Colors.white10 : Colors.grey.shade100),
+                                  children: [
+                                    const TableCell(
                                       child: Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(slot, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
-                                      ),
-                                    )),
-                              ],
-                            ),
-                            ...allocatedRooms.map((roomName) {
-                              return TableRow(
-                                children: [
-                                  TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(
-                                        roomName.replaceAll('Room', 'Room '),
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                                        padding: EdgeInsets.all(8),
+                                        child: Text('Room', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
                                       ),
                                     ),
-                                  ),
-                                  ..._timeSlots.map((slot) {
-                                    final assignmentKey = '${roomName}_$slot';
-                                    final pickerName = _scheduledAssignments[assignmentKey];
-                                    final isAssigned = pickerName != null;
-
-                                    return TableCell(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        height: 42,
-                                        child: isAssigned
-                                            ? Container(
-                                                decoration: BoxDecoration(
-                                                  color: FarmColors.forestGreen,
-                                                  borderRadius: BorderRadius.circular(4),
-                                                ),
-                                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        pickerName,
-                                                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                    ),
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          _scheduledAssignments.remove(assignmentKey);
-                                                        });
-                                                      },
-                                                      child: const Icon(Icons.close, size: 10, color: Colors.white70),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            : OutlinedButton(
-                                                style: OutlinedButton.styleFrom(
-                                                  padding: EdgeInsets.zero,
-                                                  side: BorderSide(color: widget.isDark ? Colors.white24 : Colors.grey.shade300),
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                                                ),
-                                                onPressed: () => _showPickerAssignmentDialog(roomName, slot),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: const [
-                                                    Icon(Icons.add, size: 10),
-                                                    SizedBox(width: 2),
-                                                    Text('Assign', style: TextStyle(fontSize: 8)),
-                                                  ],
-                                                ),
-                                              ),
+                                    ..._timeSlots.map((slot) => TableCell(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(slot, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                                ...allocatedRooms.map((roomName) {
+                                  return TableRow(
+                                    children: [
+                                      TableCell(
+                                        verticalAlignment: TableCellVerticalAlignment.middle,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                            roomName.replaceAll('Room', 'Room '),
+                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                                          ),
+                                        ),
                                       ),
-                                    );
-                                  }),
-                                ],
-                              );
-                            }),
-                          ],
+                                      ..._timeSlots.map((slot) {
+                                        final assignmentKey = '${roomName}_$slot';
+                                        final pickerName = _scheduledAssignments[assignmentKey];
+                                        final isAssigned = pickerName != null;
+
+                                        return TableCell(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            height: 42,
+                                            child: isAssigned
+                                                ? Container(
+                                                    decoration: BoxDecoration(
+                                                      color: FarmColors.forestGreen,
+                                                      borderRadius: BorderRadius.circular(4),
+                                                    ),
+                                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            pickerName,
+                                                            style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                                                            overflow: TextOverflow.ellipsis,
+                                                          ),
+                                                        ),
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              _scheduledAssignments.remove(assignmentKey);
+                                                            });
+                                                          },
+                                                          child: const Icon(Icons.close, size: 10, color: Colors.white70),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                : OutlinedButton(
+                                                    style: OutlinedButton.styleFrom(
+                                                      padding: EdgeInsets.zero,
+                                                      side: BorderSide(color: widget.isDark ? Colors.white24 : Colors.grey.shade300),
+                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                                    ),
+                                                    onPressed: () => _showPickerAssignmentDialog(roomName, slot),
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: const [
+                                                        Icon(Icons.add, size: 10),
+                                                        SizedBox(width: 2),
+                                                        Text('Assign', style: TextStyle(fontSize: 8)),
+                                                      ],
+                                                    ),
+                                                  ),
+                                          ),
+                                        );
+                                      }),
+                                    ],
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),

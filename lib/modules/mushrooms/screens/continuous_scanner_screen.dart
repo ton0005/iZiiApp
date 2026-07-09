@@ -54,6 +54,15 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen> {
     });
   }
 
+  Map<String, dynamic> _findEmployee(String code) {
+    for (final e in _employees) {
+      if (e['id']?.toString().toUpperCase() == code.toUpperCase()) {
+        return e;
+      }
+    }
+    return <String, dynamic>{};
+  }
+
   @override
   Widget build(BuildContext context) {
     final harvestEmployees = _employees
@@ -167,9 +176,7 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen> {
                               onPressed: () {
                                 final code = _manualIdController.text.trim().toUpperCase();
                                 if (code.isEmpty) return;
-                                final emp = _employees.firstWhere(
-                                    (e) => e['id']?.toString().toUpperCase() == code,
-                                    orElse: () => {});
+                                final emp = _findEmployee(code);
                                 if (emp.isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text('Employee ID not found!')),
