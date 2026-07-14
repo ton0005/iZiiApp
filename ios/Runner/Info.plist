@@ -77,6 +77,10 @@
 		<string>bluetooth-central</string>
 		<string>bluetooth-peripheral</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Ứng dụng cần truy cập Máy ảnh để chụp và gửi ảnh đính kèm trong tin nhắn.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Ứng dụng cần truy cập Thư viện ảnh để chọn và gửi ảnh đính kèm trong tin nhắn.</string>
 </dict>
 </plist>
 

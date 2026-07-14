@@ -8,6 +8,50 @@ enum ChatMessageType {
   sos,
 }
 
+class AttachmentFile {
+  final String id;
+  final String name;
+  final String mimeType;
+  final int fileSize;
+  final String? localUri;
+  final String? remoteUrl;
+  final String uploadStatus; // 'pending' | 'uploading' | 'success' | 'failed'
+
+  AttachmentFile({
+    required this.id,
+    required this.name,
+    required this.mimeType,
+    required this.fileSize,
+    this.localUri,
+    this.remoteUrl,
+    required this.uploadStatus,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'mime_type': mimeType,
+      'file_size': fileSize,
+      if (localUri != null) 'local_uri': localUri,
+      if (remoteUrl != null) 'remote_url': remoteUrl,
+      'upload_status': uploadStatus,
+    };
+  }
+
+  factory AttachmentFile.fromMap(Map<String, dynamic> map) {
+    return AttachmentFile(
+      id: map['id'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      mimeType: map['mime_type'] as String? ?? '',
+      fileSize: map['file_size'] as int? ?? 0,
+      localUri: map['local_uri'] as String?,
+      remoteUrl: map['remote_url'] as String?,
+      uploadStatus: map['upload_status'] as String? ?? 'pending',
+    );
+  }
+}
+
 class ChatMessageContent {
   final String? text;
   final String? fileUrl;
@@ -18,6 +62,7 @@ class ChatMessageContent {
   final double? latitude;
   final double? longitude;
   final String? alertMessage;
+  final List<AttachmentFile>? attachments;
 
   ChatMessageContent({
     this.text,
@@ -29,6 +74,7 @@ class ChatMessageContent {
     this.latitude,
     this.longitude,
     this.alertMessage,
+    this.attachments,
   });
 
   Map<String, dynamic> toMap() {
@@ -42,6 +88,8 @@ class ChatMessageContent {
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
       if (alertMessage != null) 'alertMessage': alertMessage,
+      if (attachments != null)
+        'attachments': attachments!.map((a) => a.toMap()).toList(),
     };
   }
 
@@ -56,6 +104,12 @@ class ChatMessageContent {
       latitude: (map['latitude'] as num?)?.toDouble(),
       longitude: (map['longitude'] as num?)?.toDouble(),
       alertMessage: map['alertMessage'] as String?,
+      attachments: map['attachments'] != null
+          ? (map['attachments'] as List)
+              .map((x) => AttachmentFile.fromMap(
+                  Map<String, dynamic>.from(x as Map)))
+              .toList()
+          : null,
     );
   }
 

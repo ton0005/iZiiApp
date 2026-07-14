@@ -88,6 +88,7 @@ if log_file:
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from typing import List
 import json
 import os
@@ -95,7 +96,7 @@ from datetime import datetime
 from contextlib import asynccontextmanager
 
 from database import get_db_connection, DB_PATH
-from routers import sync, devices, messages, notifications
+from routers import sync, devices, messages, notifications, attachments
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -216,6 +217,12 @@ app.include_router(sync.router)
 app.include_router(devices.router)
 app.include_router(messages.router)
 app.include_router(notifications.router)
+app.include_router(attachments.router)
+
+# Mount static uploads directory for attachments serving
+uploads_dir = os.path.join(get_stable_data_dir(), "uploads")
+os.makedirs(uploads_dir, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 
 # ══════════════════════════════════════════════════════════════════════════════

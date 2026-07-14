@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
@@ -9,6 +10,7 @@ import 'outbox_queue.dart';
 import 'sync_config_repository.dart';
 import '../device_identity/ble_device_discovery_service.dart';
 import 'ble_sync_manager.dart';
+import '../../modules/communication/repository/chat_repository.dart';
 
 class SyncEvent {
   final List<String> updatedTables;
@@ -94,6 +96,9 @@ class SyncService {
       final syncConfigRepo = SyncConfigRepository();
       final configs = await syncConfigRepo.getConfigsForUser(userId);
       final configMap = {for (var c in configs) c.moduleKey: c};
+
+      // ── UPLOAD: tải lên các tệp đính kèm chưa hoàn thành ──
+      await _uploadPendingAttachments();
 
       // ── PUSH: gửi các mutations lên server ──
       final mutations = await _outbox.getPendingMutations();
@@ -196,6 +201,116 @@ class SyncService {
       return false;
     } finally {
       _isSyncing = false;
+    }
+  }
+
+  Future<String?> uploadAttachment(
+    String filePath, {
+    void Function(int sent, int total)? onProgress,
+  }) async {
+    try {
+      final url = await _settingsService.getSyncServerUrl();
+      final token = await _settingsService.getSyncToken();
+      
+      final file = await MultipartFile.fromFile(filePath);
+      final formData = FormData.fromMap({
+        'file': file,
+      });
+      
+      final response = await _dio.post(
+        '$url/api/v1/attachments/upload',
+        data: formData,
+        onSendProgress: onProgress,
+        options: Options(headers: {
+          if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+        }),
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = response.data as Map<String, dynamic>;
+        return data['url'] as String?;
+      }
+    } catch (e) {
+      _log('Lỗi tải tệp đính kèm: $e');
+    }
+    return null;
+  }
+
+  Future<void> _uploadPendingAttachments() async {
+    try {
+      final allMessages = await _db.select(_db.chatMessages).get();
+      for (var msg in allMessages) {
+        if (msg.type != 'file') continue;
+        
+        try {
+          final contentMap = Map<String, dynamic>.from(jsonDecode(msg.content) as Map);
+          if (contentMap['attachments'] == null) continue;
+          
+          final attachmentsList = (contentMap['attachments'] as List)
+              .map((x) => Map<String, dynamic>.from(x as Map))
+              .toList();
+              
+          bool updated = false;
+          final newAttachments = <Map<String, dynamic>>[];
+          
+          for (var att in attachmentsList) {
+            final status = att['upload_status'] as String? ?? 'pending';
+            if (status == 'pending' || status == 'failed') {
+              final localUri = att['local_uri'] as String?;
+              if (localUri != null && await File(localUri).exists()) {
+                _log('Tải lên tệp đính kèm chưa hoàn thành cho tin nhắn ${msg.id}: ${att['name']}');
+                final remoteUrl = await uploadAttachment(localUri);
+                if (remoteUrl != null) {
+                  newAttachments.add({
+                    ...att,
+                    'remote_url': remoteUrl,
+                    'upload_status': 'success',
+                  });
+                  updated = true;
+                } else {
+                  newAttachments.add({
+                    ...att,
+                    'upload_status': 'failed',
+                  });
+                }
+              } else {
+                newAttachments.add(att);
+              }
+            } else {
+              newAttachments.add(att);
+            }
+          }
+          
+          if (updated) {
+            final newContentMap = {
+              ...contentMap,
+              'attachments': newAttachments,
+            };
+            
+            final updatedMsg = ChatMessage(
+              id: msg.id,
+              conversationId: msg.conversationId,
+              senderId: msg.senderId,
+              type: msg.type,
+              content: jsonEncode(newContentMap),
+              sentAt: msg.sentAt,
+              deliveredAt: msg.deliveredAt,
+              readAt: msg.readAt,
+              isDeleted: msg.isDeleted,
+            );
+            
+            await _db.into(_db.chatMessages).insertOnConflictUpdate(updatedMsg);
+            
+            final repo = ChatRepository(_db);
+            await repo.queueMessageOffline(updatedMsg);
+            _log('Đã tải lên thành công tệp đính kèm và xếp hàng đồng bộ tin nhắn ${msg.id}');
+          }
+        } catch (e) {
+          _log('Lỗi xử lý tải lên tệp đính kèm ngoại tuyến: $e');
+        }
+      }
+    } catch (e) {
+      _log('Lỗi quét tệp đính kèm ngoại tuyến: $e');
     }
   }
 

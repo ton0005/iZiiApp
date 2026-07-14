@@ -101,7 +101,10 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     null,
     null,
     null,
+    null,
+    null,
     'corridor',
+    null,
     null,
     null,
     null,
@@ -859,7 +862,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
       orElse: () => {},
     );
 
-    bool isAloneWorker = activeSoloJob.isNotEmpty || stageIsAlone || stageIsTimeout;
+    bool isAloneWorker =
+        activeSoloJob.isNotEmpty || stageIsAlone || stageIsTimeout;
     bool isSoloTimedOut = stageIsTimeout;
     String displayStage = stage;
 
@@ -888,7 +892,6 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     } else {
       stageColor = _getStageColor(stage);
     }
-
 
     // Pickers Checked-In
     final crew = widget.roomCrews[roomName] ?? [];
@@ -1161,7 +1164,6 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
         return const Color(0xFF6B7280); // Grey
     }
   }
-
 
   Widget _buildFilterBtn(String label, String value) {
     final active = widget.roomFilter == value;

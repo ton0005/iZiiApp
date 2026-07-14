@@ -1,14 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/device_identity/device_discovery_service.dart';
 import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../../../core/device_identity/device_identity_models.dart';
+import '../../../core/settings/settings_service.dart';
 import '../bloc/chat_bloc.dart';
 import '../models/chat_models.dart';
 import '../widgets/presence_avatar.dart';
@@ -34,6 +40,8 @@ class ConversationScreen extends StatefulWidget {
 class _ConversationScreenState extends State<ConversationScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _inputFocusNode = FocusNode();
+  final ImagePicker _picker = ImagePicker();
   Timer? _typingTimer;
   bool _isTyping = false;
   bool _showScrollToBottom = false;
@@ -55,6 +63,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     _typingTimer?.cancel();
+    _inputFocusNode.dispose();
     super.dispose();
   }
 
@@ -91,6 +100,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   void _onTextChanged(String text) {
+    setState(() {}); // Rebuild to update textInputAction and send/mic button dynamically
+    
     if (text.isEmpty && _isTyping) {
       _isTyping = false;
       context
@@ -128,6 +139,164 @@ class _ConversationScreenState extends State<ConversationScreen> {
       _onTextChanged('');
     }
     Timer(const Duration(milliseconds: 100), _scrollToBottom);
+  }
+
+  void _submitMessageFlow() {
+    final text = _messageController.text.trim();
+    final draftAttachments = context.read<ChatBloc>().state.draftAttachments;
+    
+    if (text.isEmpty && draftAttachments.isEmpty) return;
+    
+    if (draftAttachments.isNotEmpty) {
+      context.read<ChatBloc>().add(SendMessageWithAttachmentsEvent(
+            conversationId: widget.conversationId,
+            text: text,
+          ));
+      _messageController.clear();
+      _onTextChanged('');
+    } else {
+      _sendMessage();
+    }
+  }
+
+  TextInputAction _getTextInputAction() {
+    final hasText = _messageController.text.trim().isNotEmpty;
+    return hasText ? TextInputAction.send : TextInputAction.newline;
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final permission = source == ImageSource.camera ? Permission.camera : Permission.photos;
+      final granted = await permission.request().isGranted;
+      if (!granted && source == ImageSource.camera) {
+        _showPermissionWarning('Quyền truy cập Máy ảnh bị từ chối.');
+        return;
+      }
+      
+      final XFile? image = await _picker.pickImage(source: source);
+      if (image == null) return;
+      
+      // Check size limit: 20MB
+      final File file = File(image.path);
+      final size = await file.length();
+      if (size > 20 * 1024 * 1024) {
+        _showErrorSnackBar('Dung lượng tệp vượt quá giới hạn 20MB.');
+        return;
+      }
+      
+      // Save permanently to local app storage
+      final savedFile = await _saveFileToLocalChatDir(file, image.name);
+      
+      final att = AttachmentFile(
+        id: 'file_${DateTime.now().millisecondsSinceEpoch}_${image.name.hashCode % 10000}',
+        name: image.name,
+        mimeType: _getMimeType(image.path),
+        fileSize: size,
+        localUri: savedFile.path,
+        uploadStatus: 'pending',
+      );
+      
+      if (!mounted) return;
+      context.read<ChatBloc>().add(PickAttachmentsEvent([att]));
+    } catch (e) {
+      _showErrorSnackBar('Lỗi chọn ảnh: $e');
+    }
+  }
+
+  Future<void> _pickFiles() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        allowMultiple: true,
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'txt', 'zip'],
+      );
+      
+      if (result == null || result.files.isEmpty) return;
+      
+      final List<AttachmentFile> pickedFiles = [];
+      for (var f in result.files) {
+        if (f.path == null) continue;
+        
+        final file = File(f.path!);
+        final size = f.size;
+        if (size > 20 * 1024 * 1024) {
+          _showErrorSnackBar('Tệp ${f.name} vượt quá giới hạn 20MB.');
+          continue;
+        }
+        
+        final savedFile = await _saveFileToLocalChatDir(file, f.name);
+        
+        pickedFiles.add(AttachmentFile(
+          id: 'file_${DateTime.now().millisecondsSinceEpoch}_${f.name.hashCode % 10000}',
+          name: f.name,
+          mimeType: _getMimeType(f.path!),
+          fileSize: size,
+          localUri: savedFile.path,
+          uploadStatus: 'pending',
+        ));
+      }
+      
+      if (pickedFiles.isNotEmpty) {
+        if (!mounted) return;
+        context.read<ChatBloc>().add(PickAttachmentsEvent(pickedFiles));
+      }
+    } catch (e) {
+      _showErrorSnackBar('Lỗi chọn tài liệu: $e');
+    }
+  }
+
+  Future<File> _saveFileToLocalChatDir(File file, String name) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final chatFilesDir = Directory('${appDir.path}/chat_files');
+    if (!await chatFilesDir.exists()) {
+      await chatFilesDir.create(recursive: true);
+    }
+    
+    // Prevent name collision
+    final String cleanName = '${DateTime.now().millisecondsSinceEpoch}_$name';
+    final savedPath = '${chatFilesDir.path}/$cleanName';
+    return file.copy(savedPath);
+  }
+
+  String _getMimeType(String path) {
+    final ext = path.split('.').last.toLowerCase();
+    if (ext == 'png' || ext == 'jpg' || ext == 'jpeg' || ext == 'webp' || ext == 'heic') {
+      return 'image/$ext';
+    }
+    if (ext == 'pdf') return 'application/pdf';
+    if (ext == 'xls' || ext == 'xlsx') return 'application/vnd.ms-excel';
+    if (ext == 'doc' || ext == 'docx') return 'application/msword';
+    if (ext == 'zip') return 'application/zip';
+    return 'application/octet-stream';
+  }
+
+  void _showPermissionWarning(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Yêu cầu quyền truy cập'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: const Text('Đóng'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          TextButton(
+            child: const Text('Cài đặt'),
+            onPressed: () {
+              Navigator.pop(context);
+              openAppSettings();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
+    );
   }
 
   @override
@@ -432,6 +601,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final sentTime = DateFormat('h:mm a').format(message.sentAt.toLocal());
     final fontSize = ChatTheme.getFontSize(_fontSizeOption);
 
+    List<AttachmentFile> bubbleAttachments = [];
+    try {
+      final contentMap =
+          Map<String, dynamic>.from(jsonDecode(message.content) as Map);
+      if (contentMap['attachments'] != null) {
+        bubbleAttachments = (contentMap['attachments'] as List)
+            .map((x) =>
+                AttachmentFile.fromMap(Map<String, dynamic>.from(x as Map)))
+            .toList();
+      }
+    } catch (_) {}
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
@@ -460,34 +641,42 @@ class _ConversationScreenState extends State<ConversationScreen> {
             ),
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                messageText,
-                style: TextStyle(
-                  color: isMe ? Colors.white : ChatTheme.getTextPrimary(isDark),
-                  fontSize: fontSize,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    sentTime,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: isMe
-                          ? Colors.white.withValues(alpha: 0.75)
-                          : ChatTheme.getTextMuted(isDark),
-                    ),
+              if (messageText.isNotEmpty)
+                Text(
+                  messageText,
+                  style: TextStyle(
+                    color:
+                        isMe ? Colors.white : ChatTheme.getTextPrimary(isDark),
+                    fontSize: fontSize,
+                    height: 1.5,
                   ),
-                  if (isMe) ...[
-                    const SizedBox(width: 4),
-                    _buildStatusTick(message),
+                ),
+              if (bubbleAttachments.isNotEmpty)
+                _buildBubbleAttachments(
+                    message.id, bubbleAttachments, isMe, isDark),
+              const SizedBox(height: 6),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      sentTime,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isMe
+                            ? Colors.white.withValues(alpha: 0.75)
+                            : ChatTheme.getTextMuted(isDark),
+                      ),
+                    ),
+                    if (isMe) ...[
+                      const SizedBox(width: 4),
+                      _buildStatusTick(message),
+                    ],
                   ],
-                ],
+                ),
               ),
             ],
           ),
@@ -534,131 +723,163 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Widget _buildInputBar(BuildContext context, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-      decoration: BoxDecoration(
-        color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: isDark ? Colors.grey.shade900 : Colors.grey.shade200,
+    return BlocBuilder<ChatBloc, ChatState>(
+      builder: (context, state) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          decoration: BoxDecoration(
+            color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
+            border: Border(
+              top: BorderSide(
+                color: isDark ? Colors.grey.shade900 : Colors.grey.shade200,
+              ),
+            ),
           ),
-        ),
-      ),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Quick reply toggle button (⚡)
-                IconButton(
-                  icon: Icon(
-                    _showQuickReplyTray
-                        ? Icons.bolt_rounded
-                        : Icons.offline_bolt_outlined,
-                    color: ChatTheme.getAccent(isDark),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _showQuickReplyTray = !_showQuickReplyTray;
-                    });
-                  },
-                ),
-
-                // Attachment Button (📎)
-                IconButton(
-                  icon: Icon(Icons.attach_file_rounded,
-                      color: ChatTheme.getTextMuted(isDark)),
-                  onPressed: () {
-                    // Attachment logic
-                  },
-                ),
-
-                // Text Message input field
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? ChatTheme.bgPrimaryDark
-                          : Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: isDark
-                            ? Colors.grey.shade800
-                            : Colors.grey.shade300,
+                // Horizontal list of selected draft attachment previews
+                _buildDraftPreviewsBar(context, state),
+                
+                Row(
+                  children: [
+                    // Quick reply toggle button (⚡)
+                    IconButton(
+                      icon: Icon(
+                        _showQuickReplyTray
+                            ? Icons.bolt_rounded
+                            : Icons.offline_bolt_outlined,
+                        color: ChatTheme.getAccent(isDark),
                       ),
+                      onPressed: () {
+                        setState(() {
+                          _showQuickReplyTray = !_showQuickReplyTray;
+                        });
+                      },
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _messageController,
-                            onChanged: _onTextChanged,
-                            maxLines: 3,
-                            minLines: 1,
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: ChatTheme.getTextPrimary(isDark)),
-                            decoration: InputDecoration(
-                              hintText: context.tr('chat_type_message'),
-                              hintStyle: TextStyle(
-                                  color: ChatTheme.getTextMuted(isDark)),
-                              border: InputBorder.none,
-                              contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 10),
-                            ),
+
+                    // Attachment Button (📎)
+                    IconButton(
+                      icon: Icon(Icons.attach_file_rounded,
+                          color: ChatTheme.getTextMuted(isDark)),
+                      onPressed: () {
+                        _showAttachmentMenu();
+                      },
+                    ),
+
+                    // Text Message input field
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? ChatTheme.bgPrimaryDark
+                              : Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: isDark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade300,
                           ),
                         ),
-                        // Emoji Button (😊)
-                        IconButton(
-                          icon: Icon(Icons.sentiment_satisfied_alt_rounded,
-                              color: ChatTheme.getTextMuted(isDark)),
-                          onPressed: () {
-                            // Emoji tray action
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-
-                // Send or Voice Action Button
-                ValueListenableBuilder<TextEditingValue>(
-                  valueListenable: _messageController,
-                  builder: (context, value, child) {
-                    final hasText = value.text.trim().isNotEmpty;
-                    return CircleAvatar(
-                      backgroundColor: ChatTheme.getAccent(isDark),
-                      radius: 22,
-                      child: IconButton(
-                        icon: Icon(
-                          hasText ? Icons.send_rounded : Icons.mic_rounded,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                        onPressed: hasText
-                            ? _sendMessage
-                            : () {
-                                // Voice message recorder trigger placeholder
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        context.tr('chat_voice_recording_snack')),
-                                    duration: const Duration(seconds: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Focus(
+                                onKeyEvent: (node, event) {
+                                  if (event is KeyDownEvent &&
+                                      event.logicalKey == LogicalKeyboardKey.enter) {
+                                    final isShiftPressed =
+                                        HardwareKeyboard.instance.isShiftPressed;
+                                    if (isShiftPressed) {
+                                      return KeyEventResult.ignored;
+                                    } else {
+                                      _submitMessageFlow();
+                                      return KeyEventResult.handled;
+                                    }
+                                  }
+                                  return KeyEventResult.ignored;
+                                },
+                                child: TextField(
+                                  focusNode: _inputFocusNode,
+                                  controller: _messageController,
+                                  onChanged: _onTextChanged,
+                                  maxLines: 3,
+                                  minLines: 1,
+                                  keyboardType: TextInputType.multiline,
+                                  textInputAction: _getTextInputAction(),
+                                  onSubmitted: (_) {
+                                    _submitMessageFlow();
+                                  },
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: ChatTheme.getTextPrimary(isDark)),
+                                  decoration: InputDecoration(
+                                    hintText: context.tr('chat_type_message'),
+                                    hintStyle: TextStyle(
+                                        color: ChatTheme.getTextMuted(isDark)),
+                                    border: InputBorder.none,
+                                    contentPadding:
+                                        const EdgeInsets.symmetric(vertical: 10),
                                   ),
-                                );
+                                ),
+                              ),
+                            ),
+                            // Emoji Button (😊)
+                            IconButton(
+                              icon: Icon(Icons.sentiment_satisfied_alt_rounded,
+                                  color: ChatTheme.getTextMuted(isDark)),
+                              onPressed: () {
+                                // Emoji tray action
                               },
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(width: 8),
+
+                    // Send or Voice Action Button
+                    ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: _messageController,
+                      builder: (context, value, child) {
+                        final hasText = value.text.trim().isNotEmpty;
+                        final hasAttachments = state.draftAttachments.isNotEmpty;
+                        final showSend = hasText || hasAttachments;
+                        
+                        return CircleAvatar(
+                          backgroundColor: ChatTheme.getAccent(isDark),
+                          radius: 22,
+                          child: IconButton(
+                            icon: Icon(
+                              showSend ? Icons.send_rounded : Icons.mic_rounded,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                            onPressed: showSend
+                                ? _submitMessageFlow
+                                : () {
+                                    // Voice message recorder trigger placeholder
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            context.tr('chat_voice_recording_snack')),
+                                        duration: const Duration(seconds: 1),
+                                      ),
+                                    );
+                                  },
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -734,5 +955,344 @@ class _ConversationScreenState extends State<ConversationScreen> {
       case ChatPresenceState.offline:
         return context.tr('chat_presence_offline');
     }
+  }
+
+  Future<void> _showAttachmentMenu() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? ChatTheme.bgPrimaryDark : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded, color: Colors.purple),
+                title: const Text('Máy ảnh (Camera)', style: TextStyle(fontWeight: FontWeight.bold)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded, color: Colors.blue),
+                title: const Text('Thư viện ảnh (Gallery)', style: TextStyle(fontWeight: FontWeight.bold)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.description_rounded, color: Colors.green),
+                title: const Text('Tài liệu & Tệp (Files)', style: TextStyle(fontWeight: FontWeight.bold)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickFiles();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDraftPreviewsBar(BuildContext context, ChatState state) {
+    if (state.draftAttachments.isEmpty) return const SizedBox();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      height: 80,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.grey.shade50,
+        border: Border(
+          top: BorderSide(
+              color: isDark ? Colors.grey.shade900 : Colors.grey.shade200),
+        ),
+      ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: state.draftAttachments.length,
+        itemBuilder: (context, index) {
+          final file = state.draftAttachments[index];
+          final isImage = file.mimeType.startsWith('image/');
+
+          return Container(
+            margin: const EdgeInsets.only(right: 12),
+            width: 70,
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                    width: 60,
+                    height: 60,
+                    child: isImage && file.localUri != null
+                        ? Image.file(
+                            File(file.localUri!),
+                            fit: BoxFit.cover,
+                            width: 60,
+                            height: 60,
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                file.mimeType == 'application/pdf'
+                                    ? Icons.picture_as_pdf_rounded
+                                    : Icons.insert_drive_file_rounded,
+                                color: file.mimeType == 'application/pdf'
+                                    ? Colors.redAccent
+                                    : Colors.blueAccent,
+                                size: 28,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                file.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 9),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 4,
+                  child: GestureDetector(
+                    onTap: () {
+                      context
+                          .read<ChatBloc>()
+                          .add(RemoveAttachmentEvent(file.id));
+                    },
+                    child: CircleAvatar(
+                      radius: 10,
+                      backgroundColor: Colors.red.withValues(alpha: 0.8),
+                      child: const Icon(Icons.close_rounded,
+                          size: 12, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBubbleAttachments(
+    String messageId,
+    List<AttachmentFile> attachments,
+    bool isMe,
+    bool isDark,
+  ) {
+    if (attachments.isEmpty) return const SizedBox();
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: attachments.map((file) {
+          final isImage = file.mimeType.startsWith('image/');
+
+          return BlocBuilder<ChatBloc, ChatState>(
+            builder: (context, state) {
+              final progressKey = '${messageId}_${file.id}';
+              final progress = state.uploadProgressMap[progressKey];
+              final isUploading = file.uploadStatus == 'uploading' ||
+                  (progress != null &&
+                      progress < 1.0 &&
+                      file.uploadStatus == 'pending');
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 6),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.black26 : Colors.white24,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isDark ? Colors.white10 : Colors.black12,
+                    width: 0.5,
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (isImage)
+                      GestureDetector(
+                        onTap: () {
+                          // View full image if we want
+                        },
+                        child: file.remoteUrl != null
+                            ? _buildImageWidget(file.remoteUrl!, file.localUri)
+                            : (file.localUri != null
+                                ? Image.file(
+                                    File(file.localUri!),
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 180,
+                                  )
+                                : const SizedBox(
+                                    height: 180,
+                                    child: Center(
+                                        child: Icon(
+                                            Icons.image_not_supported_rounded)),
+                                  )),
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
+                        child: Row(
+                          children: [
+                            Icon(
+                              file.mimeType == 'application/pdf'
+                                  ? Icons.picture_as_pdf_rounded
+                                  : Icons.insert_drive_file_rounded,
+                              color: file.mimeType == 'application/pdf'
+                                  ? Colors.redAccent
+                                  : (isMe ? Colors.white : Colors.blueAccent),
+                              size: 32,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    file.name,
+                                    style: TextStyle(
+                                      color: isMe
+                                          ? Colors.white
+                                          : ChatTheme.getTextPrimary(isDark),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${(file.fileSize / 1024).toStringAsFixed(1)} KB',
+                                    style: TextStyle(
+                                      color: isMe
+                                          ? Colors.white70
+                                          : ChatTheme.getTextMuted(isDark),
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (file.remoteUrl != null)
+                              IconButton(
+                                icon: Icon(
+                                  Icons.download_rounded,
+                                  color: isMe
+                                      ? Colors.white70
+                                      : ChatTheme.getTextMuted(isDark),
+                                ),
+                                onPressed: () {
+                                  // Trigger download
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
+
+                    // Upload progress indicator
+                    if (isUploading && progress != null)
+                      Column(
+                        children: [
+                          LinearProgressIndicator(
+                            value: progress,
+                            backgroundColor: Colors.transparent,
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                                Colors.cyanAccent),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            child: Text(
+                              'Đang tải lên: ${(progress * 100).toStringAsFixed(0)}%',
+                              style: const TextStyle(
+                                  fontSize: 10, color: Colors.cyanAccent),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                    if (file.uploadStatus == 'failed')
+                      const Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        child: Row(
+                          children: [
+                            Icon(Icons.error_outline_rounded,
+                                color: Colors.redAccent, size: 14),
+                            SizedBox(width: 4),
+                            Text(
+                              'Tải lên thất bại. Sẽ thử lại khi trực tuyến.',
+                              style: TextStyle(
+                                  color: Colors.redAccent, fontSize: 10),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildImageWidget(String remoteUrl, String? localUri) {
+    if (localUri != null && File(localUri).existsSync()) {
+      return Image.file(
+        File(localUri),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: 180,
+      );
+    }
+
+    return FutureBuilder<String>(
+      future: SettingsService().getSyncServerUrl(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const SizedBox(
+            height: 180,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final serverUrl = snapshot.data!;
+        final fullUrl = remoteUrl.startsWith('http')
+            ? remoteUrl
+            : '$serverUrl$remoteUrl';
+        return Image.network(
+          fullUrl,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: 180,
+          errorBuilder: (context, error, stackTrace) {
+            return const SizedBox(
+              height: 180,
+              child: Center(child: Icon(Icons.broken_image_rounded)),
+            );
+          },
+        );
+      },
+    );
   }
 }

@@ -8,6 +8,6 @@ Each router handles one logical domain of the API:
 - messages:       Track 3 — E2EE Messaging (/api/v1/messages/*)
 - notifications:  Track 4+5 — Notifications & Settings (/api/v1/notifications/*)
 """
-from routers import sync, devices, messages, notifications
+from routers import sync, devices, messages, notifications, attachments
 
-__all__ = ["sync", "devices", "messages", "notifications"]
+__all__ = ["sync", "devices", "messages", "notifications", "attachments"]

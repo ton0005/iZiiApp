@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
@@ -105,6 +106,40 @@ class PullEncryptedMessagesEvent extends ChatEvent {}
 
 class RefreshPresenceEvent extends ChatEvent {}
 
+class PickAttachmentsEvent extends ChatEvent {
+  final List<AttachmentFile> files;
+  const PickAttachmentsEvent(this.files);
+  @override
+  List<Object?> get props => [files];
+}
+
+class RemoveAttachmentEvent extends ChatEvent {
+  final String fileId;
+  const RemoveAttachmentEvent(this.fileId);
+  @override
+  List<Object?> get props => [fileId];
+}
+
+class UploadProgressTickEvent extends ChatEvent {
+  final String messageId;
+  final String fileId;
+  final double progress;
+  const UploadProgressTickEvent(this.messageId, this.fileId, this.progress);
+  @override
+  List<Object?> get props => [messageId, fileId, progress];
+}
+
+class SendMessageWithAttachmentsEvent extends ChatEvent {
+  final String conversationId;
+  final String text;
+  const SendMessageWithAttachmentsEvent({
+    required this.conversationId,
+    required this.text,
+  });
+  @override
+  List<Object?> get props => [conversationId, text];
+}
+
 // --- States ---
 class ChatState extends Equatable {
   final List<ChatConversation> conversations;
@@ -118,6 +153,8 @@ class ChatState extends Equatable {
   final bool isLoading;
   final bool isWsConnected;
   final String? error;
+  final List<AttachmentFile> draftAttachments;
+  final Map<String, double> uploadProgressMap;
 
   const ChatState({
     this.conversations = const [],
@@ -130,6 +167,8 @@ class ChatState extends Equatable {
     this.isLoading = false,
     this.isWsConnected = false,
     this.error,
+    this.draftAttachments = const [],
+    this.uploadProgressMap = const {},
   });
 
   ChatState copyWith({
@@ -143,6 +182,8 @@ class ChatState extends Equatable {
     bool? isLoading,
     bool? isWsConnected,
     String? error,
+    List<AttachmentFile>? draftAttachments,
+    Map<String, double>? uploadProgressMap,
   }) {
     return ChatState(
       conversations: conversations ?? this.conversations,
@@ -155,6 +196,8 @@ class ChatState extends Equatable {
       isLoading: isLoading ?? this.isLoading,
       isWsConnected: isWsConnected ?? this.isWsConnected,
       error: error,
+      draftAttachments: draftAttachments ?? this.draftAttachments,
+      uploadProgressMap: uploadProgressMap ?? this.uploadProgressMap,
     );
   }
 
@@ -170,6 +213,8 @@ class ChatState extends Equatable {
         isLoading,
         isWsConnected,
         error,
+        draftAttachments,
+        uploadProgressMap,
       ];
 }
 
@@ -206,6 +251,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<SendEncryptedMessageEvent>(_onSendEncryptedMessage);
     on<PullEncryptedMessagesEvent>(_onPullEncryptedMessages);
     on<RefreshPresenceEvent>(_onRefreshPresence);
+    on<PickAttachmentsEvent>(_onPickAttachments);
+    on<RemoveAttachmentEvent>(_onRemoveAttachment);
+    on<UploadProgressTickEvent>(_onUploadProgressTick);
+    on<SendMessageWithAttachmentsEvent>(_onSendMessageWithAttachments);
 
     _init();
   }
@@ -971,5 +1020,199 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       
       emit(state.copyWith(userPresenceMap: updatedMap));
     } catch (_) {}
+  }
+
+  void _onPickAttachments(
+    PickAttachmentsEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    final updatedList = List<AttachmentFile>.from(state.draftAttachments)
+      ..addAll(event.files);
+    emit(state.copyWith(draftAttachments: updatedList));
+  }
+
+  void _onRemoveAttachment(
+    RemoveAttachmentEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    final updatedList = List<AttachmentFile>.from(state.draftAttachments)
+      ..removeWhere((f) => f.id == event.fileId);
+    emit(state.copyWith(draftAttachments: updatedList));
+  }
+
+  void _onUploadProgressTick(
+    UploadProgressTickEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    final updatedMap = Map<String, double>.from(state.uploadProgressMap)
+      ..['${event.messageId}_${event.fileId}'] = event.progress;
+    emit(state.copyWith(uploadProgressMap: updatedMap));
+  }
+
+  Future<void> _onSendMessageWithAttachments(
+    SendMessageWithAttachmentsEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    if (_currentUserId == null) return;
+
+    final attachments = List<AttachmentFile>.from(state.draftAttachments);
+    if (attachments.isEmpty) return;
+
+    // Clear draft attachments
+    emit(state.copyWith(draftAttachments: const []));
+
+    final messageId = const Uuid().v4();
+    final now = DateTime.now();
+
+    // Create ChatMessage object with status 'pending'
+    final messageContent = ChatMessageContent(
+      text: event.text,
+      attachments: attachments,
+    );
+
+    final chatMsg = ChatMessage(
+      id: messageId,
+      conversationId: event.conversationId,
+      senderId: _currentUserId!,
+      type: ChatMessageType.file.name, // Mark as file message type
+      content: messageContent.toJson(),
+      sentAt: now,
+      isDeleted: false,
+    );
+
+    // Save locally
+    await _chatRepository.saveMessage(chatMsg);
+
+    // Update active messages if this conversation is open
+    if (state.activeConversationId == event.conversationId) {
+      final updatedList = List<ChatMessage>.from(state.activeMessages)
+        ..add(chatMsg);
+      emit(state.copyWith(activeMessages: updatedList));
+    }
+    add(LoadConversationsEvent());
+
+    // Trigger upload in background
+    _uploadAttachmentsAndSend(chatMsg, attachments);
+  }
+
+  Future<void> _uploadAttachmentsAndSend(
+    ChatMessage message,
+    List<AttachmentFile> attachments,
+  ) async {
+    final updatedAttachments = <AttachmentFile>[];
+    bool hasFailure = false;
+
+    for (var att in attachments) {
+      // Set to uploading status
+      add(UploadProgressTickEvent(message.id, att.id, 0.0));
+
+      try {
+        final filePath = att.localUri;
+        if (filePath == null || !await File(filePath).exists()) {
+          throw Exception('Local file does not exist: $filePath');
+        }
+
+        // Start upload
+        final remoteUrl = await _uploadFile(message.id, att.id, filePath);
+        if (remoteUrl != null) {
+          updatedAttachments.add(AttachmentFile(
+            id: att.id,
+            name: att.name,
+            mimeType: att.mimeType,
+            fileSize: att.fileSize,
+            localUri: att.localUri,
+            remoteUrl: remoteUrl,
+            uploadStatus: 'success',
+          ));
+        } else {
+          hasFailure = true;
+          updatedAttachments.add(AttachmentFile(
+            id: att.id,
+            name: att.name,
+            mimeType: att.mimeType,
+            fileSize: att.fileSize,
+            localUri: att.localUri,
+            uploadStatus: 'failed',
+          ));
+        }
+      } catch (e) {
+        print('[ChatBloc] Error uploading attachment: $e');
+        hasFailure = true;
+        updatedAttachments.add(AttachmentFile(
+          id: att.id,
+          name: att.name,
+          mimeType: att.mimeType,
+          fileSize: att.fileSize,
+          localUri: att.localUri,
+          uploadStatus: 'failed',
+        ));
+      }
+    }
+
+    // Update local database message with final status/URLs
+    final finalContent = ChatMessageContent(
+      text: ChatMessageContent.fromJson(message.content).text,
+      attachments: updatedAttachments,
+    );
+
+    final updatedMsg = ChatMessage(
+      id: message.id,
+      conversationId: message.conversationId,
+      senderId: message.senderId,
+      type: message.type,
+      content: finalContent.toJson(),
+      sentAt: message.sentAt,
+      deliveredAt: message.deliveredAt,
+      readAt: message.readAt,
+      isDeleted: message.isDeleted,
+    );
+
+    await _chatRepository.saveMessage(updatedMsg);
+
+    // Update active message list in state
+    if (state.activeConversationId == message.conversationId) {
+      add(OpenConversationEvent(message.conversationId));
+    }
+
+    if (hasFailure) {
+      print('[ChatBloc] Some attachments failed to upload. Message is saved locally. Will retry on sync.');
+      return;
+    }
+
+    // Upload succeeded! Now queue message offline in outbox & broadcast
+    await _chatRepository.queueMessageOffline(updatedMsg);
+
+    // Broadcast via WS
+    if (_wsService.isConnected) {
+      _wsService.sendEvent(ChatWebSocketEvent(
+        event: 'send_message',
+        data: {
+          'message_id': updatedMsg.id,
+          'conversation_id': updatedMsg.conversationId,
+          'type': updatedMsg.type,
+          'content': finalContent.toMap(),
+          'sent_at': updatedMsg.sentAt.toIso8601String(),
+        },
+      ));
+    } else {
+      // Trigger sync outbox push immediately
+      SyncService().triggerSync();
+    }
+  }
+
+  Future<String?> _uploadFile(
+    String messageId,
+    String fileId,
+    String filePath,
+  ) async {
+    return SyncService().uploadAttachment(
+      filePath,
+      onProgress: (sent, total) {
+        if (total > 0) {
+          final progress = sent / total;
+          add(UploadProgressTickEvent(messageId, fileId, progress));
+        }
+      },
+    );
   }
 }
