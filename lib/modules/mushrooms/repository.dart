@@ -17,9 +17,6 @@ class MushroomsRepository {
 
   Future<void> seedRoomsIfEmpty() async {
     try {
-      final existingRooms = await _db.select(_db.growRooms).get();
-      final existingNames = existingRooms.map((r) => r.name).toSet();
-
       final allRoomsToSeed = [
         // Plant M1
         'Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6', 'Room 6A', 'Room 6B',
@@ -35,18 +32,44 @@ class MushroomsRepository {
         'Room 64', 'Room 65', 'Room 66'
       ];
 
+      // 1. Migrate any existing default rooms with random UUIDs to deterministic IDs
       for (final r in allRoomsToSeed) {
-        if (!existingNames.contains(r)) {
-          await _db.into(_db.growRooms).insert(GrowRoomsCompanion.insert(
-            id: const Uuid().v4(),
+        final deterministicId = r.toLowerCase().replaceAll(' ', '_');
+        final matchingWrongId = await (_db.select(_db.growRooms)
+              ..where((tbl) => tbl.name.equals(r) & tbl.id.equals(deterministicId).not()))
+            .get();
+        if (matchingWrongId.isNotEmpty) {
+          for (final oldRoom in matchingWrongId) {
+            await (_db.delete(_db.growRooms)..where((tbl) => tbl.id.equals(oldRoom.id))).go();
+            await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.roomId.equals(oldRoom.id))).write(
+              MushroomJobsCompanion(roomId: Value(deterministicId)),
+            );
+          }
+        }
+      }
+
+      // 2. Seed rooms if not present
+      final existingRooms = await _db.select(_db.growRooms).get();
+      final existingIds = existingRooms.map((r) => r.id).toSet();
+
+      for (final r in allRoomsToSeed) {
+        final deterministicId = r.toLowerCase().replaceAll(' ', '_');
+        if (!existingIds.contains(deterministicId)) {
+          await _db.into(_db.growRooms).insertOnConflictUpdate(GrowRoom(
+            id: deterministicId,
             name: r,
-            status: const Value('idle'),
-            currentStage: const Value('idle'),
-            dayInCycle: const Value(1),
+            status: 'idle',
+            currentStage: 'idle',
+            dayInCycle: 1,
+            targetYield: 0.0,
+            pickedYield: 0.0,
+            createdAt: DateTime.now(),
           ));
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      print('Error seeding rooms: $e');
+    }
   }
 
   Future<void> seedEmployeesIfEmpty() async {
@@ -210,29 +233,59 @@ class MushroomsRepository {
     return File(p.join(docDir.path, 'mushroom_roles.json'));
   }
 
-  Future<List<String>> getRoles() async {
+  Future<List<Map<String, dynamic>>> getRolesWithLevels() async {
     try {
       final file = await _getRolesFile();
       if (!await file.exists()) {
         final defaults = [
-          'Harvest Picker',
-          'Box Mover',
-          'Growing Specialist',
-          'Maintenance Specialist',
+          {'name': 'Harvest Picker', 'level': 0},
+          {'name': 'Box Mover', 'level': 0},
+          {'name': 'Growing Specialist', 'level': 1},
+          {'name': 'Maintenance Specialist', 'level': 1},
+          {'name': 'Growing Lead', 'level': 2},
+          {'name': 'Harvest Supervisor', 'level': 2},
+          {'name': 'Cool Room Manager', 'level': 2},
+          {'name': 'Maintenance Lead', 'level': 2},
+          {'name': 'Site Manager', 'level': 3},
         ];
         await file.writeAsString(jsonEncode(defaults));
         return defaults;
       }
       final content = await file.readAsString();
       final decoded = jsonDecode(content) as List<dynamic>;
-      return decoded.cast<String>();
+      final result = <Map<String, dynamic>>[];
+      for (final item in decoded) {
+        if (item is String) {
+          int level = 0;
+          final r = item.toLowerCase();
+          if (r.contains('manager') || r.contains('site manager')) {
+            level = 3;
+          } else if (r.contains('lead') || r.contains('supervisor')) {
+            level = 2;
+          } else if (r.contains('specialist')) {
+            level = 1;
+          }
+          result.add({'name': item, 'level': level});
+        } else if (item is Map) {
+          result.add({
+            'name': item['name'] as String,
+            'level': item['level'] as int? ?? 0,
+          });
+        }
+      }
+      return result;
     } catch (e) {
       print('Error loading roles: $e');
       return [];
     }
   }
 
-  Future<void> saveRoles(List<String> roles) async {
+  Future<List<String>> getRoles() async {
+    final list = await getRolesWithLevels();
+    return list.map((e) => e['name'] as String).toList();
+  }
+
+  Future<void> saveRoles(List<Map<String, dynamic>> roles) async {
     try {
       final file = await _getRolesFile();
       await file.writeAsString(jsonEncode(roles));
@@ -241,21 +294,24 @@ class MushroomsRepository {
     }
   }
 
-  Future<void> addRole(String roleName) async {
-    final list = await getRoles();
-    if (!list.contains(roleName)) {
-      list.add(roleName);
-      await saveRoles(list);
+  Future<void> addRole(String roleName, {int level = 0}) async {
+    final list = await getRolesWithLevels();
+    if (!list.any((e) => e['name'] == roleName)) {
+      list.add({'name': roleName, 'level': level});
+      final file = await _getRolesFile();
+      await file.writeAsString(jsonEncode(list));
       await SyncService().queueMutation('mushroom_roles', 'insert', {
         'name': roleName,
+        'level': level,
       });
     }
   }
 
   Future<void> deleteRole(String roleName) async {
-    final list = await getRoles();
-    list.remove(roleName);
-    await saveRoles(list);
+    final list = await getRolesWithLevels();
+    list.removeWhere((e) => e['name'] == roleName);
+    final file = await _getRolesFile();
+    await file.writeAsString(jsonEncode(list));
     await SyncService().queueMutation('mushroom_roles', 'delete', {
       'name': roleName,
     });
@@ -334,6 +390,57 @@ class MushroomsRepository {
       'check_in_time': j.checkInTime?.toIso8601String(),
       'check_out_time': j.checkOutTime?.toIso8601String(),
     }).toList();
+  }
+
+  Future<void> resetRoom(String roomId) async {
+    // 1. Update room status to idle and stage to idle
+    await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+      const GrowRoomsCompanion(
+        status: Value('idle'),
+        currentStage: Value('idle'),
+        dayInCycle: Value(1),
+      ),
+    );
+
+    // Queue grow_rooms update mutation
+    await SyncService().queueMutation('grow_rooms', 'update', {
+      'id': roomId,
+      'status': 'idle',
+      'current_stage': 'idle',
+      'day_in_cycle': 1,
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+
+    // 2. Set all jobs in this room to 'completed'
+    final jobs = await (_db.select(_db.mushroomJobs)..where((tbl) => tbl.roomId.equals(roomId))).get();
+    for (final job in jobs) {
+      await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(job.id))).write(
+        MushroomJobsCompanion(
+          status: const Value('completed'),
+          completedAt: Value(DateTime.now()),
+          alarmTriggered: const Value(false),
+        ),
+      );
+      await SyncService().queueMutation('mushroom_jobs', 'update', {
+        'id': job.id,
+        'status': 'completed',
+        'completedAt': DateTime.now().toIso8601String(),
+        'alarmTriggered': false,
+      });
+
+      // Update any linked Task status to 'done'
+      if (job.linkedTaskId != null && job.linkedTaskId!.isNotEmpty) {
+        try {
+          await (_db.update(_db.tasks)..where((tbl) => tbl.id.equals(job.linkedTaskId!))).write(
+            const TasksCompanion(status: Value('done')),
+          );
+          await SyncService().queueMutation('tasks', 'update', {
+            'id': job.linkedTaskId,
+            'status': 'done',
+          });
+        } catch (_) {}
+      }
+    }
   }
 
   Future<void> startNewCycle(String roomId, {String? wateringPlan, String? prochlorazRate}) async {
@@ -579,7 +686,7 @@ class MushroomsRepository {
     if (job.linkedTaskId != null && job.linkedTaskId!.isNotEmpty) {
       String taskStatus = 'todo';
       if (newStatus == 'in_progress') taskStatus = 'in_progress';
-      if (newStatus == 'review') taskStatus = 'in_progress';
+      if (newStatus == 'review') taskStatus = 'review';
       if (newStatus == 'completed') taskStatus = 'done';
       try {
         await (_db.update(_db.tasks)..where((tbl) => tbl.id.equals(job.linkedTaskId!))).write(

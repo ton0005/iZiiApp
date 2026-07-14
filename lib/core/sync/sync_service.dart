@@ -10,6 +10,11 @@ import 'sync_config_repository.dart';
 import '../device_identity/ble_device_discovery_service.dart';
 import 'ble_sync_manager.dart';
 
+class SyncEvent {
+  final List<String> updatedTables;
+  SyncEvent(this.updatedTables);
+}
+
 class SyncService {
   static final SyncService _instance = SyncService._internal();
   factory SyncService() => _instance;
@@ -31,6 +36,10 @@ class SyncService {
   // Real-time synchronization log stream for UI feedback
   final _syncLogController = StreamController<String>.broadcast();
   Stream<String> get syncLogStream => _syncLogController.stream;
+
+  // Sync completion event stream to notify UI BLoCs
+  final _syncEventController = StreamController<SyncEvent>.broadcast();
+  Stream<SyncEvent> get syncEventStream => _syncEventController.stream;
 
   bool get isSyncing => _isSyncing;
 
@@ -60,6 +69,7 @@ class SyncService {
     _connectivitySubscription?.cancel();
     _periodicTimer?.cancel();
     _syncLogController.close();
+    _syncEventController.close();
   }
 
   void _log(String message) {
@@ -160,9 +170,13 @@ class SyncService {
       }
 
       // ── PULL: kéo dữ liệu mới từ server về ──
-      await _pullServerChanges(url, token, lastSync, configMap, isManual);
+      final serverTimestamp = await _pullServerChanges(url, token, lastSync, configMap, isManual);
 
-      await _settingsService.saveLastSyncTimestamp(DateTime.now().toIso8601String());
+      if (serverTimestamp != null) {
+        await _settingsService.saveLastSyncTimestamp(serverTimestamp);
+      } else {
+        await _settingsService.saveLastSyncTimestamp(DateTime.now().toIso8601String());
+      }
       _log('🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!');
       return true;
 
@@ -185,7 +199,7 @@ class SyncService {
     }
   }
 
-  Future<void> _pullServerChanges(
+  Future<String?> _pullServerChanges(
     String url,
     String token,
     String? lastSync,
@@ -206,14 +220,16 @@ class SyncService {
         final data = response.data;
         if (data != null && data['updates'] != null) {
           final updatesList = data['updates'] as List;
+          final serverTimestamp = data['timestamp'] as String?;
           if (updatesList.isEmpty) {
             _log('Không có cập nhật mới từ Server.');
-            return;
+            return serverTimestamp;
           }
           _log('📥 Nhận được ${updatesList.length} cập nhật từ Server. Đang lọc và áp dụng...');
 
           int applied = 0;
           int skipped = 0;
+          final updatedTables = <String>{};
           for (final update in updatesList) {
             try {
               final updateMap = update is Map<String, dynamic>
@@ -222,6 +238,9 @@ class SyncService {
               final wasApplied = await _applyServerUpdate(updateMap, configMap, isManual);
               if (wasApplied) {
                 applied++;
+                if (updateMap['table'] != null) {
+                  updatedTables.add(updateMap['table'] as String);
+                }
               } else {
                 skipped++;
               }
@@ -231,6 +250,12 @@ class SyncService {
             }
           }
           _log('✅ Đã ghi $applied bản ghi vào database local (bỏ qua/lọc $skipped).');
+          if (applied > 0 && updatedTables.isNotEmpty) {
+            if (!_syncEventController.isClosed) {
+              _syncEventController.add(SyncEvent(updatedTables.toList()));
+            }
+          }
+          return serverTimestamp;
         } else {
           _log('Không có cập nhật mới từ Server.');
         }
@@ -238,6 +263,7 @@ class SyncService {
     } on DioException catch (e) {
       _log('⚠️ Không thể kéo dữ liệu từ Server: ${e.message}');
     }
+    return null;
   }
 
   /// Public wrapper to apply updates from offline sync channels (e.g. BLE P2P).
@@ -534,30 +560,55 @@ class SyncService {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
 
-    String customFields = '{}';
-    if (data['custom_fields'] != null) {
-      customFields = data['custom_fields'] is String
-          ? data['custom_fields']
-          : jsonEncode(data['custom_fields']);
-    }
+    // Check if the record already exists to perform a delta update vs complete insert
+    final existing = await (_db.select(_db.tasks)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
-    await _db.into(_db.tasks).insertOnConflictUpdate(
-      TasksCompanion(
-        id: Value(id),
-        projectId: Value(data['project_id'] as String? ?? ''),
-        title: Value(data['title'] as String? ?? 'Untitled Task'),
-        description: Value(data['description'] as String?),
-        status: Value(data['status'] as String? ?? 'todo'),
-        priority: Value(data['priority'] as String? ?? 'medium'),
-        dueDate: data['due_date'] != null
-            ? Value(DateTime.tryParse(data['due_date'].toString()))
-            : const Value(null),
-        createdAt: data['created_at'] != null
-            ? Value(DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now())
-            : Value(DateTime.now()),
-        customFields: Value(customFields),
-      ),
-    );
+    if (existing != null) {
+      String? customFields;
+      if (data['custom_fields'] != null) {
+        customFields = data['custom_fields'] is String
+            ? data['custom_fields'] as String
+            : jsonEncode(data['custom_fields']);
+      }
+
+      await (_db.update(_db.tasks)..where((tbl) => tbl.id.equals(id))).write(
+        TasksCompanion(
+          projectId: data['project_id'] != null ? Value(data['project_id'] as String) : const Value.absent(),
+          title: data['title'] != null ? Value(data['title'] as String) : const Value.absent(),
+          description: data.containsKey('description') ? Value(data['description'] as String?) : const Value.absent(),
+          status: data['status'] != null ? Value(data['status'] as String) : const Value.absent(),
+          priority: data['priority'] != null ? Value(data['priority'] as String) : const Value.absent(),
+          dueDate: data.containsKey('due_date')
+              ? Value(data['due_date'] != null ? DateTime.tryParse(data['due_date'].toString()) : null)
+              : const Value.absent(),
+          createdAt: data['created_at'] != null
+              ? Value(DateTime.tryParse(data['created_at'].toString()) ?? existing.createdAt)
+              : const Value.absent(),
+          customFields: customFields != null ? Value(customFields) : const Value.absent(),
+        ),
+      );
+    } else {
+      String customFields = '{}';
+      if (data['custom_fields'] != null) {
+        customFields = data['custom_fields'] is String
+            ? data['custom_fields'] as String
+            : jsonEncode(data['custom_fields']);
+      }
+
+      await _db.into(_db.tasks).insert(
+        TasksCompanion.insert(
+          id: id,
+          projectId: data['project_id'] as String? ?? '',
+          title: data['title'] as String? ?? 'Untitled Task',
+          description: Value(data['description'] as String?),
+          status: Value(data['status'] as String? ?? 'todo'),
+          priority: Value(data['priority'] as String? ?? 'medium'),
+          dueDate: Value(data['due_date'] != null ? DateTime.tryParse(data['due_date'].toString()) : null),
+          createdAt: Value(data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now()),
+          customFields: Value(customFields),
+        ),
+      );
+    }
 
     // Sync task status changes to linked local MushroomJobs
     try {
@@ -573,6 +624,7 @@ class SyncService {
 
     return true;
   }
+
 
   Future<bool> _upsertPurchaseOrder(Map<String, dynamic> data) async {
     final id = data['id'] as String?;
@@ -722,18 +774,23 @@ class SyncService {
   Future<bool> _upsertGrowRoom(Map<String, dynamic> data) async {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
+
+    final existing = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
     await _db.into(_db.growRooms).insertOnConflictUpdate(
       GrowRoom(
         id: id,
-        name: data['name'] as String? ?? '',
-        status: data['status'] as String? ?? 'idle',
-        currentStage: data['current_stage'] as String? ?? 'idle',
-        dayInCycle: (data['day_in_cycle'] as num?)?.toInt() ?? 1,
-        targetYield: (data['targetYield'] as num?)?.toDouble() ?? 0.0,
-        pickedYield: (data['pickedYield'] as num?)?.toDouble() ?? 0.0,
-        pickingPlanJson: data['pickingPlanJson'] as String?,
-        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
-        updatedAt: data['updated_at'] != null ? DateTime.tryParse(data['updated_at'].toString()) : null,
+        name: data['name'] as String? ?? existing?.name ?? '',
+        status: data['status'] as String? ?? existing?.status ?? 'idle',
+        currentStage: data['current_stage'] as String? ?? existing?.currentStage ?? 'idle',
+        dayInCycle: (data['day_in_cycle'] as num?)?.toInt() ?? existing?.dayInCycle ?? 1,
+        targetYield: (data['targetYield'] as num?)?.toDouble() ?? existing?.targetYield ?? 0.0,
+        pickedYield: (data['pickedYield'] as num?)?.toDouble() ?? existing?.pickedYield ?? 0.0,
+        pickingPlanJson: data['pickingPlanJson'] as String? ?? existing?.pickingPlanJson,
+        createdAt: data['created_at'] != null 
+            ? DateTime.tryParse(data['created_at'].toString()) ?? existing?.createdAt ?? DateTime.now() 
+            : existing?.createdAt ?? DateTime.now(),
+        updatedAt: data['updated_at'] != null ? DateTime.tryParse(data['updated_at'].toString()) : DateTime.now(),
       ),
     );
     return true;
@@ -742,32 +799,91 @@ class SyncService {
   Future<bool> _upsertMushroomJob(Map<String, dynamic> data) async {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
-    await _db.into(_db.mushroomJobs).insertOnConflictUpdate(
-      MushroomJob(
-        id: id,
-        roomId: data['roomId'] as String? ?? '',
-        jobType: data['jobType'] as String? ?? '',
-        name: data['name'] as String? ?? '',
-        status: data['status'] as String? ?? 'pending',
-        assignee: data['assignee'] as String?,
-        planDetails: data['planDetails'] as String?,
-        prochlorazRate: data['prochlorazRate'] as String?,
-        completedAt: data['completedAt'] != null ? DateTime.tryParse(data['completedAt'].toString()) : null,
-        linkedTaskId: data['linkedTaskId'] as String?,
-        isSoloJob: data['isSoloJob'] as bool? ?? false,
-        timeLimitMinutes: (data['timeLimitMinutes'] as num?)?.toInt(),
-        startedAt: data['startedAt'] != null ? DateTime.tryParse(data['startedAt'].toString()) : null,
-        alarmTriggered: data['alarmTriggered'] as bool? ?? false,
-        scheduledAt: data['scheduledAt'] != null ? DateTime.tryParse(data['scheduledAt'].toString()) : null,
-        priority: data['priority'] as String? ?? 'normal',
-        coLevel: (data['co_level'] as num?)?.toDouble(),
-        co2Level: (data['co2_level'] as num?)?.toDouble(),
-        checkInTime: data['check_in_time'] != null ? DateTime.tryParse(data['check_in_time'].toString()) : null,
-        checkOutTime: data['check_out_time'] != null ? DateTime.tryParse(data['check_out_time'].toString()) : null,
-        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
-        updatedAt: data['updated_at'] != null ? DateTime.tryParse(data['updated_at'].toString()) : null,
-      ),
-    );
+
+    // Check if the record already exists to perform a delta update vs complete insert
+    final existing = await (_db.select(_db.mushroomJobs)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
+    if (existing != null) {
+      dynamic getVal(String camel, String snake) {
+        return data[camel] ?? data[snake];
+      }
+      bool hasKey(String camel, String snake) {
+        return data.containsKey(camel) || data.containsKey(snake);
+      }
+
+      await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(id))).write(
+        MushroomJobsCompanion(
+          roomId: hasKey('roomId', 'room_id') ? Value(getVal('roomId', 'room_id') as String) : const Value.absent(),
+          jobType: hasKey('jobType', 'job_type') ? Value(getVal('jobType', 'job_type') as String) : const Value.absent(),
+          name: data.containsKey('name') ? Value(data['name'] as String) : const Value.absent(),
+          status: data.containsKey('status') ? Value(data['status'] as String) : const Value.absent(),
+          assignee: data.containsKey('assignee') ? Value(data['assignee'] as String?) : const Value.absent(),
+          planDetails: hasKey('planDetails', 'plan_details') ? Value(getVal('planDetails', 'plan_details') as String?) : const Value.absent(),
+          prochlorazRate: hasKey('prochlorazRate', 'prochloraz_rate') ? Value(getVal('prochlorazRate', 'prochloraz_rate') as String?) : const Value.absent(),
+          completedAt: hasKey('completedAt', 'completed_at')
+              ? Value(getVal('completedAt', 'completed_at') != null ? DateTime.tryParse(getVal('completedAt', 'completed_at').toString()) : null)
+              : const Value.absent(),
+          linkedTaskId: hasKey('linkedTaskId', 'linked_task_id') ? Value(getVal('linkedTaskId', 'linked_task_id') as String?) : const Value.absent(),
+          isSoloJob: hasKey('isSoloJob', 'is_solo_job') ? Value(getVal('isSoloJob', 'is_solo_job') as bool) : const Value.absent(),
+          timeLimitMinutes: hasKey('timeLimitMinutes', 'time_limit_minutes')
+              ? Value(getVal('timeLimitMinutes', 'time_limit_minutes') != null ? (getVal('timeLimitMinutes', 'time_limit_minutes') as num).toInt() : null)
+              : const Value.absent(),
+          startedAt: hasKey('startedAt', 'started_at')
+              ? Value(getVal('startedAt', 'started_at') != null ? DateTime.tryParse(getVal('startedAt', 'started_at').toString()) : null)
+              : const Value.absent(),
+          alarmTriggered: hasKey('alarmTriggered', 'alarm_triggered') ? Value(getVal('alarmTriggered', 'alarm_triggered') as bool) : const Value.absent(),
+          scheduledAt: hasKey('scheduledAt', 'scheduled_at')
+              ? Value(getVal('scheduledAt', 'scheduled_at') != null ? DateTime.tryParse(getVal('scheduledAt', 'scheduled_at').toString()) : null)
+              : const Value.absent(),
+          priority: data.containsKey('priority') ? Value(data['priority'] as String) : const Value.absent(),
+          coLevel: hasKey('co_level', 'coLevel')
+              ? Value(getVal('coLevel', 'co_level') != null ? (getVal('coLevel', 'co_level') as num).toDouble() : null)
+              : const Value.absent(),
+          co2Level: hasKey('co2_level', 'co2Level')
+              ? Value(getVal('co2Level', 'co2_level') != null ? (getVal('co2Level', 'co2_level') as num).toDouble() : null)
+              : const Value.absent(),
+          checkInTime: hasKey('check_in_time', 'checkInTime')
+              ? Value(getVal('checkInTime', 'check_in_time') != null ? DateTime.tryParse(getVal('checkInTime', 'check_in_time').toString()) : null)
+              : const Value.absent(),
+          checkOutTime: hasKey('check_out_time', 'checkOutTime')
+              ? Value(getVal('checkOutTime', 'check_out_time') != null ? DateTime.tryParse(getVal('checkOutTime', 'check_out_time').toString()) : null)
+              : const Value.absent(),
+          createdAt: hasKey('created_at', 'createdAt')
+              ? Value(getVal('createdAt', 'created_at') != null ? DateTime.tryParse(getVal('createdAt', 'created_at').toString()) ?? existing.createdAt : existing.createdAt)
+              : const Value.absent(),
+          updatedAt: hasKey('updated_at', 'updatedAt')
+              ? Value(getVal('updatedAt', 'updated_at') != null ? DateTime.tryParse(getVal('updatedAt', 'updated_at').toString()) : null)
+              : const Value.absent(),
+        ),
+      );
+    } else {
+      await _db.into(_db.mushroomJobs).insert(
+        MushroomJob(
+          id: id,
+          roomId: (data['roomId'] ?? data['room_id']) as String? ?? '',
+          jobType: (data['jobType'] ?? data['job_type']) as String? ?? '',
+          name: data['name'] as String? ?? '',
+          status: data['status'] as String? ?? 'pending',
+          assignee: data['assignee'] as String?,
+          planDetails: (data['planDetails'] ?? data['plan_details']) as String?,
+          prochlorazRate: (data['prochlorazRate'] ?? data['prochloraz_rate']) as String?,
+          completedAt: (data['completedAt'] ?? data['completed_at']) != null ? DateTime.tryParse((data['completedAt'] ?? data['completed_at']).toString()) : null,
+          linkedTaskId: (data['linkedTaskId'] ?? data['linked_task_id']) as String?,
+          isSoloJob: (data['isSoloJob'] ?? data['is_solo_job']) as bool? ?? false,
+          timeLimitMinutes: (data['timeLimitMinutes'] ?? data['time_limit_minutes']) != null ? ((data['timeLimitMinutes'] ?? data['time_limit_minutes']) as num).toInt() : null,
+          startedAt: (data['startedAt'] ?? data['started_at']) != null ? DateTime.tryParse((data['startedAt'] ?? data['started_at']).toString()) : null,
+          alarmTriggered: (data['alarmTriggered'] ?? data['alarm_triggered']) as bool? ?? false,
+          scheduledAt: (data['scheduledAt'] ?? data['scheduled_at']) != null ? DateTime.tryParse((data['scheduledAt'] ?? data['scheduled_at']).toString()) : null,
+          priority: data['priority'] as String? ?? 'normal',
+          coLevel: (data['co_level'] ?? data['coLevel']) != null ? ((data['co_level'] ?? data['coLevel']) as num).toDouble() : null,
+          co2Level: (data['co2_level'] ?? data['co2Level']) != null ? ((data['co2_level'] ?? data['co2Level']) as num).toDouble() : null,
+          checkInTime: (data['check_in_time'] ?? data['checkInTime']) != null ? DateTime.tryParse((data['check_in_time'] ?? data['checkInTime']).toString()) : null,
+          checkOutTime: (data['check_out_time'] ?? data['checkOutTime']) != null ? DateTime.tryParse((data['check_out_time'] ?? data['checkOutTime']).toString()) : null,
+          createdAt: (data['created_at'] ?? data['createdAt']) != null ? DateTime.tryParse((data['created_at'] ?? data['createdAt']).toString()) ?? DateTime.now() : DateTime.now(),
+          updatedAt: (data['updated_at'] ?? data['updatedAt']) != null ? DateTime.tryParse((data['updated_at'] ?? data['updatedAt']).toString()) : null,
+        ),
+      );
+    }
 
     // Sync status to local Tasks if linked
     try {
@@ -784,6 +900,7 @@ class SyncService {
 
     return true;
   }
+
 
   Future<bool> _upsertMushroomJobSafetyConfig(Map<String, dynamic> data) async {
     final id = data['id'] as String?;

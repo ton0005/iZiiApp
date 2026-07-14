@@ -113,10 +113,10 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
     final List<Map<String, dynamic>> jobs =
         List<Map<String, dynamic>>.from(room['jobs']);
 
-    final todo = jobs.where((j) => j['status'] == 'todo').toList();
-    final inprog = jobs.where((j) => j['status'] == 'inprog').toList();
+    final todo = jobs.where((j) => j['status'] == 'todo' || j['status'] == 'pending').toList();
+    final inprog = jobs.where((j) => j['status'] == 'inprog' || j['status'] == 'in_progress').toList();
     final review = jobs.where((j) => j['status'] == 'review').toList();
-    final done = jobs.where((j) => j['status'] == 'done').toList();
+    final done = jobs.where((j) => j['status'] == 'done' || j['status'] == 'completed').toList();
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -143,7 +143,17 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
     return Expanded(
       child: DragTarget<Map<String, dynamic>>(
         onWillAcceptWithDetails: (details) {
-          return details.data['status'] != colStatus;
+          final draggedStatus = details.data['status']?.toString() ?? 'todo';
+          bool isSame(String s1, String s2) {
+            String norm(String s) {
+              if (s == 'inprog' || s == 'in_progress') return 'in_progress';
+              if (s == 'completed' || s == 'done') return 'done';
+              if (s == 'pending' || s == 'todo') return 'todo';
+              return s;
+            }
+            return norm(s1) == norm(s2);
+          }
+          return !isSame(draggedStatus, colStatus);
         },
         onAcceptWithDetails: (details) {
           final job = details.data;

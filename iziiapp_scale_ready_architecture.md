@@ -1,12 +1,14 @@
 # iZiiApp — Scale-Ready Architecture
-## IIS + Windows + SQLite → Production-Ready
+## IIS (Reverse Proxy) + Uvicorn (ASGI) + Windows + SQLite → Production-Ready
 
 > **Branch:** `mushroom-farm-fork` | **Target:** 200 DAU → 5,000+ DAU  
-> **Stack:** Flutter (Client) · IIS (Windows Server) · SQLite/PostgreSQL · Python/FastAPI
+> **Stack:** Flutter (Client) · IIS (SSL Termination & ARR) · Uvicorn (ASGI Server) · SQLite/PostgreSQL · Python/FastAPI
 
 ---
 
 ## 1. Tổng quan kiến trúc
+
+Kiến trúc sản xuất sử dụng **IIS** đóng vai trò là Reverse Proxy chịu trách nhiệm SSL Termination, Rate Limiting và định tuyến yêu cầu. Toàn bộ logic ứng dụng Python/FastAPI được thực thi bởi máy chủ **Uvicorn (ASGI)** chạy dưới dạng một Windows Service độc lập. Dữ liệu được lưu trữ trên **SQLite** cấu hình WAL mode ở ổ đĩa SSD tốc độ cao.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -16,21 +18,29 @@
 └──────────────────────────┬──────────────────────────────────────┘
                            │ HTTPS / WSS
 ┌──────────────────────────▼──────────────────────────────────────┐
-│                      IIS / REVERSE PROXY                        │
-│   Windows Server · SSL Termination · Rate Limiting              │
-│   ┌──────────────────┐          ┌──────────────────────┐        │
-│   │   API App Pool   │          │  WebSocket App Pool  │        │
-│   │  (sync, CRUD)    │          │   (realtime, chat)   │        │
-│   └────────┬─────────┘          └──────────┬───────────┘        │
-└────────────┼──────────────────────────────┼────────────────────┘
-             │                              │
-┌────────────▼──────────────────────────────▼────────────────────┐
+│                  IIS (REVERSE PROXY LAYER)                      │
+│   Windows Server · SSL Termination · URL Rewrite · ARR          │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │ Default Web Site (Port 443)                             │   │
+│   │ - Route /api/*  ──► Proxy to http://127.0.0.1:8000      │   │
+│   │ - Route /ws/*   ──► Proxy to http://127.0.0.1:8000      │   │
+│   └─────────────────────────────────────────────────────────┘   │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │ HTTP / WS (Local Loopback)
+┌──────────────────────────▼──────────────────────────────────────┐
+│                  UVIVORN ASGI SERVER LAYER                      │
+│   Windows Service (Managed by NSSM)                             │
+│   Uvicorn (FastAPI Application · Port 8000)                     │
+│   Running 4 Async Workers (Concurrency optimized)               │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │ Local File I/O (WAL + Busy Timeout)
+┌──────────────────────────▼──────────────────────────────────────┐
 │                       DATA LAYER                                │
 │   SQLite (WAL mode) ──[migrate]──► PostgreSQL                   │
-│   D:\data\iziiapp.db                                            │
-└────────────────────────────────────────────────────────────────┘
-             │
-┌────────────▼────────────────────────────────────────────────────┐
+│   D:\data\iziiapp.db (SSD Drive)                                │
+└─────────────────────────────────────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────────┐
 │                    NOTIFICATION LAYER                           │
 │   FCM / APNS · Email (Delayed Queue) · In-app Inbox             │
 └─────────────────────────────────────────────────────────────────┘
@@ -48,7 +58,7 @@ Phase 1          Phase 2          Phase 3          Phase 4
 8 GB RAM         16 GB RAM        32 GB RAM         Load Balancer
 SSD 200 GB       SSD 500 GB       SSD 1 TB          PostgreSQL
 SQLite WAL       SQLite WAL       PostgreSQL         Redis Cache
-IIS 1 Pool       IIS 2 Pools      Reverse Proxy      Microservices
+Uvicorn          Uvicorn (Scale)  Uvicorn Cluster    Microservices
 ```
 
 ---
@@ -96,141 +106,196 @@ IIS 1 Pool       IIS 2 Pools      Reverse Proxy      Microservices
 
 ---
 
-## 4. IIS Configuration
+## 4. IIS & Uvicorn Configuration
 
-### App Pool — Tách từ đầu (quan trọng)
+### Cấu hình Uvicorn Windows Service (Sử dụng NSSM)
 
+Để đảm bảo Uvicorn tự khởi động lại khi server reboot hoặc khi bị crash, chúng ta cài đặt Uvicorn làm Windows Service thông qua **NSSM (Non-Sucking Service Manager)**:
+
+```bash
+# Cài đặt dịch vụ Uvicorn
+nssm install iZiiApp-Uvicorn "C:\Users\CHANH\AppData\Local\Programs\Python\Python311\python.exe" "-m uvicorn main:app --host 127.0.0.1 --port 8000 --workers 4"
+
+# Thiết lập thư mục làm việc của dự án
+nssm set iZiiApp-Uvicorn AppDirectory "C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app"
+
+# Thiết lập ghi log xuất nhập của Uvicorn
+nssm set iZiiApp-Uvicorn AppStdout "D:\logs\app\uvicorn_stdout.log"
+nssm set iZiiApp-Uvicorn AppStderr "D:\logs\app\uvicorn_stderr.log"
+
+# Khởi chạy dịch vụ
+nssm start iZiiApp-Uvicorn
 ```
-IIS
-├── App Pool: iZiiApp-API          ← Sync, CRUD, REST
-│   ├── .NET CLR: No Managed Code (nếu dùng Python FastAPI)
-│   ├── Pipeline: Integrated
-│   └── Worker Processes: 1        ← PHẢI là 1 khi dùng SQLite
-│
-└── App Pool: iZiiApp-WebSocket    ← Realtime, Chat
-    ├── Pipeline: Integrated
-    └── Worker Processes: 1
-```
 
-> Giữ **1 worker process duy nhất** cho mỗi pool khi dùng SQLite.  
-> Nhiều worker process tranh nhau file SQLite → lock conflict.
+> **Lưu ý về số lượng Workers:**  
+> Công thức tính worker tối ưu: `workers = (2 * CPU cores) + 1`.  
+> Khi chạy SQLite với nhiều workers của Uvicorn, WAL mode và cấu hình `busy_timeout` là bắt buộc để tránh lock DB giữa các tiến trình worker.
 
-### IIS Reverse Proxy sang FastAPI (Python)
+### Cấu hình IIS Reverse Proxy (web.config)
 
-Cài module: `Application Request Routing (ARR)` + `URL Rewrite`
+IIS sẽ nhận kết nối ngoài (cổng 80/443), thực hiện giải mã SSL và chuyển tiếp yêu cầu đến Uvicorn tại địa chỉ `http://127.0.0.1:8000`:
 
 ```xml
-<!-- web.config -->
-<system.webServer>
-  <rewrite>
-    <rules>
-      <rule name="API Proxy" stopProcessing="true">
-        <match url="^api/(.*)" />
-        <action type="Rewrite" url="http://127.0.0.1:8000/{R:1}" />
-      </rule>
-      <rule name="WebSocket Proxy" stopProcessing="true">
-        <match url="^ws/(.*)" />
-        <action type="Rewrite" url="http://127.0.0.1:8001/{R:1}" />
-      </rule>
-    </rules>
-  </rewrite>
-</system.webServer>
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.webServer>
+    <rewrite>
+      <rules>
+        <!-- Proxy toàn bộ WebSocket connections lên Uvicorn -->
+        <rule name="WebSocket Proxy" stopProcessing="true">
+          <match url="^ws/(.*)" />
+          <conditions>
+            <add input="{HTTP_CONNECTION}" pattern="Upgrade" />
+          </conditions>
+          <action type="Rewrite" url="http://127.0.0.1:8000/ws/{R:1}" />
+        </rule>
+        
+        <!-- Proxy toàn bộ HTTP API REST lên Uvicorn -->
+        <rule name="API Proxy" stopProcessing="true">
+          <match url="^(.*)" />
+          <action type="Rewrite" url="http://127.0.0.1:8000/{R:1}" />
+        </rule>
+      </rules>
+    </rewrite>
+    
+    <!-- Cho phép truyền header Authorization và cấu hình kích thước dữ liệu -->
+    <security>
+      <requestFiltering>
+        <requestLimits maxAllowedContentLength="104857600" /> <!-- 100 MB -->
+      </requestFiltering>
+    </security>
+  </system.webServer>
+</configuration>
 ```
 
 ---
 
 ## 5. SQLite — Cấu hình Production
 
-### Bật WAL mode (bắt buộc)
+### Thiết lập PRAGMA tối ưu hóa hiệu năng & concurrency
+
+Khi Uvicorn chạy ở chế độ đa tiến trình (multi-workers), SQLite cần được cấu hình các thông số PRAGMA đặc thù trên **mỗi connection khởi tạo** để đảm bảo không bị lock write tranh chấp.
 
 ```python
-# Chạy 1 lần khi khởi động server
 import sqlite3
+from contextlib import contextmanager
 
-conn = sqlite3.connect(r"D:\data\iziiapp.db")
-conn.execute("PRAGMA journal_mode=WAL;")
-conn.execute("PRAGMA synchronous=NORMAL;")   # Cân bằng safety vs speed
-conn.execute("PRAGMA cache_size=-64000;")    # 64 MB page cache
-conn.execute("PRAGMA temp_store=MEMORY;")
-conn.execute("PRAGMA mmap_size=268435456;")  # 256 MB memory-mapped I/O
-conn.close()
-```
+DB_PATH = r"D:\data\iziiapp.db"
 
-### WAL mode cho phép
-
-```
-Không có WAL          Có WAL
-─────────────         ──────────────────────────────
-Reader chờ Writer     Reader và Writer chạy song song
-1 connection tại 1    N readers + 1 writer đồng thời
-thời điểm             Throughput tăng 2–5x
-```
-
-### Cấu trúc thư mục data
-
-```
-D:\
-├── app\
-│   └── iziiapp\              ← IIS application files
-├── data\
-│   ├── iziiapp.db            ← SQLite main database
-│   ├── iziiapp.db-wal        ← WAL file (tự động)
-│   ├── iziiapp.db-shm        ← Shared memory (tự động)
-│   └── backups\
-│       ├── hot\              ← Backup mỗi 15 phút, giữ 24h
-│       ├── daily\            ← Backup mỗi đêm, giữ 30 ngày
-│       └── weekly\           ← Giữ 12 tuần
-└── logs\
-    ├── iis\
-    └── app\
+def get_db_connection():
+    conn = sqlite3.connect(
+        DB_PATH,
+        timeout=10.0 # Timeout mặc định ở mức driver
+    )
+    conn.row_factory = sqlite3.Row
+    
+    # Kích hoạt chế độ ghi nhật ký WAL (Write-Ahead Logging)
+    conn.execute("PRAGMA journal_mode=WAL;")
+    
+    # NORMAL giúp ghi đĩa bất đồng bộ, cân bằng giữa tốc độ và an toàn dữ liệu
+    conn.execute("PRAGMA synchronous=NORMAL;")
+    
+    # busy_timeout (Bắt buộc cho Multi-workers Uvicorn):
+    # Đợi giải phóng lock write tối đa 5000ms trước khi ném ra lỗi Database Locked
+    conn.execute("PRAGMA busy_timeout=5000;")
+    
+    # Cấu hình cache size 64MB tăng hiệu suất đọc
+    conn.execute("PRAGMA cache_size=-64000;")
+    
+    # Lưu bảng tạm trong bộ nhớ RAM thay vì ghi đĩa
+    conn.execute("PRAGMA temp_store=MEMORY;")
+    
+    # Bật Memory-Mapped I/O lên 256MB tăng tốc độ truy xuất file lớn
+    conn.execute("PRAGMA mmap_size=268435456;")
+    
+    return conn
 ```
 
 ---
 
 ## 6. Data Access Layer — Abstraction để dễ migrate
 
-Thiết kế interface từ đầu để swap SQLite → PostgreSQL không cần refactor business logic:
+Để việc di chuyển từ SQLite sang PostgreSQL trong tương lai diễn ra trơn tru mà không cần sửa đổi mã nguồn business logic, chúng ta tách biệt hoàn toàn thông qua lớp Interface Repository và sử dụng Dependency Injection của FastAPI.
 
 ```python
 # repository/interface.py
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Dict, Any
 
-class IDataRepository(ABC):
-
+class IHarvestRepository(ABC):
     @abstractmethod
-    def get_harvest_jobs(self, room_id: str) -> List[dict]:
+    def get_harvest_jobs(self, room_name: str) -> List[Dict[str, Any]]:
         pass
 
     @abstractmethod
-    def create_harvest_job(self, job: dict) -> dict:
+    def create_harvest_job(self, job_data: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
     def update_job_status(self, job_id: str, status: str) -> bool:
         pass
 
+
 # repository/sqlite_repo.py
-class SQLiteRepository(IDataRepository):
-    def __init__(self, db_path: str):
-        self.db_path = db_path
+import sqlite3
+from repository.interface import IHarvestRepository
 
-    def get_harvest_jobs(self, room_id: str) -> List[dict]:
-        # SQLite implementation
-        ...
+class SQLiteHarvestRepository(IHarvestRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
 
-# repository/postgres_repo.py  ← Tương lai, swap in khi cần
-class PostgreSQLRepository(IDataRepository):
-    def __init__(self, connection_string: str):
-        self.conn_str = connection_string
+    def get_harvest_jobs(self, room_name: str) -> List[dict]:
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM harvest_jobs WHERE roomName = ?", (room_name,))
+        return [dict(row) for row in cursor.fetchall()]
 
-    def get_harvest_jobs(self, room_id: str) -> List[dict]:
-        # PostgreSQL implementation — same interface
-        ...
+    def create_harvest_job(self, job_data: dict) -> dict:
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "INSERT INTO harvest_jobs (id, roomName, status) VALUES (?, ?, ?)",
+            (job_data['id'], job_data['roomName'], job_data['status'])
+        )
+        self.conn.commit()
+        return job_data
 
-# main.py — chỉ đổi 1 dòng khi migrate
-# repo = SQLiteRepository(r"D:\data\iziiapp.db")
-repo = PostgreSQLRepository("postgresql://user:pass@localhost/iziiapp")
+    def update_job_status(self, job_id: str, status: str) -> bool:
+        cursor = self.conn.cursor()
+        cursor.execute("UPDATE harvest_jobs SET status = ? WHERE id = ?", (status, job_id))
+        self.conn.commit()
+        return cursor.rowcount > 0
+
+
+# dependencies.py (FastAPI Dependency Injection)
+from fastapi import Depends
+import sqlite3
+from repository.sqlite_repo import SQLiteHarvestRepository
+
+def get_db():
+    # Khởi tạo db connection kèm PRAGMA tối ưu
+    conn = sqlite3.connect(r"D:\data\iziiapp.db")
+    conn.execute("PRAGMA journal_mode=WAL;")
+    conn.execute("PRAGMA synchronous=NORMAL;")
+    conn.execute("PRAGMA busy_timeout=5000;")
+    conn.row_factory = sqlite3.Row
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+def get_harvest_repo(conn: sqlite3.Connection = Depends(get_db)):
+    return SQLiteHarvestRepository(conn)
+
+
+# api/endpoints.py (Sử dụng Repository Interface)
+from fastapi import APIRouter, Depends
+from repository.interface import IHarvestRepository
+from dependencies import get_harvest_repo
+
+router = APIRouter()
+
+@router.get("/rooms/{room_name}/jobs")
+def read_jobs(room_name: str, repo: IHarvestRepository = Depends(get_harvest_repo)):
+    return repo.get_harvest_jobs(room_name)
 ```
 
 ---
@@ -243,35 +308,49 @@ repo = PostgreSQLRepository("postgresql://user:pass@localhost/iziiapp")
 | Daily snapshot | Task Scheduler + script | 02:00 hàng đêm | 30 ngày | `D:\data\backups\daily\` |
 | Weekly archive | Task Scheduler + script | Chủ nhật 03:00 | 12 tuần | `D:\data\backups\weekly\` |
 | Off-site | Rclone → Cloud (B2/S3) | Sau mỗi daily | 90 ngày | Cloud storage |
-| IIS config | `appcmd export config` | Mỗi khi deploy | Vĩnh viễn | Git repo |
+| Uvicorn Service | Registry Export (NSSM) | Mỗi khi cập nhật service | Vĩnh viễn | `D:\data\backups\services\` |
 
-### Script backup SQLite (Python — chạy qua Task Scheduler)
+### Script sao lưu Uvicorn Service và SQLite database an toàn:
 
 ```python
-# scripts/backup_sqlite.py
+# scripts/backup_system.py
 import sqlite3
-import shutil
 import datetime
 import os
+import subprocess
 
-DB_PATH    = r"D:\data\iziiapp.db"
+DB_PATH = r"D:\data\iziiapp.db"
 BACKUP_DIR = r"D:\data\backups\daily"
-KEEP_DAYS  = 30
+SERVICE_BACKUP_DIR = r"D:\data\backups\services"
+KEEP_DAYS = 30
 
 def backup():
     today = datetime.date.today().strftime("%Y%m%d")
-    dst   = os.path.join(BACKUP_DIR, f"iziiapp_{today}.db")
-
     os.makedirs(BACKUP_DIR, exist_ok=True)
-
-    # Dùng SQLite Online Backup API — an toàn kể cả khi DB đang write
+    os.makedirs(SERVICE_BACKUP_DIR, exist_ok=True)
+    
+    # 1. Hot Backup database sử dụng SQLite Online Backup API
+    db_dst = os.path.join(BACKUP_DIR, f"iziiapp_{today}.db")
     src_conn = sqlite3.connect(DB_PATH)
-    dst_conn = sqlite3.connect(dst)
-    src_conn.backup(dst_conn, pages=100)   # pages=100: backup từng chunk, không block
+    dst_conn = sqlite3.connect(db_dst)
+    src_conn.backup(dst_conn, pages=100) # Backup an toàn không block write
     dst_conn.close()
     src_conn.close()
+    print(f"[OK] Database Backup: {db_dst}")
 
-    # Xóa backup cũ hơn KEEP_DAYS ngày
+    # 2. Backup registry cấu hình dịch vụ Uvicorn từ NSSM
+    reg_dst = os.path.join(SERVICE_BACKUP_DIR, f"uvicorn_service_{today}.reg")
+    try:
+        subprocess.run(
+            f'reg export HKLM\\System\\CurrentControlSet\\Services\\iZiiApp-Uvicorn "{reg_dst}" /y',
+            shell=True,
+            check=True
+        )
+        print(f"[OK] Service Configuration Backup: {reg_dst}")
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] Service Backup failed: {e}")
+
+    # 3. Dọn dẹp các backup cũ
     cutoff = datetime.date.today() - datetime.timedelta(days=KEEP_DAYS)
     for f in os.listdir(BACKUP_DIR):
         if f.startswith("iziiapp_") and f.endswith(".db"):
@@ -281,8 +360,6 @@ def backup():
                     os.remove(os.path.join(BACKUP_DIR, f))
             except ValueError:
                 pass
-
-    print(f"[OK] Backup: {dst}")
 
 if __name__ == "__main__":
     backup()
@@ -304,51 +381,45 @@ SSD NVMe thông thường đạt 50,000–200,000 IOPS → **dư thừa hoàn to
 
 | Ngưỡng DAU | Hành động cần thiết |
 |---|---|
-| < 400 DAU | Giữ SQLite WAL — không cần thay đổi |
-| 400–800 DAU | Nâng RAM lên 16 GB, theo dõi write latency |
+| < 400 DAU | Giữ SQLite WAL + Uvicorn Service — không cần thay đổi |
+| 400–800 DAU | Nâng RAM lên 16 GB, tăng workers của Uvicorn |
 | > 800 DAU | Lên kế hoạch migrate sang PostgreSQL |
-| > 2,000 DAU | Triển khai Redis cache + connection pooling |
+| > 2,000 DAU | Triển khai Redis cache + PostgreSQL Cluster |
 
 ---
 
 ## 9. Checklist triển khai theo thứ tự ưu tiên
 
 ### Ngay lập tức
-- [ ] Chuyển SQLite data file sang SSD
-- [ ] Bật WAL mode + PRAGMA tối ưu
-- [ ] Cài backup script + Task Scheduler (hot 15 phút + daily)
-- [ ] Cấu hình IIS: 1 worker process per app pool
+- [ ] Đăng ký Uvicorn làm Windows Service bằng NSSM, cấu hình tự động khởi chạy lại
+- [ ] Chuyển SQLite data file sang ổ SSD chuyên dụng
+- [ ] Bật chế độ WAL mode + Normal sync + Busy Timeout = 5s trên API Connection
+- [ ] Thiết lập file script backup tự động SQLite Database + NSSM Service cấu hình
 
 ### Tuần này
-- [ ] Tách IIS thành 2 App Pool: API + WebSocket
-- [ ] Cấu hình URL Rewrite / ARR nếu dùng reverse proxy
-- [ ] Thiết lập off-site backup (Rclone → cloud)
-- [ ] Bật IIS logging → `D:\logs\iis\`
+- [ ] Cấu hình IIS Web Site làm Reverse Proxy thông qua URL Rewrite và Application Request Routing (ARR)
+- [ ] Tắt hoàn toàn CGI/FastCGI App Pool không cần thiết trên IIS
+- [ ] Bật IIS logging lưu trữ tại ổ đĩa log chuyên biệt `D:\logs\iis\`
 
 ### Khi thiết kế tính năng mới
-- [ ] Dùng `IDataRepository` interface cho tất cả data access
-- [ ] Đặt tất cả config (DB path, port, base URL) vào file `.env` / config
-- [ ] Không hardcode IP/domain trong Flutter app
-
-### Khi đạt 400+ DAU
-- [ ] Theo dõi write latency SQLite (`PRAGMA compile_options` + logging)
-- [ ] Nâng RAM server lên 16 GB
-- [ ] Bắt đầu chuẩn bị PostgreSQL migration script
+- [ ] Luôn sử dụng Repository Pattern thông qua `IHarvestRepository`
+- [ ] Quản lý toàn bộ thông số kết nối (DB path, port, workers, domains) qua file `.env`
+- [ ] Không hardcode IP/domain ở phía client Flutter app
 
 ---
 
-## 10. So sánh SQLite vs PostgreSQL
+## 10. So sánh SQLite vs PostgreSQL (trong môi trường Uvicorn)
 
-| Tiêu chí | SQLite (Phase 1–2) | PostgreSQL (Phase 3+) |
+| Tiêu chí | SQLite (WAL + Uvicorn) | PostgreSQL (Uvicorn) |
 |---|---|---|
-| Setup | Không cần cài đặt riêng | Cần cài + cấu hình service |
-| Concurrent writes | 1 writer tại 1 thời điểm | N writers đồng thời |
-| Backup | File copy / Online Backup API | pg_dump, point-in-time recovery |
-| Replication | Không native | Streaming replication |
-| Phù hợp | < 800 DAU, single server | > 800 DAU, multi-server |
-| Migration effort | — | Trung bình (nếu dùng IDataRepository) |
+| **Cài đặt & Vận hành** | Cực kỳ đơn giản, không cần cài engine | Phức tạp hơn, cần vận hành PostgreSQL service độc lập |
+| **Concurrency (Write)** | Hỗ trợ ghi song song ở mức tiến trình nhờ `busy_timeout` khóa tạm thời | Hỗ trợ ghi song song thực sự, transaction isolation cấp cao |
+| **Network overhead** | Bằng 0 (truy xuất trực tiếp file cục bộ SSD) | Có (truy xuất qua socket TCP/IP) |
+| **Worker processes** | Tốt nhất khi giữ số lượng worker vừa phải | Không giới hạn, hỗ trợ hàng trăm workers |
+| **Khả năng backup** | Hot backup online file cực kỳ tiện lợi | pg_dump / WAL-G phức tạp nhưng hỗ trợ khôi phục đến từng giây |
+| **Độ tin cậy** | Hoàn hảo cho single-server < 800 DAU | Hoàn hảo cho multi-server, clustering, cloud native |
 
 ---
 
 *Tài liệu này là thiết kế sống — cập nhật khi architecture thay đổi.*  
-*Last updated: {{ date }}*
+*Last updated: 2026-07-10*

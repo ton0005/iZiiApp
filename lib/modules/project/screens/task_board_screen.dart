@@ -20,11 +20,12 @@ class TaskBoardScreen extends StatefulWidget {
 }
 
 class _TaskBoardScreenState extends State<TaskBoardScreen> {
-  static const _statuses = ['todo', 'in_progress', 'done'];
+  static const _statuses = ['todo', 'in_progress', 'review', 'done'];
 
   static const _statusColors = {
     'todo': Color(0xFF94A3B8), // Slate gray
     'in_progress': Color(0xFF6366F1), // Indigo
+    'review': Color(0xFFF59E0B), // Amber / Gold for review
     'done': Color(0xFF10B981), // Emerald green
   };
 
@@ -71,7 +72,10 @@ class _TaskBoardScreenState extends State<TaskBoardScreen> {
                 grouped[status] = [];
               }
               for (final task in state.tasks) {
-                final s = task['status'] as String? ?? 'todo';
+                var s = task['status'] as String? ?? 'todo';
+                if (s == 'completed') s = 'done';
+                if (s == 'inprog') s = 'in_progress';
+                if (s == 'pending') s = 'todo';
                 grouped[s]?.add(task);
               }
 
@@ -81,7 +85,13 @@ class _TaskBoardScreenState extends State<TaskBoardScreen> {
                 laneColor: (key) => _statusColors[key] ?? Colors.grey,
                 groupedData: grouped,
                 itemKey: (task) => task['id']?.toString() ?? '',
-                itemLane: (task) => task['status']?.toString() ?? 'todo',
+                itemLane: (task) {
+                  var s = task['status']?.toString() ?? 'todo';
+                  if (s == 'completed') s = 'done';
+                  if (s == 'inprog') s = 'in_progress';
+                  if (s == 'pending') s = 'todo';
+                  return s;
+                },
                 emptyLaneHint: context.tr('crm_deal_pipeline_drag_hint'),
                 onItemMoved: (task, newStatus) {
                   context
@@ -112,6 +122,8 @@ class _TaskBoardScreenState extends State<TaskBoardScreen> {
         return context.tr('project_status_todo');
       case 'in_progress':
         return context.tr('project_status_in_progress');
+      case 'review':
+        return context.tr('project_status_review');
       case 'done':
         return context.tr('project_status_done');
       default:

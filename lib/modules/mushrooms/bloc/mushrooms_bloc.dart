@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repository.dart';
+import '../../../core/sync/sync_service.dart';
 
 // === EVENTS ===
 
@@ -96,6 +97,11 @@ class CheckInSoloJobEvent extends MushroomsEvent {
 
 class DismissActiveAlarmsEvent extends MushroomsEvent {}
 
+class ResetRoomEvent extends MushroomsEvent {
+  final String roomId;
+  ResetRoomEvent(this.roomId);
+}
+
 // === STATE ===
 
 class MushroomsState {
@@ -139,6 +145,7 @@ class MushroomsState {
 class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
   final MushroomsRepository _repository;
   Timer? _alarmCheckTimer;
+  StreamSubscription<SyncEvent>? _syncSubscription;
 
   MushroomsBloc({MushroomsRepository? repository})
       : _repository = repository ?? MushroomsRepository(),
@@ -154,10 +161,24 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
     on<CreateCustomRoomEvent>(_onCreateCustomRoom);
     on<CheckInSoloJobEvent>(_onCheckInSoloJob);
     on<DismissActiveAlarmsEvent>(_onDismissActiveAlarms);
+    on<ResetRoomEvent>(_onResetRoom);
 
     // Setup periodic background check for solo job alarms (every 30 seconds)
     _alarmCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       add(CheckAlarmsEvent());
+    });
+
+    // Listen to real-time synchronization database updates
+    _syncSubscription = SyncService().syncEventStream.listen((event) {
+      if (event.updatedTables.contains('mushroom_jobs') ||
+          event.updatedTables.contains('grow_rooms') ||
+          event.updatedTables.contains('tasks')) {
+        print('[MushroomsBloc] Database update detected via Sync. Reloading...');
+        add(LoadRoomsEvent());
+        if (state.selectedRoomId != null) {
+          add(LoadRoomDetailsEvent(state.selectedRoomId!));
+        }
+      }
     });
   }
 
@@ -381,9 +402,29 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
     }
   }
 
+  Future<void> _onResetRoom(ResetRoomEvent event, Emitter<MushroomsState> emit) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      await _repository.resetRoom(event.roomId);
+      final rooms = await _repository.getRooms();
+      final jobs = await _repository.getJobsForRoom(event.roomId);
+      final alarmActive = await _repository.isAnySoloAlarmActive();
+      emit(state.copyWith(
+        rooms: rooms,
+        selectedRoomId: event.roomId,
+        selectedRoomJobs: jobs,
+        alarmActive: alarmActive,
+        isLoading: false,
+      ));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString(), isLoading: false));
+    }
+  }
+
   @override
   Future<void> close() {
     _alarmCheckTimer?.cancel();
+    _syncSubscription?.cancel();
     return super.close();
   }
 }

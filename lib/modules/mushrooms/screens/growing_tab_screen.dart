@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'mushboom_monarto_screen.dart'; // For FarmColors and shared definitions
+import '../bloc/mushrooms_bloc.dart';
+import '../repository.dart';
 
 class GrowingTabScreen extends StatefulWidget {
   final bool isDark;
@@ -32,6 +36,7 @@ class GrowingTabScreen extends StatefulWidget {
   final Function(String roomName, String viewMode) onSwitchToTasks;
   final Function(String roomName, String wateringPlan, String prochlorazRate)
       onStartCycle;
+  final Function(String roomName) onResetRoom;
 
   const GrowingTabScreen({
     super.key,
@@ -49,6 +54,7 @@ class GrowingTabScreen extends StatefulWidget {
     required this.onJobStatusChanged,
     required this.onSwitchToTasks,
     required this.onStartCycle,
+    required this.onResetRoom,
   });
 
   @override
@@ -158,12 +164,20 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   bool _isMapMaximized = false;
   final ScrollController _horizontalScrollController = ScrollController();
 
+  bool _isAlarmDialogOpen = false;
+  Timer? _alarmAudioTimer;
+  DateTime? _snoozeUntil;
+
   @override
   void initState() {
     super.initState();
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {});
+        try {
+          context.read<MushroomsBloc>().add(CheckAlarmsEvent());
+        } catch (_) {}
+        _checkAlarms();
       }
     });
   }
@@ -171,8 +185,212 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   @override
   void dispose() {
     _countdownTimer?.cancel();
+    _alarmAudioTimer?.cancel();
     _horizontalScrollController.dispose();
     super.dispose();
+  }
+
+  List<Map<String, dynamic>> _getTimedOutRooms() {
+    final list = <Map<String, dynamic>>[];
+    for (final room in widget.localRooms.values) {
+      final List<Map<String, dynamic>> jobs = room['jobs'] != null
+          ? List<Map<String, dynamic>>.from(room['jobs'])
+          : [];
+      final activeSoloJob = jobs.firstWhere(
+        (j) =>
+            j['job_type'] == 'alone_worker' &&
+            (j['status'] == 'in_progress' || j['status'] == 'inprog'),
+        orElse: () => {},
+      );
+      if (activeSoloJob.isNotEmpty) {
+        final startedAtStr =
+            activeSoloJob['started_at'] ?? activeSoloJob['scheduled_at'];
+        if (startedAtStr != null) {
+          final startedAt = DateTime.parse(startedAtStr.toString());
+          final limitMins = (activeSoloJob['time_limit_minutes'] ?? 45) as int;
+          final deadline = startedAt.add(Duration(minutes: limitMins));
+          if (DateTime.now().isAfter(deadline)) {
+            list.add({
+              'roomName': room['name'],
+              'roomId': room['id'],
+              'job': activeSoloJob,
+            });
+          }
+        }
+      }
+    }
+    return list;
+  }
+
+  void _checkAlarms() {
+    final timedOut = _getTimedOutRooms();
+    if (timedOut.isNotEmpty) {
+      if (_snoozeUntil != null && DateTime.now().isBefore(_snoozeUntil!)) {
+        _alarmAudioTimer?.cancel();
+        _alarmAudioTimer = null;
+        return;
+      }
+
+      if (_alarmAudioTimer == null) {
+        HapticFeedback.vibrate();
+        SystemSound.play(SystemSoundType.alert);
+        _alarmAudioTimer =
+            Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+          HapticFeedback.vibrate();
+          SystemSound.play(SystemSoundType.alert);
+        });
+      }
+
+      if (!_isAlarmDialogOpen) {
+        _isAlarmDialogOpen = true;
+        _showSirenAlarmDialog(timedOut);
+      }
+    } else {
+      _alarmAudioTimer?.cancel();
+      _alarmAudioTimer = null;
+      _snoozeUntil = null;
+    }
+  }
+
+  void _showSirenAlarmDialog(List<Map<String, dynamic>> timedOutRooms) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor:
+              widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Colors.red, width: 2),
+          ),
+          icon: const Icon(
+            Icons.warning_amber_rounded,
+            color: Colors.red,
+            size: 64,
+          ),
+          title: const Text(
+            '🚨 ALARM: ALONE WORKER TIMEOUT',
+            style: TextStyle(
+              color: Colors.red,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Alone working time limit has expired! Please check the employee immediately.',
+                style: TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: timedOutRooms.map((room) {
+                    final job = room['job'];
+                    final roomName = room['roomName'] as String;
+                    final assignee = job['assignee'] ?? 'Unknown Worker';
+                    final limit = job['time_limit_minutes'] ?? 45;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            roomName,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.red),
+                          ),
+                          Text(
+                            'Employee: $assignee (Limit: ${limit}m)',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.snooze, color: Colors.orange),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.orange,
+                    side: const BorderSide(color: Colors.orange),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _isAlarmDialogOpen = false;
+                    setState(() {
+                      _snoozeUntil =
+                          DateTime.now().add(const Duration(minutes: 5));
+                    });
+                    _alarmAudioTimer?.cancel();
+                    _alarmAudioTimer = null;
+                  },
+                  label: const Text(
+                    'SNOOZE 5 MINS',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.check_circle_outline,
+                      color: Colors.white),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _isAlarmDialogOpen = false;
+                    setState(() {
+                      // Grace period of 10 seconds to allow the database update to sync
+                      _snoozeUntil =
+                          DateTime.now().add(const Duration(seconds: 10));
+                    });
+                    _alarmAudioTimer?.cancel();
+                    _alarmAudioTimer = null;
+                    try {
+                      context
+                          .read<MushroomsBloc>()
+                          .add(DismissActiveAlarmsEvent());
+                    } catch (_) {}
+                  },
+                  label: const Text(
+                    'CONFIRM SAFETY',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    ).then((_) => _isAlarmDialogOpen = false);
   }
 
   @override
@@ -193,6 +411,98 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
+          (() {
+            final timedOut = _getTimedOutRooms();
+            if (timedOut.isEmpty) return const SizedBox.shrink();
+            final isSnoozed =
+                _snoozeUntil != null && DateTime.now().isBefore(_snoozeUntil!);
+
+            return Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isSnoozed ? Colors.orange.shade700 : Colors.red.shade600,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: (isSnoozed ? Colors.orange : Colors.red)
+                        .withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                      isSnoozed
+                          ? Icons.snooze_rounded
+                          : Icons.error_outline_rounded,
+                      color: Colors.white,
+                      size: 28),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isSnoozed
+                              ? '⏸️ ALARM SNOOZED'
+                              : '🚨 SIREN ALARM WARNING',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          isSnoozed
+                              ? '${_snoozeUntil!.difference(DateTime.now()).inSeconds} seconds remaining to check rooms: ${timedOut.map((r) => r['roomName']).join(', ')}'
+                              : 'Alone worker timeout in rooms: ${timedOut.map((r) => '${r['roomName']} (${r['job']['assignee']})').join(', ')}',
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.check_circle_outline, size: 16),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: isSnoozed
+                          ? Colors.orange.shade800
+                          : Colors.red.shade700,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        // Grace period of 10 seconds to allow the database update to sync
+                        _snoozeUntil =
+                            DateTime.now().add(const Duration(seconds: 10));
+                      });
+                      _alarmAudioTimer?.cancel();
+                      _alarmAudioTimer = null;
+                      try {
+                        context
+                            .read<MushroomsBloc>()
+                            .add(DismissActiveAlarmsEvent());
+                      } catch (_) {}
+                    },
+                    label: const Text(
+                      'CONFIRM SAFETY',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          })(),
           Wrap(
             alignment: WrapAlignment.spaceBetween,
             crossAxisAlignment: WrapCrossAlignment.center,
@@ -534,7 +844,51 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     final double opacity = isFilterMatch ? 1.0 : 0.15;
     final isSelected = widget.selectedRoomName == roomName;
     final stage = (room['current_stage'] ?? 'idle') as String;
-    final stageColor = _getStageColor(stage);
+
+    final bool stageIsAlone = stage.toLowerCase() == 'alone_worker';
+    final bool stageIsTimeout = stage.toLowerCase() == 'alone_timeout';
+
+    // Check if there is an active alone worker in this room
+    final List<Map<String, dynamic>> jobs = room['jobs'] != null
+        ? List<Map<String, dynamic>>.from(room['jobs'])
+        : [];
+    final activeSoloJob = jobs.firstWhere(
+      (j) =>
+          j['job_type'] == 'alone_worker' &&
+          (j['status'] == 'in_progress' || j['status'] == 'inprog'),
+      orElse: () => {},
+    );
+
+    bool isAloneWorker = activeSoloJob.isNotEmpty || stageIsAlone || stageIsTimeout;
+    bool isSoloTimedOut = stageIsTimeout;
+    String displayStage = stage;
+
+    if (activeSoloJob.isNotEmpty) {
+      displayStage = 'alone_worker';
+      final startedAtStr =
+          activeSoloJob['started_at'] ?? activeSoloJob['scheduled_at'];
+      if (startedAtStr != null) {
+        final startedAt = DateTime.parse(startedAtStr.toString());
+        final limitMins = (activeSoloJob['time_limit_minutes'] ?? 45) as int;
+        final deadline = startedAt.add(Duration(minutes: limitMins));
+        if (DateTime.now().isAfter(deadline)) {
+          isSoloTimedOut = true;
+          displayStage = 'alone_timeout';
+        }
+      }
+    } else if (stageIsAlone || stageIsTimeout) {
+      displayStage = stageIsTimeout ? 'alone_timeout' : 'alone_worker';
+    }
+
+    Color stageColor;
+    if (isSoloTimedOut) {
+      stageColor = Colors.red;
+    } else if (isAloneWorker) {
+      stageColor = Colors.orange;
+    } else {
+      stageColor = _getStageColor(stage);
+    }
+
 
     // Pickers Checked-In
     final crew = widget.roomCrews[roomName] ?? [];
@@ -559,22 +913,42 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isSelected
+                color: isSoloTimedOut
                     ? (widget.isDark
-                        ? const Color(0xFF2A2A2A)
-                        : Colors.amber.shade50)
-                    : (widget.isDark ? const Color(0xFF1E1E1E) : Colors.white),
+                        ? Colors.red.withOpacity(0.15)
+                        : Colors.red.shade50)
+                    : (isAloneWorker
+                        ? (widget.isDark
+                            ? Colors.orange.withOpacity(0.1)
+                            : Colors.orange.shade50)
+                        : (isSelected
+                            ? (widget.isDark
+                                ? const Color(0xFF2A2A2A)
+                                : Colors.amber.shade50)
+                            : (widget.isDark
+                                ? const Color(0xFF1E1E1E)
+                                : Colors.white))),
                 border: Border.all(
-                  color: isSelected
-                      ? FarmColors.forestGreen
-                      : FarmColors.borderLight,
-                  width: isSelected ? 3 : 1,
+                  color: isSoloTimedOut
+                      ? Colors.red
+                      : (isAloneWorker
+                          ? Colors.orange
+                          : (isSelected
+                              ? FarmColors.forestGreen
+                              : FarmColors.borderLight)),
+                  width:
+                      (isSelected || isSoloTimedOut || isAloneWorker) ? 3 : 1,
                 ),
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: isSelected
+                boxShadow: (isSelected || isSoloTimedOut || isAloneWorker)
                     ? [
                         BoxShadow(
-                            color: FarmColors.forestGreen.withOpacity(0.3),
+                            color: (isSoloTimedOut
+                                    ? Colors.red
+                                    : (isAloneWorker
+                                        ? Colors.orange
+                                        : FarmColors.forestGreen))
+                                .withOpacity(0.3),
                             blurRadius: 8,
                             spreadRadius: 1)
                       ]
@@ -643,7 +1017,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      stage.toUpperCase(),
+                      displayStage.toUpperCase().replaceAll('_', ' '),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: roomWidth < 60 ? 6 : 8,
@@ -720,6 +1094,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                 _buildLegendItem('Harvest', const Color(0xFFEF4444)),
                 _buildLegendItem('Clean room', const Color(0xFF10B981)),
                 _buildLegendItem('Idle', const Color(0xFF6B7280)),
+                _buildLegendItem('Alone Worker', Colors.orange),
+                _buildLegendItem('Alone Timeout', Colors.red),
               ],
             ),
           ),
@@ -776,11 +1152,16 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
       case 'harvesting':
       case 'harvest':
         return const Color(0xFFEF4444); // Red/Rose
+      case 'alone_worker':
+        return Colors.orange;
+      case 'alone_timeout':
+        return Colors.red;
       case 'idle':
       default:
         return const Color(0xFF6B7280); // Grey
     }
   }
+
 
   Widget _buildFilterBtn(String label, String value) {
     final active = widget.roomFilter == value;
@@ -868,26 +1249,30 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               ],
             ),
             room['status'] == 'idle'
-                ? ElevatedButton.icon(
-                    icon: const Icon(Icons.play_arrow,
-                        color: Colors.white, size: 16),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: FarmColors.forestGreen,
-                      foregroundColor: Colors.white,
-                    ),
-                    label: const Text('Start New Cycle'),
-                    onPressed: () => _showStartCycleDialog(context, roomName),
+                ? Row(
+                    children: [
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.play_arrow,
+                            color: Colors.white, size: 16),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: FarmColors.forestGreen,
+                          foregroundColor: Colors.white,
+                        ),
+                        label: const Text('Start New Cycle'),
+                        onPressed: () =>
+                            _showStartCycleDialog(context, roomName),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        tooltip: 'Reset Room',
+                        icon: const Icon(Icons.refresh, color: Colors.red),
+                        onPressed: () =>
+                            _showResetRoomConfirmDialog(context, roomName),
+                      ),
+                    ],
                   )
                 : Row(
                     children: [
-                      TextButton.icon(
-                        icon: const Icon(Icons.timeline,
-                            color: Colors.grey, size: 16),
-                        label: const Text('Timeline',
-                            style: TextStyle(color: Colors.grey)),
-                        onPressed: () =>
-                            widget.onSwitchToTasks(roomName, 'gantt'),
-                      ),
                       TextButton.icon(
                         icon: const Icon(Icons.view_kanban,
                             color: Colors.grey, size: 16),
@@ -895,7 +1280,15 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                             style: TextStyle(color: Colors.grey)),
                         onPressed: () =>
                             widget.onSwitchToTasks(roomName, 'kanban'),
-                      )
+                      ),
+                      TextButton.icon(
+                        icon: const Icon(Icons.refresh,
+                            color: Colors.red, size: 16),
+                        label: const Text('Reset',
+                            style: TextStyle(color: Colors.red)),
+                        onPressed: () =>
+                            _showResetRoomConfirmDialog(context, roomName),
+                      ),
                     ],
                   )
           ],
@@ -1422,12 +1815,14 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                             ? growingEmployees
                                 .map((e) => DropdownMenuItem<String>(
                                       value: e['name'] as String,
-                                      child: Text('${e['name']} (${e['role']})'),
+                                      child:
+                                          Text('${e['name']} (${e['role']})'),
                                     ))
                                 .toList()
                             : const [
                                 DropdownMenuItem(
-                                    value: 'Minh T.', child: Text('Minh T. (Default)')),
+                                    value: 'Minh T.',
+                                    child: Text('Minh T. (Default)')),
                               ],
                         onChanged: (val) {
                           if (val != null) setDialogState(() => assignee = val);
@@ -1522,6 +1917,33 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               Navigator.pop(ctx);
             },
             child: const Text('Start', style: TextStyle(color: Colors.white)),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showResetRoomConfirmDialog(BuildContext context, String roomName) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Reset ${roomName.replaceAll('Room', 'Grow Room')}'),
+        content: const Text(
+          'Are you sure you want to reset this room? This will set the room status and stage to Idle, clear all active alarms, and complete all jobs.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              widget.onResetRoom(roomName);
+              Navigator.pop(ctx);
+            },
+            child:
+                const Text('Reset Room', style: TextStyle(color: Colors.white)),
           )
         ],
       ),

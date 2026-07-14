@@ -129,6 +129,7 @@ class ProjectModule implements IZiiModule {
       'project_no_projects': 'Chưa có dự án nào',
       'project_status_todo': 'Cần làm',
       'project_status_in_progress': 'Đang làm',
+      'project_status_review': 'Đang đánh giá',
       'project_status_done': 'Hoàn thành',
       'project_task_add_title': 'Thêm công việc',
       'project_task_title_label': 'Tiêu đề công việc',
@@ -151,6 +152,7 @@ class ProjectModule implements IZiiModule {
       'project_no_projects': 'No projects yet',
       'project_status_todo': 'Todo',
       'project_status_in_progress': 'In Progress',
+      'project_status_review': 'Review',
       'project_status_done': 'Done',
       'project_task_add_title': 'Add Task',
       'project_task_title_label': 'Task Title',
@@ -182,6 +184,7 @@ class _ProjectDashboardWidget extends StatefulWidget {
 class _ProjectDashboardWidgetState extends State<_ProjectDashboardWidget> {
   int _todoCount = 0;
   int _progressCount = 0;
+  int _reviewCount = 0;
   int _doneCount = 0;
   bool _loading = true;
 
@@ -195,16 +198,19 @@ class _ProjectDashboardWidgetState extends State<_ProjectDashboardWidget> {
     final tasks = await ProjectRepository().getAllTasks();
     int todo = 0;
     int progress = 0;
+    int review = 0;
     int done = 0;
     for (final t in tasks) {
       if (t['status'] == 'todo') todo++;
       if (t['status'] == 'in_progress') progress++;
+      if (t['status'] == 'review') review++;
       if (t['status'] == 'done') done++;
     }
     if (mounted) {
       setState(() {
         _todoCount = todo;
         _progressCount = progress;
+        _reviewCount = review;
         _doneCount = done;
         _loading = false;
       });
@@ -218,7 +224,7 @@ class _ProjectDashboardWidgetState extends State<_ProjectDashboardWidget> {
           height: 100, child: Center(child: CircularProgressIndicator()));
     }
 
-    final total = _todoCount + _progressCount + _doneCount;
+    final total = _todoCount + _progressCount + _reviewCount + _doneCount;
     final percent =
         total > 0 ? (_doneCount / total * 100).toStringAsFixed(0) : '0';
 
@@ -256,6 +262,8 @@ class _ProjectDashboardWidgetState extends State<_ProjectDashboardWidget> {
                   const Color(0xFF94A3B8)),
               _statItem(context.tr('project_status_in_progress'),
                   _progressCount, const Color(0xFF6366F1)),
+              _statItem(context.tr('project_status_review'), _reviewCount,
+                  const Color(0xFFF59E0B)),
               _statItem(context.tr('project_status_done'), _doneCount,
                   const Color(0xFF10B981)),
             ],

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -6,8 +7,33 @@ import 'core/navigation/app_router.dart';
 import 'core/theme/izii_theme.dart';
 import 'core/localization/app_localizations.dart';
 
-class IZiiApp extends StatelessWidget {
+import 'core/server/server_manager.dart';
+
+class IZiiApp extends StatefulWidget {
   const IZiiApp({super.key});
+
+  @override
+  State<IZiiApp> createState() => _IZiiAppState();
+}
+
+class _IZiiAppState extends State<IZiiApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Future<AppExitResponse> didRequestAppExit() async {
+    await ServerManager().stopServer();
+    return AppExitResponse.exit;
+  }
 
   @override
   Widget build(BuildContext context) {

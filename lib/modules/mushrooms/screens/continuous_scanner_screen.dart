@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../repository.dart';
 import 'mushboom_monarto_screen.dart'; // For FarmColors
 
@@ -22,26 +23,51 @@ class ContinuousScannerScreen extends StatefulWidget {
   State<ContinuousScannerScreen> createState() => _ContinuousScannerScreenState();
 }
 
-class _ContinuousScannerScreenState extends State<ContinuousScannerScreen> {
+class _ContinuousScannerScreenState extends State<ContinuousScannerScreen>
+    with SingleTickerProviderStateMixin {
   late String _roomSelected;
+  late String _plantSelected;
   String _scanAction = 'checkin'; // 'checkin' or 'checkout'
   List<Map<String, dynamic>> _employees = [];
   final List<String> _scannedHistory = [];
   bool _isLoading = true;
   final TextEditingController _manualIdController = TextEditingController();
 
+  // Mobile Scanner Controllers
+  final MobileScannerController _controller = MobileScannerController();
+  late AnimationController _animationController;
+  bool _isProcessing = false;
+  bool _isTorchOn = false;
+
   @override
   void initState() {
     super.initState();
+    _plantSelected = widget.activePlant;
     _roomSelected = widget.localRooms.keys.firstWhere(
-        (k) => widget.localRooms[k]!['plant'] == widget.activePlant,
+        (k) => widget.localRooms[k]!['plant'] == _plantSelected,
         orElse: () => widget.localRooms.keys.first);
     _loadEmployees();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  void _onPlantChanged(String plant) {
+    setState(() {
+      _plantSelected = plant;
+      _roomSelected = widget.localRooms.keys.firstWhere(
+          (k) => widget.localRooms[k]!['plant'] == plant,
+          orElse: () => widget.localRooms.keys.first);
+    });
   }
 
   @override
   void dispose() {
     _manualIdController.dispose();
+    _animationController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -61,6 +87,81 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen> {
       }
     }
     return <String, dynamic>{};
+  }
+
+  void _onDetect(BarcodeCapture capture) async {
+    if (_isProcessing) return;
+
+    final List<Barcode> barcodes = capture.barcodes;
+    if (barcodes.isEmpty) return;
+
+    final String? code = barcodes.first.rawValue;
+    if (code == null || code.isEmpty) return;
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    // Pause scanner temporarily
+    await _controller.stop();
+
+    if (!mounted) return;
+    _processScannedCode(code);
+  }
+
+  void _processScannedCode(String code) {
+    final emp = _findEmployee(code);
+    if (emp.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error: Employee ID not found!'),
+          backgroundColor: Color(0xFFF43F5E),
+        ),
+      );
+      _resumeScanner();
+      return;
+    }
+
+    final dept = emp['department']?.toString().toLowerCase() ?? '';
+    if (!dept.contains('harvest')) {
+      final actString = _scanAction == 'checkin' ? 'check-in to' : 'check-out of';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: Only Harvest department employees can $actString Harvest rooms.'),
+          backgroundColor: const Color(0xFFF43F5E),
+        ),
+      );
+      _resumeScanner();
+      return;
+    }
+
+    final name = emp['name'] as String;
+    if (_scanAction == 'checkin') {
+      widget.onCheckIn(code, _roomSelected);
+      setState(() {
+        _scannedHistory.insert(0, 'Checked In: $name ($code)');
+      });
+    } else {
+      widget.onCheckOut(code, _roomSelected);
+      setState(() {
+        _scannedHistory.insert(0, 'Checked Out: $name ($code)');
+      });
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Successfully processed scan for: $name ($code)'),
+        duration: const Duration(milliseconds: 800),
+      ),
+    );
+    _resumeScanner();
+  }
+
+  void _resumeScanner() async {
+    setState(() {
+      _isProcessing = false;
+    });
+    await _controller.start();
   }
 
   @override
@@ -97,6 +198,43 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen> {
                     ),
                     child: Column(
                       children: [
+                        // Plant Selection (M1 vs M2)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Target Plant:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                            Row(
+                              children: [
+                                ChoiceChip(
+                                  label: const Text('Plant M1'),
+                                  selected: _plantSelected == 'M1',
+                                  onSelected: (val) {
+                                    if (val) _onPlantChanged('M1');
+                                  },
+                                  selectedColor: FarmColors.forestGreen.withValues(alpha: 0.2),
+                                  labelStyle: TextStyle(
+                                    color: _plantSelected == 'M1' ? FarmColors.forestGreenText : Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                ChoiceChip(
+                                  label: const Text('Plant M2'),
+                                  selected: _plantSelected == 'M2',
+                                  onSelected: (val) {
+                                    if (val) _onPlantChanged('M2');
+                                  },
+                                  selectedColor: FarmColors.forestGreen.withValues(alpha: 0.2),
+                                  labelStyle: TextStyle(
+                                    color: _plantSelected == 'M2' ? FarmColors.forestGreenText : Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
                         // Room Selection Dropdown
                         DropdownButtonFormField<String>(
                           decoration: const InputDecoration(
@@ -105,7 +243,7 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen> {
                           ),
                           value: _roomSelected,
                           items: widget.localRooms.keys
-                              .where((k) => widget.localRooms[k]!['plant'] == widget.activePlant)
+                              .where((k) => widget.localRooms[k]!['plant'] == _plantSelected)
                               .map((r) => DropdownMenuItem(
                                   value: r, child: Text(r.replaceAll('Room', 'Grow Room'))))
                               .toList(),
@@ -129,7 +267,7 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen> {
                                   onSelected: (val) {
                                     if (val) setState(() => _scanAction = 'checkin');
                                   },
-                                  selectedColor: FarmColors.forestGreen.withOpacity(0.2),
+                                  selectedColor: FarmColors.forestGreen.withValues(alpha: 0.2),
                                   labelStyle: TextStyle(
                                     color: _scanAction == 'checkin' ? FarmColors.forestGreenText : Colors.grey,
                                     fontWeight: FontWeight.bold,
@@ -142,7 +280,7 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen> {
                                   onSelected: (val) {
                                     if (val) setState(() => _scanAction = 'checkout');
                                   },
-                                  selectedColor: Colors.red.withOpacity(0.2),
+                                  selectedColor: Colors.red.withValues(alpha: 0.2),
                                   labelStyle: TextStyle(
                                     color: _scanAction == 'checkout' ? Colors.red.shade800 : Colors.grey,
                                     fontWeight: FontWeight.bold,
@@ -224,45 +362,100 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen> {
                     flex: 3,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black87,
+                        color: Colors.black,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: FarmColors.forestGreen, width: 2),
                       ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.qr_code_scanner, color: Colors.green, size: 64),
-                              SizedBox(height: 12),
-                              Text(
-                                'CAMERA VIEWPORT ACTIVE',
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'monospace',
-                                  letterSpacing: 1.5,
-                                ),
-                              ),
-                              SizedBox(height: 6),
-                              Text(
-                                'Continuous Mobile Barcode Scanner',
-                                style: TextStyle(color: Colors.white54, fontSize: 11),
-                              ),
-                            ],
-                          ),
-                          Positioned(
-                            top: 40,
-                            bottom: 40,
-                            left: 40,
-                            right: 40,
-                            child: CustomPaint(
-                              painter: _ViewportPainter(),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // 1. Mobile Camera Scan View
+                            MobileScanner(
+                              controller: _controller,
+                              onDetect: _onDetect,
                             ),
-                          ),
-                        ],
+                            // 2. Corner Viewfinder overlay
+                            Positioned(
+                              top: 20,
+                              bottom: 20,
+                              left: 20,
+                              right: 20,
+                              child: CustomPaint(
+                                painter: _ViewportPainter(),
+                              ),
+                            ),
+                            // 3. Red Scanning Line overlay
+                            AnimatedBuilder(
+                              animation: _animationController,
+                              builder: (context, child) {
+                                return Positioned(
+                                  top: _animationController.value * 200,
+                                  left: 24,
+                                  right: 24,
+                                  child: Container(
+                                    height: 3,
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Colors.transparent,
+                                          Colors.red,
+                                          Colors.transparent
+                                        ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.red.withValues(alpha: 0.5),
+                                          blurRadius: 4,
+                                          spreadRadius: 1,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            // 4. Torch and Flip controls overlay
+                            Positioned(
+                              top: 12,
+                              right: 12,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withValues(alpha: 0.4),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(
+                                        _isTorchOn ? Icons.flash_on : Icons.flash_off,
+                                        color: _isTorchOn ? Colors.amber : Colors.white70,
+                                      ),
+                                      onPressed: () async {
+                                        await _controller.toggleTorch();
+                                        setState(() {
+                                          _isTorchOn = !_isTorchOn;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withValues(alpha: 0.4),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(Icons.flip_camera_ios, color: Colors.white70),
+                                      onPressed: () => _controller.switchCamera(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -410,7 +603,7 @@ class _ViewportPainter extends CustomPainter {
 
     // Laser Line
     final laserPaint = Paint()
-      ..color = Colors.green.withOpacity(0.8)
+      ..color = Colors.green.withValues(alpha: 0.8)
       ..strokeWidth = 2;
     canvas.drawLine(
         Offset(0, size.height / 2), Offset(size.width, size.height / 2), laserPaint);

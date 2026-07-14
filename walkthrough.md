@@ -225,6 +225,42 @@ Tôi đã hoàn tất việc thiết lập máy chủ đồng bộ tinh gọn v�
 *   [NEW] [run_server.bat](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/run_server.bat): File batch khởi chạy máy chủ tức thì chỉ với một click (tự động chạy `db_init.py` trước khi bật máy chủ trên port `8080`).
 *   [NEW] [start_background.vbs](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/start_background.vbs): VBScript script hỗ trợ chạy ẩn máy chủ uvicorn trong nền mà không hiển thị màn hình CMD.
 
+---
+
+## Quản lý vòng đời Server tự động (Windows Server Process Lifecycle Auto-Termination)
+
+Khắc phục triệt để vấn đề khi tắt ứng dụng Flutter trên Windows thì tiến trình máy chủ con (`iziiapp_server.exe`) vẫn chạy ngầm và người dùng phải kết thúc thủ công từ Task Manager:
+
+1. **Cơ chế Giám sát Stdin (Parent-Child Connection Monitor)**:
+   - Thêm một luồng phụ daemon (`monitor_parent_stdin`) trong file entrypoint của Python ASGI server [app.py](file:///C:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/server/app.py). Luồng này thực hiện đọc từ `sys.stdin`.
+   - Khi tiến trình ứng dụng mẹ (Flutter App) thoát ra (cho dù tắt bình thường, bị tắt bằng Task Manager, hoặc crash), Hệ điều hành Windows sẽ tự động đóng đường dẫn Standard Input (stdin) kết nối giữa hai tiến trình.
+   - Thao tác đóng luồng stdin sẽ giải phóng khối chặn `sys.stdin.read()` trong luồng phụ, lập tức gọi `os._exit(0)` để dừng tiến trình máy chủ ngay lập tức mà không để lại tiến trình rác.
+
+2. **Đăng ký Trình đóng ứng dụng (WidgetsBindingObserver)**:
+   - Thay đổi widget chính `IZiiApp` trong [app.dart](file:///C:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/lib/app.dart) từ `StatelessWidget` sang `StatefulWidget`.
+   - Đăng ký `WidgetsBindingObserver` để theo dõi sự kiện vòng đời và bắt tín hiệu đóng cửa sổ qua hàm `didRequestAppExit()`.
+   - Thực hiện gọi bất đồng bộ phương thức `ServerManager().stopServer()` khi người dùng nhấn nút đóng (X) hoặc Alt+F4 để gửi tín hiệu dừng (`sigterm` / `sigkill`) và giải phóng tài nguyên một cách an toàn và chủ động trước khi đóng ứng dụng.
+
+3. **Rebuild Standalone Executable**:
+   - Sử dụng PyInstaller để cấu hình và biên dịch lại máy chủ ASGI thành tệp thực thi độc lập mới tại `dist/iziiapp_server.exe` để tích hợp toàn bộ cơ chế giám sát stdin tự động tắt mới.
+
+---
+
+## Cảnh báo Làm việc một mình (Alone Worker Warning & Siren Alarm)
+
+Triển khai cơ chế cảnh báo trực quan và báo động Siren trên giao diện sơ đồ phòng `growing_tab_screen.dart` đối với trường hợp nhân viên làm việc một mình quá thời gian cho phép:
+
+1. **Đổi màu trạng thái phòng trực quan (Warning & Alarm Colors)**:
+   - Khi có công việc **Alone Worker** đang diễn ra (`in_progress`):
+     - **Trong thời gian cho phép (Cảnh báo Cam)**: Viền phòng đổi sang màu **Cam (Orange)** dày 3px, nền phòng phủ một lớp màu cam nhạt, thẻ trạng thái ở góc dưới hiển thị chữ `"ALONE WORKER"`.
+     - **Quá thời gian thiết lập (Báo động Đỏ)**: Viền phòng đổi sang màu **Đỏ (Red)** dày 3px, nền phòng phủ màu đỏ nhạt, thẻ trạng thái hiển thị chữ `"ALONE TIMEOUT"`.
+   - Cập nhật thêm hai trạng thái này vào phần chú thích sơ đồ sàn (Legend) ở cuối màn hình để dễ dàng đối chiếu.
+
+2. **Cơ chế Kiểm tra & Phát động báo động Siren (Siren Alarm Dialog & Banner)**:
+   - **Tự động quét**: Tích hợp gọi `CheckAlarmsEvent()` định kỳ 1 giây/lần thông qua timer của màn hình để liên tục kiểm tra và đồng bộ trạng thái quá hạn của các phòng đơn lẻ vào SQLite database.
+   - **Hộp thoại Báo động (Siren Dialog)**: Khi phát hiện bất kỳ nhân viên nào bị quá giờ làm việc một mình, một hộp thoại khẩn cấp (AlertDialog) viền đỏ nổi bật sẽ tự động xuất hiện trên màn hình, đi kèm với âm thanh và rung báo động lặp lại liên tục sau mỗi 1,5 giây để thu hút sự chú ý. Người điều hành có thể bấm nút `"XÁC NHẬN AN TOÀN"` để gọi hàm check-in an toàn và reset giờ làm việc của nhân viên.
+   - **Thanh cảnh báo khẩn cấp (Alert Banner)**: Hiển thị một thanh thông báo màu đỏ khẩn cấp ở đầu tab Sơ đồ phòng để thông tin chi tiết tên phòng và tên nhân viên gặp sự cố, tồn tại liên tục cho đến khi báo động được tắt, đảm bảo an toàn lao động tối đa.
+
 ## Cách chạy thử nghiệm:
 1.  **Chạy máy chủ trực tiếp:** Nhấp đúp chuột vào tệp [run_server.bat](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/run_server.bat). Màn hình CMD sẽ hiển thị và máy chủ sẽ trực tiếp lắng nghe cổng `8080` (cả API và WebSocket `/chat`).
 2.  **Chạy ngầm dưới nền:** Nhấp đúp chuột vào tệp [start_background.vbs](file:///c:/Users/CHANH/OneDrive/Documents/Downloads/Compressed/izii_app/start_background.vbs). Máy chủ sẽ chạy hoàn toàn ẩn trong Task Manager.

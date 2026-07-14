@@ -1,812 +1,739 @@
-app.py:115: DeprecationWarning:
-        on_event is deprecated, use lifespan event handlers instead.
 
-        Read more about it in the
-        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
-
-←[32mINFO←[0m:     Started server process [←[36m12436←[0m]
-←[32mINFO←[0m:     Waiting for application startup.
-←[32mINFO←[0m:     Application startup complete.
-←[32mINFO←[0m:     Uvicorn running on ←[1mhttp://0.0.0.0:8080←[0m (Press CTRL+C to quit)
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-
-🚀 Starting iZiiApp Standalone Server in Bundled Mode...
-Database auto-initialized successfully at: C:\Users\CHANH\OneDrive\Máy tính\data\iziiapp.db
-←[32mINFO←[0m:     172.23.128.1:64092 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-==================================================
-📥 [PUSH] Nhận được 20 thay đổi lúc 2026-07-07T23:37:36.303243
-==================================================
-   [1] 🔹 Bảng: tasks | Thao tác: update
-       - id: b98bec28-4ee2-4023-bd50-585f8d329723
-       - status: in_progress
-   [2] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648623_4797
-       - code: 1-1000
-       - name: Operating Bank Account
-       - category: Asset
-       - gst_tax_code: ITS
-       - balance: 50000.0
-       - is_active: True
-   [3] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648629_1796
-       - code: 1-1200
-       - name: Accounts Receivable
-       - category: Asset
-       - gst_tax_code: GST
-       - balance: 0.0
-       - is_active: True
-   [4] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648642_5795
-       - code: 1-1500
-       - name: Office Equipment
-       - category: Asset
-       - gst_tax_code: GST
-       - balance: 12000.0
-       - is_active: True
-   [5] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648654_8807
-       - code: 2-1000
-       - name: Accounts Payable
-       - category: Liability
-       - gst_tax_code: GST
-       - balance: 0.0
-       - is_active: True
-   [6] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648665_1794
-       - code: 2-2000
-       - name: GST Collected
-       - category: Liability
-       - gst_tax_code: ITS
-       - balance: 0.0
-       - is_active: True
-   [7] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648678_5795
-       - code: 2-2100
-       - name: GST Paid
-       - category: Liability
-       - gst_tax_code: ITS
-       - balance: 0.0
-       - is_active: True
-   [8] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648694_3930
-       - code: 2-2200
-       - name: PAYG Withholding Payable
-       - category: Liability
-       - gst_tax_code: ITS
-       - balance: 0.0
-       - is_active: True
-   [9] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648713_4797
-       - code: 2-2300
-       - name: Superannuation Payable
-       - category: Liability
-       - gst_tax_code: ITS
-       - balance: 0.0
-       - is_active: True
-   [10] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648724_6797
-       - code: 3-1000
-       - name: Owner Capital
-       - category: Equity
-       - gst_tax_code: ITS
-       - balance: 62000.0
-       - is_active: True
-   [11] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648735_8792
-       - code: 3-8000
-       - name: Retained Earnings
-       - category: Equity
-       - gst_tax_code: ITS
-       - balance: 0.0
-       - is_active: True
-   [12] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648747_2797
-       - code: 4-1000
-       - name: Sales Revenue
-       - category: Revenue
-       - gst_tax_code: GST
-       - balance: 0.0
-       - is_active: True
-   [13] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648759_5796
-       - code: 4-1200
-       - name: GST Free Sales
-       - category: Revenue
-       - gst_tax_code: FRE
-       - balance: 0.0
-       - is_active: True
-   [14] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648771_8792
-       - code: 5-1000
-       - name: Cost of Goods Sold
-       - category: COGS
-       - gst_tax_code: GST
-       - balance: 0.0
-       - is_active: True
-   [15] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648784_3796
-       - code: 6-1000
-       - name: Wages & Salaries Expense
-       - category: Expense
-       - gst_tax_code: ITS
-       - balance: 0.0
-       - is_active: True
-   [16] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648795_5794
-       - code: 6-1100
-       - name: Superannuation Expense
-       - category: Expense
-       - gst_tax_code: ITS
-       - balance: 0.0
-       - is_active: True
-   [17] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648806_7793
-       - code: 6-1200
-       - name: Office Rent
-       - category: Expense
-       - gst_tax_code: GST
-       - balance: 0.0
-       - is_active: True
-   [18] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648817_9791
-       - code: 6-1300
-       - name: Electricity & Utilities
-       - category: Expense
-       - gst_tax_code: GST
-       - balance: 0.0
-       - is_active: True
-   [19] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648828_2795
-       - code: 6-1400
-       - name: Bank Fees
-       - category: Expense
-       - gst_tax_code: ITS
-       - balance: 0.0
-       - is_active: True
-   [20] 🔹 Bảng: accounts | Thao tác: insert
-       - id: acc_1783432648842_7831
-       - code: 6-1500
-       - name: Shipping & Delivery Expense
-       - category: Expense
-       - gst_tax_code: GST
-       - balance: 0.0
-       - is_active: True
-←[32mINFO←[0m:     172.23.128.1:64093 - "←[1mPOST /sync/push HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T22:52:27.821577
-   📦 Gửi 20 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64093 - "←[1mGET /sync/pull?since=2026-07-07T22%3A52%3A27.821577 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:37:36.652316
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64094 - "←[1mGET /sync/pull?since=2026-07-07T23%3A37%3A36.652316 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64095 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64096 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64097 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:37:41.308055
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64094 - "←[1mGET /sync/pull?since=2026-07-07T23%3A37%3A41.308055 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64098 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:37:43.921798
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64094 - "←[1mGET /sync/pull?since=2026-07-07T23%3A37%3A43.921798 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64099 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64100 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:37:46.189692
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64101 - "←[1mGET /sync/pull?since=2026-07-07T23%3A37%3A46.189692 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64102 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64103 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:37:51.181989
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64104 - "←[1mGET /sync/pull?since=2026-07-07T23%3A37%3A51.181989 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64105 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:49634 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T22:52:10.033760
-   📦 Gửi 20 bản ghi
-←[32mINFO←[0m:     10.107.156.166:49636 - "←[1mGET /sync/pull?since=2026-07-07T22%3A52%3A10.033760 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64106 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:37:56.180656
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64107 - "←[1mGET /sync/pull?since=2026-07-07T23%3A37%3A56.180656 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64108 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-🔐 [DEVICE] Registered: iZii-android-mqp9cpj6 (android) DID: izii-d-27fd1f53...
-   👤 User: user_huong_vo
-←[32mINFO←[0m:     10.107.156.166:49650 - "←[1mPOST /api/v1/devices/register HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:49650 - "←[1mPOST /api/v1/devices/heartbeat HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 0 active
-←[32mINFO←[0m:     10.107.156.166:49652 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:49654 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:00.045953
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:49668 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A00.045953 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:49676 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64109 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:01.188487
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64110 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A01.188487 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64111 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:59134 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:05.028759
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:59146 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A05.028759 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:59160 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64112 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:06.182115
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64113 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A06.182115 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64114 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:59168 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:10.040799
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:59170 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A10.040799 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:59182 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64115 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:11.182551
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64116 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A11.182551 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64117 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:46982 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:15.132833
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:46998 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A15.132833 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:47008 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64118 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:16.206042
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64119 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A16.206042 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:47022 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:19.971442
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:47030 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A19.971442 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:47044 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:52146 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:24.987958
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:52160 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A24.987958 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:52168 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:52180 - "←[1mPOST /api/v1/devices/heartbeat HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:52180 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:30.047835
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:52184 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A30.047835 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:52188 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:60502 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:34.988078
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:60508 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A34.988078 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:60518 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64120 - "←[1mGET /api/v1/notification-settings?user_id= HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64121 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:38:21.182039
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64122 - "←[1mGET /sync/pull?since=2026-07-07T23%3A38%3A21.182039 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:00.426999
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64123 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A00.426999 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64124 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64125 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64126 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:05.110632
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64127 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A05.110632 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64128 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64129 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:10.112941
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64130 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A10.112941 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64131 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64132 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:15.112444
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64133 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A15.112444 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64134 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64135 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:20.288804
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64136 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A20.288804 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64137 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64138 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:25.117533
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64139 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A25.117533 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64140 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64141 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:30.113412
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64142 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A30.113412 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64143 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64144 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:35.115719
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64145 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A35.115719 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64146 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64147 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:40.128516
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64148 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A40.128516 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64149 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:45.114946
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64148 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A45.114946 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64150 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:46.923053
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64151 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A46.923053 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64152 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-🔐 [DEVICE] Registered: iZii-windows-mraq47eu (windows) DID: izii-d-3ad5c1ed...
-   👤 User: user_an_nguyen
-←[32mINFO←[0m:     172.23.128.1:64150 - "←[1mPOST /api/v1/devices/register HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64150 - "←[1mPOST /api/v1/devices/heartbeat HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     172.23.128.1:64153 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64153 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:50.116985
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64166 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A50.116985 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64167 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:49726 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:49726 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:54.954883
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:48186 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A54.954883 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64168 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:55.120195
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64169 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A55.120195 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64170 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:48190 - "←[1mPOST /api/v1/devices/heartbeat HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:48190 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:39:59.981285
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:48194 - "←[1mGET /sync/pull?since=2026-07-07T23%3A39%3A59.981285 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64171 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:00.114395
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64172 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A00.114395 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64173 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:04.977810
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:44794 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A04.977810 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:44792 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64174 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:05.109147
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64175 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A05.109147 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64176 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:44800 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:09.981588
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:44816 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A09.981588 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64177 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:10.277815
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64178 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A10.277815 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64179 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:50302 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:14.988828
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:50308 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A14.988828 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64180 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:15.115467
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64181 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A15.115467 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64182 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64180 - "←[1mPOST /api/v1/devices/heartbeat HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:50314 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:19.993736
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:50320 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A19.993736 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64180 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:20.121069
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64183 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A20.121069 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64184 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     172.23.128.1:64180 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     172.23.128.1:64180 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-   🔔 [IN-APP] Created notification for user_huong_vo
-   ✉️ [EMAIL] Scheduled Delayed Email to user_huong_vo in 15 mins
-←[32mINFO←[0m:     172.23.128.1:64180 - "←[1mPOST /api/v1/messages/send HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:25.133502
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64185 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A25.133502 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📬 [PENDING] 1 message(s) waiting for device izii-d-27fd1f53...
-←[32mINFO←[0m:     10.107.156.166:60866 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:24.977096
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:60870 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A24.977096 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-🔑 [KEY] Key lookup for device: iZii-windows-mraq47eu DID: izii-d-3ad5c1ed...
-←[32mINFO←[0m:     10.107.156.166:60866 - "←[1mGET /api/v1/devices/izii-d-3ad5c1ed/key HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-✅ [ACK] Acknowledged 1/1 message(s)
-←[32mINFO←[0m:     10.107.156.166:60866 - "←[1mPOST /api/v1/messages/ack HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:29.987995
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:60870 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A29.987995 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64180 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:28.448747
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64185 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A28.448747 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64186 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:60886 - "←[1mPOST /api/v1/devices/heartbeat HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:60886 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:30.124036
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:60902 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A30.124036 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64187 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:30.128715
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64188 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A30.128715 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64189 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:51538 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:34.979226
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:51544 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A34.979226 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64190 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:35.218118
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64191 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A35.218118 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64192 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     10.107.156.166:51548 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:39.972764
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:51552 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A39.972764 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:51566 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:51566 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:51578 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:51566 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:51578 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:43.379069
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:51552 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A43.379069 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:51594 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64193 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:40.112734
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64194 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A40.112734 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64195 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:37786 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:45.038994
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:37796 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A45.038994 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64196 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:45.114817
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64197 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A45.114817 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64198 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     172.23.128.1:64196 - "←[1mPOST /api/v1/devices/heartbeat HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:37806 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:49.990783
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:37808 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A49.990783 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64196 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:50.114918
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64199 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A50.114918 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64200 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:37806 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:37806 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-   🔔 [IN-APP] Created notification for user_an_nguyen
-   ✉️ [EMAIL] Scheduled Delayed Email to user_an_nguyen in 15 mins
-←[32mINFO←[0m:     10.107.156.166:37806 - "←[1mPOST /api/v1/messages/send HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:37812 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:37824 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:54.992551
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:37808 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A54.992551 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:37824 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     10.107.156.166:37812 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:37812 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:57.549469
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:37808 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A57.549469 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📬 [PENDING] 1 message(s) waiting for device izii-d-3ad5c1ed...
-←[32mINFO←[0m:     172.23.128.1:64201 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:55.109878
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64202 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A55.109878 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-🔑 [KEY] Key lookup for device: iZii-android-mqp9cpj6 DID: izii-d-27fd1f53...
-←[32mINFO←[0m:     172.23.128.1:64201 - "←[1mGET /api/v1/devices/izii-d-27fd1f53/key HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-✅ [ACK] Acknowledged 1/1 message(s)
-←[32mINFO←[0m:     172.23.128.1:64201 - "←[1mPOST /api/v1/messages/ack HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:41:00.122059
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64202 - "←[1mGET /sync/pull?since=2026-07-07T23%3A41%3A00.122059 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64204 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-
-📡 [ONLINE] Queried online devices → 1 active
-←[32mINFO←[0m:     172.23.128.1:64205 - "←[1mGET /api/v1/devices/online?exclude_device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:45714 - "←[1mPOST /api/v1/devices/heartbeat HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     10.107.156.166:45714 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:40:59.980339
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:45718 - "←[1mGET /sync/pull?since=2026-07-07T23%3A40%3A59.980339 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64205 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:41:00.265662
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64206 - "←[1mGET /sync/pull?since=2026-07-07T23%3A41%3A00.265662 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64207 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:35530 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:41:05.001566
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:35544 - "←[1mGET /sync/pull?since=2026-07-07T23%3A41%3A05.001566 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64208 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:41:05.131193
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     172.23.128.1:64209 - "←[1mGET /sync/pull?since=2026-07-07T23%3A41%3A05.131193 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[33mWARNING←[0m:  Unsupported upgrade request.
-←[33mWARNING←[0m:  No supported WebSocket library detected. Please use "pip install 'uvicorn[standard]'", or install 'websockets' or 'wsproto' manually.
-←[32mINFO←[0m:     172.23.128.1:64210 - "←[1mGET /chat HTTP/1.1←[0m" ←[31m404 Not Found←[0m
-←[32mINFO←[0m:     10.107.156.166:35556 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-27fd1f53 HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:41:10.027675
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m:     10.107.156.166:35564 - "←[1mGET /sync/pull?since=2026-07-07T23%3A41%3A10.027675 HTTP/1.1←[0m" ←[32m200 OK←[0m
-←[32mINFO←[0m:     172.23.128.1:64211 - "←[1mGET /api/v1/messages/pending?device_id=izii-d-3ad5c1ed HTTP/1.1←[0m" ←[32m200 OK←[0m
-
-📤 [PULL] Thiết bị đang tải về các cập nhật mới...
-   🕐 Lọc từ: 2026-07-07T23:41:10.114148
-   📦 Gửi 0 bản ghi
-←[32mINFO←[0m: 
+D/FlutterGeolocator( 5307): Creating service.
+D/FlutterGeolocator( 5307): Binding to location service.
+D/FlutterGeolocator( 5307): Flutter engine connected. Connected engine count 1
+I/flutter ( 5307): [DeviceIdentity] Loaded existing identity: izii-d-f55f16b1
+I/flutter ( 5307): [DeviceDiscovery] ✅ Device registered: izii-d-f55f16b1
+I/flutter ( 5307): [DeviceDiscovery] Starting heartbeat (every 30s)
+I/flutter ( 5307): [ChatWS] Connecting to ws://10.107.156.38:8080/chat ...
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Đang gửi 27 thay đổi lên server...
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 accounts → insert
+I/flutter ( 5307): [SyncService]    📦 tasks → update
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → update
+I/flutter ( 5307): [SyncService]    📦 tasks → update
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → update
+I/flutter ( 5307): [SyncService]    📦 tasks → update
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → update
+I/flutter ( 5307): [SyncService]    📦 tasks → update
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → update
+I/flutter ( 5307): [ChatWS] Connected successfully.
+I/flutter ( 5307): [ChatWS] Sent event: presence_update
+I/flutter ( 5307): [ChatWS] Received event: sync_trigger
+I/flutter ( 5307): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 5307): [SyncService] ✅ PUSH thành công! Server đã nhận 27 thay đổi.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] 📥 Nhận được 27 cập nhật từ Server. Đang lọc và áp dụng...
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887379_3695
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887384_8240
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887391_6120
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887397_3674
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887403_9791
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887410_7862
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887417_5401
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887427_6014
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887433_3107
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887439_9756
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887446_7266
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887452_4207
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887458_1321
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887466_9215
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887473_7104
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887479_4576
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887485_1978
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887493_9066
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 accounts → insert: id=acc_1784021887499_6781
+I/flutter ( 5307): [SyncService]    ! Bảng "accounts" chưa được hỗ trợ đồng bộ PULL.
+I/flutter ( 5307): [SyncService]    🔄 tasks → update: id=9a4d1fba-4186-4302-b93e-f5767688d5bb
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=f7c6ae70-0e94-49ac-b056-ad2a5fb7ce65
+I/flutter ( 5307): [SyncService]    🔄 tasks → update: id=9a4d1fba-4186-4302-b93e-f5767688d5bb
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=f7c6ae70-0e94-49ac-b056-ad2a5fb7ce65
+I/flutter ( 5307): [SyncService]    🔄 tasks → update: id=9a4d1fba-4186-4302-b93e-f5767688d5bb
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=f7c6ae70-0e94-49ac-b056-ad2a5fb7ce65
+I/flutter ( 5307): [SyncService]    🔄 tasks → update: id=9a4d1fba-4186-4302-b93e-f5767688d5bb
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=f7c6ae70-0e94-49ac-b056-ad2a5fb7ce65
+I/flutter ( 5307): [SyncService] ✅ Đã ghi 8 bản ghi vào database local (bỏ qua/lọc 19).
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [BleDiscovery] BlePeripheral initialized successfully.
+I/flutter ( 5307): [BleDiscovery] Waiting for Bluetooth adapter to be powered on...
+I/flutter ( 5307): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 5307): [BleDiscovery] Error starting scan: PlatformException(startScan, Bluetooth must be turned on, null, null)
+I/flutter ( 5307): [DeviceDiscovery] ✅ Device registered: izii-d-f55f16b1
+I/flutter ( 5307): [DeviceDiscovery] Heartbeat stopped
+I/flutter ( 5307): [DeviceDiscovery] Starting heartbeat (every 30s)
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [BleDiscovery] Timeout waiting for Bluetooth adapter state.
+I/flutter ( 5307): [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 5307): [BleDiscovery] Failed to start BLE Advertising: PlatformException(Exception, java.lang.Exception: Bluetooth is not enabled, Cause: null, Stacktrace: java.lang.Exception: Bluetooth is not enabled
+I/flutter ( 5307):      at h6.z.e(r8-map-id-d7579e0e950d972803ce9d8892c57ed1f4b3c13bb139f22f689ca1932649ddc8:41)
+I/flutter ( 5307):      at h6.h.b(r8-map-id-d7579e0e950d972803ce9d8892c57ed1f4b3c13bb139f22f689ca1932649ddc8:429)
+I/flutter ( 5307):      at a5.j0.b(r8-map-id-d7579e0e950d972803ce9d8892c57ed1f4b3c13bb139f22f689ca1932649ddc8:95)
+I/flutter ( 5307):      at y.u.run(r8-map-id-d7579e0e950d972803ce9d8892c57ed1f4b3c13bb139f22f689ca1932649ddc8:143)
+I/flutter ( 5307):      at android.os.Handler.handleCallback(Handler.java:995)
+I/flutter ( 5307):      at android.os.Handler.dispatchMessage(Handler.java:103)
+I/flutter ( 5307):      at android.os.Looper.loopOnce(Looper.java:273)
+I/flutter ( 5307):      at android.os.Looper.loop(Looper.java:363)
+I/flutter ( 5307):      at android.app.ActivityThread.main(ActivityThread.java:10060)
+I/flutter ( 5307):      at java.lang.reflect.Method.invoke(Native Method)
+I/flutter ( 5307):      at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:632)
+I/flutter ( 5307):      at com.android.internal.os.ZygoteInit.main(ZygoteInit.java
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: presence_update
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: presence_update
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Sent event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [ChatWS] Received event: typing_state
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: typing_state
+I/flutter ( 5307): [ChatWS] Received event: e2ee_message
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Sent event: heartbeat
+I/flutter ( 5307): [ChatWS] Sent event: typing_state
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Sent event: typing_state
+I/flutter ( 5307): [E2EE Debug] encryptForDevice:
+I/flutter ( 5307):    - recipientDeviceId: izii-d-3ad5c1ed
+I/flutter ( 5307):    - ciphertext length: 21
+I/flutter ( 5307):    - signature length: 64
+I/flutter ( 5307): [DeviceDiscovery] 📤 Sending E2EE to http://10.107.156.38:8080/api/v1/messages/send
+I/flutter ( 5307): [DeviceDiscovery]    conversation_id: direct_user_bich_tran_user_huong_vo
+I/flutter ( 5307): [DeviceDiscovery]    sender_device_id: izii-d-f55f16b1
+I/flutter ( 5307): [DeviceDiscovery]    recipients: 1
+I/flutter ( 5307): [DeviceDiscovery]    payload keys for izii-d-3ad5c1ed: [ciphertext, nonce, sender_device_id, signature, sent_at]
+I/flutter ( 5307): [DeviceDiscovery] ✅ Encrypted message sent to 1 device(s)
+I/flutter ( 5307): [ChatWS] Sent event: e2ee_message
+I/flutter ( 5307): [E2EE] Sent encrypted message to 1 devices
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Sent event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [ChatWS] Connection closed.
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [ChatWS] Retrying connection...
+I/flutter ( 5307): [ChatWS] Connecting to ws://10.107.156.38:8080/chat ...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Connected successfully.
+I/flutter ( 5307): [ChatWS] Sent event: presence_update
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Sent event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: sync_trigger
+I/flutter ( 5307): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] 📥 Nhận được 5 cập nhật từ Server. Đang lọc và áp dụng...
+I/flutter ( 5307): [SyncService]    🔄 tasks → insert: id=523439bd-ac39-4ea9-8c7b-72ffb3306f43
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=4c251670-b638-4a4f-80ce-422c9e66e14c
+I/flutter ( 5307): [SyncService]    🔄 mushroom_job_safety_configs → insert: id=4014d586-5a8e-4841-a2b4-7d2458bbc2fc
+I/flutter ( 5307): [SyncService]    🔄 mushroom_safety_checkin_logs → insert: id=64d38e66-57a0-4111-be1e-6e4ee052d908
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_38
+I/flutter ( 5307): [SyncService] ✅ Đã ghi 5 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Connection closed.
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [ChatWS] Retrying connection...
+I/flutter ( 5307): [ChatWS] Connecting to ws://10.107.156.38:8080/chat ...
+I/flutter ( 5307): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Connected successfully.
+I/flutter ( 5307): [ChatWS] Sent event: presence_update
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Sent event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Connection closed.
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [ChatWS] Retrying connection...
+I/flutter ( 5307): [ChatWS] Connecting to ws://10.107.156.38:8080/chat ...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 5307): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:10.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Software caused connection abort (OS Error: Software caused connection abort, errno = 103), address = 10.107.156.38, port = 51366
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter ( 5307): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter ( 5307): [DeviceDiscovery] ! Heartbeat failed: Connection error – is the server running?
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] 📥 Nhận được 37 cập nhật từ Server. Đang lọc và áp dụng...
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=cefd81c6-37ac-461a-93a1-ad3b6acb5b54
+I/flutter ( 5307): [SyncService]    🔄 mushroom_job_safety_configs → insert: id=d2520603-f8ed-4acb-9df9-b1c5d7e20282
+I/flutter ( 5307): [SyncService]    🔄 mushroom_safety_checkin_logs → insert: id=ee490d40-e773-4d7d-8465-b2c802872e93
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_37
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=fbd34487-5c32-4f24-b9cc-b5590bb8432d
+I/flutter ( 5307): [SyncService]    🔄 mushroom_job_safety_configs → insert: id=b09abdd5-50d7-4f80-aa7d-89c77bf4afd6
+I/flutter ( 5307): [SyncService]    🔄 mushroom_safety_checkin_logs → insert: id=bd66e2cf-17a1-41f7-bf66-5c42bac8c09e
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_66
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_38
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=fbd34487-5c32-4f24-b9cc-b5590bb8432d
+I/flutter ( 5307): [SyncService]    🔄 tasks → update: id=bed1cf10-c726-42c2-979b-1f00726d59e0
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=fbd34487-5c32-4f24-b9cc-b5590bb8432d
+I/flutter ( 5307): [SyncService]    🔄 tasks → update: id=bed1cf10-c726-42c2-979b-1f00726d59e0
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_65
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=cefd81c6-37ac-461a-93a1-ad3b6acb5b54
+I/flutter ( 5307): [SyncService]    🔄 tasks → update: id=e17b6cb4-498a-47a1-add6-02b29913075f
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_37
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_35
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=c66e6fe4-0e6b-4070-b008-3882a390fb49
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=638d4ce8-f122-491a-8a6f-e13f90a7f7b2
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=fc1c10bd-9452-424f-abc4-39beb56d1f88
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=73b1602c-9e5b-42fa-94ef-dd1d5c0c3942
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=a502a241-d92e-45ab-9440-3320c462d254
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=7441a998-79a5-48bb-a6f8-10aea45b7185
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=1e774e25-a213-4846-a8f7-615bbd06692a
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=70b8f675-851b-4442-9022-ae96db93a5f0
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=c66e6fe4-0e6b-4070-b008-3882a390fb49
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=638d4ce8-f122-491a-8a6f-e13f90a7f7b2
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_35
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=fc1c10bd-9452-424f-abc4-39beb56d1f88
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_35
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=73b1602c-9e5b-42fa-94ef-dd1d5c0c3942
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_35
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=a502a241-d92e-45ab-9440-3320c462d254
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_35
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=7441a998-79a5-48bb-a6f8-10aea45b7185
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_35
+I/flutter ( 5307): [SyncService] ✅ Đã ghi 37 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Retrying connection...
+I/flutter ( 5307): [ChatWS] Connecting to ws://10.107.156.38:8080/chat ...
+I/flutter ( 5307): [ChatWS] Connected successfully.
+I/flutter ( 5307): [ChatWS] Sent event: presence_update
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: grow_rooms -> update
+I/flutter ( 5307): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter ( 5307): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter ( 5307): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter ( 5307): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter ( 5307): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter ( 5307): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter ( 5307): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter ( 5307): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Đang gửi 9 thay đổi lên server...
+I/flutter ( 5307): [SyncService]    📦 grow_rooms → update
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → insert
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → insert
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → insert
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → insert
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → insert
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → insert
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → insert
+I/flutter ( 5307): [SyncService]    📦 mushroom_jobs → insert
+I/flutter ( 5307): [ChatWS] Received event: sync_trigger
+I/flutter ( 5307): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 5307): [SyncService] ✅ PUSH thành công! Server đã nhận 9 thay đổi.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] 📥 Nhận được 9 cập nhật từ Server. Đang lọc và áp dụng...
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_1
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=af3be3fa-20e2-4464-a269-2bf2df9c5479
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=2306ad58-f503-4123-b5df-fc2820b43f9b
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=fdbdcb08-accc-4276-8792-5e3f6377d46e
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=7dcaf8d9-a271-4cf6-8337-a016479c1d9e
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=be0faeb7-c86e-41ef-8899-84b1f3cfc62c
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=1a66d2a0-6914-4219-b4fb-488381f4dec6
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=065277c6-1164-4058-98f5-6bcf4067b61e
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=43cc6d67-874b-4c35-9b74-bff8bc31d06f
+I/flutter ( 5307): [SyncService] ✅ Đã ghi 9 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Sent event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: sync_trigger
+I/flutter ( 5307): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] 📥 Nhận được 2 cập nhật từ Server. Đang lọc và áp dụng...
+I/flutter ( 5307): [SyncService]    🔄 tasks → insert: id=1c0f3513-d24e-48eb-b81b-71873c2910f3
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=26e2e0ea-1dd2-4bb2-9393-d8f162207810
+I/flutter ( 5307): [SyncService] ✅ Đã ghi 2 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Sent event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: sync_trigger
+I/flutter ( 5307): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] 📥 Nhận được 9 cập nhật từ Server. Đang lọc và áp dụng...
+I/flutter ( 5307): [SyncService]    🔄 grow_rooms → update: id=room_10
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=d97c063a-fc37-48de-bbe1-293b88b4c808
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=afaf4d62-dbad-4507-a442-125f2d2801dd
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=857867eb-c759-4212-a896-73beef9cb17d
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=7e0af0e2-762d-4b42-8b98-fa3ad98e6d80
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=578cf0ae-f3db-4025-82d9-2c26782b00d4
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=a5700bc1-6327-4199-b449-5584a1647eb5
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=41251cbd-911e-493a-a61f-e7e2847d4e1f
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → insert: id=f0a72993-6828-4e33-a11e-a218638cc74a
+I/flutter ( 5307): [SyncService] ✅ Đã ghi 9 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Sent event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: sync_trigger
+I/flutter ( 5307): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] 📥 Nhận được 1 cập nhật từ Server. Đang lọc và áp dụng...
+I/flutter ( 5307): [SyncService]    🔄 mushroom_jobs → update: id=d97c063a-fc37-48de-bbe1-293b88b4c808
+I/flutter ( 5307): [SyncService] ✅ Đã ghi 1 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [MushroomsBloc] Database update detected via Sync. Reloading...
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [ChatWS] Sent event: heartbeat
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Received event: heartbeat
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 5307): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 5307): [ChatWS] Connection closed.
+I/flutter ( 5307): [SyncService] Đang kết nối tới server: http://10.107.156.38:8080 ...
+I/flutter ( 5307): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 5307): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 5307): [ChatWS] Retrying connection...
+I/flutter ( 5307): [ChatWS] Connecting to ws://10.107.156.38:8080/chat ...

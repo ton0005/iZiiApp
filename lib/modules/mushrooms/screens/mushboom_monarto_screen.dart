@@ -15,6 +15,7 @@ import 'chat_tab_screen.dart';
 import 'safety_tab_screen.dart';
 import 'employees_tab_screen.dart';
 import 'departments_tab_screen.dart';
+import 'settings_tab_screen.dart';
 
 // --- Premium color definitions ---
 class FarmColors {
@@ -38,7 +39,8 @@ class FarmColors {
 }
 
 class MushboomMonartoScreen extends StatefulWidget {
-  const MushboomMonartoScreen({super.key});
+  final String? initialTab;
+  const MushboomMonartoScreen({super.key, this.initialTab});
 
   @override
   State<MushboomMonartoScreen> createState() => _MushboomMonartoScreenState();
@@ -103,23 +105,23 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   final List<Map<String, dynamic>> _maintenanceJobs = [
     {
       'id': 'MNT-101',
-      'title': 'Khử trùng quạt hút gió',
+      'title': 'Exhaust fan sterilization',
       'plant': 'M2',
       'room': '33',
       'assignee': 'Nam T.',
       'priority': 'normal',
       'status': 'inprog',
-      'notes': 'Bảo trì bộ lọc khuẩn định kỳ.'
+      'notes': 'Routine antibacterial filter maintenance.'
     },
     {
       'id': 'MNT-102',
-      'title': 'Cân chỉnh cảm biến độ ẩm',
+      'title': 'Calibrate humidity sensor',
       'plant': 'M1',
       'room': '12',
-      'assignee': 'Lợi P.',
+      'assignee': 'Loi P.',
       'priority': 'high',
       'status': 'todo',
-      'notes': 'Cảm biến lệch 5% so với đo tay.'
+      'notes': 'Sensor offset is 5% compared to manual measurement.'
     }
   ];
 
@@ -128,13 +130,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     'Growing Crew': [
       {
         'sender': 'Minh T.',
-        'text': 'Đã hoàn thành tưới nước phòng 33 sáng nay.',
+        'text': 'Completed watering Room 33 this morning.',
         'time': '08:30',
         'role': 'Growing Specialist'
       },
       {
         'sender': 'Vinh',
-        'text': 'Tốt lắm, kiểm tra độ ẩm phòng 34 luôn nhé.',
+        'text': 'Great, check humidity for Room 34 as well.',
         'time': '08:45',
         'role': 'Growing Lead'
       }
@@ -143,13 +145,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       {
         'sender': 'Sarah',
         'text':
-            'Aeon Mall cần gấp 150kg nấm cỡ vừa vào chiều nay, kho đủ hàng không Trúc ơi?',
+            'Aeon Mall needs 150kg medium mushrooms urgently this afternoon, is warehouse stock enough, Truc?',
         'time': '09:15',
         'role': 'Sales Lead'
       },
       {
-        'sender': 'Trúc',
-        'text': 'Để mình lập kế hoạch picking gấp gửi cho Harvest.',
+        'sender': 'Truc',
+        'text': 'I\'ll create an urgent picking plan and send to Harvest.',
         'time': '09:20',
         'role': 'Cool Room Manager'
       }
@@ -157,7 +159,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     'Mike (Site Manager)': [
       {
         'sender': 'Mike',
-        'text': 'Đã cập nhật hệ thống báo động an toàn cho branch mới.',
+        'text': 'Updated the safety alarm system for the new branch.',
         'time': '07:00',
         'role': 'Site Manager'
       }
@@ -191,6 +193,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
   // Employees Registry
   final List<Map<String, dynamic>> _employees = [];
+  List<Map<String, dynamic>> _rolesWithLevels = [];
 
   // BLoC
   late MushroomsBloc _bloc;
@@ -198,8 +201,61 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialTab != null) {
+      _activeTab = widget.initialTab!;
+    }
     _bloc = MushroomsBloc()..add(LoadRoomsEvent());
     _loadMushroomData();
+  }
+
+  bool _isJobVisible(Map<String, dynamic> job, String activeRole, List<Map<String, dynamic>> employees) {
+    int getUserLevel(String role) {
+      for (final r in _rolesWithLevels) {
+        if (r['name']?.toString().toLowerCase() == role.toLowerCase()) {
+          return r['level'] as int? ?? 0;
+        }
+      }
+      final r = role.toLowerCase();
+      if (r.contains('manager') || r.contains('site manager') || r.contains('cool room manager')) return 3;
+      if (r.contains('lead') || r.contains('supervisor')) return 2;
+      if (r.contains('specialist')) return 1;
+      return 0; // picker, box mover, worker, etc.
+    }
+
+    final userLevel = getUserLevel(activeRole);
+
+    final assignee = job['assignee']?.toString() ?? job['assigneeName']?.toString() ?? '';
+    if (assignee.isEmpty || assignee == 'Not Assigned') {
+      return true; // Unassigned jobs are visible to everyone
+    }
+
+    String getActiveName(String role) {
+      if (role == 'Growing Lead') return 'Vinh';
+      if (role == 'Harvest Supervisor') return 'Hải';
+      if (role == 'Cool Room Manager') return 'Trúc';
+      if (role == 'Maintenance Lead') return 'Nam';
+      return '';
+    }
+    final activeName = getActiveName(activeRole);
+    if (activeName.isNotEmpty && assignee.toLowerCase().contains(activeName.toLowerCase())) {
+      return true; // Always show jobs assigned to myself
+    }
+
+    String assigneeRole = '';
+    for (final e in employees) {
+      final empName = e['name']?.toString() ?? '';
+      if (empName.isNotEmpty && (assignee.toLowerCase().contains(empName.toLowerCase()) || empName.toLowerCase().contains(assignee.toLowerCase()))) {
+        assigneeRole = e['role']?.toString() ?? '';
+        break;
+      }
+    }
+
+    if (assigneeRole.isEmpty) {
+      return true; // Default visible if employee not found (could be supervisor or system generated)
+    }
+
+    final assigneeLevel = getUserLevel(assigneeRole);
+    return userLevel >= assigneeLevel;
   }
 
   Future<void> _loadMushroomData() async {
@@ -213,6 +269,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final crews = await repo.getRoomCrews();
     final soloJobs = await repo.getAllSoloJobs();
     final dbEmployees = await repo.getEmployees();
+    final rolesList = await repo.getRolesWithLevels();
 
     setState(() {
       _stockButton = stock['button'] ?? 120.0;
@@ -239,6 +296,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
       _employees.clear();
       _employees.addAll(dbEmployees);
+
+      _rolesWithLevels = rolesList;
     });
   }
 
@@ -323,7 +382,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
               }
             });
 
-            final room = _localRooms[_selectedRoomName];
+            final activeRoomName = (_activeTab == 'tasks') ? _tasksSelectedRoomName : _selectedRoomName;
+            final room = _localRooms[activeRoomName];
             if (room != null && room['id'] != _lastLoadedRoomId) {
               _lastLoadedRoomId = room['id'];
               _bloc.add(LoadRoomDetailsEvent(room['id']));
@@ -337,7 +397,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                   orElse: () => {});
               if (roomEntry.isNotEmpty) {
                 final rName = roomEntry['name'] as String;
-                _localRooms[rName]!['jobs'] = state.selectedRoomJobs
+                final filteredJobs = state.selectedRoomJobs.where((j) {
+                  return _isJobVisible(j, _activeRole, _employees);
+                }).toList();
+                
+                _localRooms[rName]!['jobs'] = filteredJobs
                     .map((j) => {
                           'id': j['id'],
                           'name': j['name'],
@@ -516,7 +580,12 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                               style: TextStyle(fontSize: 13))),
                     ],
                     onChanged: (val) {
-                      if (val != null) setState(() => _activeRole = val);
+                      if (val != null) {
+                        setState(() => _activeRole = val);
+                        if (_selectedRoomName != null && _localRooms[_selectedRoomName] != null) {
+                          _bloc.add(LoadRoomDetailsEvent(_localRooms[_selectedRoomName]!['id']));
+                        }
+                      }
                     },
                   ),
                 ),
@@ -555,6 +624,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'departments') {
       return _language == 'vi' ? 'Phòng ban (Departments)' : 'Department Directory';
     }
+    if (_activeTab == 'settings') {
+      return _language == 'vi' ? 'Cài đặt (Settings)' : 'Settings';
+    }
     return _language == 'vi' ? 'An toàn lao động (Safety)' : 'Safety Dashboard';
   }
 
@@ -573,6 +645,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'chat') return 'Offline BLE P2P Chat Simulator';
     if (_activeTab == 'employees') return 'Staff & Specialist Registry';
     if (_activeTab == 'departments') return 'Manage business department listings';
+    if (_activeTab == 'settings') return 'Server, Sync & Application Preferences';
     return 'Solo Working Alerts & Incident Manager';
   }
 
@@ -667,6 +740,14 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                     Icons.lan_rounded,
                     _language == 'vi' ? 'Phòng ban (Departments)' : 'Departments',
                     Colors.indigo),
+                const Divider(),
+                _buildSidebarLabel(
+                    _language == 'vi' ? 'CẤU HÌNH' : 'CONFIGURATION'),
+                _buildSidebarItem(
+                    'settings',
+                    Icons.settings_rounded,
+                    _language == 'vi' ? 'Cài đặt (Settings)' : 'Settings',
+                    const Color(0xFF8B5CF6)),
               ],
             ),
           ),
@@ -764,6 +845,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       _activeTab = tabId;
     });
     _loadMushroomData();
+
+    final activeRoomName = (tabId == 'tasks') ? _tasksSelectedRoomName : _selectedRoomName;
+    final room = _localRooms[activeRoomName];
+    if (room != null) {
+      _lastLoadedRoomId = room['id'];
+      _bloc.add(LoadRoomDetailsEvent(room['id']));
+    }
   }
 
   // --- Main Content Switcher ---
@@ -793,6 +881,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         onJobStatusChanged: _onJobStatusChanged,
         onSwitchToTasks: _onSwitchToTasks,
         onStartCycle: _onStartCycle,
+        onResetRoom: _onResetRoom,
       );
     }
     if (_activeTab == 'harvest') {
@@ -879,6 +968,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         isDark: isDark,
       );
     }
+    if (_activeTab == 'settings') {
+      return SettingsTabScreen(
+        isDark: isDark,
+      );
+    }
     return const SizedBox.shrink();
   }
 
@@ -893,6 +987,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         wateringPlan: wateringPlan,
         prochlorazRate: prochlorazRate,
       ));
+    }
+  }
+
+  void _onResetRoom(String roomName) {
+    final room = _localRooms[roomName];
+    if (room != null) {
+      _bloc.add(ResetRoomEvent(room['id']));
     }
   }
 
@@ -969,6 +1070,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       _activeTab = 'tasks';
       _tasksViewMode = viewMode;
     });
+    final room = _localRooms[roomName];
+    if (room != null) {
+      _lastLoadedRoomId = room['id'];
+      _bloc.add(LoadRoomDetailsEvent(room['id']));
+    }
   }
 
   void _onCheckIn(String code, String roomSelected) async {
@@ -985,7 +1091,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (alreadyCheckedIn.isNotEmpty) {
       final oldRoom = alreadyCheckedIn.first['roomName']!;
       _showMsg(
-          'Nhân viên ${emp['name']} đang check-in tại Grow Room ${oldRoom.replaceAll('Room', '')}. Vui lòng check-out trước!');
+          'Employee ${emp['name']} is already checked-in at Grow Room ${oldRoom.replaceAll('Room', '')}. Please check-out first!');
       return;
     }
     await repo.checkInRoomCrew(
@@ -1106,7 +1212,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       String roomSelected, int buttonVal, int mediumVal, int openVal, [String mushroomType = 'White']) async {
     final total = buttonVal + mediumVal + openVal;
     if (total <= 0) {
-      _showMsg('Vui lòng nhập sản lượng lớn hơn 0!');
+      _showMsg('Please enter a target yield greater than 0!');
       return;
     }
     final room = _localRooms[roomSelected];
@@ -1132,7 +1238,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
     _loadMushroomData();
     _bloc.add(LoadRoomsEvent());
-    _showMsg('Đã tạo kế hoạch picking và gửi đến Harvest thành công!');
+    _showMsg('Picking plan created and successfully sent to Harvest!');
   }
 
   void _onDeliverOrder(Map<String, dynamic> order) async {
@@ -1144,19 +1250,19 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         await repo.updateMushroomStock('button', -50.0);
         await repo.updateMushroomStock('cup', -100.0);
         await repo.deliverMushroomOrder(orderId);
-        _showMsg('Giao đơn hàng ORD-001 thành công!');
+        _showMsg('Delivered order ORD-001 successfully!');
       } else {
         _showMsg(
-            'Không đủ nấm tồn kho trong kho lạnh! Vui lòng lập thêm kế hoạch Picking.');
+            'Insufficient stock in the cool room! Please schedule more picking.');
       }
     } else if (orderId == 'ORD-002') {
       if (_stockMedium >= 80 && _stockOpen >= 30) {
         await repo.updateMushroomStock('cup', -80.0);
         await repo.updateMushroomStock('flat', -30.0);
         await repo.deliverMushroomOrder(orderId);
-        _showMsg('Giao đơn hàng ORD-002 thành công!');
+        _showMsg('Delivered order ORD-002 successfully!');
       } else {
-        _showMsg('Không đủ nấm tồn kho trong kho lạnh!');
+        _showMsg('Insufficient stock in the cool room!');
       }
     }
     _loadMushroomData();

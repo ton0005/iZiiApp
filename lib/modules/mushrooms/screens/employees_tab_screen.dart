@@ -399,21 +399,27 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
     );
   }
 
-  void _showManageRolesDialog() {
+  void _showManageRolesDialog() async {
     final textController = TextEditingController();
+    int selectedLevel = 0;
+
+    // Fetch initial roles with levels
+    List<Map<String, dynamic>> dialogRoles = await _repo.getRolesWithLevels();
+
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Manage Employee Roles'),
+          title: const Text('Manage Employee Roles & Levels'),
           content: SizedBox(
-            width: 400,
+            width: 450,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   children: [
                     Expanded(
+                      flex: 2,
                       child: TextField(
                         controller: textController,
                         decoration: const InputDecoration(
@@ -421,6 +427,23 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                           contentPadding: EdgeInsets.symmetric(horizontal: 12),
                         ),
                       ),
+                    ),
+                    const SizedBox(width: 8),
+                    DropdownButton<int>(
+                      value: selectedLevel,
+                      items: const [
+                        DropdownMenuItem(value: 0, child: Text('Lvl 0 (Worker)')),
+                        DropdownMenuItem(value: 1, child: Text('Lvl 1 (Specialist)')),
+                        DropdownMenuItem(value: 2, child: Text('Lvl 2 (Lead/Sup)')),
+                        DropdownMenuItem(value: 3, child: Text('Lvl 3 (Manager)')),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) {
+                          setDialogState(() {
+                            selectedLevel = val;
+                          });
+                        }
+                      },
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -431,13 +454,17 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                       onPressed: () async {
                         final val = textController.text.trim();
                         if (val.isNotEmpty) {
-                          await _repo.addRole(val);
+                          await _repo.addRole(val, level: selectedLevel);
                           textController.clear();
-                          final updated = await _repo.getRoles();
+                          selectedLevel = 0;
+                          final updated = await _repo.getRolesWithLevels();
+                          final updatedNames = await _repo.getRoles();
                           setState(() {
-                            _roles = updated;
+                            _roles = updatedNames;
                           });
-                          setDialogState(() {});
+                          setDialogState(() {
+                            dialogRoles = updated;
+                          });
                         }
                       },
                       child: const Text('Add'),
@@ -450,7 +477,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Active Roles:',
+                    'Active Roles & Levels:',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey),
                   ),
                 ),
@@ -461,24 +488,36 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                     border: Border.all(color: FarmColors.borderLight),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: _roles.isEmpty
+                  child: dialogRoles.isEmpty
                       ? const Center(child: Text('No roles defined.'))
                       : ListView.builder(
-                          itemCount: _roles.length,
+                          itemCount: dialogRoles.length,
                           itemBuilder: (c, idx) {
-                            final r = _roles[idx];
+                            final r = dialogRoles[idx];
+                            final level = r['level'] ?? 0;
+                            String lvlLabel = 'Lvl $level';
+                            if (level == 0) lvlLabel += ' (Worker)';
+                            if (level == 1) lvlLabel += ' (Specialist)';
+                            if (level == 2) lvlLabel += ' (Lead/Sup)';
+                            if (level == 3) lvlLabel += ' (Manager)';
+
                             return ListTile(
                               dense: true,
-                              title: Text(r, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              title: Text(r['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Text(lvlLabel, style: const TextStyle(color: Colors.blueGrey, fontSize: 11)),
                               trailing: IconButton(
                                 icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 18),
                                 onPressed: () async {
-                                  await _repo.deleteRole(r);
-                                  final updated = await _repo.getRoles();
+                                  final roleName = r['name'] ?? '';
+                                  await _repo.deleteRole(roleName);
+                                  final updated = await _repo.getRolesWithLevels();
+                                  final updatedNames = await _repo.getRoles();
                                   setState(() {
-                                    _roles = updated;
+                                    _roles = updatedNames;
                                   });
-                                  setDialogState(() {});
+                                  setDialogState(() {
+                                    dialogRoles = updated;
+                                  });
                                 },
                               ),
                             );

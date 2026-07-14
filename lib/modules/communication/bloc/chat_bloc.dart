@@ -537,6 +537,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final data = wsEvent.data;
 
     switch (wsEvent.event) {
+      case 'sync_trigger':
+        print('[ChatWS] Sync trigger received from WebSocket. Pulling updates...');
+        SyncService().triggerSync(isManual: true);
+        break;
+
       case 'message_received':
         final msgId = data['message_id'] as String;
         final convoId = data['conversation_id'] as String;

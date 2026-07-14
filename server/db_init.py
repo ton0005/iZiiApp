@@ -13,9 +13,11 @@ def init_db():
     # Apply Production Optimizations
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA synchronous=NORMAL;")
+    conn.execute("PRAGMA busy_timeout=5000;")          # CRITICAL for multi-worker Uvicorn
     conn.execute("PRAGMA cache_size=-64000;")     # 64MB Cache
     conn.execute("PRAGMA temp_store=MEMORY;")
     conn.execute("PRAGMA mmap_size=268435456;")   # 256MB MMAP
+
     
     cursor = conn.cursor()
     
