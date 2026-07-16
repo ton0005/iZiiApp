@@ -1,0 +1,120 @@
+Stop-Process -Name "iziiapp_server" -Force -ErrorAction SilentlyContinue; Get-Process -Id (Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Remove-Item -Path "$env:USERPROFILE\Documents\izii_app_db.sqlite*" -Force -Recurse -ErrorAction SilentlyContinue; Remove-Item -Path "server\data\db.sqlite*" -Force -Recurse -ErrorAction SilentlyContinue; Remove-Item -Path "dist\data\db.sqlite*" -Force -Recurse -ErrorAction SilentlyContinue; pyinstaller --clean iziiapp_server.spec; C:\flutter\bin\flutter.bat build windows
+
+
+
+C:\Users\CHANH\AppData\Local\Programs\Python\Python311\python.exe -m pip install python-multipart;
+pyinstaller --clean iziiapp_server.spec
+
+
+
+Get-Process : Cannot bind argument to parameter 'Id' because it is null.
+At line:2 char:17
++ ... Process -Id (Get-NetTCPConnection -LocalPort 8080 -ErrorAction Silent ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [Get-Process], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.GetProcessC 
+   ommand
+ 
+264 INFO: PyInstaller: 6.21.0, contrib hooks: 2026.6
+264 INFO: Python: 3.11.5
+277 INFO: Platform: Windows-10-10.0.19045-SP0
+277 INFO: Python environment: C:\Users\CHANH\AppData\Local\Programs\Python\Python311
+285 INFO: Removing temporary files and cleaning cache in C:\Users\CHANH\AppData\Local\pyinstaller
+302 INFO: Module search paths (PYTHONPATH):
+['C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Scripts\\pyinstaller.exe',
+ 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\python311.zip',
+ 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\DLLs',
+ 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib',
+ 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311',
+ 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages',
+ 'C:\\Users\\CHANH\\OneDrive\\Documents\\Downloads\\Compressed\\izii_app\\server']
+2535 INFO: checking Analysis
+2535 INFO: Building Analysis because Analysis-00.toc is non existent
+2536 INFO: Looking for Python shared library...
+2536 INFO: Using Python shared library: C:\Users\CHANH\AppData\Local\Programs\Python\Python311\python311.dll
+2536 INFO: Running Analysis Analysis-00.toc
+2536 INFO: Target bytecode optimization level: 0
+2536 INFO: Initializing module dependency graph...
+2538 INFO: Initializing module graph hook caches...
+2639 INFO: Analyzing modules for base_library.zip ...
+4480 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+4723 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+8336 INFO: Processing standard module hook 'hook-math.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+8603 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+14472 INFO: Caching module dependency graph...
+14567 INFO: Analyzing C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\server\app.py
+15249 INFO: Processing standard module hook 'hook-anyio.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+16203 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+16206 INFO: SetuptoolsInfo: initializing cached setuptools info...
+17979 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+18418 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+19203 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+21834 INFO: Processing standard module hook 'hook-pydantic.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+23002 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+23662 INFO: Processing standard module hook 'hook-rich.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+25223 INFO: Processing standard module hook 'hook-pygments.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+30082 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+30515 INFO: Processing standard module hook 'hook-webbrowser.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+31853 INFO: Processing standard module hook 'hook-zoneinfo.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+36304 INFO: Processing standard module hook 'hook-sqlite3.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+36945 INFO: Processing standard module hook 'hook-uvicorn.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+39417 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+40308 INFO: Processing standard module hook 'hook-websockets.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+42837 INFO: Analyzing hidden import 'uvicorn.loops'
+42838 INFO: Analyzing hidden import 'uvicorn.loops.auto'
+42883 INFO: Analyzing hidden import 'uvicorn.protocols.http.auto'
+42900 INFO: Analyzing hidden import 'uvicorn.protocols.websockets.auto'
+42915 INFO: Analyzing hidden import 'uvicorn.lifespan'
+42917 INFO: Analyzing hidden import 'uvicorn.lifespan.on'
+42944 INFO: Analyzing hidden import 'uvicorn.lifespan.off'
+42960 INFO: Processing module hooks (post-graph stage)...
+43769 INFO: Processing pre-safe-import-module hook 'hook-tomli.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+44178 INFO: Processing standard module hook 'hook-numpy.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+47850 INFO: Processing standard module hook 'hook-psutil.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+50981 INFO: Processing standard module hook 'hook-charset_normalizer.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+53010 INFO: Processing standard module hook 'hook-PIL.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+53234 INFO: Processing standard module hook 'hook-PIL.Image.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+54082 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+54578 INFO: Processing standard module hook 'hook-PIL.ImageFilter.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+55521 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+64778 INFO: Processing standard module hook 'hook-tzdata.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+66964 INFO: Processing standard module hook 'hook-PIL.SpiderImagePlugin.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'
+67202 INFO: Performing binary vs. data reclassification (606 entries)
+71312 INFO: Looking for ctypes DLLs
+71500 INFO: Analyzing run-time hooks ...
+71511 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+71533 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+71553 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+71640 INFO: Creating base_library.zip...
+71682 INFO: Looking for dynamic libraries
+Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+74035 INFO: Extra DLL search directories (AddDllDirectory): ['C:\\Users\\CHANH\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\numpy.libs']
+74036 INFO: Extra DLL search directories (PATH): []
+75744 INFO: Warnings written to C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\build\iziiapp_server\warn-iziiapp_server.txt
+76044 INFO: Graph cross-reference written to C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\build\iziiapp_server\xref-iziiapp_server.html
+76237 INFO: checking PYZ
+76237 INFO: Building PYZ because PYZ-00.toc is non existent
+76237 INFO: Building PYZ (ZlibArchive) C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\build\iziiapp_server\PYZ-00.pyz
+77727 INFO: Building PYZ (ZlibArchive) C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\build\iziiapp_server\PYZ-00.pyz completed successfully.
+77818 INFO: checking PKG
+77818 INFO: Building PKG because PKG-00.toc is non existent
+77819 INFO: Building PKG (CArchive) iziiapp_server.pkg
+88850 INFO: Building PKG (CArchive) iziiapp_server.pkg completed successfully.
+88890 INFO: Bootloader C:\Users\CHANH\AppData\Local\Programs\Python\Python311\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\run.exe
+88890 INFO: checking EXE
+88891 INFO: Building EXE because EXE-00.toc is non existent
+88891 INFO: Building EXE from EXE-00.toc
+88891 INFO: Copying bootloader EXE to C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\dist\iziiapp_server.exe
+89054 INFO: Copying icon to EXE
+89149 INFO: Copying 0 resources to EXE
+89149 INFO: Embedding manifest in EXE
+89234 INFO: Appending PKG archive to EXE
+89383 INFO: Fixing EXE headers
+90000 INFO: Building EXE from EXE-00.toc completed successfully.
+90040 INFO: Build complete! The results are available in: C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\dist
+Building Windows application...                                   321.3s
+√ Built build\windows\x64\runner\Release\izii_app.exe
