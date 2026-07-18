@@ -8,7 +8,7 @@ class OutboxQueue {
   factory OutboxQueue() => _instance;
   OutboxQueue._internal();
 
-  final AppDatabase _db = AppDatabase();
+  AppDatabase get _db => AppDatabase();
 
   Future<void> addMutation(String tableName, String operation, Map<String, dynamic> data) async {
     final id = const Uuid().v4();

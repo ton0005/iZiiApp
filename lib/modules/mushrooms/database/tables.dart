@@ -37,6 +37,7 @@ class MushroomJobs extends Table {
   // --- Scheduling and Prioritization Fields ---
   DateTimeColumn get scheduledAt => dateTime().nullable()();
   TextColumn get priority => text().nullable().withDefault(const Constant('normal'))(); // low, normal, high, urgent
+  IntColumn get sequence => integer().nullable()();
 
   // --- Gas Levels and Timestamps ---
   RealColumn get coLevel => real().nullable()();
@@ -122,6 +123,41 @@ class MushroomEmployees extends Table {
   TextColumn get name => text()();
   TextColumn get role => text()(); // Picker, Box Mover, Growing Specialist, etc.
   TextColumn get department => text().nullable()(); // Department name
+  TextColumn get passwordHash => text().withDefault(const Constant(''))();
+  TextColumn get status => text().withDefault(const Constant('active'))(); // active, inactive, on_leave
+  TextColumn get linkedUserId => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class MushroomDepartments extends Table {
+  TextColumn get id => text()(); // e.g. DEP001, DEP002
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class MushroomEmployeeDepartmentRoles extends Table {
+  TextColumn get id => text()(); // UUID
+  TextColumn get employeeId => text()();
+  TextColumn get departmentId => text()();
+  TextColumn get roleKey => text()(); // manager, supervisor, specialist, picker
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class MushroomPermissionOverrides extends Table {
+  TextColumn get id => text()(); // UUID
+  TextColumn get employeeId => text()();
+  TextColumn get permissionKey => text()(); // e.g. addRoom, createJob...
+  TextColumn get type => text()(); // 'allow' or 'deny'
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -139,4 +175,5 @@ class MushroomYieldSurveys extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
 

@@ -6,6 +6,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import 'package:izii_app/core/sync/sync_service.dart';
 import '../../core/database/app_database.dart';
+import 'services/employee_service.dart';
 
 class MushroomsRepository {
   final AppDatabase _db;
@@ -76,22 +77,7 @@ class MushroomsRepository {
     try {
       final existing = await _db.select(_db.mushroomEmployees).get();
       if (existing.isEmpty) {
-        final defaults = [
-          {'id': 'EMP001', 'name': 'Minh T.', 'role': 'Growing Specialist'},
-          {'id': 'EMP002', 'name': 'Lan N.', 'role': 'Growing Specialist'},
-          {'id': 'EMP003', 'name': 'Hùng V.', 'role': 'Harvest Picker'},
-          {'id': 'EMP004', 'name': 'Phúc D.', 'role': 'Harvest Picker'},
-          {'id': 'EMP005', 'name': 'Nam T.', 'role': 'Maintenance Specialist'},
-          {'id': 'EMP006', 'name': 'Lợi P.', 'role': 'Maintenance Specialist'},
-        ];
-        for (final emp in defaults) {
-          await _db.into(_db.mushroomEmployees).insert(MushroomEmployeesCompanion.insert(
-            id: emp['id']!,
-            name: emp['name']!,
-            role: emp['role']!,
-            createdAt: Value(DateTime.now()),
-          ));
-        }
+        await EmployeeServiceImpl().seedDefaultData();
       }
     } catch (_) {}
   }

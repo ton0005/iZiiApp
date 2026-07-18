@@ -64,6 +64,9 @@ part 'app_database.g.dart';
   MushroomChatMessages,
   MushroomRoomCrews,
   MushroomEmployees,
+  MushroomDepartments,
+  MushroomEmployeeDepartmentRoles,
+  MushroomPermissionOverrides,
   MushroomYieldSurveys,
   ChatConversations,
   ChatParticipants,
@@ -77,13 +80,19 @@ part 'app_database.g.dart';
   NotificationSettingsTable
 ])
 class AppDatabase extends _$AppDatabase {
-  static final AppDatabase _instance = AppDatabase._internal();
+  static AppDatabase _instance = AppDatabase._internal();
   factory AppDatabase() => _instance;
+
+  // Constructor for testing with in-memory or mock database executor
+  AppDatabase.forTesting(QueryExecutor e) : super(e);
+
+  // Set test instance override
+  static set testInstance(AppDatabase db) => _instance = db;
 
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 23;
+  int get schemaVersion => 24;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -361,6 +370,20 @@ class AppDatabase extends _$AppDatabase {
           if (from < 23) {
             try {
               await m.createTable(mushroomYieldSurveys);
+            } catch (_) {}
+          }
+          if (from < 24) {
+            try {
+              await m.addColumn(mushroomJobs, mushroomJobs.sequence);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomDepartments);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomEmployeeDepartmentRoles);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomPermissionOverrides);
             } catch (_) {}
           }
         },

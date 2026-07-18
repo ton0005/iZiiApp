@@ -9,6 +9,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:dio/dio.dart';
+import 'package:path/path.dart' as p;
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/device_identity/device_discovery_service.dart';
@@ -1129,7 +1133,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     if (isImage)
                       GestureDetector(
                         onTap: () {
-                          // View full image if we want
+                          _viewImage(file);
                         },
                         child: file.remoteUrl != null
                             ? _buildImageWidget(file.remoteUrl!, file.localUri)
@@ -1201,7 +1205,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                                       : ChatTheme.getTextMuted(isDark),
                                 ),
                                 onPressed: () {
-                                  // Trigger download
+                                  _downloadFile(file);
                                 },
                               ),
                           ],
@@ -1280,17 +1284,127 @@ class _ConversationScreenState extends State<ConversationScreen> {
         final fullUrl = remoteUrl.startsWith('http')
             ? remoteUrl
             : '$serverUrl$remoteUrl';
-        return Image.network(
-          fullUrl,
+        return CachedNetworkImage(
+          imageUrl: fullUrl,
           fit: BoxFit.cover,
           width: double.infinity,
           height: 180,
-          errorBuilder: (context, error, stackTrace) {
-            return const SizedBox(
-              height: 180,
-              child: Center(child: Icon(Icons.broken_image_rounded)),
-            );
-          },
+          placeholder: (context, url) => const SizedBox(
+            height: 180,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          errorWidget: (context, url, error) => const SizedBox(
+            height: 180,
+            child: Center(child: Icon(Icons.broken_image_rounded)),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _downloadFile(AttachmentFile file) async {
+    if (file.remoteUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tệp chưa được tải lên máy chủ.')),
+      );
+      return;
+    }
+
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Đang tải xuống: ${file.name}...')),
+      );
+
+      final serverUrl = await SettingsService().getSyncServerUrl();
+      final fullUrl = file.remoteUrl!.startsWith('http')
+          ? file.remoteUrl!
+          : '$serverUrl${file.remoteUrl}';
+
+      final dir = await getDownloadsDirectory() ?? await getApplicationDocumentsDirectory();
+      final savePath = p.join(dir.path, file.name);
+
+      final dio = Dio();
+      await dio.download(fullUrl, savePath);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Tải xuống thành công: ${file.name}'),
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'Mở thư mục',
+            onPressed: () async {
+              final folderPath = dir.path;
+              if (Platform.isWindows) {
+                await Process.run('explorer.exe', [folderPath]);
+              } else {
+                final uri = Uri.parse('file://$folderPath');
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
+                }
+              }
+            },
+          ),
+        ),
+      );
+    } catch (e) {
+      print('[DownloadError] $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Tải xuống thất bại: $e')),
+      );
+    }
+  }
+
+  void _viewImage(AttachmentFile file) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.9),
+      builder: (context) {
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            actions: [
+              if (file.remoteUrl != null)
+                IconButton(
+                  icon: const Icon(Icons.download_rounded, color: Colors.white, size: 28),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _downloadFile(file);
+                  },
+                ),
+            ],
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: file.localUri != null && File(file.localUri!).existsSync()
+                  ? Image.file(File(file.localUri!))
+                  : FutureBuilder<String>(
+                      future: SettingsService().getSyncServerUrl(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const CircularProgressIndicator();
+                        }
+                        final serverUrl = snapshot.data!;
+                        final fullUrl = file.remoteUrl!.startsWith('http')
+                            ? file.remoteUrl!
+                            : '$serverUrl${file.remoteUrl}';
+                        return CachedNetworkImage(
+                          imageUrl: fullUrl,
+                          placeholder: (context, url) => const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.broken_image_rounded, size: 64, color: Colors.white54),
+                        );
+                      },
+                    ),
+            ),
+          ),
         );
       },
     );

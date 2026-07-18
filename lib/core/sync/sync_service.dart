@@ -25,7 +25,7 @@ class SyncService {
   final OutboxQueue _outbox = OutboxQueue();
   final SettingsService _settingsService = SettingsService();
   final Connectivity _connectivity = Connectivity();
-  final AppDatabase _db = AppDatabase();
+  AppDatabase get _db => AppDatabase();
   final Dio _dio = Dio(BaseOptions(
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
@@ -1112,6 +1112,9 @@ class SyncService {
         name: data['name'] as String? ?? '',
         role: data['role'] as String? ?? '',
         department: data['department'] as String?,
+        passwordHash: data['password_hash'] as String? ?? '',
+        status: data['status'] as String? ?? 'active',
+        linkedUserId: data['linked_user_id'] as String?,
         createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
       ),
     );

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../repository.dart';
-import '../../../core/sync/sync_service.dart';
+import '../services/grow_room_service.dart';
+import '../services/job_list_service.dart';
 
 // === EVENTS ===
 
@@ -102,6 +102,16 @@ class ResetRoomEvent extends MushroomsEvent {
   ResetRoomEvent(this.roomId);
 }
 
+class RoomsUpdatedEvent extends MushroomsEvent {
+  final List<Map<String, dynamic>> rooms;
+  RoomsUpdatedEvent(this.rooms);
+}
+
+class RoomJobsUpdatedEvent extends MushroomsEvent {
+  final List<Map<String, dynamic>> jobs;
+  RoomJobsUpdatedEvent(this.jobs);
+}
+
 // === STATE ===
 
 class MushroomsState {
@@ -143,15 +153,20 @@ class MushroomsState {
 // === BLOC ===
 
 class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
-  final MushroomsRepository _repository;
+  final GrowRoomService _roomService;
+  final JobListService _jobService;
   Timer? _alarmCheckTimer;
-  StreamSubscription<SyncEvent>? _syncSubscription;
+  StreamSubscription<List<Map<String, dynamic>>>? _roomsSubscription;
+  StreamSubscription<List<Map<String, dynamic>>>? _jobsSubscription;
 
-  MushroomsBloc({MushroomsRepository? repository})
-      : _repository = repository ?? MushroomsRepository(),
+  MushroomsBloc({GrowRoomService? roomService, JobListService? jobService})
+      : _roomService = roomService ?? GrowRoomServiceImpl(),
+        _jobService = jobService ?? JobListServiceImpl(),
         super(MushroomsState()) {
     on<LoadRoomsEvent>(_onLoadRooms);
     on<LoadRoomDetailsEvent>(_onLoadRoomDetails);
+    on<RoomsUpdatedEvent>(_onRoomsUpdated);
+    on<RoomJobsUpdatedEvent>(_onRoomJobsUpdated);
     on<StartCycleEvent>(_onStartCycle);
     on<AddSoloJobEvent>(_onAddSoloJob);
     on<CompleteJobEvent>(_onCompleteJob);
@@ -167,66 +182,46 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
     _alarmCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       add(CheckAlarmsEvent());
     });
-
-    // Listen to real-time synchronization database updates
-    _syncSubscription = SyncService().syncEventStream.listen((event) {
-      if (event.updatedTables.contains('mushroom_jobs') ||
-          event.updatedTables.contains('grow_rooms') ||
-          event.updatedTables.contains('tasks')) {
-        print('[MushroomsBloc] Database update detected via Sync. Reloading...');
-        add(LoadRoomsEvent());
-        if (state.selectedRoomId != null) {
-          add(LoadRoomDetailsEvent(state.selectedRoomId!));
-        }
-      }
-    });
   }
 
   Future<void> _onLoadRooms(LoadRoomsEvent event, Emitter<MushroomsState> emit) async {
-    emit(state.copyWith(isLoading: true));
-    try {
-      final rooms = await _repository.getRooms();
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(rooms: rooms, alarmActive: alarmActive, isLoading: false));
-    } catch (e) {
-      emit(state.copyWith(error: e.toString(), isLoading: false));
-    }
+    _roomsSubscription?.cancel();
+    _roomsSubscription = _roomService.watchRooms().listen((rooms) {
+      add(RoomsUpdatedEvent(rooms));
+    });
+    final alarmActive = await _jobService.isAnySoloAlarmActive();
+    emit(state.copyWith(alarmActive: alarmActive));
   }
 
   Future<void> _onLoadRoomDetails(LoadRoomDetailsEvent event, Emitter<MushroomsState> emit) async {
-    emit(state.copyWith(isLoading: true));
-    try {
-      final jobs = await _repository.getJobsForRoom(event.roomId);
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(
-        selectedRoomId: event.roomId,
-        selectedRoomJobs: jobs,
-        alarmActive: alarmActive,
-        isLoading: false,
-      ));
-    } catch (e) {
-      emit(state.copyWith(error: e.toString(), isLoading: false));
-    }
+    _jobsSubscription?.cancel();
+    _jobsSubscription = _jobService.watchJobsByRoom(event.roomId).listen((jobs) {
+      add(RoomJobsUpdatedEvent(jobs));
+    });
+    final alarmActive = await _jobService.isAnySoloAlarmActive();
+    emit(state.copyWith(
+      selectedRoomId: event.roomId,
+      alarmActive: alarmActive,
+    ));
+  }
+
+  void _onRoomsUpdated(RoomsUpdatedEvent event, Emitter<MushroomsState> emit) {
+    emit(state.copyWith(rooms: event.rooms));
+  }
+
+  void _onRoomJobsUpdated(RoomJobsUpdatedEvent event, Emitter<MushroomsState> emit) {
+    emit(state.copyWith(selectedRoomJobs: event.jobs));
   }
 
   Future<void> _onStartCycle(StartCycleEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      await _repository.startNewCycle(
+      await _roomService.startNewCycle(
         event.roomId,
         wateringPlan: event.wateringPlan,
         prochlorazRate: event.prochlorazRate,
       );
-      final rooms = await _repository.getRooms();
-      final jobs = await _repository.getJobsForRoom(event.roomId);
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(
-        rooms: rooms,
-        selectedRoomId: event.roomId,
-        selectedRoomJobs: jobs,
-        alarmActive: alarmActive,
-        isLoading: false,
-      ));
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }
@@ -235,7 +230,7 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
   Future<void> _onAddSoloJob(AddSoloJobEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      await _repository.addSpecialSoloJob(
+      await _jobService.addSpecialSoloJob(
         event.roomId,
         event.title,
         event.assignee,
@@ -245,16 +240,7 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
         checkInTime: event.checkInTime,
         checkOutTime: event.checkOutTime,
       );
-      final rooms = await _repository.getRooms();
-      final jobs = await _repository.getJobsForRoom(event.roomId);
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(
-        rooms: rooms,
-        selectedRoomId: event.roomId,
-        selectedRoomJobs: jobs,
-        alarmActive: alarmActive,
-        isLoading: false,
-      ));
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }
@@ -263,17 +249,8 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
   Future<void> _onCompleteJob(CompleteJobEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      await _repository.completeJob(event.jobId);
-      final rooms = await _repository.getRooms();
-      final jobs = await _repository.getJobsForRoom(event.roomId);
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(
-        rooms: rooms,
-        selectedRoomId: event.roomId,
-        selectedRoomJobs: jobs,
-        alarmActive: alarmActive,
-        isLoading: false,
-      ));
+      await _jobService.completeJob(event.jobId);
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }
@@ -281,30 +258,17 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
 
   Future<void> _onCheckAlarms(CheckAlarmsEvent event, Emitter<MushroomsState> emit) async {
     try {
-      await _repository.checkSoloJobsAlarms();
-      final rooms = await _repository.getRooms();
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      
-      List<Map<String, dynamic>> currentRoomJobs = state.selectedRoomJobs;
-      if (state.selectedRoomId != null) {
-        currentRoomJobs = await _repository.getJobsForRoom(state.selectedRoomId!);
-      }
-      
-      emit(state.copyWith(
-        rooms: rooms,
-        selectedRoomJobs: currentRoomJobs,
-        alarmActive: alarmActive,
-      ));
+      await _jobService.checkSoloJobsAlarms();
+      final alarmActive = await _jobService.isAnySoloAlarmActive();
+      emit(state.copyWith(alarmActive: alarmActive));
     } catch (_) {}
   }
 
   Future<void> _onCreateCustomRoom(CreateCustomRoomEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      await _repository.addNewRoom(event.name);
-      final rooms = await _repository.getRooms();
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(rooms: rooms, alarmActive: alarmActive, isLoading: false));
+      await _roomService.addRoom(name: event.name, plantName: 'Plant M2');
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }
@@ -313,21 +277,8 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
   Future<void> _onUpdateJobStatus(UpdateJobStatusEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      if (event.newStatus == 'completed') {
-        await _repository.completeJob(event.jobId);
-      } else {
-        await _repository.updateJobStatus(event.jobId, event.newStatus);
-      }
-      final rooms = await _repository.getRooms();
-      final jobs = await _repository.getJobsForRoom(event.roomId);
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(
-        rooms: rooms,
-        selectedRoomId: event.roomId,
-        selectedRoomJobs: jobs,
-        alarmActive: alarmActive,
-        isLoading: false,
-      ));
+      await _jobService.updateJobStatus(event.jobId, event.newStatus);
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }
@@ -336,17 +287,8 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
   Future<void> _onCheckInSoloJob(CheckInSoloJobEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      await _repository.checkInSoloJob(event.jobId);
-      final rooms = await _repository.getRooms();
-      final jobs = await _repository.getJobsForRoom(event.roomId);
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(
-        rooms: rooms,
-        selectedRoomId: event.roomId,
-        selectedRoomJobs: jobs,
-        alarmActive: alarmActive,
-        isLoading: false,
-      ));
+      await _jobService.checkInSoloJob(event.jobId);
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }
@@ -354,28 +296,19 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
 
   Future<void> _onDismissActiveAlarms(DismissActiveAlarmsEvent event, Emitter<MushroomsState> emit) async {
     try {
-      final activeTriggeredJobs = await _repository.getActiveTriggeredSoloJobs();
+      final activeTriggeredJobs = await _jobService.getActiveTriggeredSoloJobs();
       for (var job in activeTriggeredJobs) {
-        await _repository.checkInSoloJob(job['id']);
+        await _jobService.checkInSoloJob(job['id']);
       }
-      final rooms = await _repository.getRooms();
-      List<Map<String, dynamic>> currentRoomJobs = state.selectedRoomJobs;
-      if (state.selectedRoomId != null) {
-        currentRoomJobs = await _repository.getJobsForRoom(state.selectedRoomId!);
-      }
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(
-        rooms: rooms,
-        selectedRoomJobs: currentRoomJobs,
-        alarmActive: alarmActive,
-      ));
+      final alarmActive = await _jobService.isAnySoloAlarmActive();
+      emit(state.copyWith(alarmActive: alarmActive));
     } catch (_) {}
   }
 
   Future<void> _onCreateCustomJob(CreateCustomJobEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      await _repository.addCustomMushroomJob(
+      await _jobService.addCustomMushroomJob(
         roomId: event.roomId,
         name: event.name,
         jobType: event.jobType,
@@ -387,16 +320,7 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
         notes: event.notes,
         projectName: event.projectName,
       );
-      final rooms = await _repository.getRooms();
-      final jobs = await _repository.getJobsForRoom(event.roomId);
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(
-        rooms: rooms,
-        selectedRoomId: event.roomId,
-        selectedRoomJobs: jobs,
-        alarmActive: alarmActive,
-        isLoading: false,
-      ));
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }
@@ -405,17 +329,8 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
   Future<void> _onResetRoom(ResetRoomEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      await _repository.resetRoom(event.roomId);
-      final rooms = await _repository.getRooms();
-      final jobs = await _repository.getJobsForRoom(event.roomId);
-      final alarmActive = await _repository.isAnySoloAlarmActive();
-      emit(state.copyWith(
-        rooms: rooms,
-        selectedRoomId: event.roomId,
-        selectedRoomJobs: jobs,
-        alarmActive: alarmActive,
-        isLoading: false,
-      ));
+      await _roomService.resetRoom(event.roomId);
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }
@@ -424,7 +339,8 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
   @override
   Future<void> close() {
     _alarmCheckTimer?.cancel();
-    _syncSubscription?.cancel();
+    _roomsSubscription?.cancel();
+    _jobsSubscription?.cancel();
     return super.close();
   }
 }
