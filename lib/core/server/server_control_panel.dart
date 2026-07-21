@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../features/server_selection/screens/server_selection_screen.dart';
 import '../../core/theme/izii_colors.dart';
 import 'server_manager.dart';
 
@@ -213,6 +214,26 @@ class _ServerControlPanelState extends State<ServerControlPanel>
                 : 'Auto-Restart: OFF',
             onPressed: () {
               _serverManager.autoRestart = !_serverManager.autoRestart;
+            },
+          ),
+
+          // Multi-Server Discovery button
+          IconButton(
+            icon: Icon(
+              Icons.lan_outlined,
+              color: isDark ? Colors.cyanAccent : IZiiColors.primary,
+              size: 20,
+            ),
+            tooltip: 'Quét & Chọn iZiiApp Server (Multi-Server)',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ServerSelectionScreen(
+                    onConnected: () => Navigator.pop(context),
+                  ),
+                ),
+              );
             },
           ),
 

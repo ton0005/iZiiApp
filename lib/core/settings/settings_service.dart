@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/server_config_service.dart';
+
 class SettingsService {
   static const String _geminiApiKey = 'gemini_api_key';
   static const String _syncServerUrl = 'sync_server_url';
@@ -34,6 +36,13 @@ class SettingsService {
   }
 
   Future<String> getSyncServerUrl() async {
+    final serverConfig = ServerConfigService.instance;
+    if (!serverConfig.hasSelectedServer) {
+      await serverConfig.init();
+    }
+    if (serverConfig.hasSelectedServer && serverConfig.currentServer != null) {
+      return serverConfig.currentServer!.baseUrl;
+    }
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_syncServerUrl) ?? 'http://10.146.147.160:8080';
   }
