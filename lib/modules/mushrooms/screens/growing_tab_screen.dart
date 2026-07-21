@@ -101,8 +101,6 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     null,
     null,
     null,
-    null,
-    null,
     'corridor',
     null,
     null,
@@ -112,8 +110,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     'Room 56',
     'Room 55',
     'Room 54',
-    'Room 53',
-    null
+    'Room 53'
   ];
 
   static const List<String?> m1TopRow = [
@@ -227,6 +224,12 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
 
   void _checkAlarms() {
     final timedOut = _getTimedOutRooms();
+    for (final t in timedOut) {
+      final rName = t['roomName'] as String?;
+      if (rName != null && widget.localRooms.containsKey(rName)) {
+        widget.localRooms[rName]!['current_stage'] = 'alone_timeout';
+      }
+    }
     if (timedOut.isNotEmpty) {
       if (_snoozeUntil != null && DateTime.now().isBefore(_snoozeUntil!)) {
         _alarmAudioTimer?.cancel();
@@ -1360,105 +1363,111 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Checkbox(
-                          value: done,
-                          onChanged: (val) {
-                            widget.onJobStatusChanged(
-                                roomName, jobId, val ?? false);
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(job['name'],
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                    decoration: done
-                                        ? TextDecoration.lineThrough
-                                        : null)),
-                            Text(job['notes'] ?? '',
-                                style: const TextStyle(
-                                    fontSize: 11, color: Colors.grey)),
-                            if (job['is_solo_job'] == true ||
-                                job['job_type'] == 'alone_worker' ||
-                                job['job_type'] == 'special_solo') ...[
-                              const SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  if (job['co_level'] != null) ...[
-                                    Icon(Icons.warning_amber_rounded,
-                                        size: 12, color: Colors.amber.shade700),
-                                    const SizedBox(width: 4),
-                                    Text('CO: ${job['co_level']} ppm',
-                                        style: const TextStyle(
-                                            fontSize: 11, color: Colors.grey)),
-                                    const SizedBox(width: 12),
-                                  ],
-                                  if (job['co2_level'] != null) ...[
-                                    Icon(Icons.cloud_queue_rounded,
-                                        size: 12, color: Colors.blue.shade700),
-                                    const SizedBox(width: 4),
-                                    Text('CO₂: ${job['co2_level']} ppm',
-                                        style: const TextStyle(
-                                            fontSize: 11, color: Colors.grey)),
-                                    const SizedBox(width: 12),
-                                  ],
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  if (job['check_in_time'] != null) ...[
-                                    Text(
-                                        'Check In: ${DateTime.parse(job['check_in_time'] as String).toLocal().toString().substring(11, 16)}',
-                                        style: const TextStyle(
-                                            fontSize: 10, color: Colors.grey)),
-                                    const SizedBox(width: 12),
-                                  ],
-                                  if (job['check_out_time'] != null) ...[
-                                    Text(
-                                        'Check Out: ${DateTime.parse(job['check_out_time'] as String).toLocal().toString().substring(11, 16)}',
-                                        style: const TextStyle(
-                                            fontSize: 10, color: Colors.grey)),
-                                  ],
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              Builder(builder: (context) {
-                                final timerStr = getTimerString();
-                                final isExpired = timerStr.contains('EXPIRED');
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: isExpired
-                                        ? Colors.red.withOpacity(0.1)
-                                        : FarmColors.forestGreenLight,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    'Time Remaining: $timerStr',
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Checkbox(
+                            value: done,
+                            onChanged: (val) {
+                              widget.onJobStatusChanged(
+                                  roomName, jobId, val ?? false);
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(job['name'],
                                     style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      color: isExpired
-                                          ? Colors.red
-                                          : FarmColors.forestGreenText,
-                                    ),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                        decoration: done
+                                            ? TextDecoration.lineThrough
+                                            : null)),
+                                Text(job['notes'] ?? '',
+                                    style: const TextStyle(
+                                        fontSize: 11, color: Colors.grey)),
+                                if (job['is_solo_job'] == true ||
+                                    job['job_type'] == 'alone_worker' ||
+                                    job['job_type'] == 'special_solo') ...[
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      if (job['co_level'] != null) ...[
+                                        Icon(Icons.warning_amber_rounded,
+                                            size: 12, color: Colors.amber.shade700),
+                                        const SizedBox(width: 4),
+                                        Text('CO: ${job['co_level']} ppm',
+                                            style: const TextStyle(
+                                                fontSize: 11, color: Colors.grey)),
+                                        const SizedBox(width: 12),
+                                      ],
+                                      if (job['co2_level'] != null) ...[
+                                        Icon(Icons.cloud_queue_rounded,
+                                            size: 12, color: Colors.blue.shade700),
+                                        const SizedBox(width: 4),
+                                        Text('CO₂: ${job['co2_level']} ppm',
+                                            style: const TextStyle(
+                                                fontSize: 11, color: Colors.grey)),
+                                        const SizedBox(width: 12),
+                                      ],
+                                    ],
                                   ),
-                                );
-                              }),
-                            ],
-                          ],
-                        ),
-                      ],
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      if (job['check_in_time'] != null) ...[
+                                        Text(
+                                            'Check In: ${DateTime.parse(job['check_in_time'] as String).toLocal().toString().substring(11, 16)}',
+                                            style: const TextStyle(
+                                                fontSize: 10, color: Colors.grey)),
+                                        const SizedBox(width: 12),
+                                      ],
+                                      if (job['check_out_time'] != null) ...[
+                                        Text(
+                                            'Check Out: ${DateTime.parse(job['check_out_time'] as String).toLocal().toString().substring(11, 16)}',
+                                            style: const TextStyle(
+                                                fontSize: 10, color: Colors.grey)),
+                                      ],
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Builder(builder: (context) {
+                                    final timerStr = getTimerString();
+                                    final isExpired = timerStr.contains('EXPIRED');
+                                    return Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: isExpired
+                                            ? Colors.red.withOpacity(0.1)
+                                            : FarmColors.forestGreenLight,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        'Time Remaining: $timerStr',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          color: isExpired
+                                              ? Colors.red
+                                              : FarmColors.forestGreenText,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
@@ -1535,8 +1544,11 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
         .where((e) => e['department']?.toString().toLowerCase() == 'growing')
         .toList();
     String jobType = 'filling';
-    String roomSelected = widget.localRooms.keys.firstWhere(
-        (k) => widget.localRooms[k]!['plant'] == widget.activePlant);
+    String roomSelected = (widget.selectedRoomName != null &&
+            widget.localRooms.containsKey(widget.selectedRoomName))
+        ? widget.selectedRoomName!
+        : widget.localRooms.keys.firstWhere(
+            (k) => widget.localRooms[k]!['plant'] == widget.activePlant);
     String assignee = growingEmployees.isNotEmpty
         ? (growingEmployees.first['name'] as String)
         : 'Minh T.';

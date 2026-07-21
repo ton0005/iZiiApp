@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import 'package:izii_app/core/sync/sync_service.dart';
+import 'package:cryptography/cryptography.dart';
 import '../../core/database/app_database.dart';
 import 'services/employee_service.dart';
 
@@ -96,32 +97,63 @@ class MushroomsRepository {
     }).toList();
   }
 
-  Future<void> addEmployee(String id, String name, String role, [String? department]) async {
+  Future<void> addEmployee(String id, String name, String role, [String? department, String? password, String? status]) async {
+    final passwordToHash = (password != null && password.isNotEmpty) ? password : 'password123';
+    final algorithm = Sha256();
+    final hash = await algorithm.hash(utf8.encode(passwordToHash));
+    final passwordHash = hash.bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    final statusVal = (status != null && status.isNotEmpty) ? status : 'active';
+
     await _db.into(_db.mushroomEmployees).insertOnConflictUpdate(
       MushroomEmployeesCompanion.insert(
         id: id,
         name: name,
         role: role,
         department: Value(department),
+        passwordHash: Value(passwordHash),
+        status: Value(statusVal),
         createdAt: Value(DateTime.now()),
       ),
     );
+
+    String getRoleKey(String r) {
+      final lower = r.toLowerCase();
+      if (lower.contains('manager')) return 'manager';
+      if (lower.contains('supervisor') || lower.contains('lead')) return 'supervisor';
+      if (lower.contains('specialist')) return 'specialist';
+      return 'picker';
+    }
+
+    final roleKey = getRoleKey(role);
+    final roleBindId = 'bind_$id';
+    await _db.into(_db.mushroomEmployeeDepartmentRoles).insertOnConflictUpdate(
+      MushroomEmployeeDepartmentRole(
+        id: roleBindId,
+        employeeId: id,
+        departmentId: 'DEP002',
+        roleKey: roleKey,
+        createdAt: DateTime.now(),
+      ),
+    );
+
     await SyncService().queueMutation('mushroom_employees', 'insert', {
       'id': id,
       'name': name,
       'role': role,
       'department': department,
+      'status': statusVal,
       'created_at': DateTime.now().toIso8601String(),
     });
   }
 
-  Future<void> updateEmployee(String id, String name, String role, [String? department]) async {
-    await _db.into(_db.mushroomEmployees).insertOnConflictUpdate(
-      MushroomEmployeesCompanion.insert(
-        id: id,
-        name: name,
-        role: role,
+  Future<void> updateEmployee(String id, String name, String role, [String? department, String? status]) async {
+    final statusVal = (status != null && status.isNotEmpty) ? status : 'active';
+    await (_db.update(_db.mushroomEmployees)..where((e) => e.id.equals(id))).write(
+      MushroomEmployeesCompanion(
+        name: Value(name),
+        role: Value(role),
         department: Value(department),
+        status: Value(statusVal),
       ),
     );
     await SyncService().queueMutation('mushroom_employees', 'update', {
@@ -129,6 +161,7 @@ class MushroomsRepository {
       'name': name,
       'role': role,
       'department': department,
+      'status': statusVal,
     });
   }
 
@@ -873,25 +906,47 @@ class MushroomsRepository {
   }
 
   Future<void> checkSoloJobsAlarms() async {
-    final activeSoloJobs = await (_db.select(_db.mushroomJobs)
-          ..where((tbl) => tbl.isSoloJob.equals(true) & tbl.status.equals('in_progress') & tbl.alarmTriggered.equals(false)))
-        .get();
+    try {
+      final activeSoloJobs = await (_db.select(_db.mushroomJobs)
+            ..where((tbl) =>
+                (tbl.isSoloJob.equals(true) | tbl.jobType.equals('alone_worker')) &
+                (tbl.status.equals('in_progress') | tbl.status.equals('inprog'))))
+          .get();
 
-    final now = DateTime.now();
-    for (var job in activeSoloJobs) {
-      if (job.startedAt != null && job.timeLimitMinutes != null) {
-        final elapsed = now.difference(job.startedAt!).inMinutes;
-        if (elapsed >= job.timeLimitMinutes!) {
-          await triggerSafetyAlarm(job.id);
+      final now = DateTime.now();
+      for (var job in activeSoloJobs) {
+        final startTime = job.startedAt ?? job.scheduledAt ?? job.createdAt;
+        final limitMins = job.timeLimitMinutes ?? 45;
+        final elapsed = now.difference(startTime).inMinutes;
+        if (elapsed >= limitMins) {
+          if (job.alarmTriggered != true) {
+            await triggerSafetyAlarm(job.id);
+          }
+          // Automatically update the room stage in database to 'alone_timeout' for Red Alarm
+          await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+            const GrowRoomsCompanion(
+              status: Value('active'),
+              currentStage: Value('alone_timeout'),
+            ),
+          );
+          await SyncService().queueMutation('grow_rooms', 'update', {
+            'id': job.roomId,
+            'status': 'active',
+            'current_stage': 'alone_timeout',
+            'updated_at': DateTime.now().toIso8601String(),
+          });
         }
       }
-    }
+    } catch (_) {}
   }
 
   Future<bool> isAnySoloAlarmActive() async {
     try {
       final activeAlarms = await (_db.select(_db.mushroomJobs)
-            ..where((tbl) => tbl.isSoloJob.equals(true) & tbl.status.equals('in_progress') & tbl.alarmTriggered.equals(true)))
+            ..where((tbl) =>
+                (tbl.isSoloJob.equals(true) | tbl.jobType.equals('alone_worker')) &
+                (tbl.status.equals('in_progress') | tbl.status.equals('inprog')) &
+                tbl.alarmTriggered.equals(true)))
           .get();
       return activeAlarms.isNotEmpty;
     } catch (_) {

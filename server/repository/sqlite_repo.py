@@ -29,25 +29,48 @@ class SQLiteSyncRepository(ISyncRepository):
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
     
-    def push_mutations(self, mutations: List[Dict[str, Any]], timestamp: str) -> int:
+    def push_mutations(
+        self, mutations: List[Dict[str, Any]], timestamp: str, default_origin_server_id: Optional[str] = None
+    ) -> int:
+        """
+        default_origin_server_id: dùng khi mutation đến từ DEVICE (chưa có
+        origin_server_id) — gán server hiện tại là "nơi đầu tiên" nhận mutation
+        này. Khi RELAY từ peer server khác (qua peer_sync router), mutation đã
+        có sẵn origin_server_id gốc và PHẢI được giữ nguyên, không ghi đè,
+        để tránh vòng lặp relay vô hạn giữa các server.
+        """
         cursor = self.conn.cursor()
         count = 0
         for m in mutations:
+            origin = m.get("origin_server_id") or default_origin_server_id
             cursor.execute("""
-                INSERT OR REPLACE INTO sync_mutations (id, client_id, "table", operation, data, server_received_at)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (m["id"], m.get("client_id"), m["table"], m["operation"], 
-                  json.dumps(m["data"]), timestamp))
+                INSERT OR REPLACE INTO sync_mutations (id, client_id, "table", operation, data, server_received_at, origin_server_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (m["id"], m.get("client_id"), m["table"], m["operation"],
+                  json.dumps(m["data"]), timestamp, origin))
             count += 1
         self.conn.commit()
         return count
     
-    def pull_mutations(self, since: Optional[str] = None) -> List[Dict[str, Any]]:
+    def pull_mutations(
+        self, since: Optional[str] = None, exclude_origin_server_id: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        exclude_origin_server_id: dùng khi 1 peer server gọi pull — loại bỏ
+        các mutation mà chính peer đó là nơi khởi tạo (origin), vì peer đã có
+        sẵn dữ liệu này, gửi lại chỉ tốn băng thông. Không dùng khi device
+        thường (mobile app) gọi pull.
+        """
         cursor = self.conn.cursor()
+        query = 'SELECT * FROM sync_mutations WHERE 1=1'
+        params: list = []
         if since:
-            cursor.execute('SELECT * FROM sync_mutations WHERE server_received_at > ?', (since,))
-        else:
-            cursor.execute('SELECT * FROM sync_mutations')
+            query += ' AND server_received_at > ?'
+            params.append(since)
+        if exclude_origin_server_id:
+            query += ' AND (origin_server_id IS NULL OR origin_server_id != ?)'
+            params.append(exclude_origin_server_id)
+        cursor.execute(query, params)
         rows = cursor.fetchall()
         
         return [{
@@ -56,7 +79,8 @@ class SQLiteSyncRepository(ISyncRepository):
             "table": r["table"],
             "operation": r["operation"],
             "data": json.loads(r["data"]),
-            "server_received_at": r["server_received_at"]
+            "server_received_at": r["server_received_at"],
+            "origin_server_id": r["origin_server_id"],
         } for r in rows]
     
     def get_status(self) -> Dict[str, Any]:

@@ -95,86 +95,90 @@ import os
 from datetime import datetime
 from contextlib import asynccontextmanager
 
-from database import get_db_connection, DB_PATH
-from routers import sync, devices, messages, notifications, attachments
+import asyncio
+import httpx
+
+from database import DB_PATH, get_db_connection
+from db_init import init_db
+from server_config import CONFIG
+from server_discovery import ServerDiscovery
+from repository.sqlite_repo import SQLiteSyncRepository
+from routers import sync, devices, messages, notifications, attachments, peer_sync
+
+# LƯU Ý: init_db() giờ chỉ được định nghĩa DUY NHẤT ở db_init.py.
+# app.py không tự định nghĩa schema nữa — tránh 2 nơi có thể lệch nhau.
+# Nếu cần thêm bảng mới (vd server_registry, peer_sync_log cho multi-server),
+# chỉ sửa ở db_init.py.
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  Database Schema Initialization
+#  Multi-Server Peer Sync — Background Polling Task
 # ══════════════════════════════════════════════════════════════════════════════
 
-def init_db():
-    """Initialize the SQLite database schema using production-grade connection."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # 1. Sync Mutations Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS sync_mutations (
-        id TEXT PRIMARY KEY,
-        client_id TEXT,
-        "table" TEXT,
-        operation TEXT,
-        data TEXT,
-        server_received_at TEXT
-    )""")
-    
-    # 2. Registered Devices
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS devices (
-        device_id TEXT PRIMARY KEY,
-        user_id TEXT,
-        public_key TEXT,
-        signing_public_key TEXT,
-        device_name TEXT,
-        platform TEXT,
-        push_token TEXT,
-        fingerprint TEXT,
-        registered_at TEXT,
-        last_seen_at TEXT
-    )""")
-    
-    # 3. Encrypted Message Queue (E2EE Envelopes)
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS message_queue (
-        id TEXT PRIMARY KEY,
-        conversation_id TEXT,
-        sender_device_id TEXT,
-        recipient_device_id TEXT,
-        ciphertext TEXT,
-        nonce TEXT,
-        signature TEXT,
-        sent_at TEXT,
-        delivered_at TEXT
-    )""")
-    
-    # 4. In-App Notifications
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS notifications (
-        id TEXT PRIMARY KEY,
-        user_id TEXT,
-        title TEXT,
-        body TEXT,
-        event_type TEXT,
-        resource_id TEXT,
-        read_at TEXT,
-        created_at TEXT
-    )""")
-    
-    # 5. User Notification Settings
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS notification_settings (
-        user_id TEXT,
-        event_type TEXT,
-        enable_push INTEGER,
-        enable_in_app INTEGER,
-        enable_email INTEGER,
-        digest_frequency TEXT,
-        PRIMARY KEY (user_id, event_type)
-    )""")
-    
-    conn.commit()
-    conn.close()
+_peer_last_sync: dict[str, str] = {}  # peer_url -> last server_time nhận được
+discovery: ServerDiscovery | None = None  # gán trong lifespan(), dùng bởi _peer_sync_loop
+
+
+async def _sync_with_one_peer(client: httpx.AsyncClient, peer_url: str) -> None:
+    since = _peer_last_sync.get(peer_url)
+    try:
+        resp = await client.get(
+            f"{peer_url}/peer-sync/pull",
+            params={"since": since, "requester_server_id": CONFIG.server_id},
+            timeout=10.0,
+        )
+        resp.raise_for_status()
+        body = resp.json()
+    except httpx.HTTPError as e:
+        print(f"⚠️  [PEER-SYNC] Không kết nối được peer {peer_url}: {e} (có thể đang offline)")
+        return
+
+    updates = body.get("updates", [])
+    if updates:
+        conn = get_db_connection()
+        repo = SQLiteSyncRepository(conn)
+        now = datetime.now().isoformat()
+        try:
+            count = repo.push_mutations(updates, now)
+            print(f"🔁 [PEER-SYNC] Đã áp dụng {count} mutations từ {peer_url}")
+
+            # Relay tiếp cho các device đang connect trực tiếp WebSocket vào
+            # server này, để họ thấy dữ liệu từ zone khác gần như real-time.
+            tables = list({m["table"] for m in updates})
+            event_data = {"event": "sync_trigger", "data": {"tables": tables, "timestamp": now}}
+            ws_manager = getattr(app.state, "ws_manager", None)
+            if ws_manager:
+                await ws_manager.broadcast(json.dumps(event_data), exclude=None)
+        finally:
+            conn.close()
+
+    _peer_last_sync[peer_url] = body.get("server_time", since)
+
+
+async def _peer_sync_loop() -> None:
+    print(
+        f"🔁 [PEER-SYNC] Bắt đầu vòng lặp đồng bộ (mỗi {CONFIG.sync_interval_seconds}s). "
+        f"Peer tĩnh (.env): {CONFIG.peers or '(không có)'}. "
+        f"Peer qua mDNS sẽ được cộng dồn động khi phát hiện."
+    )
+    async with httpx.AsyncClient() as client:
+        while True:
+            # Hợp nhất peer khai báo tĩnh (IZIIAPP_PEERS) với peer phát hiện
+            # động qua mDNS — cho phép thêm server mới vào mạng mà không cần
+            # sửa .env / khởi động lại các server đang chạy.
+            static_peers = set(CONFIG.peers)
+            dynamic_peers = set(discovery.get_discovered_peer_urls()) if discovery else set()
+            all_peers = static_peers | dynamic_peers
+
+            if not all_peers:
+                await asyncio.sleep(CONFIG.sync_interval_seconds)
+                continue
+
+            await asyncio.gather(
+                *(_sync_with_one_peer(client, peer) for peer in all_peers),
+                return_exceptions=True,
+            )
+            await asyncio.sleep(CONFIG.sync_interval_seconds)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -183,12 +187,31 @@ def init_db():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global discovery
     # Startup
     init_db()
     print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
     print(f"✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB")
+    print(f"🌐 Server identity: server_id={CONFIG.server_id} zone={CONFIG.zone}")
+
+    discovery = ServerDiscovery(port=8080)
+    try:
+        await discovery.start_advertising()
+        await discovery.start_discovery()
+    except Exception as e:
+        # mDNS không phải chức năng cốt lõi — nếu môi trường mạng chặn
+        # multicast (vd 1 số cloud VM), server vẫn phải chạy bình thường,
+        # chỉ mất tính năng auto-discovery, fallback về peer tĩnh (.env).
+        print(f"⚠️  [mDNS] Không khởi động được advertise/discovery: {e}. "
+              f"Vẫn dùng peer tĩnh khai báo trong IZIIAPP_PEERS.")
+
+    peer_sync_task = asyncio.create_task(_peer_sync_loop())
+
     yield
     # Shutdown
+    peer_sync_task.cancel()
+    if discovery:
+        await discovery.close()
     print("🛑 Server shutting down...")
 
 
@@ -218,11 +241,27 @@ app.include_router(devices.router)
 app.include_router(messages.router)
 app.include_router(notifications.router)
 app.include_router(attachments.router)
+app.include_router(peer_sync.router)  # Server-to-Server delta sync (multi-server)
 
 # Mount static uploads directory for attachments serving
 uploads_dir = os.path.join(get_stable_data_dir(), "uploads")
 os.makedirs(uploads_dir, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+
+
+@app.get("/health")
+async def device_health_check():
+    """
+    Endpoint cho THIẾT BỊ LOCAL (iPhone/iPad/Samsung) dùng để kiểm tra server
+    đang chọn còn sống hay không — khác với /peer-sync/health vốn chỉ dành
+    cho server-to-server và trả thêm thông tin nội bộ (sync status).
+    """
+    return {
+        "server_id": CONFIG.server_id,
+        "zone": CONFIG.zone,
+        "status": "ok",
+        "server_time": datetime.now().isoformat(),
+    }
 
 
 # ══════════════════════════════════════════════════════════════════════════════

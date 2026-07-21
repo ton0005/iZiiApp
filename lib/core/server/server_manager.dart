@@ -78,10 +78,14 @@ class ServerManager extends ChangeNotifier {
     // In development, the server binary is at: dist/iziiapp_server.exe or server/
     // In production, it sits alongside the Flutter exe
     final candidates = [
+      path.join(appDir, 'server', 'dist', 'izii_server', 'izii_server.exe'),
+      path.join(appDir, 'server', 'izii_server.exe'),
       path.join(appDir, 'server', 'iziiapp_server.exe'),
+      path.join(appDir, 'izii_server.exe'),
       path.join(appDir, 'iziiapp_server.exe'),
+      path.join(appDir, '..', 'server', 'dist', 'izii_server', 'izii_server.exe'),
+      path.join(appDir, '..', '..', 'server', 'dist', 'izii_server', 'izii_server.exe'),
       path.join(appDir, '..', 'dist', 'iziiapp_server.exe'),
-      // Dev fallback: project root dist
       path.join(appDir, '..', '..', 'dist', 'iziiapp_server.exe'),
     ];
 
@@ -92,7 +96,7 @@ class ServerManager extends ChangeNotifier {
     }
 
     // Final fallback
-    return path.join(appDir, 'iziiapp_server.exe');
+    return path.join(appDir, 'server', 'dist', 'izii_server', 'izii_server.exe');
   }
 
   /// The working directory for the server process (where data/ folder lives).

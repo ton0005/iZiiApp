@@ -16,18 +16,39 @@ class ISyncRepository(ABC):
     """Repository interface for Track 1 — Sync Engine operations."""
     
     @abstractmethod
-    def push_mutations(self, mutations: List[Dict[str, Any]], timestamp: str) -> int:
+    def push_mutations(
+        self, mutations: List[Dict[str, Any]], timestamp: str,
+        default_origin_server_id: Optional[str] = None,
+    ) -> int:
         """
-        Store a batch of sync mutations from a client device.
+        Store a batch of sync mutations from a client device (or relayed
+        from a peer server in a multi-server setup).
+
+        default_origin_server_id: server_id to record as the mutation's
+        point of origin, used ONLY when a mutation doesn't already carry
+        its own origin_server_id (i.e. it came directly from a device,
+        not relayed from another server). When relaying from a peer,
+        each mutation already has origin_server_id set and it must be
+        preserved as-is by the implementation.
+
         Returns the number of mutations successfully stored.
         """
         pass
     
     @abstractmethod
-    def pull_mutations(self, since: Optional[str] = None) -> List[Dict[str, Any]]:
+    def pull_mutations(
+        self, since: Optional[str] = None,
+        exclude_origin_server_id: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
         """
         Retrieve mutations since a given timestamp.
         If since is None, returns all mutations.
+
+        exclude_origin_server_id: when set, mutations whose origin_server_id
+        matches this value are excluded from the result. Used by peer
+        servers pulling delta from each other — the requester doesn't need
+        mutations it originated itself, saving bandwidth. Regular device
+        clients should leave this as None.
         """
         pass
     

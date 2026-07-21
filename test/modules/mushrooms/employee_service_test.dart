@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:izii_app/core/database/app_database.dart';
 import 'package:izii_app/modules/mushrooms/services/employee_service.dart';
+import 'package:izii_app/modules/mushrooms/repository.dart';
 
 void main() {
   late AppDatabase db;
@@ -33,6 +34,30 @@ void main() {
 
       final currentId = await service.getCurrentEmployeeId();
       expect(currentId, equals('EMP001'));
+    });
+
+    test('Đăng nhập thành công với thông tin đúng của Vinh Phan (305629) và có quyền admin', () async {
+      final success = await service.login('305629', 'password123');
+      expect(success, isTrue);
+
+      final currentId = await service.getCurrentEmployeeId();
+      expect(currentId, equals('305629'));
+
+      // Check admin/manager permission
+      expect(await service.hasPermission('305629', 'addRoom'), isTrue);
+      expect(await service.hasPermission('305629', 'createJob'), isTrue);
+    });
+
+    test('Thêm nhân viên mới (Manager/Supervisor) với mật khẩu tùy chỉnh và đăng nhập thành công', () async {
+      final repo = MushroomsRepository(db);
+      await repo.addEmployee('SUP888', 'Nam Tran (Supervisor)', 'Supervisor', 'Growing', 'mypassword123');
+
+      final success = await service.login('sup888', 'mypassword123');
+      expect(success, isTrue);
+
+      final currentId = await service.getCurrentEmployeeId();
+      expect(currentId, equals('SUP888'));
+      expect(await service.hasPermission('SUP888', 'approveMaintenanceRequest'), isTrue);
     });
 
     test('Đăng nhập thất bại khi sai mật khẩu', () async {

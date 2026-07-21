@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
@@ -16,6 +17,9 @@ import 'safety_tab_screen.dart';
 import 'employees_tab_screen.dart';
 import 'departments_tab_screen.dart';
 import 'settings_tab_screen.dart';
+import 'mushrooms_profile_screen.dart';
+import '../services/employee_service.dart';
+import 'package:izii_app/core/database/app_database.dart';
 
 // --- Premium color definitions ---
 class FarmColors {
@@ -48,6 +52,9 @@ class MushboomMonartoScreen extends StatefulWidget {
 
 class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   // Tab state
+  final EmployeeService _employeeService = EmployeeServiceImpl();
+  bool _isAuthenticated = false;
+  String? _currentEmployeeId;
   String _activeTab =
       'growing'; // growing, harvest, coolroom, maintenance, tasks, chat, safety
   String _activePlant = 'M2'; // M1 or M2
@@ -194,6 +201,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   // Employees Registry
   final List<Map<String, dynamic>> _employees = [];
   List<Map<String, dynamic>> _rolesWithLevels = [];
+  MushroomEmployee? _currentEmployee;
+
+  // Sidebar state
+  bool _isSidebarPinned = true;
+  bool _isSidebarHovered = false;
 
   // BLoC
   late MushroomsBloc _bloc;
@@ -208,7 +220,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     _loadMushroomData();
   }
 
-  bool _isJobVisible(Map<String, dynamic> job, String activeRole, List<Map<String, dynamic>> employees) {
+  bool _isJobVisible(Map<String, dynamic> job, String activeRole,
+      List<Map<String, dynamic>> employees) {
     int getUserLevel(String role) {
       for (final r in _rolesWithLevels) {
         if (r['name']?.toString().toLowerCase() == role.toLowerCase()) {
@@ -216,7 +229,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         }
       }
       final r = role.toLowerCase();
-      if (r.contains('manager') || r.contains('site manager') || r.contains('cool room manager')) return 3;
+      if (r.contains('manager') ||
+          r.contains('site manager') ||
+          r.contains('cool room manager')) return 3;
       if (r.contains('lead') || r.contains('supervisor')) return 2;
       if (r.contains('specialist')) return 1;
       return 0; // picker, box mover, worker, etc.
@@ -224,7 +239,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
     final userLevel = getUserLevel(activeRole);
 
-    final assignee = job['assignee']?.toString() ?? job['assigneeName']?.toString() ?? '';
+    final assignee =
+        job['assignee']?.toString() ?? job['assigneeName']?.toString() ?? '';
     if (assignee.isEmpty || assignee == 'Not Assigned') {
       return true; // Unassigned jobs are visible to everyone
     }
@@ -236,15 +252,19 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       if (role == 'Maintenance Lead') return 'Nam';
       return '';
     }
+
     final activeName = getActiveName(activeRole);
-    if (activeName.isNotEmpty && assignee.toLowerCase().contains(activeName.toLowerCase())) {
+    if (activeName.isNotEmpty &&
+        assignee.toLowerCase().contains(activeName.toLowerCase())) {
       return true; // Always show jobs assigned to myself
     }
 
     String assigneeRole = '';
     for (final e in employees) {
       final empName = e['name']?.toString() ?? '';
-      if (empName.isNotEmpty && (assignee.toLowerCase().contains(empName.toLowerCase()) || empName.toLowerCase().contains(assignee.toLowerCase()))) {
+      if (empName.isNotEmpty &&
+          (assignee.toLowerCase().contains(empName.toLowerCase()) ||
+              empName.toLowerCase().contains(assignee.toLowerCase()))) {
         assigneeRole = e['role']?.toString() ?? '';
         break;
       }
@@ -270,8 +290,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final soloJobs = await repo.getAllSoloJobs();
     final dbEmployees = await repo.getEmployees();
     final rolesList = await repo.getRolesWithLevels();
+    final currentEmp = await EmployeeServiceImpl().getCurrentEmployee();
 
     setState(() {
+      _currentEmployee = currentEmp;
+      if (currentEmp != null) {
+        _activeRole = currentEmp.role;
+      }
       _stockButton = stock['button'] ?? 120.0;
       _stockMedium = stock['cup'] ?? 240.0;
       _stockOpen = stock['flat'] ?? 95.0;
@@ -382,7 +407,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
               }
             });
 
-            final activeRoomName = (_activeTab == 'tasks') ? _tasksSelectedRoomName : _selectedRoomName;
+            final activeRoomName = (_activeTab == 'tasks')
+                ? _tasksSelectedRoomName
+                : _selectedRoomName;
             final room = _localRooms[activeRoomName];
             if (room != null && room['id'] != _lastLoadedRoomId) {
               _lastLoadedRoomId = room['id'];
@@ -400,7 +427,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                 final filteredJobs = state.selectedRoomJobs.where((j) {
                   return _isJobVisible(j, _activeRole, _employees);
                 }).toList();
-                
+
                 _localRooms[rName]!['jobs'] = filteredJobs
                     .map((j) => {
                           'id': j['id'],
@@ -551,45 +578,61 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
           ),
           Row(
             children: [
-              // Role Selector Dropdown
+              IconButton(
+                icon: const Icon(Icons.account_circle_outlined, size: 24),
+                tooltip: 'Profile & Change Password',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MushroomsProfileScreen(isDark: isDark),
+                    ),
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.logout_rounded),
+                tooltip: 'Sign out',
+                onPressed: _handleLogout,
+              ),
+              const SizedBox(width: 8),
+              // Employee Info Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  border: Border.all(color: FarmColors.borderStrong),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : FarmColors.forestGreen.withValues(alpha: 0.08),
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white24
+                        : FarmColors.forestGreen.withValues(alpha: 0.3),
+                  ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _activeRole,
-                    items: const [
-                      DropdownMenuItem(
-                          value: 'Growing Lead',
-                          child: Text('Vinh (Growing Lead)',
-                              style: TextStyle(fontSize: 13))),
-                      DropdownMenuItem(
-                          value: 'Harvest Supervisor',
-                          child: Text('Hải (Harvest Sup)',
-                              style: TextStyle(fontSize: 13))),
-                      DropdownMenuItem(
-                          value: 'Cool Room Manager',
-                          child: Text('Trúc (Cool Room Mgr)',
-                              style: TextStyle(fontSize: 13))),
-                      DropdownMenuItem(
-                          value: 'Maintenance Lead',
-                          child: Text('Nam (Maint Lead)',
-                              style: TextStyle(fontSize: 13))),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) {
-                        setState(() => _activeRole = val);
-                        if (_selectedRoomName != null && _localRooms[_selectedRoomName] != null) {
-                          _bloc.add(LoadRoomDetailsEvent(_localRooms[_selectedRoomName]!['id']));
-                        }
-                      }
-                    },
-                  ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.badge_outlined,
+                      size: 18,
+                      color: isDark ? Colors.white70 : FarmColors.forestGreen,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _currentEmployee != null
+                          ? '${_currentEmployee!.name} (ID: ${_currentEmployee!.id}) • ${_currentEmployee!.role}'
+                          : 'NV: ${_activeRole}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                  ],
                 ),
-              )
+              ),
             ],
           )
         ],
@@ -622,7 +665,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       return _language == 'vi' ? 'Nhân sự (Employees)' : 'Employee Registry';
     }
     if (_activeTab == 'departments') {
-      return _language == 'vi' ? 'Phòng ban (Departments)' : 'Department Directory';
+      return _language == 'vi'
+          ? 'Phòng ban (Departments)'
+          : 'Department Directory';
     }
     if (_activeTab == 'settings') {
       return _language == 'vi' ? 'Cài đặt (Settings)' : 'Settings';
@@ -644,193 +689,287 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'tasks') return 'Kanban Board & Gantt Chart Timeline';
     if (_activeTab == 'chat') return 'Offline BLE P2P Chat Simulator';
     if (_activeTab == 'employees') return 'Staff & Specialist Registry';
-    if (_activeTab == 'departments') return 'Manage business department listings';
-    if (_activeTab == 'settings') return 'Server, Sync & Application Preferences';
+    if (_activeTab == 'departments')
+      return 'Manage business department listings';
+    if (_activeTab == 'settings')
+      return 'Server, Sync & Application Preferences';
     return 'Solo Working Alerts & Incident Manager';
   }
 
   // --- Sidebar ---
+  // --- Sidebar ---
   Widget _buildSidebar(bool isDark) {
-    return Container(
-      width: 240,
-      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-      child: Column(
-        children: [
-          // Sidebar Logo Header
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                      color: isDark ? Colors.white10 : FarmColors.borderLight)),
-            ),
-            alignment: Alignment.centerLeft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset(
-                  'assets/images/costa-tag-logo-green.png',
-                  height: 40,
-                  fit: BoxFit.contain,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: const [
-                    Icon(Icons.call_split, size: 12, color: Colors.grey),
-                    SizedBox(width: 4),
-                    Text('mushroom-farm-fork',
-                        style: TextStyle(fontSize: 10, color: Colors.grey)),
-                  ],
-                )
-              ],
-            ),
-          ),
+    final isMobilePlatform = defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android;
+    final effectivePinned = isMobilePlatform || _isSidebarPinned;
+    final effectiveExpanded = effectivePinned || _isSidebarHovered;
+    final targetWidth = effectiveExpanded ? 260.0 : 79.0;
 
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              children: [
-                _buildSidebarLabel(
-                    _language == 'vi' ? 'PHÒNG BAN' : 'DEPARTMENTS'),
-                _buildSidebarItem(
-                    'growing',
-                    Icons.corporate_fare_rounded,
-                    _language == 'vi' ? 'Trồng trọt (Growing)' : 'Growing',
-                    FarmColors.forestGreen),
-                _buildSidebarItem(
-                    'harvest',
-                    Icons.cut_rounded,
-                    _language == 'vi' ? 'Thu hoạch (Harvest)' : 'Harvest',
-                    FarmColors.harvestPurple),
-                _buildSidebarItem(
-                    'coolroom',
-                    Icons.ac_unit_rounded,
-                    _language == 'vi' ? 'Kho lạnh (Cool Room)' : 'Cool Room',
-                    FarmColors.coolBlue),
-                _buildSidebarItem(
-                    'maintenance',
-                    Icons.build_rounded,
-                    _language == 'vi' ? 'Bảo trì (Maintenance)' : 'Maintenance',
-                    FarmColors.maintenanceOrange),
-                const Divider(),
-                _buildSidebarLabel(
-                    _language == 'vi' ? 'HỆ THỐNG' : 'UTILITIES'),
-                _buildSidebarItem(
-                    'tasks',
-                    Icons.view_kanban_rounded,
-                    _language == 'vi' ? 'Công việc (Tasks)' : 'Tasks',
-                    Colors.blueGrey),
-                _buildSidebarItem(
-                    'chat',
-                    Icons.question_answer_rounded,
-                    _language == 'vi' ? 'Trò chuyện (Chat)' : 'Chat',
-                    Colors.blue),
-                _buildSidebarItem(
-                    'safety',
-                    Icons.shield_rounded,
-                    _language == 'vi' ? 'An toàn (Safety)' : 'Safety',
-                    Colors.redAccent),
-                _buildSidebarItem(
-                    'employees',
-                    Icons.badge_rounded,
-                    _language == 'vi' ? 'Nhân sự (Employees)' : 'Employees',
-                    Colors.teal),
-                _buildSidebarItem(
-                    'departments',
-                    Icons.lan_rounded,
-                    _language == 'vi' ? 'Phòng ban (Departments)' : 'Departments',
-                    Colors.indigo),
-                const Divider(),
-                _buildSidebarLabel(
-                    _language == 'vi' ? 'CẤU HÌNH' : 'CONFIGURATION'),
-                _buildSidebarItem(
-                    'settings',
-                    Icons.settings_rounded,
-                    _language == 'vi' ? 'Cài đặt (Settings)' : 'Settings',
-                    const Color(0xFF8B5CF6)),
-              ],
-            ),
-          ),
-
-          // Bottom Left Logo
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: isDark ? Colors.white10 : FarmColors.borderLight,
-                ),
-              ),
-            ),
-            alignment: Alignment.centerLeft,
-            child: const Row(
-              children: [
-                Icon(
-                  Icons.dashboard_rounded,
-                  color: FarmColors.forestGreen,
-                  size: 20,
-                ),
-                SizedBox(width: 8),
-                Text(
-                  'iZiiApp',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: FarmColors.forestGreen,
+    return MouseRegion(
+      onEnter: (_) {
+        if (!effectivePinned && !_isSidebarHovered) {
+          setState(() => _isSidebarHovered = true);
+        }
+      },
+      onExit: (_) {
+        if (!effectivePinned && _isSidebarHovered) {
+          setState(() => _isSidebarHovered = false);
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        width: targetWidth,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        child: ClipRect(
+          child: Column(
+            children: [
+              // Sidebar Logo Header
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: isDark ? Colors.white10 : FarmColors.borderLight,
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Fixed size Logo (32px height) in BOTH expanded and collapsed states
+                    Image.asset(
+                      'assets/images/costa-tag-logo-green.png',
+                      height: 32,
+                      fit: BoxFit.contain,
+                    ),
+                    if (effectiveExpanded) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.call_split, size: 10, color: Colors.grey),
+                          SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              'mushroom-farm-fork',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 9, color: Colors.grey),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
 
-  Widget _buildSidebarLabel(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Text(text,
-          style: const TextStyle(
-              fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey)),
-    );
-  }
+                    // Pin Icon Button BELOW Logo (Hidden on iOS/Android)
+                    if (!isMobilePlatform) ...[
+                      const SizedBox(height: 8),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isSidebarPinned = !_isSidebarPinned;
+                            if (_isSidebarPinned) {
+                              _isSidebarHovered = false;
+                            }
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(6),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: effectiveExpanded ? 10 : 6,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _isSidebarPinned
+                                ? FarmColors.forestGreen.withValues(alpha: 0.12)
+                                : (isDark ? Colors.white10 : Colors.grey.shade100),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: _isSidebarPinned
+                                  ? FarmColors.forestGreen.withValues(alpha: 0.3)
+                                  : Colors.transparent,
+                            ),
+                          ),
+                          child: Tooltip(
+                            message: _isSidebarPinned
+                                ? (_language == 'vi'
+                                    ? 'Tự động ẩn Menu (Auto-hide)'
+                                    : 'Auto-hide Menu')
+                                : (_language == 'vi'
+                                    ? 'Ghim Menu (Pin)'
+                                    : 'Pin Menu'),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _isSidebarPinned
+                                      ? Icons.view_sidebar_rounded
+                                      : Icons.view_sidebar_outlined,
+                                  size: 18,
+                                  color: _isSidebarPinned
+                                      ? FarmColors.forestGreen
+                                      : Colors.grey.shade600,
+                                ),
+                                if (effectiveExpanded) ...[
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      _isSidebarPinned
+                                          ? (_language == 'vi' ? 'Đã ghim Menu' : 'Pinned')
+                                          : (_language == 'vi' ? 'Tự động ẩn' : 'Auto-hide'),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: _isSidebarPinned
+                                            ? FarmColors.forestGreen
+                                            : Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
 
-  Widget _buildSidebarItem(
-      String tabId, IconData icon, String label, Color indicatorColor) {
-    final isActive = _activeTab == tabId;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  children: [
+                    _buildSidebarLabel(
+                        _language == 'vi' ? 'PHÒNG BAN' : 'DEPARTMENTS',
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'growing',
+                        Icons.corporate_fare_rounded,
+                        _language == 'vi' ? 'Trồng trọt (Growing)' : 'Growing',
+                        FarmColors.forestGreen,
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'harvest',
+                        Icons.cut_rounded,
+                        _language == 'vi' ? 'Thu hoạch (Harvest)' : 'Harvest',
+                        FarmColors.harvestPurple,
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'coolroom',
+                        Icons.ac_unit_rounded,
+                        _language == 'vi' ? 'Kho lạnh (Cool Room)' : 'Cool Room',
+                        FarmColors.coolBlue,
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'maintenance',
+                        Icons.build_rounded,
+                        _language == 'vi'
+                            ? 'Bảo trì (Maintenance)'
+                            : 'Maintenance',
+                        FarmColors.maintenanceOrange,
+                        effectiveExpanded),
+                    if (effectiveExpanded)
+                      const Divider()
+                    else
+                      const SizedBox(height: 8),
+                    _buildSidebarLabel(
+                        _language == 'vi' ? 'HỆ THỐNG' : 'UTILITIES',
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'tasks',
+                        Icons.view_kanban_rounded,
+                        _language == 'vi' ? 'Công việc (Tasks)' : 'Tasks',
+                        Colors.blueGrey,
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'chat',
+                        Icons.question_answer_rounded,
+                        _language == 'vi' ? 'Trò chuyện (Chat)' : 'Chat',
+                        Colors.blue,
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'safety',
+                        Icons.shield_rounded,
+                        _language == 'vi' ? 'An toàn (Safety)' : 'Safety',
+                        Colors.redAccent,
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'employees',
+                        Icons.badge_rounded,
+                        _language == 'vi' ? 'Nhân sự (Employees)' : 'Employees',
+                        Colors.teal,
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'departments',
+                        Icons.lan_rounded,
+                        _language == 'vi'
+                            ? 'Phòng ban (Departments)'
+                            : 'Departments',
+                        Colors.indigo,
+                        effectiveExpanded),
+                    if (effectiveExpanded)
+                      const Divider()
+                    else
+                      const SizedBox(height: 8),
+                    _buildSidebarLabel(
+                        _language == 'vi' ? 'CẤU HÌNH' : 'CONFIGURATION',
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'settings',
+                        Icons.settings_rounded,
+                        _language == 'vi' ? 'Cài đặt (Settings)' : 'Settings',
+                        const Color(0xFF8B5CF6),
+                        effectiveExpanded),
+                  ],
+                ),
+              ),
 
-    final Color? bgCol = isActive
-        ? (isDark ? FarmColors.forestGreen : FarmColors.forestGreenLight.withOpacity(0.4))
-        : null;
-
-    final Color textIconCol = isActive
-        ? (isDark ? Colors.white : FarmColors.forestGreenText)
-        : Colors.grey.shade600;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-      child: InkWell(
-        onTap: () => switchTab(tabId),
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            color: bgCol,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              Icon(icon,
-                  size: 20, color: textIconCol),
-              const SizedBox(width: 12),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                  color: textIconCol,
+              // Bottom Left Logo
+              Container(
+                height: 56,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: isDark ? Colors.white10 : FarmColors.borderLight,
+                    ),
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: ClipRect(
+                  child: Row(
+                    mainAxisAlignment: effectiveExpanded
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.dashboard_rounded,
+                        color: FarmColors.forestGreen,
+                        size: 20,
+                      ),
+                      if (effectiveExpanded) ...[
+                        const SizedBox(width: 8),
+                        const Flexible(
+                          child: Text(
+                            'iZiiApp',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: FarmColors.forestGreen,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -840,13 +979,101 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     );
   }
 
+  Widget _buildSidebarLabel(String text, bool expanded) {
+    if (!expanded) return const SizedBox(height: 4);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSidebarItem(String tabId, IconData icon, String label,
+      Color indicatorColor, bool expanded) {
+    final isActive = _activeTab == tabId;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color? bgCol = isActive
+        ? (isDark
+            ? FarmColors.forestGreen
+            : FarmColors.forestGreenLight.withOpacity(0.4))
+        : null;
+
+    final Color textIconCol = isActive
+        ? (isDark ? Colors.white : FarmColors.forestGreenText)
+        : Colors.grey.shade600;
+
+    final itemWidget = Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      child: InkWell(
+        onTap: () => switchTab(tabId),
+        borderRadius: BorderRadius.circular(8),
+        child: ClipRect(
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: expanded ? 10 : 0,
+              vertical: 10,
+            ),
+            decoration: BoxDecoration(
+              color: bgCol,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: expanded
+                ? SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: SizedBox(
+                      width: 260.0 - 16.0 - 20.0,
+                      child: Row(
+                        children: [
+                          Icon(icon, size: 20, color: textIconCol),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight:
+                                    isActive ? FontWeight.bold : FontWeight.normal,
+                                color: textIconCol,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Icon(icon, size: 20, color: textIconCol),
+                  ),
+          ),
+        ),
+      ),
+    );
+
+    return Tooltip(
+      message: label,
+      waitDuration: const Duration(milliseconds: 300),
+      child: itemWidget,
+    );
+  }
+
   void switchTab(String tabId) {
     setState(() {
       _activeTab = tabId;
     });
     _loadMushroomData();
 
-    final activeRoomName = (tabId == 'tasks') ? _tasksSelectedRoomName : _selectedRoomName;
+    final activeRoomName =
+        (tabId == 'tasks') ? _tasksSelectedRoomName : _selectedRoomName;
     final room = _localRooms[activeRoomName];
     if (room != null) {
       _lastLoadedRoomId = room['id'];
@@ -1209,7 +1436,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   }
 
   void _onSendPickingPlan(
-      String roomSelected, int buttonVal, int mediumVal, int openVal, [String mushroomType = 'White']) async {
+      String roomSelected, int buttonVal, int mediumVal, int openVal,
+      [String mushroomType = 'White']) async {
     final total = buttonVal + mediumVal + openVal;
     if (total <= 0) {
       _showMsg('Please enter a target yield greater than 0!');
@@ -1280,7 +1508,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       notes: notes,
     );
     _loadMushroomData();
-    _showMsg('Đã tạo lệnh bảo trì mới thành công!');
+    _showMsg('A new maintenance order has been successfully created!');
   }
 
   void _onUpdateMaintStatus(String jobId, String status) async {
@@ -1296,7 +1524,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       String dbStatus = 'todo';
       if (nextStatus == 'inprog') dbStatus = 'in_progress';
       if (nextStatus == 'review') dbStatus = 'review';
-      if (nextStatus == 'done' || nextStatus == 'completed') dbStatus = 'completed';
+      if (nextStatus == 'done' || nextStatus == 'completed')
+        dbStatus = 'completed';
 
       _bloc.add(UpdateJobStatusEvent(
         jobId as String,
@@ -1332,26 +1561,27 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
   void _onReportIncident(String location, String desc) {
     _showMsg(
-        'Đã gửi báo cáo sự cố thành công tới Kỹ thuật trưởng và Supervisor.');
+        'Successfully submitted incident report to the Chief Technician and Supervisor.');
   }
 
   void _onTriggerSafetyContact(String roomNum) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Liên lạc an toàn'),
+        title: const Text('Secure communication'),
         content: Text(
             'Sending periodic check‑in signals and pinging the solo worker’s phone at ${roomNum.replaceAll('Room', 'Grow Room')}...'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const Text('Đóng'))
+              onPressed: () => Navigator.pop(ctx), child: const Text('Close'))
         ],
       ),
     );
   }
 
   void _onTriggerSafetyCheckAll() {
-    _showMsg('Đã phát tín hiệu yêu cầu tất cả nhân sự xác minh check-in.');
+    _showMsg(
+        'A signal has been issued requesting all personnel to verify their check‑in.');
   }
 
   void _onResetSafety() async {
@@ -1361,34 +1591,47 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       _emergencyActive = false;
     });
     _loadMushroomData();
-    _showMsg('Đã khôi phục các chỉ số an toàn.');
+    _showMsg('Safety metrics have been restored.');
   }
 
-  void _onAddEmployee(String id, String name, String role, [String? department]) async {
+  void _onAddEmployee(String id, String name, String role,
+      [String? department, String? password, String? status]) async {
     final repo = MushroomsRepository();
-    await repo.addEmployee(id, name, role, department);
+    await repo.addEmployee(id, name, role, department, password, status);
     _loadMushroomData();
   }
 
-  void _onEditEmployee(String id, String name, String role, [String? department]) async {
+  void _onEditEmployee(String id, String name, String role,
+      [String? department, String? status]) async {
     final repo = MushroomsRepository();
-    await repo.updateEmployee(id, name, role, department);
+    await repo.updateEmployee(id, name, role, department, status);
     _loadMushroomData();
   }
 
   void _onImportEmployees(List<Map<String, String>> list) async {
     final repo = MushroomsRepository();
     for (var emp in list) {
-      await repo.addEmployee(emp['id']!, emp['name']!, emp['role']!, emp['department']);
+      await repo.addEmployee(
+          emp['id']!, emp['name']!, emp['role']!, emp['department']);
     }
     _loadMushroomData();
+  }
+
+  Future<void> _handleLogout() async {
+    await _employeeService.logout();
+    if (mounted) {
+      setState(() {
+        _isAuthenticated = false;
+        _currentEmployeeId = null;
+      });
+    }
   }
 
   void _showMsg(String msg) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Thông báo'),
+        title: const Text('Notification'),
         content: Text(msg),
         actions: [
           TextButton(

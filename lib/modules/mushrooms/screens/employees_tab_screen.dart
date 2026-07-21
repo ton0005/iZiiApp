@@ -5,8 +5,8 @@ import 'mushboom_monarto_screen.dart'; // For FarmColors
 class EmployeesTabScreen extends StatefulWidget {
   final bool isDark;
   final List<Map<String, dynamic>> employees;
-  final Function(String, String, String, String?) onAddEmployee;
-  final Function(String, String, String, String?) onEditEmployee;
+  final Function(String, String, String, String?, [String?, String?]) onAddEmployee;
+  final Function(String, String, String, String?, [String?]) onEditEmployee;
   final Function(List<Map<String, String>>) onImportEmployees;
 
   const EmployeesTabScreen({
@@ -187,6 +187,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                               Expanded(flex: 3, child: Text('NAME', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.grey))),
                               Expanded(flex: 3, child: Text('ROLE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.grey))),
                               Expanded(flex: 3, child: Text('DEPARTMENT', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.grey))),
+                              Expanded(flex: 2, child: Text('STATUS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.grey))),
                               Expanded(flex: 2, child: Text('CREATED AT', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.grey))),
                               Expanded(flex: 1, child: Text('ACTIONS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.grey))),
                             ],
@@ -202,6 +203,8 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                               final timeStr = emp['createdAt'] != null
                                   ? emp['createdAt'].toString().substring(0, 10)
                                   : 'N/A';
+                              final statusStr = emp['status']?.toString().toLowerCase() ?? 'active';
+                              final isActive = statusStr == 'active';
                               return Container(
                                 decoration: BoxDecoration(
                                   border: Border(bottom: BorderSide(color: widget.isDark ? Colors.white10 : Colors.grey.shade100)),
@@ -262,6 +265,45 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                                           child: Text(
                                             emp['department']?.toString() ?? 'N/A',
                                             style: const TextStyle(fontSize: 13),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            alignment: Alignment.centerLeft,
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: isActive
+                                                    ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                                                    : Colors.redAccent.withValues(alpha: 0.12),
+                                                borderRadius: BorderRadius.circular(6),
+                                                border: Border.all(
+                                                  color: isActive
+                                                      ? const Color(0xFF10B981).withValues(alpha: 0.3)
+                                                      : Colors.redAccent.withValues(alpha: 0.3),
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    isActive ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                                                    size: 12,
+                                                    color: isActive ? const Color(0xFF10B981) : Colors.redAccent,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    isActive ? 'Active' : 'Inactive',
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: isActive ? const Color(0xFF10B981) : Colors.redAccent,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
                                         Expanded(
@@ -339,6 +381,8 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
       role = dropDownItems.first;
     }
 
+    String status = (emp['status']?.toString().toLowerCase() == 'inactive' || emp['status']?.toString().toLowerCase() == 'not active') ? 'inactive' : 'active';
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -378,6 +422,22 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                 items: _getDepartmentItems(),
                 onChanged: (val) => department = val!,
               ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Status (Trạng thái)'),
+                value: status,
+                items: const [
+                  DropdownMenuItem(
+                    value: 'active',
+                    child: Text('Active (Đang hoạt động)'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'inactive',
+                    child: Text('Inactive (Tạm khóa / Ngưng)'),
+                  ),
+                ],
+                onChanged: (val) => status = val!,
+              ),
             ],
           ),
         ),
@@ -388,7 +448,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
             onPressed: () {
               if (formKey.currentState!.validate()) {
                 formKey.currentState!.save();
-                widget.onEditEmployee(id, name, role, department);
+                widget.onEditEmployee(id, name, role, department, status);
                 Navigator.pop(ctx);
               }
             },
@@ -542,6 +602,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
     final formKey = GlobalKey<FormState>();
     String id = '';
     String name = '';
+    String password = '';
     String role = _roles.isNotEmpty ? _roles.first : 'Harvest Picker';
     final deptsList = _departments.isNotEmpty
         ? _departments.map((d) => d['name'] as String).toList()
@@ -550,64 +611,113 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
 
     final dropDownItems = _roles.isNotEmpty
         ? _roles
-        : ['Harvest Picker', 'Box Mover', 'Growing Specialist', 'Maintenance Specialist'];
+        : ['Harvest Picker', 'Box Mover', 'Growing Specialist', 'Maintenance Specialist', 'Manager', 'Supervisor'];
+
+    String status = 'active';
+
+    bool isElevatedRole(String r) {
+      final lower = r.toLowerCase();
+      return lower.contains('manager') ||
+          lower.contains('supervisor') ||
+          lower.contains('lead') ||
+          lower.contains('specialist');
+    }
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add Employee Registry'),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Employee ID (e.g. EMP007)'),
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
-                onSaved: (val) => id = val!.trim().toUpperCase(),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          final showPasswordField = isElevatedRole(role);
+          return AlertDialog(
+            title: const Text('Add Employee Registry'),
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Employee ID (e.g. EMP007)'),
+                    validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                    onSaved: (val) => id = val!.trim().toUpperCase(),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Full Name'),
+                    validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                    onSaved: (val) => name = val!.trim(),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(labelText: 'Role'),
+                    value: role,
+                    items: dropDownItems
+                        .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                        .toList(),
+                    onChanged: (val) {
+                      setDialogState(() {
+                        role = val!;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(labelText: 'Department'),
+                    value: department,
+                    items: _getDepartmentItems(),
+                    onChanged: (val) => department = val!,
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(labelText: 'Status (Trạng thái)'),
+                    value: status,
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'active',
+                        child: Text('Active (Đang hoạt động)'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'inactive',
+                        child: Text('Inactive (Tạm khóa / Ngưng)'),
+                      ),
+                    ],
+                    onChanged: (val) {
+                      setDialogState(() {
+                        status = val!;
+                      });
+                    },
+                  ),
+                  if (showPasswordField) ...[
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Initial Password (Mật khẩu khởi tạo)',
+                        hintText: 'Mặc định: password123',
+                      ),
+                      onSaved: (val) => password = val?.trim() ?? '',
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(height: 8),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Full Name'),
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
-                onSaved: (val) => name = val!.trim(),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Role'),
-                value: role,
-                items: dropDownItems
-                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
-                    .toList(),
-                onChanged: (val) => role = val!,
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Department'),
-                value: department,
-                items: _getDepartmentItems(),
-                onChanged: (val) => department = val!,
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    formKey.currentState!.save();
+                    widget.onAddEmployee(id, name, role, department, password, status);
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Employee $name successfully registered.')),
+                    );
+                  }
+                },
+                child: const Text('Add', style: TextStyle(color: Colors.white)),
               ),
             ],
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                formKey.currentState!.save();
-                widget.onAddEmployee(id, name, role, department);
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Employee $name successfully registered.')),
-                );
-              }
-            },
-            child: const Text('Add', style: TextStyle(color: Colors.white)),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

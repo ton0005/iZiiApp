@@ -38,6 +38,13 @@ abstract class EmployeeService {
   /// Lấy danh sách vai trò phân bổ theo phòng ban
   Future<List<MushroomEmployeeDepartmentRole>> getEmployeeRoles(String employeeId);
 
+  /// Đổi mật khẩu cho nhân viên
+  Future<bool> changePassword({
+    required String employeeId,
+    required String oldPassword,
+    required String newPassword,
+  });
+
   /// Seed dữ liệu phòng ban, nhân viên và phân vai trò mẫu ban đầu
   Future<void> seedDefaultData();
 }
@@ -58,18 +65,39 @@ class EmployeeServiceImpl implements EmployeeService {
   @override
   Future<bool> login(String employeeId, String password) async {
     await seedDefaultData();
+    final trimmedId = employeeId.trim();
     final inputHash = await _hashPassword(password);
-    
-    // Xác thực local SQLite (Offline-First)
-    final query = _db.select(_db.mushroomEmployees)
-      ..where((e) => e.id.equals(employeeId) & e.status.equals('active'));
-    final employee = await query.getSingleOrNull();
+
+    // Tìm nhân viên trong SQLite (hỗ trợ case-insensitive và trim)
+    final allEmployees = await _db.select(_db.mushroomEmployees).get();
+    final employee = allEmployees.cast<MushroomEmployee?>().firstWhere(
+      (e) =>
+          e != null &&
+          e.id.trim().toLowerCase() == trimmedId.toLowerCase() &&
+          (e.status.toLowerCase() == 'active' || e.status.isEmpty),
+      orElse: () => null,
+    );
 
     if (employee == null) return false;
 
-    if (employee.passwordHash == inputHash) {
+    // Kiểm tra khớp passwordHash hoặc mật khẩu mặc định nếu rỗng
+    final isMatch = employee.passwordHash == inputHash ||
+        (employee.passwordHash.isEmpty && password == 'password123');
+
+    if (isMatch) {
+      // Đồng bộ tài khoản nhân viên sang bảng Users dùng cho Chat
+      await _db.into(_db.users).insertOnConflictUpdate(
+        User(
+          id: employee.id,
+          name: employee.name,
+          type: 'both',
+          kycStatus: 'none',
+          createdAt: DateTime.now(),
+        ),
+      );
+
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_currentEmployeeIdKey, employeeId);
+      await prefs.setString(_currentEmployeeIdKey, employee.id);
       return true;
     }
     return false;
@@ -79,6 +107,30 @@ class EmployeeServiceImpl implements EmployeeService {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_currentEmployeeIdKey);
+  }
+
+  @override
+  Future<bool> changePassword({
+    required String employeeId,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final oldHash = await _hashPassword(oldPassword);
+    final newHash = await _hashPassword(newPassword);
+
+    final query = _db.select(_db.mushroomEmployees)
+      ..where((e) => e.id.equals(employeeId) & e.status.equals('active'));
+    final employee = await query.getSingleOrNull();
+
+    if (employee == null || employee.passwordHash != oldHash) {
+      return false;
+    }
+
+    await (_db.update(_db.mushroomEmployees)
+          ..where((e) => e.id.equals(employeeId)))
+        .write(MushroomEmployeesCompanion(passwordHash: Value(newHash)));
+
+    return true;
   }
 
   @override
@@ -269,6 +321,15 @@ class EmployeeServiceImpl implements EmployeeService {
         status: 'active',
         createdAt: DateTime.now(),
       ),
+      MushroomEmployee(
+        id: '305629',
+        name: 'Vinh Phan',
+        role: 'Manager',
+        department: 'Growing',
+        passwordHash: defaultPasswordHash,
+        status: 'active',
+        createdAt: DateTime.now(),
+      ),
     ];
 
     for (final e in employees) {
@@ -281,6 +342,7 @@ class EmployeeServiceImpl implements EmployeeService {
       MushroomEmployeeDepartmentRole(id: 'bind_2', employeeId: 'EMP002', departmentId: 'DEP002', roleKey: 'supervisor', createdAt: DateTime.now()),
       MushroomEmployeeDepartmentRole(id: 'bind_3', employeeId: 'EMP003', departmentId: 'DEP002', roleKey: 'specialist', createdAt: DateTime.now()),
       MushroomEmployeeDepartmentRole(id: 'bind_4', employeeId: 'EMP004', departmentId: 'DEP001', roleKey: 'picker', createdAt: DateTime.now()),
+      MushroomEmployeeDepartmentRole(id: 'bind_vinh_phan', employeeId: '305629', departmentId: 'DEP002', roleKey: 'manager', createdAt: DateTime.now()),
     ];
 
     for (final b in roleBinds) {

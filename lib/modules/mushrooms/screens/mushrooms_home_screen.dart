@@ -8,11 +8,15 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/izii_colors.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
+import '../services/employee_service.dart';
 import 'mushrooms_dashboard_screen.dart';
 import 'mushboom_monarto_screen.dart';
 import 'continuous_scanner_screen.dart';
 import 'safety_tab_screen.dart';
 import 'quick_access_card.dart';
+import 'mushrooms_login_screen.dart';
+import 'mushrooms_profile_screen.dart';
+import '../../communication/bloc/chat_bloc.dart';
 
 class MushroomsHomeScreen extends StatefulWidget {
   const MushroomsHomeScreen({super.key});
@@ -23,14 +27,44 @@ class MushroomsHomeScreen extends StatefulWidget {
 
 class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
   final MushroomsRepository _repository = MushroomsRepository();
+  final EmployeeService _employeeService = EmployeeServiceImpl();
   List<Map<String, dynamic>> _employees = [];
   List<Map<String, dynamic>> _safetyLogs = [];
+  bool _isAuthenticated = false;
+  String? _currentEmployeeId;
 
   @override
   void initState() {
     super.initState();
-    context.read<MushroomsBloc>().add(LoadRoomsEvent());
-    _loadMushroomData();
+    _checkAuth();
+  }
+
+  Future<void> _checkAuth() async {
+    final empId = await _employeeService.getCurrentEmployeeId();
+    if (empId != null) {
+      if (mounted) {
+        setState(() {
+          _isAuthenticated = true;
+          _currentEmployeeId = empId;
+        });
+        // Kích hoạt SwitchUserEvent cho ChatBloc để đồng nhất Identity trong Chat
+        try {
+          context.read<ChatBloc>().add(SwitchUserEvent(empId));
+        } catch (_) {}
+        context.read<MushroomsBloc>().add(LoadRoomsEvent());
+        _loadMushroomData();
+      }
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    await _employeeService.logout();
+    if (mounted) {
+      setState(() {
+        _isAuthenticated = false;
+        _currentEmployeeId = null;
+      });
+    }
   }
 
   Future<void> _loadMushroomData() async {
@@ -60,7 +94,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
   }
 
   // Sync state rooms to localRooms format
-  Map<String, Map<String, dynamic>> _buildLocalRooms(List<Map<String, dynamic>> dbRooms) {
+  Map<String, Map<String, dynamic>> _buildLocalRooms(
+      List<Map<String, dynamic>> dbRooms) {
     final localRooms = <String, Map<String, dynamic>>{};
     for (var r in dbRooms) {
       final name = r['name'] as String;
@@ -75,7 +110,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
         'area': '112 m²',
         'targetYield': r['targetYield'] ?? 0.0,
         'pickedYield': r['pickedYield'] ?? 0.0,
-        'pickingPlan': r['pickingPlanJson'] != null && r['pickingPlanJson'].toString().isNotEmpty
+        'pickingPlan': r['pickingPlanJson'] != null &&
+                r['pickingPlanJson'].toString().isNotEmpty
             ? jsonDecode(r['pickingPlanJson'])
             : null,
         'jobs': []
@@ -85,7 +121,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
   }
 
   // ── Continuous Scanner Check-In/Check-Out Handlers ─────────────────────────
-  void _onCheckIn(String code, String roomSelected, Map<String, Map<String, dynamic>> localRooms) async {
+  void _onCheckIn(String code, String roomSelected,
+      Map<String, Map<String, dynamic>> localRooms) async {
     final bloc = context.read<MushroomsBloc>();
     final matches = _employees.where((e) => e['id'] == code);
     if (matches.isEmpty) {
@@ -147,7 +184,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     _loadMushroomData();
   }
 
-  void _onCheckOut(String code, String roomSelected, Map<String, Map<String, dynamic>> localRooms) async {
+  void _onCheckOut(String code, String roomSelected,
+      Map<String, Map<String, dynamic>> localRooms) async {
     final bloc = context.read<MushroomsBloc>();
     final matches = _employees.where((e) => e['id'] == code);
     if (matches.isEmpty) {
@@ -212,7 +250,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     ).then((_) => bloc.add(LoadRoomsEvent()));
   }
 
-  void _navigateToScanner(BuildContext context, Map<String, Map<String, dynamic>> localRooms) {
+  void _navigateToScanner(
+      BuildContext context, Map<String, Map<String, dynamic>> localRooms) {
     if (localRooms.isEmpty) {
       _showSnackBar('No rooms loaded yet', isError: true);
       return;
@@ -256,7 +295,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             child: Scaffold(
               appBar: AppBar(
                 title: const Text('Safety Management'),
-                backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                backgroundColor:
+                    isDark ? const Color(0xFF1E293B) : Colors.white,
                 foregroundColor: isDark ? Colors.white : Colors.black87,
               ),
               body: SafetyTabScreen(
@@ -264,7 +304,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 safetyLogs: _safetyLogs,
                 onTriggerEmergency: (active) {},
                 onTriggerSafetyCheckAll: () {
-                  _showSnackBar('Broadcasted verification request to all check-in personnel.');
+                  _showSnackBar(
+                      'Broadcasted verification request to all check-in personnel.');
                 },
                 onResetSafety: () async {
                   await _repository.clearRoomCrews();
@@ -273,7 +314,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                   _showSnackBar('Safety metrics restored successfully.');
                 },
                 onReportIncident: (room, desc) {
-                  _showSnackBar('Incident report sent successfully to Chief Engineer and Supervisor.');
+                  _showSnackBar(
+                      'Incident report sent successfully to Chief Engineer and Supervisor.');
                 },
               ),
             ),
@@ -295,13 +337,51 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isTablet = MediaQuery.of(context).size.width >= 768;
 
+    if (!_isAuthenticated) {
+      return MushroomsLoginScreen(
+        onLoginSuccess: (empId) {
+          setState(() {
+            _isAuthenticated = true;
+            _currentEmployeeId = empId;
+          });
+          // Kích hoạt SwitchUserEvent cho ChatBloc để đồng nhất Identity trong Chat
+          try {
+            context.read<ChatBloc>().add(SwitchUserEvent(empId));
+          } catch (_) {}
+          context.read<MushroomsBloc>().add(LoadRoomsEvent());
+          _loadMushroomData();
+        },
+      );
+    }
+
     return Scaffold(
-      backgroundColor: isDark ? IZiiColors.darkBackground : IZiiColors.lightBackground,
+      backgroundColor:
+          isDark ? IZiiColors.darkBackground : IZiiColors.lightBackground,
       appBar: AppBar(
-        title: const Text('Costa Mushrooms', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: const Text('Costa Mushrooms',
+            style: TextStyle(fontWeight: FontWeight.w800)),
         backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         foregroundColor: isDark ? Colors.white : Colors.black87,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle_outlined),
+            tooltip: 'Profile & Change Password',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MushroomsProfileScreen(isDark: isDark),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout_rounded),
+            tooltip: 'Sign out',
+            onPressed: _handleLogout,
+          ),
+        ],
       ),
       body: BlocBuilder<MushroomsBloc, MushroomsState>(
         builder: (context, state) {
@@ -310,14 +390,18 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           }
 
           final localRooms = _buildLocalRooms(state.rooms);
-          final activeRoomsCount = state.rooms.where((r) => r['status'] == 'active').length;
-          final runningJobsCount = state.rooms.where((r) => r['current_stage'] != 'idle').length;
+          final activeRoomsCount =
+              state.rooms.where((r) => r['status'] == 'active').length;
+          final runningJobsCount =
+              state.rooms.where((r) => r['current_stage'] != 'idle').length;
           final hasActiveAlarms = state.alarmActive;
 
           return SafeArea(
             child: isTablet
-                ? _buildTabletGrid(context, localRooms, activeRoomsCount, runningJobsCount, hasActiveAlarms, isDark)
-                : _buildPhoneColumn(context, localRooms, activeRoomsCount, runningJobsCount, hasActiveAlarms, isDark),
+                ? _buildTabletGrid(context, localRooms, activeRoomsCount,
+                    runningJobsCount, hasActiveAlarms, isDark)
+                : _buildPhoneColumn(context, localRooms, activeRoomsCount,
+                    runningJobsCount, hasActiveAlarms, isDark),
           );
         },
       ),
@@ -344,7 +428,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           const SizedBox(height: 12),
           QuickAccessCard(
             title: 'Operations Dashboard',
-            subtitle: '$activeRooms active grow rooms • View target yield & pipelines',
+            subtitle:
+                '$activeRooms active grow rooms • View target yield & pipelines',
             icon: Icons.dashboard_customize_rounded,
             color: const Color(0xFF6366F1),
             isDark: isDark,
@@ -362,7 +447,9 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           const SizedBox(height: 12),
           QuickAccessCard(
             title: 'Safety incident & Solo Job',
-            subtitle: hasAlarms ? '⚠️ Active safety alarm triggered!' : 'All checked-in crew is safe',
+            subtitle: hasAlarms
+                ? '⚠️ Active safety alarm triggered!'
+                : 'All checked-in crew is safe',
             icon: Icons.shield_rounded,
             color: hasAlarms ? IZiiColors.error : const Color(0xFFF59E0B),
             badgeCount: hasAlarms ? 1 : 0,
@@ -424,7 +511,9 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
               ),
               QuickAccessCard(
                 title: 'Safety & Solo Alarms',
-                subtitle: hasAlarms ? '⚠️ Active safety alarm triggered!' : 'All checked-in crew is safe',
+                subtitle: hasAlarms
+                    ? '⚠️ Active safety alarm triggered!'
+                    : 'All checked-in crew is safe',
                 icon: Icons.shield_rounded,
                 color: hasAlarms ? IZiiColors.error : const Color(0xFFF59E0B),
                 badgeCount: hasAlarms ? 1 : 0,
@@ -438,39 +527,50 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     );
   }
 
-  Widget _buildLiveStatsRow(int activeRooms, int runningJobs, bool hasAlarms, bool isDark) {
+  Widget _buildLiveStatsRow(
+      int activeRooms, int runningJobs, bool hasAlarms, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? Colors.white10 : const Color(0xFFE2E0D9)),
-        boxShadow: isDark ? null : [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
-        ],
+        border: Border.all(
+            color: isDark ? Colors.white10 : const Color(0xFFE2E0D9)),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
+              ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem('Active Rooms', '$activeRooms', const Color(0xFF10B981), isDark),
-          _buildStatItem('Running Jobs', '$runningJobs', const Color(0xFF6366F1), isDark),
-          _buildStatItem('Safety Alerts', hasAlarms ? '1' : '0', hasAlarms ? IZiiColors.error : const Color(0xFFF59E0B), isDark, isAlert: hasAlarms),
+          _buildStatItem(
+              'Active Rooms', '$activeRooms', const Color(0xFF10B981), isDark),
+          _buildStatItem(
+              'Running Jobs', '$runningJobs', const Color(0xFF6366F1), isDark),
+          _buildStatItem('Safety Alerts', hasAlarms ? '1' : '0',
+              hasAlarms ? IZiiColors.error : const Color(0xFFF59E0B), isDark,
+              isAlert: hasAlarms),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(String label, String value, Color color, bool isDark, {bool isAlert = false}) {
+  Widget _buildStatItem(String label, String value, Color color, bool isDark,
+      {bool isAlert = false}) {
     Widget valueWidget = Text(
       value,
       style: TextStyle(
         fontSize: 22,
         fontWeight: FontWeight.bold,
-        color: isAlert ? IZiiColors.error : (isDark ? Colors.white : Colors.black87),
+        color: isAlert
+            ? IZiiColors.error
+            : (isDark ? Colors.white : Colors.black87),
       ),
     );
 

@@ -92,7 +92,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 24;
+  int get schemaVersion => 25;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -386,14 +386,34 @@ class AppDatabase extends _$AppDatabase {
               await m.createTable(mushroomPermissionOverrides);
             } catch (_) {}
           }
+          if (from < 25) {
+            try {
+              await m.addColumn(mushroomEmployees, mushroomEmployees.passwordHash);
+            } catch (_) {}
+            try {
+              await m.addColumn(mushroomEmployees, mushroomEmployees.linkedUserId);
+            } catch (_) {}
+          }
         },
       );
 }
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'izii_app_db.sqlite'));
+    File file;
+    final envPath = Platform.environment['IZIIAPP_DB_PATH'];
+    if (envPath != null && envPath.isNotEmpty) {
+      file = File(envPath);
+    } else {
+      const explicitPath = r'C:\Users\CHANH\OneDrive\Documents\izii_app_db.sqlite';
+      final explicitFile = File(explicitPath);
+      if (explicitFile.existsSync()) {
+        file = explicitFile;
+      } else {
+        final dbFolder = await getApplicationDocumentsDirectory();
+        file = File(p.join(dbFolder.path, 'izii_app_db.sqlite'));
+      }
+    }
 
     // Fix for Android: ensure native SQLite library is loaded correctly
     if (Platform.isAndroid) {

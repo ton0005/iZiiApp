@@ -16,6 +16,7 @@ import asyncio
 
 from dependencies import get_sync_repo
 from repository.interface import ISyncRepository
+from server_config import CONFIG
 
 router = APIRouter(prefix="/sync", tags=["Sync Engine"])
 
@@ -49,7 +50,7 @@ async def sync_push(payload: PushPayload, request: Request, repo: ISyncRepositor
                 print(f"       - {key}: {val_str}")
             mutations_dicts.append(m.model_dump())
         
-        count = repo.push_mutations(mutations_dicts, now)
+        count = repo.push_mutations(mutations_dicts, now, default_origin_server_id=CONFIG.server_id)
         
         # Broadcast sync trigger to all active WebSocket clients!
         ws_manager = getattr(request.app.state, "ws_manager", None)

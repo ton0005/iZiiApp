@@ -7,19 +7,28 @@
         {
             "name": "izii_app",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "env": {
+                "IZIIAPP_DB_PATH": "C:\\Users\\CHANH\\OneDrive\\Documents\\izii_app_db.sqlite"
+            }
         },
         {
             "name": "izii_app (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "env": {
+                "IZIIAPP_DB_PATH": "C:\\Users\\CHANH\\OneDrive\\Documents\\izii_app_db.sqlite"
+            }
         },
         {
             "name": "izii_app (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "env": {
+                "IZIIAPP_DB_PATH": "C:\\Users\\CHANH\\OneDrive\\Documents\\izii_app_db.sqlite"
+            }
         }
     ]
 }
