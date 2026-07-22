@@ -13,6 +13,7 @@ import 'mushrooms_dashboard_screen.dart';
 import 'mushboom_monarto_screen.dart';
 import 'continuous_scanner_screen.dart';
 import 'safety_tab_screen.dart';
+import 'employees_tab_screen.dart';
 import 'quick_access_card.dart';
 import 'mushrooms_login_screen.dart';
 import 'mushrooms_profile_screen.dart';
@@ -328,6 +329,48 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     }
   }
 
+  void _navigateToEmployees(BuildContext context) {
+    final bloc = context.read<MushroomsBloc>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BlocProvider.value(
+          value: bloc,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Employees & Roles'),
+              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              foregroundColor: isDark ? Colors.white : Colors.black87,
+            ),
+            body: EmployeesTabScreen(
+              isDark: isDark,
+              employees: _employees,
+              onAddEmployee: (id, name, role, dept, [pass, status]) async {
+                await _repository.addEmployee(id, name, role, dept, pass, status);
+                _loadMushroomData();
+              },
+              onEditEmployee: (id, name, role, dept, [status]) async {
+                await _repository.updateEmployee(id, name, role, dept, status);
+                _loadMushroomData();
+              },
+              onImportEmployees: (list) async {
+                for (var emp in list) {
+                  await _repository.addEmployee(
+                      emp['id']!, emp['name']!, emp['role']!, emp['department']);
+                }
+                _loadMushroomData();
+              },
+            ),
+          ),
+        ),
+      ),
+    ).then((_) {
+      bloc.add(LoadRoomsEvent());
+      _loadMushroomData();
+    });
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   //  Build
   // ══════════════════════════════════════════════════════════════════════════
@@ -456,6 +499,15 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             isDark: isDark,
             onTap: () => _navigateToPage(context, 'safety'),
           ),
+          const SizedBox(height: 12),
+          QuickAccessCard(
+            title: 'Employees & Roles',
+            subtitle: 'Register new personnel, modify roles & scan ID cards',
+            icon: Icons.people_alt_rounded,
+            color: const Color(0xFF8B5CF6),
+            isDark: isDark,
+            onTap: () => _navigateToEmployees(context),
+          ),
         ],
       ),
     );
@@ -519,6 +571,14 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 badgeCount: hasAlarms ? 1 : 0,
                 isDark: isDark,
                 onTap: () => _navigateToPage(context, 'safety'),
+              ),
+              QuickAccessCard(
+                title: 'Employees & Roles',
+                subtitle: 'Register new personnel, modify roles & scan ID cards',
+                icon: Icons.people_alt_rounded,
+                color: const Color(0xFF8B5CF6),
+                isDark: isDark,
+                onTap: () => _navigateToEmployees(context),
               ),
             ]),
           )

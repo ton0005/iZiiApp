@@ -282,27 +282,45 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16),
                                           ),
-                                          // Stage status indicator badge
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 3),
-                                            decoration: BoxDecoration(
-                                              color: statusColor.withValues(
-                                                  alpha: 0.12),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              isRoomActive
-                                                  ? currentStage.toUpperCase()
-                                                  : 'IDLE',
-                                              style: TextStyle(
-                                                color: statusColor,
-                                                fontSize: 9,
-                                                fontWeight: FontWeight.bold,
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              if (isRoomActive)
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.refresh_rounded,
+                                                    color: Colors.redAccent,
+                                                    size: 16,
+                                                  ),
+                                                  padding: EdgeInsets.zero,
+                                                  constraints: const BoxConstraints(),
+                                                  tooltip: 'Reset Room Status',
+                                                  onPressed: () => _showResetRoomConfirmDialog(context, room),
+                                                ),
+                                              if (isRoomActive) const SizedBox(width: 6),
+                                              // Stage status indicator badge
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                    horizontal: 8, vertical: 3),
+                                                decoration: BoxDecoration(
+                                                  color: statusColor.withValues(
+                                                      alpha: 0.12),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: Text(
+                                                  isRoomActive
+                                                      ? currentStage.toUpperCase()
+                                                      : 'IDLE',
+                                                  style: TextStyle(
+                                                    color: statusColor,
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
+                                            ],
+                                          ),
                                         ],
                                       ),
                                       const SizedBox(height: 8),
@@ -445,6 +463,43 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
         if (val) {
           setState(() => _activeFilter = filter);
         }
+      },
+    );
+  }
+
+  void _showResetRoomConfirmDialog(BuildContext context, Map<String, dynamic> room) {
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: const Text(
+            'Reset Room Status',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            'Are you sure you want to reset ${room['name']}? This will clear all active jobs and return the room to IDLE.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              onPressed: () {
+                _bloc.add(ResetRoomEvent(room['id'] as String));
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Đã gửi yêu cầu reset trạng thái phòng ${room['name']}'),
+                    backgroundColor: Colors.redAccent,
+                  ),
+                );
+              },
+              child: const Text('Reset'),
+            ),
+          ],
+        );
       },
     );
   }
