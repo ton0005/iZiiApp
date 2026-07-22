@@ -239,6 +239,8 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                             Color statusColor = Colors.grey;
                             if (isRoomActive) {
                               if (currentStage == 'alone_worker') {
+                                statusColor = Colors.orange;
+                              } else if (currentStage == 'alone_timeout') {
                                 statusColor = Colors.red;
                               } else {
                                 statusColor = Colors.green;
@@ -252,10 +254,12 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                   side: BorderSide(
-                                    color: currentStage == 'alone_worker'
-                                        ? Colors.redAccent
-                                            .withValues(alpha: 0.6)
-                                        : Colors.transparent,
+                                    color: currentStage == 'alone_timeout'
+                                        ? Colors.red
+                                        : (currentStage == 'alone_worker'
+                                            ? Colors.orangeAccent
+                                                .withValues(alpha: 0.6)
+                                            : Colors.transparent),
                                     width: 2,
                                   ),
                                 ),
@@ -320,18 +324,27 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                             ),
                                           ],
                                         ),
-                                        if (currentStage == 'alone_worker')
+                                        if (currentStage == 'alone_worker' || currentStage == 'alone_timeout')
                                           Row(
                                             children: [
-                                              const Icon(Icons.warning_amber_rounded,
+                                              Icon(
+                                                  currentStage == 'alone_timeout'
+                                                      ? Icons.gpp_bad_rounded
+                                                      : Icons.warning_amber_rounded,
                                                   size: 14,
-                                                  color: Colors.orange),
+                                                  color: currentStage == 'alone_timeout'
+                                                      ? Colors.red
+                                                      : Colors.orange),
                                               const SizedBox(width: 4),
                                               Text(
-                                                context.tr('mushrooms_has_solo_job'),
-                                                style: const TextStyle(
+                                                currentStage == 'alone_timeout'
+                                                    ? 'CẢNH BÁO AN TOÀN'
+                                                    : context.tr('mushrooms_has_solo_job'),
+                                                style: TextStyle(
                                                     fontSize: 11,
-                                                    color: Colors.orange,
+                                                    color: currentStage == 'alone_timeout'
+                                                        ? Colors.red
+                                                        : Colors.orange,
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
@@ -365,9 +378,11 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                               .withValues(alpha: 0.1),
                                           valueColor: AlwaysStoppedAnimation<
                                                   Color>(
-                                               currentStage == 'alone_worker'
-                                                   ? Colors.orange
-                                                   : const Color(0xFF0EA5E9)),
+                                               currentStage == 'alone_timeout'
+                                                   ? Colors.red
+                                                   : (currentStage == 'alone_worker'
+                                                       ? Colors.orange
+                                                       : const Color(0xFF0EA5E9))),
                                            minHeight: 4,
                                         ),
                                       )
