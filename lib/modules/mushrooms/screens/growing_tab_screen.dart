@@ -193,6 +193,10 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   List<Map<String, dynamic>> _getTimedOutRooms() {
     final list = <Map<String, dynamic>>[];
     for (final room in widget.localRooms.values) {
+      final stage = (room['current_stage'] ?? '').toString().toLowerCase();
+      if (stage != 'alone_worker' && stage != 'alone_timeout') {
+        continue;
+      }
       final List<Map<String, dynamic>> jobs = room['jobs'] != null
           ? List<Map<String, dynamic>>.from(room['jobs'])
           : [];
@@ -865,12 +869,11 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
       orElse: () => {},
     );
 
-    bool isAloneWorker =
-        activeSoloJob.isNotEmpty || stageIsAlone || stageIsTimeout;
+    bool isAloneWorker = stageIsAlone || stageIsTimeout;
     bool isSoloTimedOut = stageIsTimeout;
     String displayStage = stage;
 
-    if (activeSoloJob.isNotEmpty) {
+    if (activeSoloJob.isNotEmpty && isAloneWorker) {
       displayStage = 'alone_worker';
       final startedAtStr =
           activeSoloJob['started_at'] ?? activeSoloJob['scheduled_at'];
