@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../repository.dart';
 import 'mushboom_monarto_screen.dart'; // For FarmColors
 
@@ -25,6 +26,8 @@ class EmployeesTabScreen extends StatefulWidget {
 class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
   final MushroomsRepository _repo = MushroomsRepository();
   final TextEditingController _searchController = TextEditingController();
+  MobileScannerController? _dialogScannerController;
+  bool _isScannerProcessing = false;
   String _searchQuery = '';
   List<String> _roles = [];
   List<Map<String, dynamic>> _departments = [];
@@ -597,9 +600,9 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
     );
   }
 
-  void _showAddEmployeeDialog() {
+  void _showAddEmployeeDialog({String? prefilledId}) {
     final formKey = GlobalKey<FormState>();
-    String id = '';
+    String id = prefilledId ?? '';
     String name = '';
     String password = '';
     String role = _roles.isNotEmpty ? _roles.first : 'Harvest Picker';
@@ -635,6 +638,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
+                    initialValue: id,
                     decoration: const InputDecoration(labelText: 'Employee ID (e.g. EMP007)'),
                     validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                     onSaved: (val) => id = val!.trim().toUpperCase(),
@@ -806,86 +810,92 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
   }
 
   void _showScanCardDialog() {
-    final textController = TextEditingController();
+    _isScannerProcessing = false;
+    _dialogScannerController = MobileScannerController();
+
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Scan Employee Card'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 200,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Stack(
-                alignment: Alignment.center,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+      barrierDismissible: false,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Scan Employee Card'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 220,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.blue.shade700, width: 2),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Stack(
+                    alignment: Alignment.center,
                     children: [
-                      Icon(Icons.camera_alt_outlined, color: Colors.white, size: 40),
-                      SizedBox(height: 10),
-                      Text('[ CAMERA VIEWFINDER LIVE ]', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
-                      SizedBox(height: 6),
-                      Text('Align card barcode within frame', style: TextStyle(color: Colors.white54, fontSize: 10)),
+                      MobileScanner(
+                        controller: _dialogScannerController!,
+                        onDetect: (capture) async {
+                          if (_isScannerProcessing) return;
+                          final List<Barcode> barcodes = capture.barcodes;
+                          if (barcodes.isEmpty) return;
+                          final String? rawVal = barcodes.first.rawValue;
+                          if (rawVal == null || rawVal.isEmpty) return;
+
+                          _isScannerProcessing = true;
+                          await _dialogScannerController?.stop();
+
+                          final raw = rawVal.trim();
+                          final parts = raw.split(',');
+                          if (parts.length >= 3) {
+                            final id = parts[0].trim().toUpperCase();
+                            final name = parts[1].trim();
+                            final role = parts[2].trim();
+                            final dept = parts.length >= 4 ? parts[3].trim() : 'Harvesting';
+                            widget.onAddEmployee(id, name, role, dept);
+                            if (ctx.mounted) Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Scanned barcode: Employee $name added successfully.')),
+                            );
+                          } else {
+                            if (ctx.mounted) Navigator.pop(ctx);
+                            _showAddEmployeeDialog(prefilledId: raw);
+                          }
+                        },
+                      ),
+                      Positioned.fill(
+                        child: const Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: BorderPainterWidget(),
+                        ),
+                      ),
+                      const _ScanningLaserLine(),
                     ],
                   ),
-                  Positioned(
-                    top: 40,
-                    bottom: 40,
-                    left: 20,
-                    right: 20,
-                    child: BorderPainterWidget(),
-                  ),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: textController,
-              decoration: const InputDecoration(
-                labelText: 'Manual Entry (Simulate scan outcome)',
-                hintText: 'e.g. EMP011,David B.,Box Mover',
+              const SizedBox(height: 12),
+              const Text(
+                'Align employee badge QR/Barcode in viewfinder.\nFormats: "ID,Name,Role,Dept" or just "ID"',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 11, color: Colors.grey),
               ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _dialogScannerController?.dispose();
+                _dialogScannerController = null;
+                Navigator.pop(ctx);
+              },
+              child: const Text('Cancel'),
             ),
           ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
-            onPressed: () {
-              final raw = textController.text.trim();
-              if (raw.isNotEmpty) {
-                final parts = raw.split(',');
-                if (parts.length >= 3) {
-                  widget.onAddEmployee(parts[0].trim().toUpperCase(), parts[1].trim(), parts[2].trim(), parts.length >= 4 ? parts[3].trim() : 'Harvesting');
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Scanned barcode: Employee ${parts[1]} added successfully.')),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Invalid simulator entry. Format: ID,Name,Role,Department')),
-                  );
-                }
-              } else {
-                // Default fallback simulation
-                widget.onAddEmployee('EMP011', 'David B.', 'Box Mover', 'Harvesting');
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Scanned barcode: Employee David B. added successfully.')),
-                );
-              }
-            },
-            child: const Text('Simulate Scan', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -986,4 +996,65 @@ class _BorderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _ScanningLaserLine extends StatefulWidget {
+  const _ScanningLaserLine();
+
+  @override
+  State<_ScanningLaserLine> createState() => _ScanningLaserLineState();
+}
+
+class _ScanningLaserLineState extends State<_ScanningLaserLine>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Positioned.fill(
+          child: Align(
+            alignment: Alignment(0, _animationController.value * 2 - 1),
+            child: Container(
+              height: 3,
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    Colors.red,
+                    Colors.transparent
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.red.withOpacity(0.5),
+                    blurRadius: 4,
+                    spreadRadius: 1,
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
