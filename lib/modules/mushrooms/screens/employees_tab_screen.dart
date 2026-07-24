@@ -71,66 +71,65 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Actions
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Employee Registry',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Manage pickers, box movers and specialists (${widget.employees.length} registered)',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.qr_code_scanner, size: 16),
-                    label: const Text('Scan Card'),
-                    onPressed: _showScanCardDialog,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                      foregroundColor: Colors.white,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth >= 650;
+              if (isWide) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Employee Registry',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'Manage pickers, box movers and specialists (${widget.employees.length} registered)',
+                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.upload_file_rounded, size: 16),
-                    label: const Text('Import Excel'),
-                    onPressed: _showImportExcelDialog,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: FarmColors.forestGreen,
-                      foregroundColor: Colors.white,
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _buildScanButton(),
+                        _buildImportButton(),
+                        _buildManageRolesButton(),
+                        _buildAddEmployeeButton(),
+                      ],
                     ),
-                  ),
-                   const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.supervised_user_circle_rounded, size: 16),
-                    label: const Text('Manage Roles'),
-                    onPressed: _showManageRolesDialog,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey,
-                      foregroundColor: Colors.white,
+                  ],
+                );
+              } else {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Employee Registry',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.person_add_alt_1_rounded, size: 16),
-                    label: const Text('Add Employee'),
-                    onPressed: _showAddEmployeeDialog,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: FarmColors.forestGreenText,
-                      foregroundColor: Colors.white,
+                    Text(
+                      'Manage pickers, box movers and specialists (${widget.employees.length} registered)',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _buildScanButton(),
+                        _buildImportButton(),
+                        _buildManageRolesButton(),
+                        _buildAddEmployeeButton(),
+                      ],
+                    ),
+                  ],
+                );
+              }
+            },
           ),
           const SizedBox(height: 20),
           // Search Box
@@ -886,6 +885,54 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
             child: const Text('Simulate Scan', style: TextStyle(color: Colors.white)),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildScanButton() {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.qr_code_scanner, size: 16),
+      label: const Text('Scan Card'),
+      onPressed: _showScanCardDialog,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blue.shade700,
+        foregroundColor: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildImportButton() {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.upload_file_rounded, size: 16),
+      label: const Text('Import Excel'),
+      onPressed: _showImportExcelDialog,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: FarmColors.forestGreen,
+        foregroundColor: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildManageRolesButton() {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.supervised_user_circle_rounded, size: 16),
+      label: const Text('Manage Roles'),
+      onPressed: _showManageRolesDialog,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blueGrey,
+        foregroundColor: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildAddEmployeeButton() {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.person_add_alt_1_rounded, size: 16),
+      label: const Text('Add Employee'),
+      onPressed: _showAddEmployeeDialog,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: FarmColors.forestGreenText,
+        foregroundColor: Colors.white,
       ),
     );
   }
