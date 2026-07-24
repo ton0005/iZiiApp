@@ -282,7 +282,8 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16),
                                           ),
-                                          Row(
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.end,
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               if (isRoomActive)
@@ -297,7 +298,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                   tooltip: 'Reset Room Status',
                                                   onPressed: () => _showResetRoomConfirmDialog(context, room),
                                                 ),
-                                              if (isRoomActive) const SizedBox(width: 6),
+                                              if (isRoomActive) const SizedBox(height: 4),
                                               // Stage status indicator badge
                                               Container(
                                                 padding: const EdgeInsets.symmetric(
