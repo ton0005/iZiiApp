@@ -1,3 +1,5 @@
+import 'package:drift/drift.dart' as d;
+import 'package:izii_app/core/database/app_database.dart';
 import 'package:flutter/material.dart';
 import 'mushboom_monarto_screen.dart'; // For FarmColors
 import 'dart:convert';
@@ -1422,6 +1424,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
 
   void _onConfirmAllocation() async {
     final repo = MushroomsRepository();
+    final db = AppDatabase();
     int totalAllocated = 0;
 
     for (final roomName in _allocControllers.keys) {
@@ -1429,29 +1432,76 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
       final val = double.tryParse(textVal) ?? 0.0;
       if (val > 0) {
         totalAllocated += val.toInt();
-        final survey = _findYieldSurvey(roomName);
-        final strain = survey.isNotEmpty ? survey['strain'] as String : 'Cup';
-
-        final planMap = {
-          'id': '${DateTime.now().millisecondsSinceEpoch}_$roomName',
-          'roomName': roomName,
-          'plant': widget.activePlant,
-          'button': (strain == 'Button') ? val.toInt() : 0,
-          'medium': (strain == 'Cup') ? val.toInt() : 0,
-          'open': (strain == 'Flat') ? val.toInt() : 0,
-          'mushroomType': _allocTypes[roomName] ?? 'White',
-          'sentAt': DateTime.now().toLocal().toString().substring(11, 16)
-        };
-
-        await repo.saveAllocatedRoomPlan(roomName, val, jsonEncode(planMap));
-      } else {
-        await repo.clearRoomPlanByName(roomName);
       }
     }
 
     if (totalAllocated > 0) {
+      final today = DateTime.now();
+      final planId = 'PLAN_${today.year}${today.month.toString().padLeft(2, '0')}${today.day.toString().padLeft(2, '0')}';
+
+      // 1. Upsert Harvest Plan for today
+      await db.into(db.mushroomHarvestPlans).insertOnConflictUpdate(
+        MushroomHarvestPlansCompanion.insert(
+          id: planId,
+          planDate: today,
+          zoneId: d.Value(widget.activePlant),
+          status: const d.Value('published'),
+          totalTargetBoxes: d.Value(totalAllocated ~/ 4),
+        ),
+      );
+
+      for (final roomName in _allocControllers.keys) {
+        final textVal = _allocControllers[roomName]?.text.trim() ?? '';
+        final val = double.tryParse(textVal) ?? 0.0;
+        final cleanRoomName = roomName.toLowerCase().replaceAll(' ', '_');
+
+        if (val > 0) {
+          final survey = _findYieldSurvey(roomName);
+          final strain = survey.isNotEmpty ? survey['strain'] as String : 'Cup';
+
+          final planMap = {
+            'id': '${DateTime.now().millisecondsSinceEpoch}_$roomName',
+            'roomName': roomName,
+            'plant': widget.activePlant,
+            'button': (strain == 'Button') ? val.toInt() : 0,
+            'medium': (strain == 'Cup') ? val.toInt() : 0,
+            'open': (strain == 'Flat') ? val.toInt() : 0,
+            'mushroomType': _allocTypes[roomName] ?? 'White',
+            'sentAt': DateTime.now().toLocal().toString().substring(11, 16)
+          };
+
+          await repo.saveAllocatedRoomPlan(roomName, val, jsonEncode(planMap));
+
+          // 2. Upsert Room Assignments
+          final targetBoxes = (val.toInt() ~/ 4).clamp(1, 1000);
+          await db.into(db.mushroomRoomAssignments).insertOnConflictUpdate(
+            MushroomRoomAssignmentsCompanion.insert(
+              id: '${planId}_$cleanRoomName',
+              planId: planId,
+              roomId: cleanRoomName,
+              boxTarget: d.Value(targetBoxes),
+              trolleyCount: d.Value((targetBoxes ~/ 50).clamp(1, 15)),
+              teamAssignmentsJson: d.Value(jsonEncode([
+                {
+                  'teamColor': _allocTypes[roomName] ?? 'White',
+                  'headcount': 6
+                }
+              ])),
+              pickingInstructionsJson: d.Value(jsonEncode([strain])),
+              notes: d.Value('Yield survey expected: $val kg'),
+            ),
+          );
+        } else {
+          await repo.clearRoomPlanByName(roomName);
+          // Delete Room Assignment if allocation cleared
+          await (db.delete(db.mushroomRoomAssignments)
+                ..where((t) => t.id.equals('${planId}_$cleanRoomName')))
+              .go();
+        }
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Successfully confirmed manual allocation of $totalAllocated kg!')),
+        SnackBar(content: Text('Successfully confirmed manual allocation of $totalAllocated kg and synchronized to SQLite!')),
       );
       try {
         final bloc = BlocProvider.of<MushroomsBloc>(context);
@@ -1774,7 +1824,10 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     }
 
     final repo = MushroomsRepository();
+    final db = AppDatabase();
     int count = 0;
+    final now = DateTime.now();
+    final planId = 'PLAN_${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
 
     for (final key in _scheduledAssignments.keys) {
       final parts = key.split('_');
@@ -1786,7 +1839,6 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
       if (room == null) continue;
       final roomId = room['id'] as String;
 
-      final now = DateTime.now();
       final timeParts = slot.split(':');
       final hour = int.tryParse(timeParts[0]) ?? 8;
       final min = int.tryParse(timeParts[1]) ?? 0;
@@ -1797,6 +1849,21 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
         pickerName: pickerName,
         scheduledTime: scheduledTime,
         notes: 'Picking target allocated: ${room['targetYield']?.toInt() ?? 0} kg',
+      );
+
+      // Sync assignment to MushroomShifts database table
+      final employee = _employees.firstWhere((e) => e['name'] == pickerName, orElse: () => {});
+      final empId = employee['id']?.toString() ?? 'EMP_UNKNOWN';
+
+      await db.into(db.mushroomShifts).insertOnConflictUpdate(
+        MushroomShiftsCompanion.insert(
+          id: 'SHIFT_${empId}_${slot.replaceAll(':', '')}_${DateTime.now().millisecondsSinceEpoch}',
+          planId: planId,
+          role: 'Picker',
+          employeeId: empId,
+          startTime: d.Value(scheduledTime),
+          shedRoomListJson: d.Value(jsonEncode([roomName])),
+        ),
       );
 
       await repo.sendChatMessage(
@@ -1815,7 +1882,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     } catch (_) {}
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Successfully approved schedule and sent notifications to $count pickers!')),
+      SnackBar(content: Text('Successfully approved schedule and synchronized $count shifts to SQLite!')),
     );
 
     setState(() {
