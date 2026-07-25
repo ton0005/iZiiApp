@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iZiiApp — Harvest Check-in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --soil-950:#181510;
+    --soil-800:#2A241D;
+    --sage-50:#F1F3EA;
+    --sage-100:#E7EBDC;
+    --moss-600:#3F6B3A;
+    --moss-700:#345A2E;
+    --moss-100:#DCE7D6;
+    --clay-500:#C97A3D;
+    --amber-500:#D9A441;
+    --amber-100:#F7E9C9;
+    --ink-900:#1E211B;
+    --ink-600:#5B5F52;
+    --line:#D8DCCC;
+    --white:#FFFFFF;
+    --font-display:'Space Grotesk',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--soil-950);
+    font-family:var(--font-body);
+    color:var(--ink-900);
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .top{
+    max-width:1180px;margin:0 auto 26px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg,var(--moss-600),var(--moss-700));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-weight:700;color:var(--sage-50);font-size:15px;
+  }
+  .brand span{font-family:var(--font-display);font-weight:600;color:var(--sage-50);font-size:16px;letter-spacing:.2px;}
+  .brand small{display:block;font-family:var(--font-mono);color:#8C9280;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;}
+
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;}
+  .tabs button{
+    font-family:var(--font-mono);font-size:11.5px;letter-spacing:.03em;
+    padding:9px 13px;border-radius:8px;border:1px solid #3A362C;
+    background:#211D17;color:#A7AC98;cursor:pointer;transition:.15s;
+  }
+  .tabs button.active{background:var(--moss-600);border-color:var(--moss-600);color:#fff;}
+  .tabs button:hover:not(.active){border-color:#5B5F52;color:var(--sage-100);}
+
+  .stage{
+    max-width:1180px;margin:0 auto;
+    display:flex;gap:18px;flex-wrap:wrap;justify-content:center;
+  }
+  .screen{display:none;}
+  .screen.active{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;width:100%;}
+
+  .phone{
+    width:340px;background:var(--sage-50);border-radius:34px;
+    padding:14px 14px 20px;box-shadow:0 30px 60px -20px rgba(0,0,0,.55);
+    border:6px solid #100E0B;
+  }
+  .notch{width:70px;height:5px;background:#00000022;border-radius:4px;margin:0 auto 12px;}
+  .screenbody{background:var(--white);border-radius:20px;min-height:560px;overflow:hidden;display:flex;flex-direction:column;}
+
+  .caption{
+    width:340px;text-align:center;margin-top:10px;font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.04em;color:#8C9280;text-transform:uppercase;
+  }
+
+  /* ---- shared UI bits ---- */
+  .statusbar{display:flex;justify-content:space-between;padding:12px 20px 4px;font-family:var(--font-mono);font-size:11px;color:var(--ink-600);}
+  .app-header{padding:6px 20px 14px;border-bottom:1px solid var(--line);}
+  .app-header .eyebrow{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;color:var(--moss-600);text-transform:uppercase;font-weight:600;}
+  .app-header h1{font-family:var(--font-display);font-size:19px;font-weight:600;margin-top:4px;}
+  .content{padding:18px 20px;flex:1;display:flex;flex-direction:column;gap:16px;}
+
+  .qr-frame{
+    aspect-ratio:1/1;border-radius:18px;background:var(--soil-950);
+    display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-top:10px;
+  }
+  .qr-frame .corner{position:absolute;width:26px;height:26px;border:3px solid var(--amber-500);}
+  .qr-frame .c1{top:16px;left:16px;border-right:none;border-bottom:none;border-radius:6px 0 0 0;}
+  .qr-frame .c2{top:16px;right:16px;border-left:none;border-bottom:none;border-radius:0 6px 0 0;}
+  .qr-frame .c3{bottom:16px;left:16px;border-right:none;border-top:none;border-radius:0 0 0 6px;}
+  .qr-frame .c4{bottom:16px;right:16px;border-left:none;border-top:none;border-radius:0 0 6px 0;}
+  .qr-frame .scanline{position:absolute;left:16px;right:16px;height:2px;background:var(--amber-500);box-shadow:0 0 12px 2px var(--amber-500);animation:scan 2.2s ease-in-out infinite;}
+  @keyframes scan{0%,100%{top:20%}50%{top:78%}}
+  .qr-frame .hint{font-family:var(--font-mono);color:#8C9280;font-size:11px;text-align:center;}
+
+  .btn{
+    font-family:var(--font-body);font-weight:600;font-size:14px;
+    padding:14px;border-radius:12px;border:none;cursor:pointer;text-align:center;
+  }
+  .btn-primary{background:var(--moss-600);color:#fff;}
+  .btn-ghost{background:var(--sage-100);color:var(--ink-900);}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);
+    font-size:11px;font-weight:600;padding:5px 10px;border-radius:100px;letter-spacing:.03em;
+  }
+  .dot{width:8px;height:8px;border-radius:50%;}
+
+  .id-card{
+    display:flex;align-items:center;gap:12px;background:var(--sage-100);
+    border-radius:14px;padding:12px 14px;
+  }
+  .avatar{width:42px;height:42px;border-radius:11px;background:var(--moss-600);color:#fff;
+    font-family:var(--font-display);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .id-card .name{font-weight:600;font-size:14px;}
+  .id-card .role{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.05em;}
+
+  .team-hero{
+    border-radius:16px;padding:18px;color:#fff;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,var(--clay-500),#A65C29);
+  }
+  .team-hero .lbl{font-family:var(--font-mono);font-size:10.5px;opacity:.85;text-transform:uppercase;letter-spacing:.08em;}
+  .team-hero .val{font-family:var(--font-display);font-size:26px;font-weight:700;margin-top:4px;}
+
+  .room-list{display:flex;flex-direction:column;gap:8px;}
+  .room-row{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--sage-50);border:1px solid var(--line);border-radius:12px;padding:11px 13px;
+  }
+  .room-row .room-num{font-family:var(--font-display);font-weight:700;font-size:16px;}
+  .room-row .instr{font-family:var(--font-mono);font-size:10px;color:var(--moss-600);text-transform:uppercase;}
+  .room-row .box-target{font-family:var(--font-mono);font-size:12px;color:var(--ink-600);}
+
+  .section-lbl{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-600);font-weight:600;margin-bottom:2px;}
+
+  .timer{
+    text-align:center;background:var(--soil-950);border-radius:16px;padding:22px 16px;color:#fff;
+  }
+  .timer .lbl{font-family:var(--font-mono);font-size:11px;color:#8C9280;text-transform:uppercase;letter-spacing:.08em;}
+  .timer .clock{font-family:var(--font-mono);font-size:38px;font-weight:600;margin-top:6px;letter-spacing:.02em;}
+  .timer .sub{font-family:var(--font-mono);font-size:11px;color:var(--moss-100);margin-top:6px;}
+
+  .break-controls{display:flex;gap:8px;}
+  .break-controls button{flex:1;}
+
+  .summary-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:11px 0;border-bottom:1px solid var(--line);
+  }
+  .summary-row:last-child{border-bottom:none;}
+  .summary-row .k{font-size:13px;color:var(--ink-600);}
+  .summary-row .v{font-family:var(--font-mono);font-weight:600;font-size:13.5px;}
+  .summary-row.flag .v{color:var(--clay-500);}
+  .summary-row.total{padding-top:14px;margin-top:4px;border-top:2px solid var(--ink-900);}
+  .summary-row.total .k{font-weight:700;color:var(--ink-900);font-size:14px;}
+  .summary-row.total .v{font-size:16px;color:var(--moss-600);}
+
+  .alert-box{
+    background:var(--amber-100);border:1px solid #E4C578;border-radius:12px;padding:12px 14px;
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .alert-box .ico{font-size:16px;line-height:1;}
+  .alert-box p{font-size:12px;color:#7A5A17;line-height:1.5;}
+  .alert-box b{color:#5C4310;}
+
+  .footer-bar{padding:16px 20px 20px;border-top:1px solid var(--line);display:flex;gap:10px;}
+
+  /* manager review specific */
+  .review-card{background:var(--sage-50);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .review-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .review-top .name{font-weight:600;font-size:14px;}
+  .review-top .team-chip{font-family:var(--font-mono);font-size:10px;padding:3px 8px;border-radius:100px;}
+  .review-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+  .mini-stat{background:#fff;border-radius:10px;padding:9px 10px;}
+  .mini-stat .k{font-family:var(--font-mono);font-size:9.5px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.05em;}
+  .mini-stat .v{font-family:var(--font-mono);font-weight:700;font-size:14px;margin-top:2px;}
+  .mini-stat.warn .v{color:var(--clay-500);}
+  .review-actions{display:flex;gap:8px;margin-top:12px;}
+  .review-actions button{flex:1;padding:10px;border-radius:9px;font-size:12.5px;font-weight:600;border:none;cursor:pointer;}
+  .approve{background:var(--moss-600);color:#fff;}
+  .adjust{background:var(--sage-100);color:var(--ink-900);}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">
+    <div class="mark">iZ</div>
+    <div>
+      <span>iZiiApp — Harvest</span>
+      <small>Costa Mushroom · Check-in flow</small>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-target="s1">1 · Quét QR</button>
+    <button class="tab-btn" data-target="s2">2 · Xác nhận Room</button>
+    <button class="tab-btn" data-target="s3">3 · Đang làm việc</button>
+    <button class="tab-btn" data-target="s4">4 · Check-out</button>
+    <button class="tab-btn" data-target="s5">5 · Manager duyệt</button>
+  </div>
+</div>
+
+<div class="stage">
+
+  <!-- SCREEN 1: QR CHECK-IN -->
+  <div class="screen active" id="s1">
+    <div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screenbody">
+          <div class="statusbar"><span>7:42</span><span>●●●●</span></div>
+          <div class="app-header">
+            <div class="eyebrow">Friday · 24/07/2026</div>
+            <h1>Check-in ca sáng</h1>
+          </div>
+          <div class="content">
+            <div class="qr-frame">
+              <div class="corner c1"></div><div class="corner c2"></div>
+              <div class="corner c3"></div><div class="corner c4"></div>
+              <div class="scanline"></div>
+              <div class="hint">Đưa mã QR cá nhân<br>vào khung quét</div>
+            </div>
+            <div style="flex:1"></div>
+            <button class="btn btn-ghost">Nhập mã nhân viên thủ công</button>
+          </div>
+        </div>
+      </div>
+      <div class="caption">Picker quét QR cá nhân để check-in</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: TEAM + ROOM REVEAL -->
+  <div class="screen" id="s2">
+    <div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screenbody">
+          <div class="statusbar"><span>7:42</span><span>●●●●</span></div>
+          <div class="content" style="padding-top:16px;gap:14px;">
+            <div class="id-card">
+              <div class="avatar">MR</div>
+              <div>
+                <div class="name">Marcell Ruping</div>
+                <div class="role">Senior Picker</div>
+              </div>
+              <div style="margin-left:auto" class="badge" style="background:var(--moss-100);color:var(--moss-700)">
+                <span class="dot" style="background:var(--moss-600)"></span>Checked-in 7:42
+              </div>
+            </div>
+
+            <div class="team-hero">
+              <div class="lbl">Bạn thuộc Team</div>
+              <div class="val">🟪 PURPLE</div>
+            </div>
+
+            <div>
+              <div class="section-lbl">Room được phân bổ hôm nay</div>
+              <div class="room-list">
+                <div class="room-row">
+                  <div>
+                    <div class="room-num">Room 24</div>
+                    <div class="instr">MB · CB</div>
+                  </div>
+                  <div class="box-target">600 boxes</div>
+                </div>
+                <div class="room-row">
+                  <div>
+                    <div class="room-num">Room 61</div>
+                    <div class="instr">Clumps · Wash trolleys</div>
+                  </div>
+                  <div class="box-target">200 boxes</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-box">
+              <div class="ico">📍</div>
+              <p><b>Lưu ý:</b> Nếu Manager điều chỉnh plan giữa ca, room phân bổ sẽ tự cập nhật — kiểm tra lại trước khi đổi phòng.</p>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <button class="btn btn-primary" style="width:100%">Đã hiểu, bắt đầu ca</button>
+          </div>
+        </div>
+      </div>
+      <div class="caption">Sau check-in: hiện ngay team màu + room + hướng dẫn hái</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: ACTIVE SHIFT / BREAK -->
+  <div class="screen" id="s3">
+    <div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screenbody">
+          <div class="statusbar"><span>11:05</span><span>●●●●</span></div>
+          <div class="app-header">
+            <div class="eyebrow">Room 24 · Purple Team</div>
+            <h1>Ca đang chạy</h1>
+          </div>
+          <div class="content">
+            <div class="timer">
+              <div class="lbl">Thời gian làm việc</div>
+              <div class="clock">03:23:11</div>
+              <div class="sub">Check-in lúc 07:42</div>
+            </div>
+
+            <div>
+              <div class="section-lbl">Break hôm nay</div>
+              <div class="summary-row">
+                <div class="k">Chuẩn cho phép</div>
+                <div class="v">25 phút</div>
+              </div>
+              <div class="summary-row">
+                <div class="k">Đã dùng</div>
+                <div class="v">12 phút</div>
+              </div>
+            </div>
+
+            <div class="break-controls">
+              <button class="btn btn-ghost">☕ Bắt đầu Break</button>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <button class="btn btn-primary" style="width:100%;background:var(--clay-500)">Check-out</button>
+          </div>
+        </div>
+      </div>
+      <div class="caption">Break tự ghi nhận, đếm ngược so với mức chuẩn 20–30 phút</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: CHECK-OUT SUMMARY -->
+  <div class="screen" id="s4">
+    <div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screenbody">
+          <div class="statusbar"><span>16:10</span><span>●●●●</span></div>
+          <div class="app-header">
+            <div class="eyebrow">Marcell Ruping · 24/07/2026</div>
+            <h1>Tổng kết ca</h1>
+          </div>
+          <div class="content">
+            <div class="summary-row">
+              <div class="k">Check-in</div><div class="v">07:42</div>
+            </div>
+            <div class="summary-row">
+              <div class="k">Check-out</div><div class="v">16:10</div>
+            </div>
+            <div class="summary-row">
+              <div class="k">Tổng giờ tại xưởng</div><div class="v">8h 28p</div>
+            </div>
+            <div class="summary-row">
+              <div class="k">Break chuẩn (đã trừ)</div><div class="v">−25p</div>
+            </div>
+            <div class="summary-row flag">
+              <div class="k">Extra break (chờ duyệt)</div><div class="v">−18p ⚠</div>
+            </div>
+            <div class="summary-row total">
+              <div class="k">Giờ công tạm tính</div><div class="v">7h 45p</div>
+            </div>
+
+            <div class="alert-box">
+              <div class="ico">⏳</div>
+              <p><b>Đang chờ Manager duyệt</b> phần extra break trước khi chốt vào bảng lương.</p>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <button class="btn btn-primary" style="width:100%">Hoàn tất Check-out</button>
+          </div>
+        </div>
+      </div>
+      <div class="caption">Extra break bị trừ tạm tính, chờ Manager xác nhận</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: MANAGER REVIEW -->
+  <div class="screen" id="s5">
+    <div>
+      <div class="phone" style="width:380px">
+        <div class="notch"></div>
+        <div class="screenbody">
+          <div class="statusbar"><span>17:30</span><span>●●●●</span></div>
+          <div class="app-header">
+            <div class="eyebrow">Timesheet review · 24/07/2026</div>
+            <h1>3 picker cần duyệt</h1>
+          </div>
+          <div class="content" style="gap:12px;">
+
+            <div class="review-card">
+              <div class="review-top">
+                <div class="name">Marcell Ruping</div>
+                <div class="team-chip" style="background:#EAD9F5;color:#7A3FA0">PURPLE</div>
+              </div>
+              <div class="review-grid">
+                <div class="mini-stat"><div class="k">Break chuẩn</div><div class="v">25p</div></div>
+                <div class="mini-stat warn"><div class="k">Extra break</div><div class="v">18p</div></div>
+                <div class="mini-stat"><div class="k">Giờ công tạm tính</div><div class="v">7h 45p</div></div>
+                <div class="mini-stat"><div class="k">Room</div><div class="v">24, 61</div></div>
+              </div>
+              <div class="review-actions">
+                <button class="approve">Duyệt trừ lương</button>
+                <button class="adjust">Điều chỉnh tay</button>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="review-top">
+                <div class="name">Selvam K.</div>
+                <div class="team-chip" style="background:#DCE7D6;color:#345A2E">SAGE</div>
+              </div>
+              <div class="review-grid">
+                <div class="mini-stat"><div class="k">Break chuẩn</div><div class="v">20p</div></div>
+                <div class="mini-stat warn"><div class="k">Extra break</div><div class="v">41p</div></div>
+                <div class="mini-stat"><div class="k">Giờ công tạm tính</div><div class="v">6h 58p</div></div>
+                <div class="mini-stat"><div class="k">Room</div><div class="v">43</div></div>
+              </div>
+              <div class="review-actions">
+                <button class="approve">Duyệt trừ lương</button>
+                <button class="adjust">Điều chỉnh tay</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="caption">Manager duyệt hàng loạt extra-break trước khi khoá bảng lương</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
