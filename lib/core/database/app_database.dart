@@ -68,6 +68,14 @@ part 'app_database.g.dart';
   MushroomEmployeeDepartmentRoles,
   MushroomPermissionOverrides,
   MushroomYieldSurveys,
+  MushroomHarvestPlans,
+  MushroomShifts,
+  MushroomPickerTeams,
+  MushroomRoomAssignments,
+  MushroomAttendanceEvents,
+  MushroomBreakPolicies,
+  MushroomDailyTimesheets,
+  MushroomPayrollCalculations,
   ChatConversations,
   ChatParticipants,
   ChatMessages,
@@ -92,7 +100,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 25;
+  int get schemaVersion => 26;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -392,6 +400,44 @@ class AppDatabase extends _$AppDatabase {
             } catch (_) {}
             try {
               await m.addColumn(mushroomEmployees, mushroomEmployees.linkedUserId);
+            } catch (_) {}
+          }
+          if (from < 26) {
+            try {
+              await m.addColumn(mushroomEmployees, mushroomEmployees.employmentType);
+            } catch (_) {}
+            try {
+              await m.addColumn(mushroomEmployees, mushroomEmployees.baseRate);
+            } catch (_) {}
+            try {
+              await m.addColumn(mushroomEmployees, mushroomEmployees.defaultShed);
+            } catch (_) {}
+            try {
+              await m.addColumn(mushroomEmployees, mushroomEmployees.pickerTeamColor);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomHarvestPlans);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomShifts);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomPickerTeams);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomRoomAssignments);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomAttendanceEvents);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomBreakPolicies);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomDailyTimesheets);
+            } catch (_) {}
+            try {
+              await m.createTable(mushroomPayrollCalculations);
             } catch (_) {}
           }
         },

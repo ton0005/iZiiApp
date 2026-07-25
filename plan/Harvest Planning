@@ -1,0 +1,207 @@
+# Thiết kế tích hợp Harvest Plan & Attendance vào iZiiApp
+**Module:** Mushrooms — Harvest Department (Costa Mushroom)
+
+---
+
+## PHẦN 1: Phân tích bảng Harvesting Plan hiện tại (giấy)
+
+### 1.1 Các thành phần dữ liệu đọc được từ bảng mẫu
+
+| Nhóm | Trường dữ liệu | Ví dụ trong ảnh |
+|---|---|---|
+| **Header** | Ngày, Thứ | Friday 24/07/2026 |
+| **Ca/Role** | Supervisor, Team Leader, Box Mover (Day/D-S/A-N) | Delwar, Shiplu, Bohdan... |
+| **Shed Plan** | Room list gán cho từng leader | 24/26/23, 50//51//48 |
+| **Team (màu)** | Tên màu đại diện 1 nhóm picker | Ivory, Pearl, Purple, Sapphire... |
+| **Rate W** | Định mức năng suất/kg mỗi team | 28.5, 31.9, 25.4... |
+| **H.V (Headcount/Volume)** | Số lượng picker trong team | 8, 6, 11... |
+| **Room** | Số phòng nấm (Grow Room) | 1, 3, 4, 11, 13... |
+| **Flush** | Đợt ra nấm | 1, 2, 3 |
+| **Boxes** | Sản lượng box mục tiêu | 500, 1000, 100... |
+| **Trolley** | Số xe đẩy cần dùng | 8, 16, 4... |
+| **Teams gán vào Room** | Kết hợp nhiều team cho 1 room | "IVORY x8 + PEARL x8" |
+| **Picking Instruction** | Hướng dẫn hái riêng từng room | SSA, Clumps, Wash Trolleys, MB, CB, XLF/LF |
+| **Tổng hợp** | Seniors/Trainees/Total, Total boxes | 163 / 11 / 174, 42374 |
+| **Packing** | Quy cách đóng gói | CV-500gm: 432, CV-200gm |
+
+### 1.2 Nhận xét về mô hình vận hành hiện tại
+- Đây là mô hình **phân bổ theo "Team màu"** chứ không gán trực tiếp từng picker vào room — mỗi màu đại diện 1 nhóm ~7-16 người do 1 Team Leader phụ trách.
+- 1 Room có thể được gán **nhiều team cùng lúc** (ví dụ Room 3: Ivory x8 + Pearl x8).
+- Có khái niệm **"Rest"** (team nghỉ/dự phòng) và ghi chú viết tay điều chỉnh real-time (đổi người, đổi room) — cho thấy plan **thay đổi trong ngày**, không cố định từ đầu.
+- Rate (kg/giờ ước tính) gắn theo từng team, dùng để **ước tính sản lượng** trước khi hái.
+
+---
+
+## PHẦN 2: Data Model đề xuất cho iZiiApp
+
+### 2.1 Entity — Harvest Planning
+
+```
+HarvestPlan
+├── id
+├── plan_date
+├── shed_id / zone_id            (liên kết zone-based partitioning hiện có)
+├── created_by (Manager)
+├── status: DRAFT | PUBLISHED | IN_PROGRESS | CLOSED
+└── total_target_boxes
+
+Shift
+├── id
+├── plan_id (FK -> HarvestPlan)
+├── role: SUPERVISOR | TEAM_LEADER | BOX_MOVER_DAY | BOX_MOVER_DS | BOX_MOVER_AN
+├── employee_id
+├── start_time
+└── shed_room_list (rooms phụ trách)
+
+PickerTeam                        # "Team màu"
+├── id
+├── plan_id
+├── color_code ("Ivory","Pearl"...)
+├── team_leader_id
+├── headcount
+├── rate_estimate (kg/hr hoặc box/hr)
+└── member_ids[] (danh sách picker thuộc team)
+
+Room
+├── id
+├── room_number
+├── flush_number
+├── zone_id //Plant M1/M2
+└── capacity_reference
+
+RoomAssignment                    # Gán team vào room
+├── id
+├── plan_id
+├── room_id
+├── box_target
+├── trolley_count
+├── team_assignments[]            # [{team_color_id, headcount_used}]
+├── picking_instruction_code[]    # ["SSA","Clumps","WASH_TROLLEYS"]
+└── notes (free text, cho ghi chú viết tay/điều chỉnh)
+
+PickingInstructionCode (danh mục chuẩn hóa)
+├── code (SSA, CLUMPS, WASH_TROLLEYS, MB, CB, XLF, LF, TIDY_UP...)
+└── description
+```
+
+### 2.2 Đề xuất UI cho Manager
+- Màn **Plan Builder**: kéo-thả team màu vào từng room, hệ thống tự tính:
+  - Tổng headcount đã phân bổ vs. tổng available.
+  - Cảnh báo nếu 1 team bị gán trùng 2 room cùng lúc.
+  - Auto-suggest picking instruction dựa trên lịch sử room đó (VD: room hay dùng "Clumps, Wash Trolleys").
+- Cho phép **Publish** plan → khoá chỉnh sửa hàng loạt, chỉ cho phép "Adjustment" có log (giữ được tinh thần ghi chú viết tay hiện tại, nhưng có audit trail).
+- Đồng bộ BLE/mDNS xuống các thiết bị check-in tại từng Shed ngay khi Publish.
+
+---
+
+## PHẦN 3: Check-in / Check-out & Tính lương
+
+### 3.1 Luồng nghiệp vụ
+
+```
+[Manager publish Plan] 
+        │
+        ▼
+[Picker Check-in tại kiosk/app]
+        │  → Hệ thống tra plan hôm nay theo employee_id
+        │  → Tìm team màu picker thuộc về
+        ▼
+[Hiển thị: "Bạn thuộc team PEARL — Room 3, 23, 26"]
+        │
+        ▼
+[Picker làm việc — Break Start/End tự ghi nhận]
+        │
+        ▼
+[Picker Check-out]
+        │
+        ▼
+[Hệ thống tính: Worked time, Standard break, Extra break, Overtime]
+        │
+        ▼
+[Payroll Engine tổng hợp cuối kỳ]
+```
+
+### 3.2 Data Model — Attendance & Payroll
+
+```
+Employee
+├── id
+├── name
+├── employment_type: SENIOR | TRAINEE
+├── base_rate (lương/giờ)
+└── default_shed/zone
+
+AttendanceEvent
+├── id
+├── employee_id
+├── plan_id (liên kết ngày làm việc cụ thể)
+├── event_type: CHECK_IN | CHECK_OUT | BREAK_START | BREAK_END
+├── timestamp
+├── source: QR | NFC | MANUAL | BLE_BEACON
+└── device_id / location (room hoặc shed, nếu dùng BLE beacon theo room)
+
+BreakPolicy (config, theo shed hoặc theo hợp đồng lao động)
+├── id
+├── standard_break_minutes (VD: 30 phút lunch + 2x10 phút tea break)
+├── grace_minutes (buffer cho phép, VD 5 phút không tính extra)
+└── extra_break_rule: UNPAID | DEDUCT_DOUBLE | FLAG_FOR_REVIEW
+
+DailyTimesheet                    # Tính toán cuối ngày cho mỗi picker
+├── id
+├── employee_id
+├── plan_date
+├── check_in_time
+├── check_out_time
+├── total_break_taken (phút)
+├── standard_break_allowed (phút, theo BreakPolicy)
+├── extra_break_minutes = MAX(0, total_break_taken - standard_break_allowed - grace)
+├── gross_worked_minutes = (check_out - check_in)
+├── paid_minutes = gross_worked_minutes - standard_break_allowed - extra_break_minutes
+├── overtime_minutes (nếu paid_minutes > ca chuẩn, VD >8h)
+├── assigned_team_color
+├── assigned_rooms[]
+└── status: NORMAL | NEEDS_REVIEW (nếu extra break bất thường/quên checkout)
+
+PayrollCalculation
+├── employee_id
+├── pay_period
+├── total_paid_hours
+├── total_overtime_hours
+├── base_pay
+├── overtime_pay
+└── total_pay
+```
+
+### 3.3 Quy tắc tính lương (logic đề xuất — cần Manager xác nhận số cụ thể)
+
+| Trường hợp | Cách tính |
+|---|---|
+| Break đúng chuẩn (≤ standard + grace) | Không trừ thêm ngoài standard break |
+| Break vượt chuẩn | `extra_break_minutes` bị trừ khỏi `paid_minutes` (không trả lương phần vượt) |
+| Break vượt quá nhiều (VD >2x standard) | Tự động flag `NEEDS_REVIEW` để Manager duyệt tay, tránh trừ sai nếu có lý do chính đáng (nghỉ ốm, sự cố) |
+| Quên check-out | Flag `NEEDS_REVIEW`, không tự tính lương cho đến khi Manager xác nhận giờ ra |
+| Làm quá ca chuẩn | Tính `overtime_minutes` theo hệ số riêng (VD x1.5) |
+
+**[CẦN XÁC NHẬN từ anh/Manager]:**
+1. Standard break là bao nhiêu phút/ca? 20 - 30 phút  Có phân biệt Senior vs Trainee không? không
+2. Cách picker check-in: quét QR cá nhân
+3. Extra break bị **trừ lương** hay chỉ **cảnh báo Manager** (không tự động trừ)? Trừ vào working time => Manager quyết định
+4. Overtime tính theo ngày (>8h) hay theo tuần (>38h) — theo chuẩn Fair Work Úc? Custom sau
+
+### 3.4 Trải nghiệm Picker khi Check-in
+- Sau check-in, hiển thị ngay: **Team màu** + **Danh sách Room được phân** + **Picking instruction** của các room đó (đồng bộ trực tiếp từ RoomAssignment).
+- Nếu Manager điều chỉnh plan giữa ca (đổi room), app cần **real-time notify** picker qua BLE/mDNS sync — đúng tinh thần offline-first hiện có của iZiiApp.
+
+---
+
+## PHẦN 4: Liên kết với kiến trúc iZiiApp hiện tại
+- **Zone-based partitioning**: mỗi Shed = 1 zone → HarvestPlan, RoomAssignment, AttendanceEvent đồng bộ theo zone, giảm tải server trung tâm.
+- **Delta-sync**: chỉ đồng bộ thay đổi (VD: điều chỉnh RoomAssignment giữa ca) thay vì gửi lại toàn bộ plan.
+- **Hybrid RBAC + Manager Override**: Manager tạo/sửa plan, Team Leader chỉ xem/ghi chú, Picker chỉ check-in/out — khớp với permission model đã thiết kế.
+- **IDataRepository**: AttendanceEvent và DailyTimesheet nên thiết kế qua abstraction này ngay từ đầu vì đây là dữ liệu tăng nhanh, cần sẵn sàng migrate PostgreSQL sớm hơn các module khác.
+
+---
+
+1. Chốt danh mục chuẩn hóa `PickingInstructionCode` (từ các viết tắt SSA, Clumps, MB, CB, XLF, LF... đang dùng trên giấy).
+2. Thiết kế wireframe màn hình Check-in cho Picker (ưu tiên: nhanh, ít thao tác, hiển thị room ngay lập tức).
+3. Nhân viên check in trế, manager sẽ sắp xếp Room manual.

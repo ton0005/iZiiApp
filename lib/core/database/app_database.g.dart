@@ -18084,6 +18084,30 @@ class $MushroomEmployeesTable extends MushroomEmployees
   late final GeneratedColumn<String> linkedUserId = GeneratedColumn<String>(
       'linked_user_id', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _employmentTypeMeta =
+      const VerificationMeta('employmentType');
+  @override
+  late final GeneratedColumn<String> employmentType = GeneratedColumn<String>(
+      'employment_type', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _baseRateMeta =
+      const VerificationMeta('baseRate');
+  @override
+  late final GeneratedColumn<double> baseRate = GeneratedColumn<double>(
+      'base_rate', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _defaultShedMeta =
+      const VerificationMeta('defaultShed');
+  @override
+  late final GeneratedColumn<String> defaultShed = GeneratedColumn<String>(
+      'default_shed', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _pickerTeamColorMeta =
+      const VerificationMeta('pickerTeamColor');
+  @override
+  late final GeneratedColumn<String> pickerTeamColor = GeneratedColumn<String>(
+      'picker_team_color', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -18101,6 +18125,10 @@ class $MushroomEmployeesTable extends MushroomEmployees
         passwordHash,
         status,
         linkedUserId,
+        employmentType,
+        baseRate,
+        defaultShed,
+        pickerTeamColor,
         createdAt
       ];
   @override
@@ -18152,6 +18180,28 @@ class $MushroomEmployeesTable extends MushroomEmployees
           linkedUserId.isAcceptableOrUnknown(
               data['linked_user_id']!, _linkedUserIdMeta));
     }
+    if (data.containsKey('employment_type')) {
+      context.handle(
+          _employmentTypeMeta,
+          employmentType.isAcceptableOrUnknown(
+              data['employment_type']!, _employmentTypeMeta));
+    }
+    if (data.containsKey('base_rate')) {
+      context.handle(_baseRateMeta,
+          baseRate.isAcceptableOrUnknown(data['base_rate']!, _baseRateMeta));
+    }
+    if (data.containsKey('default_shed')) {
+      context.handle(
+          _defaultShedMeta,
+          defaultShed.isAcceptableOrUnknown(
+              data['default_shed']!, _defaultShedMeta));
+    }
+    if (data.containsKey('picker_team_color')) {
+      context.handle(
+          _pickerTeamColorMeta,
+          pickerTeamColor.isAcceptableOrUnknown(
+              data['picker_team_color']!, _pickerTeamColorMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -18179,6 +18229,14 @@ class $MushroomEmployeesTable extends MushroomEmployees
           .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
       linkedUserId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}linked_user_id']),
+      employmentType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}employment_type']),
+      baseRate: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}base_rate']),
+      defaultShed: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}default_shed']),
+      pickerTeamColor: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}picker_team_color']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -18199,6 +18257,10 @@ class MushroomEmployee extends DataClass
   final String passwordHash;
   final String status;
   final String? linkedUserId;
+  final String? employmentType;
+  final double? baseRate;
+  final String? defaultShed;
+  final String? pickerTeamColor;
   final DateTime createdAt;
   const MushroomEmployee(
       {required this.id,
@@ -18208,6 +18270,10 @@ class MushroomEmployee extends DataClass
       required this.passwordHash,
       required this.status,
       this.linkedUserId,
+      this.employmentType,
+      this.baseRate,
+      this.defaultShed,
+      this.pickerTeamColor,
       required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -18222,6 +18288,18 @@ class MushroomEmployee extends DataClass
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || linkedUserId != null) {
       map['linked_user_id'] = Variable<String>(linkedUserId);
+    }
+    if (!nullToAbsent || employmentType != null) {
+      map['employment_type'] = Variable<String>(employmentType);
+    }
+    if (!nullToAbsent || baseRate != null) {
+      map['base_rate'] = Variable<double>(baseRate);
+    }
+    if (!nullToAbsent || defaultShed != null) {
+      map['default_shed'] = Variable<String>(defaultShed);
+    }
+    if (!nullToAbsent || pickerTeamColor != null) {
+      map['picker_team_color'] = Variable<String>(pickerTeamColor);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -18240,6 +18318,18 @@ class MushroomEmployee extends DataClass
       linkedUserId: linkedUserId == null && nullToAbsent
           ? const Value.absent()
           : Value(linkedUserId),
+      employmentType: employmentType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(employmentType),
+      baseRate: baseRate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(baseRate),
+      defaultShed: defaultShed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(defaultShed),
+      pickerTeamColor: pickerTeamColor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pickerTeamColor),
       createdAt: Value(createdAt),
     );
   }
@@ -18255,6 +18345,10 @@ class MushroomEmployee extends DataClass
       passwordHash: serializer.fromJson<String>(json['passwordHash']),
       status: serializer.fromJson<String>(json['status']),
       linkedUserId: serializer.fromJson<String?>(json['linkedUserId']),
+      employmentType: serializer.fromJson<String?>(json['employmentType']),
+      baseRate: serializer.fromJson<double?>(json['baseRate']),
+      defaultShed: serializer.fromJson<String?>(json['defaultShed']),
+      pickerTeamColor: serializer.fromJson<String?>(json['pickerTeamColor']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -18269,6 +18363,10 @@ class MushroomEmployee extends DataClass
       'passwordHash': serializer.toJson<String>(passwordHash),
       'status': serializer.toJson<String>(status),
       'linkedUserId': serializer.toJson<String?>(linkedUserId),
+      'employmentType': serializer.toJson<String?>(employmentType),
+      'baseRate': serializer.toJson<double?>(baseRate),
+      'defaultShed': serializer.toJson<String?>(defaultShed),
+      'pickerTeamColor': serializer.toJson<String?>(pickerTeamColor),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -18281,6 +18379,10 @@ class MushroomEmployee extends DataClass
           String? passwordHash,
           String? status,
           Value<String?> linkedUserId = const Value.absent(),
+          Value<String?> employmentType = const Value.absent(),
+          Value<double?> baseRate = const Value.absent(),
+          Value<String?> defaultShed = const Value.absent(),
+          Value<String?> pickerTeamColor = const Value.absent(),
           DateTime? createdAt}) =>
       MushroomEmployee(
         id: id ?? this.id,
@@ -18291,6 +18393,13 @@ class MushroomEmployee extends DataClass
         status: status ?? this.status,
         linkedUserId:
             linkedUserId.present ? linkedUserId.value : this.linkedUserId,
+        employmentType:
+            employmentType.present ? employmentType.value : this.employmentType,
+        baseRate: baseRate.present ? baseRate.value : this.baseRate,
+        defaultShed: defaultShed.present ? defaultShed.value : this.defaultShed,
+        pickerTeamColor: pickerTeamColor.present
+            ? pickerTeamColor.value
+            : this.pickerTeamColor,
         createdAt: createdAt ?? this.createdAt,
       );
   MushroomEmployee copyWithCompanion(MushroomEmployeesCompanion data) {
@@ -18307,6 +18416,15 @@ class MushroomEmployee extends DataClass
       linkedUserId: data.linkedUserId.present
           ? data.linkedUserId.value
           : this.linkedUserId,
+      employmentType: data.employmentType.present
+          ? data.employmentType.value
+          : this.employmentType,
+      baseRate: data.baseRate.present ? data.baseRate.value : this.baseRate,
+      defaultShed:
+          data.defaultShed.present ? data.defaultShed.value : this.defaultShed,
+      pickerTeamColor: data.pickerTeamColor.present
+          ? data.pickerTeamColor.value
+          : this.pickerTeamColor,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -18321,14 +18439,29 @@ class MushroomEmployee extends DataClass
           ..write('passwordHash: $passwordHash, ')
           ..write('status: $status, ')
           ..write('linkedUserId: $linkedUserId, ')
+          ..write('employmentType: $employmentType, ')
+          ..write('baseRate: $baseRate, ')
+          ..write('defaultShed: $defaultShed, ')
+          ..write('pickerTeamColor: $pickerTeamColor, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, role, department, passwordHash,
-      status, linkedUserId, createdAt);
+  int get hashCode => Object.hash(
+      id,
+      name,
+      role,
+      department,
+      passwordHash,
+      status,
+      linkedUserId,
+      employmentType,
+      baseRate,
+      defaultShed,
+      pickerTeamColor,
+      createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -18340,6 +18473,10 @@ class MushroomEmployee extends DataClass
           other.passwordHash == this.passwordHash &&
           other.status == this.status &&
           other.linkedUserId == this.linkedUserId &&
+          other.employmentType == this.employmentType &&
+          other.baseRate == this.baseRate &&
+          other.defaultShed == this.defaultShed &&
+          other.pickerTeamColor == this.pickerTeamColor &&
           other.createdAt == this.createdAt);
 }
 
@@ -18351,6 +18488,10 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
   final Value<String> passwordHash;
   final Value<String> status;
   final Value<String?> linkedUserId;
+  final Value<String?> employmentType;
+  final Value<double?> baseRate;
+  final Value<String?> defaultShed;
+  final Value<String?> pickerTeamColor;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const MushroomEmployeesCompanion({
@@ -18361,6 +18502,10 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
     this.passwordHash = const Value.absent(),
     this.status = const Value.absent(),
     this.linkedUserId = const Value.absent(),
+    this.employmentType = const Value.absent(),
+    this.baseRate = const Value.absent(),
+    this.defaultShed = const Value.absent(),
+    this.pickerTeamColor = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -18372,6 +18517,10 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
     this.passwordHash = const Value.absent(),
     this.status = const Value.absent(),
     this.linkedUserId = const Value.absent(),
+    this.employmentType = const Value.absent(),
+    this.baseRate = const Value.absent(),
+    this.defaultShed = const Value.absent(),
+    this.pickerTeamColor = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
@@ -18385,6 +18534,10 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
     Expression<String>? passwordHash,
     Expression<String>? status,
     Expression<String>? linkedUserId,
+    Expression<String>? employmentType,
+    Expression<double>? baseRate,
+    Expression<String>? defaultShed,
+    Expression<String>? pickerTeamColor,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -18396,6 +18549,10 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
       if (passwordHash != null) 'password_hash': passwordHash,
       if (status != null) 'status': status,
       if (linkedUserId != null) 'linked_user_id': linkedUserId,
+      if (employmentType != null) 'employment_type': employmentType,
+      if (baseRate != null) 'base_rate': baseRate,
+      if (defaultShed != null) 'default_shed': defaultShed,
+      if (pickerTeamColor != null) 'picker_team_color': pickerTeamColor,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -18409,6 +18566,10 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
       Value<String>? passwordHash,
       Value<String>? status,
       Value<String?>? linkedUserId,
+      Value<String?>? employmentType,
+      Value<double?>? baseRate,
+      Value<String?>? defaultShed,
+      Value<String?>? pickerTeamColor,
       Value<DateTime>? createdAt,
       Value<int>? rowid}) {
     return MushroomEmployeesCompanion(
@@ -18419,6 +18580,10 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
       passwordHash: passwordHash ?? this.passwordHash,
       status: status ?? this.status,
       linkedUserId: linkedUserId ?? this.linkedUserId,
+      employmentType: employmentType ?? this.employmentType,
+      baseRate: baseRate ?? this.baseRate,
+      defaultShed: defaultShed ?? this.defaultShed,
+      pickerTeamColor: pickerTeamColor ?? this.pickerTeamColor,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -18448,6 +18613,18 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
     if (linkedUserId.present) {
       map['linked_user_id'] = Variable<String>(linkedUserId.value);
     }
+    if (employmentType.present) {
+      map['employment_type'] = Variable<String>(employmentType.value);
+    }
+    if (baseRate.present) {
+      map['base_rate'] = Variable<double>(baseRate.value);
+    }
+    if (defaultShed.present) {
+      map['default_shed'] = Variable<String>(defaultShed.value);
+    }
+    if (pickerTeamColor.present) {
+      map['picker_team_color'] = Variable<String>(pickerTeamColor.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -18467,6 +18644,10 @@ class MushroomEmployeesCompanion extends UpdateCompanion<MushroomEmployee> {
           ..write('passwordHash: $passwordHash, ')
           ..write('status: $status, ')
           ..write('linkedUserId: $linkedUserId, ')
+          ..write('employmentType: $employmentType, ')
+          ..write('baseRate: $baseRate, ')
+          ..write('defaultShed: $defaultShed, ')
+          ..write('pickerTeamColor: $pickerTeamColor, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -19742,6 +19923,3471 @@ class MushroomYieldSurveysCompanion
           ..write('cycle: $cycle, ')
           ..write('expectedYield: $expectedYield, ')
           ..write('surveyedAt: $surveyedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MushroomHarvestPlansTable extends MushroomHarvestPlans
+    with TableInfo<$MushroomHarvestPlansTable, MushroomHarvestPlan> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomHarvestPlansTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _planDateMeta =
+      const VerificationMeta('planDate');
+  @override
+  late final GeneratedColumn<DateTime> planDate = GeneratedColumn<DateTime>(
+      'plan_date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _zoneIdMeta = const VerificationMeta('zoneId');
+  @override
+  late final GeneratedColumn<String> zoneId = GeneratedColumn<String>(
+      'zone_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('draft'));
+  static const VerificationMeta _totalTargetBoxesMeta =
+      const VerificationMeta('totalTargetBoxes');
+  @override
+  late final GeneratedColumn<int> totalTargetBoxes = GeneratedColumn<int>(
+      'total_target_boxes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, planDate, zoneId, createdBy, status, totalTargetBoxes];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_harvest_plans';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MushroomHarvestPlan> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('plan_date')) {
+      context.handle(_planDateMeta,
+          planDate.isAcceptableOrUnknown(data['plan_date']!, _planDateMeta));
+    } else if (isInserting) {
+      context.missing(_planDateMeta);
+    }
+    if (data.containsKey('zone_id')) {
+      context.handle(_zoneIdMeta,
+          zoneId.isAcceptableOrUnknown(data['zone_id']!, _zoneIdMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('total_target_boxes')) {
+      context.handle(
+          _totalTargetBoxesMeta,
+          totalTargetBoxes.isAcceptableOrUnknown(
+              data['total_target_boxes']!, _totalTargetBoxesMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomHarvestPlan map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomHarvestPlan(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      planDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}plan_date'])!,
+      zoneId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}zone_id']),
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by']),
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      totalTargetBoxes: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}total_target_boxes'])!,
+    );
+  }
+
+  @override
+  $MushroomHarvestPlansTable createAlias(String alias) {
+    return $MushroomHarvestPlansTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomHarvestPlan extends DataClass
+    implements Insertable<MushroomHarvestPlan> {
+  final String id;
+  final DateTime planDate;
+  final String? zoneId;
+  final String? createdBy;
+  final String status;
+  final int totalTargetBoxes;
+  const MushroomHarvestPlan(
+      {required this.id,
+      required this.planDate,
+      this.zoneId,
+      this.createdBy,
+      required this.status,
+      required this.totalTargetBoxes});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['plan_date'] = Variable<DateTime>(planDate);
+    if (!nullToAbsent || zoneId != null) {
+      map['zone_id'] = Variable<String>(zoneId);
+    }
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<String>(createdBy);
+    }
+    map['status'] = Variable<String>(status);
+    map['total_target_boxes'] = Variable<int>(totalTargetBoxes);
+    return map;
+  }
+
+  MushroomHarvestPlansCompanion toCompanion(bool nullToAbsent) {
+    return MushroomHarvestPlansCompanion(
+      id: Value(id),
+      planDate: Value(planDate),
+      zoneId:
+          zoneId == null && nullToAbsent ? const Value.absent() : Value(zoneId),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
+      status: Value(status),
+      totalTargetBoxes: Value(totalTargetBoxes),
+    );
+  }
+
+  factory MushroomHarvestPlan.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomHarvestPlan(
+      id: serializer.fromJson<String>(json['id']),
+      planDate: serializer.fromJson<DateTime>(json['planDate']),
+      zoneId: serializer.fromJson<String?>(json['zoneId']),
+      createdBy: serializer.fromJson<String?>(json['createdBy']),
+      status: serializer.fromJson<String>(json['status']),
+      totalTargetBoxes: serializer.fromJson<int>(json['totalTargetBoxes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'planDate': serializer.toJson<DateTime>(planDate),
+      'zoneId': serializer.toJson<String?>(zoneId),
+      'createdBy': serializer.toJson<String?>(createdBy),
+      'status': serializer.toJson<String>(status),
+      'totalTargetBoxes': serializer.toJson<int>(totalTargetBoxes),
+    };
+  }
+
+  MushroomHarvestPlan copyWith(
+          {String? id,
+          DateTime? planDate,
+          Value<String?> zoneId = const Value.absent(),
+          Value<String?> createdBy = const Value.absent(),
+          String? status,
+          int? totalTargetBoxes}) =>
+      MushroomHarvestPlan(
+        id: id ?? this.id,
+        planDate: planDate ?? this.planDate,
+        zoneId: zoneId.present ? zoneId.value : this.zoneId,
+        createdBy: createdBy.present ? createdBy.value : this.createdBy,
+        status: status ?? this.status,
+        totalTargetBoxes: totalTargetBoxes ?? this.totalTargetBoxes,
+      );
+  MushroomHarvestPlan copyWithCompanion(MushroomHarvestPlansCompanion data) {
+    return MushroomHarvestPlan(
+      id: data.id.present ? data.id.value : this.id,
+      planDate: data.planDate.present ? data.planDate.value : this.planDate,
+      zoneId: data.zoneId.present ? data.zoneId.value : this.zoneId,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      status: data.status.present ? data.status.value : this.status,
+      totalTargetBoxes: data.totalTargetBoxes.present
+          ? data.totalTargetBoxes.value
+          : this.totalTargetBoxes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomHarvestPlan(')
+          ..write('id: $id, ')
+          ..write('planDate: $planDate, ')
+          ..write('zoneId: $zoneId, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('status: $status, ')
+          ..write('totalTargetBoxes: $totalTargetBoxes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, planDate, zoneId, createdBy, status, totalTargetBoxes);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomHarvestPlan &&
+          other.id == this.id &&
+          other.planDate == this.planDate &&
+          other.zoneId == this.zoneId &&
+          other.createdBy == this.createdBy &&
+          other.status == this.status &&
+          other.totalTargetBoxes == this.totalTargetBoxes);
+}
+
+class MushroomHarvestPlansCompanion
+    extends UpdateCompanion<MushroomHarvestPlan> {
+  final Value<String> id;
+  final Value<DateTime> planDate;
+  final Value<String?> zoneId;
+  final Value<String?> createdBy;
+  final Value<String> status;
+  final Value<int> totalTargetBoxes;
+  final Value<int> rowid;
+  const MushroomHarvestPlansCompanion({
+    this.id = const Value.absent(),
+    this.planDate = const Value.absent(),
+    this.zoneId = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.status = const Value.absent(),
+    this.totalTargetBoxes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomHarvestPlansCompanion.insert({
+    required String id,
+    required DateTime planDate,
+    this.zoneId = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.status = const Value.absent(),
+    this.totalTargetBoxes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        planDate = Value(planDate);
+  static Insertable<MushroomHarvestPlan> custom({
+    Expression<String>? id,
+    Expression<DateTime>? planDate,
+    Expression<String>? zoneId,
+    Expression<String>? createdBy,
+    Expression<String>? status,
+    Expression<int>? totalTargetBoxes,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (planDate != null) 'plan_date': planDate,
+      if (zoneId != null) 'zone_id': zoneId,
+      if (createdBy != null) 'created_by': createdBy,
+      if (status != null) 'status': status,
+      if (totalTargetBoxes != null) 'total_target_boxes': totalTargetBoxes,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomHarvestPlansCompanion copyWith(
+      {Value<String>? id,
+      Value<DateTime>? planDate,
+      Value<String?>? zoneId,
+      Value<String?>? createdBy,
+      Value<String>? status,
+      Value<int>? totalTargetBoxes,
+      Value<int>? rowid}) {
+    return MushroomHarvestPlansCompanion(
+      id: id ?? this.id,
+      planDate: planDate ?? this.planDate,
+      zoneId: zoneId ?? this.zoneId,
+      createdBy: createdBy ?? this.createdBy,
+      status: status ?? this.status,
+      totalTargetBoxes: totalTargetBoxes ?? this.totalTargetBoxes,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (planDate.present) {
+      map['plan_date'] = Variable<DateTime>(planDate.value);
+    }
+    if (zoneId.present) {
+      map['zone_id'] = Variable<String>(zoneId.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (totalTargetBoxes.present) {
+      map['total_target_boxes'] = Variable<int>(totalTargetBoxes.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomHarvestPlansCompanion(')
+          ..write('id: $id, ')
+          ..write('planDate: $planDate, ')
+          ..write('zoneId: $zoneId, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('status: $status, ')
+          ..write('totalTargetBoxes: $totalTargetBoxes, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MushroomShiftsTable extends MushroomShifts
+    with TableInfo<$MushroomShiftsTable, MushroomShift> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomShiftsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  @override
+  late final GeneratedColumn<String> planId = GeneratedColumn<String>(
+      'plan_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+      'role', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _employeeIdMeta =
+      const VerificationMeta('employeeId');
+  @override
+  late final GeneratedColumn<String> employeeId = GeneratedColumn<String>(
+      'employee_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _startTimeMeta =
+      const VerificationMeta('startTime');
+  @override
+  late final GeneratedColumn<DateTime> startTime = GeneratedColumn<DateTime>(
+      'start_time', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _shedRoomListJsonMeta =
+      const VerificationMeta('shedRoomListJson');
+  @override
+  late final GeneratedColumn<String> shedRoomListJson = GeneratedColumn<String>(
+      'shed_room_list_json', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, planId, role, employeeId, startTime, shedRoomListJson];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_shifts';
+  @override
+  VerificationContext validateIntegrity(Insertable<MushroomShift> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('plan_id')) {
+      context.handle(_planIdMeta,
+          planId.isAcceptableOrUnknown(data['plan_id']!, _planIdMeta));
+    } else if (isInserting) {
+      context.missing(_planIdMeta);
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+          _roleMeta, role.isAcceptableOrUnknown(data['role']!, _roleMeta));
+    } else if (isInserting) {
+      context.missing(_roleMeta);
+    }
+    if (data.containsKey('employee_id')) {
+      context.handle(
+          _employeeIdMeta,
+          employeeId.isAcceptableOrUnknown(
+              data['employee_id']!, _employeeIdMeta));
+    } else if (isInserting) {
+      context.missing(_employeeIdMeta);
+    }
+    if (data.containsKey('start_time')) {
+      context.handle(_startTimeMeta,
+          startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta));
+    }
+    if (data.containsKey('shed_room_list_json')) {
+      context.handle(
+          _shedRoomListJsonMeta,
+          shedRoomListJson.isAcceptableOrUnknown(
+              data['shed_room_list_json']!, _shedRoomListJsonMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomShift map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomShift(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      planId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}plan_id'])!,
+      role: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}role'])!,
+      employeeId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}employee_id'])!,
+      startTime: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}start_time']),
+      shedRoomListJson: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}shed_room_list_json']),
+    );
+  }
+
+  @override
+  $MushroomShiftsTable createAlias(String alias) {
+    return $MushroomShiftsTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomShift extends DataClass implements Insertable<MushroomShift> {
+  final String id;
+  final String planId;
+  final String role;
+  final String employeeId;
+  final DateTime? startTime;
+  final String? shedRoomListJson;
+  const MushroomShift(
+      {required this.id,
+      required this.planId,
+      required this.role,
+      required this.employeeId,
+      this.startTime,
+      this.shedRoomListJson});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['plan_id'] = Variable<String>(planId);
+    map['role'] = Variable<String>(role);
+    map['employee_id'] = Variable<String>(employeeId);
+    if (!nullToAbsent || startTime != null) {
+      map['start_time'] = Variable<DateTime>(startTime);
+    }
+    if (!nullToAbsent || shedRoomListJson != null) {
+      map['shed_room_list_json'] = Variable<String>(shedRoomListJson);
+    }
+    return map;
+  }
+
+  MushroomShiftsCompanion toCompanion(bool nullToAbsent) {
+    return MushroomShiftsCompanion(
+      id: Value(id),
+      planId: Value(planId),
+      role: Value(role),
+      employeeId: Value(employeeId),
+      startTime: startTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startTime),
+      shedRoomListJson: shedRoomListJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shedRoomListJson),
+    );
+  }
+
+  factory MushroomShift.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomShift(
+      id: serializer.fromJson<String>(json['id']),
+      planId: serializer.fromJson<String>(json['planId']),
+      role: serializer.fromJson<String>(json['role']),
+      employeeId: serializer.fromJson<String>(json['employeeId']),
+      startTime: serializer.fromJson<DateTime?>(json['startTime']),
+      shedRoomListJson: serializer.fromJson<String?>(json['shedRoomListJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'planId': serializer.toJson<String>(planId),
+      'role': serializer.toJson<String>(role),
+      'employeeId': serializer.toJson<String>(employeeId),
+      'startTime': serializer.toJson<DateTime?>(startTime),
+      'shedRoomListJson': serializer.toJson<String?>(shedRoomListJson),
+    };
+  }
+
+  MushroomShift copyWith(
+          {String? id,
+          String? planId,
+          String? role,
+          String? employeeId,
+          Value<DateTime?> startTime = const Value.absent(),
+          Value<String?> shedRoomListJson = const Value.absent()}) =>
+      MushroomShift(
+        id: id ?? this.id,
+        planId: planId ?? this.planId,
+        role: role ?? this.role,
+        employeeId: employeeId ?? this.employeeId,
+        startTime: startTime.present ? startTime.value : this.startTime,
+        shedRoomListJson: shedRoomListJson.present
+            ? shedRoomListJson.value
+            : this.shedRoomListJson,
+      );
+  MushroomShift copyWithCompanion(MushroomShiftsCompanion data) {
+    return MushroomShift(
+      id: data.id.present ? data.id.value : this.id,
+      planId: data.planId.present ? data.planId.value : this.planId,
+      role: data.role.present ? data.role.value : this.role,
+      employeeId:
+          data.employeeId.present ? data.employeeId.value : this.employeeId,
+      startTime: data.startTime.present ? data.startTime.value : this.startTime,
+      shedRoomListJson: data.shedRoomListJson.present
+          ? data.shedRoomListJson.value
+          : this.shedRoomListJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomShift(')
+          ..write('id: $id, ')
+          ..write('planId: $planId, ')
+          ..write('role: $role, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('startTime: $startTime, ')
+          ..write('shedRoomListJson: $shedRoomListJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, planId, role, employeeId, startTime, shedRoomListJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomShift &&
+          other.id == this.id &&
+          other.planId == this.planId &&
+          other.role == this.role &&
+          other.employeeId == this.employeeId &&
+          other.startTime == this.startTime &&
+          other.shedRoomListJson == this.shedRoomListJson);
+}
+
+class MushroomShiftsCompanion extends UpdateCompanion<MushroomShift> {
+  final Value<String> id;
+  final Value<String> planId;
+  final Value<String> role;
+  final Value<String> employeeId;
+  final Value<DateTime?> startTime;
+  final Value<String?> shedRoomListJson;
+  final Value<int> rowid;
+  const MushroomShiftsCompanion({
+    this.id = const Value.absent(),
+    this.planId = const Value.absent(),
+    this.role = const Value.absent(),
+    this.employeeId = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.shedRoomListJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomShiftsCompanion.insert({
+    required String id,
+    required String planId,
+    required String role,
+    required String employeeId,
+    this.startTime = const Value.absent(),
+    this.shedRoomListJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        planId = Value(planId),
+        role = Value(role),
+        employeeId = Value(employeeId);
+  static Insertable<MushroomShift> custom({
+    Expression<String>? id,
+    Expression<String>? planId,
+    Expression<String>? role,
+    Expression<String>? employeeId,
+    Expression<DateTime>? startTime,
+    Expression<String>? shedRoomListJson,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (planId != null) 'plan_id': planId,
+      if (role != null) 'role': role,
+      if (employeeId != null) 'employee_id': employeeId,
+      if (startTime != null) 'start_time': startTime,
+      if (shedRoomListJson != null) 'shed_room_list_json': shedRoomListJson,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomShiftsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? planId,
+      Value<String>? role,
+      Value<String>? employeeId,
+      Value<DateTime?>? startTime,
+      Value<String?>? shedRoomListJson,
+      Value<int>? rowid}) {
+    return MushroomShiftsCompanion(
+      id: id ?? this.id,
+      planId: planId ?? this.planId,
+      role: role ?? this.role,
+      employeeId: employeeId ?? this.employeeId,
+      startTime: startTime ?? this.startTime,
+      shedRoomListJson: shedRoomListJson ?? this.shedRoomListJson,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (planId.present) {
+      map['plan_id'] = Variable<String>(planId.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (employeeId.present) {
+      map['employee_id'] = Variable<String>(employeeId.value);
+    }
+    if (startTime.present) {
+      map['start_time'] = Variable<DateTime>(startTime.value);
+    }
+    if (shedRoomListJson.present) {
+      map['shed_room_list_json'] = Variable<String>(shedRoomListJson.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomShiftsCompanion(')
+          ..write('id: $id, ')
+          ..write('planId: $planId, ')
+          ..write('role: $role, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('startTime: $startTime, ')
+          ..write('shedRoomListJson: $shedRoomListJson, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MushroomPickerTeamsTable extends MushroomPickerTeams
+    with TableInfo<$MushroomPickerTeamsTable, MushroomPickerTeam> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomPickerTeamsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  @override
+  late final GeneratedColumn<String> planId = GeneratedColumn<String>(
+      'plan_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _colorCodeMeta =
+      const VerificationMeta('colorCode');
+  @override
+  late final GeneratedColumn<String> colorCode = GeneratedColumn<String>(
+      'color_code', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _teamLeaderIdMeta =
+      const VerificationMeta('teamLeaderId');
+  @override
+  late final GeneratedColumn<String> teamLeaderId = GeneratedColumn<String>(
+      'team_leader_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _headcountMeta =
+      const VerificationMeta('headcount');
+  @override
+  late final GeneratedColumn<int> headcount = GeneratedColumn<int>(
+      'headcount', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _rateEstimateMeta =
+      const VerificationMeta('rateEstimate');
+  @override
+  late final GeneratedColumn<double> rateEstimate = GeneratedColumn<double>(
+      'rate_estimate', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.0));
+  static const VerificationMeta _memberIdsJsonMeta =
+      const VerificationMeta('memberIdsJson');
+  @override
+  late final GeneratedColumn<String> memberIdsJson = GeneratedColumn<String>(
+      'member_ids_json', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        planId,
+        colorCode,
+        teamLeaderId,
+        headcount,
+        rateEstimate,
+        memberIdsJson
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_picker_teams';
+  @override
+  VerificationContext validateIntegrity(Insertable<MushroomPickerTeam> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('plan_id')) {
+      context.handle(_planIdMeta,
+          planId.isAcceptableOrUnknown(data['plan_id']!, _planIdMeta));
+    } else if (isInserting) {
+      context.missing(_planIdMeta);
+    }
+    if (data.containsKey('color_code')) {
+      context.handle(_colorCodeMeta,
+          colorCode.isAcceptableOrUnknown(data['color_code']!, _colorCodeMeta));
+    } else if (isInserting) {
+      context.missing(_colorCodeMeta);
+    }
+    if (data.containsKey('team_leader_id')) {
+      context.handle(
+          _teamLeaderIdMeta,
+          teamLeaderId.isAcceptableOrUnknown(
+              data['team_leader_id']!, _teamLeaderIdMeta));
+    }
+    if (data.containsKey('headcount')) {
+      context.handle(_headcountMeta,
+          headcount.isAcceptableOrUnknown(data['headcount']!, _headcountMeta));
+    }
+    if (data.containsKey('rate_estimate')) {
+      context.handle(
+          _rateEstimateMeta,
+          rateEstimate.isAcceptableOrUnknown(
+              data['rate_estimate']!, _rateEstimateMeta));
+    }
+    if (data.containsKey('member_ids_json')) {
+      context.handle(
+          _memberIdsJsonMeta,
+          memberIdsJson.isAcceptableOrUnknown(
+              data['member_ids_json']!, _memberIdsJsonMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomPickerTeam map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomPickerTeam(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      planId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}plan_id'])!,
+      colorCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}color_code'])!,
+      teamLeaderId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}team_leader_id']),
+      headcount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}headcount'])!,
+      rateEstimate: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}rate_estimate'])!,
+      memberIdsJson: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}member_ids_json']),
+    );
+  }
+
+  @override
+  $MushroomPickerTeamsTable createAlias(String alias) {
+    return $MushroomPickerTeamsTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomPickerTeam extends DataClass
+    implements Insertable<MushroomPickerTeam> {
+  final String id;
+  final String planId;
+  final String colorCode;
+  final String? teamLeaderId;
+  final int headcount;
+  final double rateEstimate;
+  final String? memberIdsJson;
+  const MushroomPickerTeam(
+      {required this.id,
+      required this.planId,
+      required this.colorCode,
+      this.teamLeaderId,
+      required this.headcount,
+      required this.rateEstimate,
+      this.memberIdsJson});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['plan_id'] = Variable<String>(planId);
+    map['color_code'] = Variable<String>(colorCode);
+    if (!nullToAbsent || teamLeaderId != null) {
+      map['team_leader_id'] = Variable<String>(teamLeaderId);
+    }
+    map['headcount'] = Variable<int>(headcount);
+    map['rate_estimate'] = Variable<double>(rateEstimate);
+    if (!nullToAbsent || memberIdsJson != null) {
+      map['member_ids_json'] = Variable<String>(memberIdsJson);
+    }
+    return map;
+  }
+
+  MushroomPickerTeamsCompanion toCompanion(bool nullToAbsent) {
+    return MushroomPickerTeamsCompanion(
+      id: Value(id),
+      planId: Value(planId),
+      colorCode: Value(colorCode),
+      teamLeaderId: teamLeaderId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(teamLeaderId),
+      headcount: Value(headcount),
+      rateEstimate: Value(rateEstimate),
+      memberIdsJson: memberIdsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(memberIdsJson),
+    );
+  }
+
+  factory MushroomPickerTeam.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomPickerTeam(
+      id: serializer.fromJson<String>(json['id']),
+      planId: serializer.fromJson<String>(json['planId']),
+      colorCode: serializer.fromJson<String>(json['colorCode']),
+      teamLeaderId: serializer.fromJson<String?>(json['teamLeaderId']),
+      headcount: serializer.fromJson<int>(json['headcount']),
+      rateEstimate: serializer.fromJson<double>(json['rateEstimate']),
+      memberIdsJson: serializer.fromJson<String?>(json['memberIdsJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'planId': serializer.toJson<String>(planId),
+      'colorCode': serializer.toJson<String>(colorCode),
+      'teamLeaderId': serializer.toJson<String?>(teamLeaderId),
+      'headcount': serializer.toJson<int>(headcount),
+      'rateEstimate': serializer.toJson<double>(rateEstimate),
+      'memberIdsJson': serializer.toJson<String?>(memberIdsJson),
+    };
+  }
+
+  MushroomPickerTeam copyWith(
+          {String? id,
+          String? planId,
+          String? colorCode,
+          Value<String?> teamLeaderId = const Value.absent(),
+          int? headcount,
+          double? rateEstimate,
+          Value<String?> memberIdsJson = const Value.absent()}) =>
+      MushroomPickerTeam(
+        id: id ?? this.id,
+        planId: planId ?? this.planId,
+        colorCode: colorCode ?? this.colorCode,
+        teamLeaderId:
+            teamLeaderId.present ? teamLeaderId.value : this.teamLeaderId,
+        headcount: headcount ?? this.headcount,
+        rateEstimate: rateEstimate ?? this.rateEstimate,
+        memberIdsJson:
+            memberIdsJson.present ? memberIdsJson.value : this.memberIdsJson,
+      );
+  MushroomPickerTeam copyWithCompanion(MushroomPickerTeamsCompanion data) {
+    return MushroomPickerTeam(
+      id: data.id.present ? data.id.value : this.id,
+      planId: data.planId.present ? data.planId.value : this.planId,
+      colorCode: data.colorCode.present ? data.colorCode.value : this.colorCode,
+      teamLeaderId: data.teamLeaderId.present
+          ? data.teamLeaderId.value
+          : this.teamLeaderId,
+      headcount: data.headcount.present ? data.headcount.value : this.headcount,
+      rateEstimate: data.rateEstimate.present
+          ? data.rateEstimate.value
+          : this.rateEstimate,
+      memberIdsJson: data.memberIdsJson.present
+          ? data.memberIdsJson.value
+          : this.memberIdsJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomPickerTeam(')
+          ..write('id: $id, ')
+          ..write('planId: $planId, ')
+          ..write('colorCode: $colorCode, ')
+          ..write('teamLeaderId: $teamLeaderId, ')
+          ..write('headcount: $headcount, ')
+          ..write('rateEstimate: $rateEstimate, ')
+          ..write('memberIdsJson: $memberIdsJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, planId, colorCode, teamLeaderId,
+      headcount, rateEstimate, memberIdsJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomPickerTeam &&
+          other.id == this.id &&
+          other.planId == this.planId &&
+          other.colorCode == this.colorCode &&
+          other.teamLeaderId == this.teamLeaderId &&
+          other.headcount == this.headcount &&
+          other.rateEstimate == this.rateEstimate &&
+          other.memberIdsJson == this.memberIdsJson);
+}
+
+class MushroomPickerTeamsCompanion extends UpdateCompanion<MushroomPickerTeam> {
+  final Value<String> id;
+  final Value<String> planId;
+  final Value<String> colorCode;
+  final Value<String?> teamLeaderId;
+  final Value<int> headcount;
+  final Value<double> rateEstimate;
+  final Value<String?> memberIdsJson;
+  final Value<int> rowid;
+  const MushroomPickerTeamsCompanion({
+    this.id = const Value.absent(),
+    this.planId = const Value.absent(),
+    this.colorCode = const Value.absent(),
+    this.teamLeaderId = const Value.absent(),
+    this.headcount = const Value.absent(),
+    this.rateEstimate = const Value.absent(),
+    this.memberIdsJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomPickerTeamsCompanion.insert({
+    required String id,
+    required String planId,
+    required String colorCode,
+    this.teamLeaderId = const Value.absent(),
+    this.headcount = const Value.absent(),
+    this.rateEstimate = const Value.absent(),
+    this.memberIdsJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        planId = Value(planId),
+        colorCode = Value(colorCode);
+  static Insertable<MushroomPickerTeam> custom({
+    Expression<String>? id,
+    Expression<String>? planId,
+    Expression<String>? colorCode,
+    Expression<String>? teamLeaderId,
+    Expression<int>? headcount,
+    Expression<double>? rateEstimate,
+    Expression<String>? memberIdsJson,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (planId != null) 'plan_id': planId,
+      if (colorCode != null) 'color_code': colorCode,
+      if (teamLeaderId != null) 'team_leader_id': teamLeaderId,
+      if (headcount != null) 'headcount': headcount,
+      if (rateEstimate != null) 'rate_estimate': rateEstimate,
+      if (memberIdsJson != null) 'member_ids_json': memberIdsJson,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomPickerTeamsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? planId,
+      Value<String>? colorCode,
+      Value<String?>? teamLeaderId,
+      Value<int>? headcount,
+      Value<double>? rateEstimate,
+      Value<String?>? memberIdsJson,
+      Value<int>? rowid}) {
+    return MushroomPickerTeamsCompanion(
+      id: id ?? this.id,
+      planId: planId ?? this.planId,
+      colorCode: colorCode ?? this.colorCode,
+      teamLeaderId: teamLeaderId ?? this.teamLeaderId,
+      headcount: headcount ?? this.headcount,
+      rateEstimate: rateEstimate ?? this.rateEstimate,
+      memberIdsJson: memberIdsJson ?? this.memberIdsJson,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (planId.present) {
+      map['plan_id'] = Variable<String>(planId.value);
+    }
+    if (colorCode.present) {
+      map['color_code'] = Variable<String>(colorCode.value);
+    }
+    if (teamLeaderId.present) {
+      map['team_leader_id'] = Variable<String>(teamLeaderId.value);
+    }
+    if (headcount.present) {
+      map['headcount'] = Variable<int>(headcount.value);
+    }
+    if (rateEstimate.present) {
+      map['rate_estimate'] = Variable<double>(rateEstimate.value);
+    }
+    if (memberIdsJson.present) {
+      map['member_ids_json'] = Variable<String>(memberIdsJson.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomPickerTeamsCompanion(')
+          ..write('id: $id, ')
+          ..write('planId: $planId, ')
+          ..write('colorCode: $colorCode, ')
+          ..write('teamLeaderId: $teamLeaderId, ')
+          ..write('headcount: $headcount, ')
+          ..write('rateEstimate: $rateEstimate, ')
+          ..write('memberIdsJson: $memberIdsJson, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MushroomRoomAssignmentsTable extends MushroomRoomAssignments
+    with TableInfo<$MushroomRoomAssignmentsTable, MushroomRoomAssignment> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomRoomAssignmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  @override
+  late final GeneratedColumn<String> planId = GeneratedColumn<String>(
+      'plan_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _roomIdMeta = const VerificationMeta('roomId');
+  @override
+  late final GeneratedColumn<String> roomId = GeneratedColumn<String>(
+      'room_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _boxTargetMeta =
+      const VerificationMeta('boxTarget');
+  @override
+  late final GeneratedColumn<int> boxTarget = GeneratedColumn<int>(
+      'box_target', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _trolleyCountMeta =
+      const VerificationMeta('trolleyCount');
+  @override
+  late final GeneratedColumn<int> trolleyCount = GeneratedColumn<int>(
+      'trolley_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _teamAssignmentsJsonMeta =
+      const VerificationMeta('teamAssignmentsJson');
+  @override
+  late final GeneratedColumn<String> teamAssignmentsJson =
+      GeneratedColumn<String>('team_assignments_json', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _pickingInstructionsJsonMeta =
+      const VerificationMeta('pickingInstructionsJson');
+  @override
+  late final GeneratedColumn<String> pickingInstructionsJson =
+      GeneratedColumn<String>('picking_instructions_json', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        planId,
+        roomId,
+        boxTarget,
+        trolleyCount,
+        teamAssignmentsJson,
+        pickingInstructionsJson,
+        notes
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_room_assignments';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MushroomRoomAssignment> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('plan_id')) {
+      context.handle(_planIdMeta,
+          planId.isAcceptableOrUnknown(data['plan_id']!, _planIdMeta));
+    } else if (isInserting) {
+      context.missing(_planIdMeta);
+    }
+    if (data.containsKey('room_id')) {
+      context.handle(_roomIdMeta,
+          roomId.isAcceptableOrUnknown(data['room_id']!, _roomIdMeta));
+    } else if (isInserting) {
+      context.missing(_roomIdMeta);
+    }
+    if (data.containsKey('box_target')) {
+      context.handle(_boxTargetMeta,
+          boxTarget.isAcceptableOrUnknown(data['box_target']!, _boxTargetMeta));
+    }
+    if (data.containsKey('trolley_count')) {
+      context.handle(
+          _trolleyCountMeta,
+          trolleyCount.isAcceptableOrUnknown(
+              data['trolley_count']!, _trolleyCountMeta));
+    }
+    if (data.containsKey('team_assignments_json')) {
+      context.handle(
+          _teamAssignmentsJsonMeta,
+          teamAssignmentsJson.isAcceptableOrUnknown(
+              data['team_assignments_json']!, _teamAssignmentsJsonMeta));
+    }
+    if (data.containsKey('picking_instructions_json')) {
+      context.handle(
+          _pickingInstructionsJsonMeta,
+          pickingInstructionsJson.isAcceptableOrUnknown(
+              data['picking_instructions_json']!,
+              _pickingInstructionsJsonMeta));
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomRoomAssignment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomRoomAssignment(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      planId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}plan_id'])!,
+      roomId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}room_id'])!,
+      boxTarget: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}box_target'])!,
+      trolleyCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}trolley_count'])!,
+      teamAssignmentsJson: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}team_assignments_json']),
+      pickingInstructionsJson: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}picking_instructions_json']),
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+    );
+  }
+
+  @override
+  $MushroomRoomAssignmentsTable createAlias(String alias) {
+    return $MushroomRoomAssignmentsTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomRoomAssignment extends DataClass
+    implements Insertable<MushroomRoomAssignment> {
+  final String id;
+  final String planId;
+  final String roomId;
+  final int boxTarget;
+  final int trolleyCount;
+  final String? teamAssignmentsJson;
+  final String? pickingInstructionsJson;
+  final String? notes;
+  const MushroomRoomAssignment(
+      {required this.id,
+      required this.planId,
+      required this.roomId,
+      required this.boxTarget,
+      required this.trolleyCount,
+      this.teamAssignmentsJson,
+      this.pickingInstructionsJson,
+      this.notes});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['plan_id'] = Variable<String>(planId);
+    map['room_id'] = Variable<String>(roomId);
+    map['box_target'] = Variable<int>(boxTarget);
+    map['trolley_count'] = Variable<int>(trolleyCount);
+    if (!nullToAbsent || teamAssignmentsJson != null) {
+      map['team_assignments_json'] = Variable<String>(teamAssignmentsJson);
+    }
+    if (!nullToAbsent || pickingInstructionsJson != null) {
+      map['picking_instructions_json'] =
+          Variable<String>(pickingInstructionsJson);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    return map;
+  }
+
+  MushroomRoomAssignmentsCompanion toCompanion(bool nullToAbsent) {
+    return MushroomRoomAssignmentsCompanion(
+      id: Value(id),
+      planId: Value(planId),
+      roomId: Value(roomId),
+      boxTarget: Value(boxTarget),
+      trolleyCount: Value(trolleyCount),
+      teamAssignmentsJson: teamAssignmentsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(teamAssignmentsJson),
+      pickingInstructionsJson: pickingInstructionsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pickingInstructionsJson),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+    );
+  }
+
+  factory MushroomRoomAssignment.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomRoomAssignment(
+      id: serializer.fromJson<String>(json['id']),
+      planId: serializer.fromJson<String>(json['planId']),
+      roomId: serializer.fromJson<String>(json['roomId']),
+      boxTarget: serializer.fromJson<int>(json['boxTarget']),
+      trolleyCount: serializer.fromJson<int>(json['trolleyCount']),
+      teamAssignmentsJson:
+          serializer.fromJson<String?>(json['teamAssignmentsJson']),
+      pickingInstructionsJson:
+          serializer.fromJson<String?>(json['pickingInstructionsJson']),
+      notes: serializer.fromJson<String?>(json['notes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'planId': serializer.toJson<String>(planId),
+      'roomId': serializer.toJson<String>(roomId),
+      'boxTarget': serializer.toJson<int>(boxTarget),
+      'trolleyCount': serializer.toJson<int>(trolleyCount),
+      'teamAssignmentsJson': serializer.toJson<String?>(teamAssignmentsJson),
+      'pickingInstructionsJson':
+          serializer.toJson<String?>(pickingInstructionsJson),
+      'notes': serializer.toJson<String?>(notes),
+    };
+  }
+
+  MushroomRoomAssignment copyWith(
+          {String? id,
+          String? planId,
+          String? roomId,
+          int? boxTarget,
+          int? trolleyCount,
+          Value<String?> teamAssignmentsJson = const Value.absent(),
+          Value<String?> pickingInstructionsJson = const Value.absent(),
+          Value<String?> notes = const Value.absent()}) =>
+      MushroomRoomAssignment(
+        id: id ?? this.id,
+        planId: planId ?? this.planId,
+        roomId: roomId ?? this.roomId,
+        boxTarget: boxTarget ?? this.boxTarget,
+        trolleyCount: trolleyCount ?? this.trolleyCount,
+        teamAssignmentsJson: teamAssignmentsJson.present
+            ? teamAssignmentsJson.value
+            : this.teamAssignmentsJson,
+        pickingInstructionsJson: pickingInstructionsJson.present
+            ? pickingInstructionsJson.value
+            : this.pickingInstructionsJson,
+        notes: notes.present ? notes.value : this.notes,
+      );
+  MushroomRoomAssignment copyWithCompanion(
+      MushroomRoomAssignmentsCompanion data) {
+    return MushroomRoomAssignment(
+      id: data.id.present ? data.id.value : this.id,
+      planId: data.planId.present ? data.planId.value : this.planId,
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      boxTarget: data.boxTarget.present ? data.boxTarget.value : this.boxTarget,
+      trolleyCount: data.trolleyCount.present
+          ? data.trolleyCount.value
+          : this.trolleyCount,
+      teamAssignmentsJson: data.teamAssignmentsJson.present
+          ? data.teamAssignmentsJson.value
+          : this.teamAssignmentsJson,
+      pickingInstructionsJson: data.pickingInstructionsJson.present
+          ? data.pickingInstructionsJson.value
+          : this.pickingInstructionsJson,
+      notes: data.notes.present ? data.notes.value : this.notes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomRoomAssignment(')
+          ..write('id: $id, ')
+          ..write('planId: $planId, ')
+          ..write('roomId: $roomId, ')
+          ..write('boxTarget: $boxTarget, ')
+          ..write('trolleyCount: $trolleyCount, ')
+          ..write('teamAssignmentsJson: $teamAssignmentsJson, ')
+          ..write('pickingInstructionsJson: $pickingInstructionsJson, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, planId, roomId, boxTarget, trolleyCount,
+      teamAssignmentsJson, pickingInstructionsJson, notes);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomRoomAssignment &&
+          other.id == this.id &&
+          other.planId == this.planId &&
+          other.roomId == this.roomId &&
+          other.boxTarget == this.boxTarget &&
+          other.trolleyCount == this.trolleyCount &&
+          other.teamAssignmentsJson == this.teamAssignmentsJson &&
+          other.pickingInstructionsJson == this.pickingInstructionsJson &&
+          other.notes == this.notes);
+}
+
+class MushroomRoomAssignmentsCompanion
+    extends UpdateCompanion<MushroomRoomAssignment> {
+  final Value<String> id;
+  final Value<String> planId;
+  final Value<String> roomId;
+  final Value<int> boxTarget;
+  final Value<int> trolleyCount;
+  final Value<String?> teamAssignmentsJson;
+  final Value<String?> pickingInstructionsJson;
+  final Value<String?> notes;
+  final Value<int> rowid;
+  const MushroomRoomAssignmentsCompanion({
+    this.id = const Value.absent(),
+    this.planId = const Value.absent(),
+    this.roomId = const Value.absent(),
+    this.boxTarget = const Value.absent(),
+    this.trolleyCount = const Value.absent(),
+    this.teamAssignmentsJson = const Value.absent(),
+    this.pickingInstructionsJson = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomRoomAssignmentsCompanion.insert({
+    required String id,
+    required String planId,
+    required String roomId,
+    this.boxTarget = const Value.absent(),
+    this.trolleyCount = const Value.absent(),
+    this.teamAssignmentsJson = const Value.absent(),
+    this.pickingInstructionsJson = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        planId = Value(planId),
+        roomId = Value(roomId);
+  static Insertable<MushroomRoomAssignment> custom({
+    Expression<String>? id,
+    Expression<String>? planId,
+    Expression<String>? roomId,
+    Expression<int>? boxTarget,
+    Expression<int>? trolleyCount,
+    Expression<String>? teamAssignmentsJson,
+    Expression<String>? pickingInstructionsJson,
+    Expression<String>? notes,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (planId != null) 'plan_id': planId,
+      if (roomId != null) 'room_id': roomId,
+      if (boxTarget != null) 'box_target': boxTarget,
+      if (trolleyCount != null) 'trolley_count': trolleyCount,
+      if (teamAssignmentsJson != null)
+        'team_assignments_json': teamAssignmentsJson,
+      if (pickingInstructionsJson != null)
+        'picking_instructions_json': pickingInstructionsJson,
+      if (notes != null) 'notes': notes,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomRoomAssignmentsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? planId,
+      Value<String>? roomId,
+      Value<int>? boxTarget,
+      Value<int>? trolleyCount,
+      Value<String?>? teamAssignmentsJson,
+      Value<String?>? pickingInstructionsJson,
+      Value<String?>? notes,
+      Value<int>? rowid}) {
+    return MushroomRoomAssignmentsCompanion(
+      id: id ?? this.id,
+      planId: planId ?? this.planId,
+      roomId: roomId ?? this.roomId,
+      boxTarget: boxTarget ?? this.boxTarget,
+      trolleyCount: trolleyCount ?? this.trolleyCount,
+      teamAssignmentsJson: teamAssignmentsJson ?? this.teamAssignmentsJson,
+      pickingInstructionsJson:
+          pickingInstructionsJson ?? this.pickingInstructionsJson,
+      notes: notes ?? this.notes,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (planId.present) {
+      map['plan_id'] = Variable<String>(planId.value);
+    }
+    if (roomId.present) {
+      map['room_id'] = Variable<String>(roomId.value);
+    }
+    if (boxTarget.present) {
+      map['box_target'] = Variable<int>(boxTarget.value);
+    }
+    if (trolleyCount.present) {
+      map['trolley_count'] = Variable<int>(trolleyCount.value);
+    }
+    if (teamAssignmentsJson.present) {
+      map['team_assignments_json'] =
+          Variable<String>(teamAssignmentsJson.value);
+    }
+    if (pickingInstructionsJson.present) {
+      map['picking_instructions_json'] =
+          Variable<String>(pickingInstructionsJson.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomRoomAssignmentsCompanion(')
+          ..write('id: $id, ')
+          ..write('planId: $planId, ')
+          ..write('roomId: $roomId, ')
+          ..write('boxTarget: $boxTarget, ')
+          ..write('trolleyCount: $trolleyCount, ')
+          ..write('teamAssignmentsJson: $teamAssignmentsJson, ')
+          ..write('pickingInstructionsJson: $pickingInstructionsJson, ')
+          ..write('notes: $notes, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MushroomAttendanceEventsTable extends MushroomAttendanceEvents
+    with TableInfo<$MushroomAttendanceEventsTable, MushroomAttendanceEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomAttendanceEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _employeeIdMeta =
+      const VerificationMeta('employeeId');
+  @override
+  late final GeneratedColumn<String> employeeId = GeneratedColumn<String>(
+      'employee_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  @override
+  late final GeneratedColumn<String> planId = GeneratedColumn<String>(
+      'plan_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _eventTypeMeta =
+      const VerificationMeta('eventType');
+  @override
+  late final GeneratedColumn<String> eventType = GeneratedColumn<String>(
+      'event_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _timestampMeta =
+      const VerificationMeta('timestamp');
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+      'timestamp', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+      'source', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _locationMeta =
+      const VerificationMeta('location');
+  @override
+  late final GeneratedColumn<String> location = GeneratedColumn<String>(
+      'location', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, employeeId, planId, eventType, timestamp, source, location];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_attendance_events';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MushroomAttendanceEvent> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('employee_id')) {
+      context.handle(
+          _employeeIdMeta,
+          employeeId.isAcceptableOrUnknown(
+              data['employee_id']!, _employeeIdMeta));
+    } else if (isInserting) {
+      context.missing(_employeeIdMeta);
+    }
+    if (data.containsKey('plan_id')) {
+      context.handle(_planIdMeta,
+          planId.isAcceptableOrUnknown(data['plan_id']!, _planIdMeta));
+    }
+    if (data.containsKey('event_type')) {
+      context.handle(_eventTypeMeta,
+          eventType.isAcceptableOrUnknown(data['event_type']!, _eventTypeMeta));
+    } else if (isInserting) {
+      context.missing(_eventTypeMeta);
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(_timestampMeta,
+          timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta));
+    }
+    if (data.containsKey('source')) {
+      context.handle(_sourceMeta,
+          source.isAcceptableOrUnknown(data['source']!, _sourceMeta));
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('location')) {
+      context.handle(_locationMeta,
+          location.isAcceptableOrUnknown(data['location']!, _locationMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomAttendanceEvent map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomAttendanceEvent(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      employeeId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}employee_id'])!,
+      planId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}plan_id']),
+      eventType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}event_type'])!,
+      timestamp: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}timestamp'])!,
+      source: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}source'])!,
+      location: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}location']),
+    );
+  }
+
+  @override
+  $MushroomAttendanceEventsTable createAlias(String alias) {
+    return $MushroomAttendanceEventsTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomAttendanceEvent extends DataClass
+    implements Insertable<MushroomAttendanceEvent> {
+  final String id;
+  final String employeeId;
+  final String? planId;
+  final String eventType;
+  final DateTime timestamp;
+  final String source;
+  final String? location;
+  const MushroomAttendanceEvent(
+      {required this.id,
+      required this.employeeId,
+      this.planId,
+      required this.eventType,
+      required this.timestamp,
+      required this.source,
+      this.location});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['employee_id'] = Variable<String>(employeeId);
+    if (!nullToAbsent || planId != null) {
+      map['plan_id'] = Variable<String>(planId);
+    }
+    map['event_type'] = Variable<String>(eventType);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    map['source'] = Variable<String>(source);
+    if (!nullToAbsent || location != null) {
+      map['location'] = Variable<String>(location);
+    }
+    return map;
+  }
+
+  MushroomAttendanceEventsCompanion toCompanion(bool nullToAbsent) {
+    return MushroomAttendanceEventsCompanion(
+      id: Value(id),
+      employeeId: Value(employeeId),
+      planId:
+          planId == null && nullToAbsent ? const Value.absent() : Value(planId),
+      eventType: Value(eventType),
+      timestamp: Value(timestamp),
+      source: Value(source),
+      location: location == null && nullToAbsent
+          ? const Value.absent()
+          : Value(location),
+    );
+  }
+
+  factory MushroomAttendanceEvent.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomAttendanceEvent(
+      id: serializer.fromJson<String>(json['id']),
+      employeeId: serializer.fromJson<String>(json['employeeId']),
+      planId: serializer.fromJson<String?>(json['planId']),
+      eventType: serializer.fromJson<String>(json['eventType']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      source: serializer.fromJson<String>(json['source']),
+      location: serializer.fromJson<String?>(json['location']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'employeeId': serializer.toJson<String>(employeeId),
+      'planId': serializer.toJson<String?>(planId),
+      'eventType': serializer.toJson<String>(eventType),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'source': serializer.toJson<String>(source),
+      'location': serializer.toJson<String?>(location),
+    };
+  }
+
+  MushroomAttendanceEvent copyWith(
+          {String? id,
+          String? employeeId,
+          Value<String?> planId = const Value.absent(),
+          String? eventType,
+          DateTime? timestamp,
+          String? source,
+          Value<String?> location = const Value.absent()}) =>
+      MushroomAttendanceEvent(
+        id: id ?? this.id,
+        employeeId: employeeId ?? this.employeeId,
+        planId: planId.present ? planId.value : this.planId,
+        eventType: eventType ?? this.eventType,
+        timestamp: timestamp ?? this.timestamp,
+        source: source ?? this.source,
+        location: location.present ? location.value : this.location,
+      );
+  MushroomAttendanceEvent copyWithCompanion(
+      MushroomAttendanceEventsCompanion data) {
+    return MushroomAttendanceEvent(
+      id: data.id.present ? data.id.value : this.id,
+      employeeId:
+          data.employeeId.present ? data.employeeId.value : this.employeeId,
+      planId: data.planId.present ? data.planId.value : this.planId,
+      eventType: data.eventType.present ? data.eventType.value : this.eventType,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      source: data.source.present ? data.source.value : this.source,
+      location: data.location.present ? data.location.value : this.location,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomAttendanceEvent(')
+          ..write('id: $id, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('planId: $planId, ')
+          ..write('eventType: $eventType, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('source: $source, ')
+          ..write('location: $location')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, employeeId, planId, eventType, timestamp, source, location);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomAttendanceEvent &&
+          other.id == this.id &&
+          other.employeeId == this.employeeId &&
+          other.planId == this.planId &&
+          other.eventType == this.eventType &&
+          other.timestamp == this.timestamp &&
+          other.source == this.source &&
+          other.location == this.location);
+}
+
+class MushroomAttendanceEventsCompanion
+    extends UpdateCompanion<MushroomAttendanceEvent> {
+  final Value<String> id;
+  final Value<String> employeeId;
+  final Value<String?> planId;
+  final Value<String> eventType;
+  final Value<DateTime> timestamp;
+  final Value<String> source;
+  final Value<String?> location;
+  final Value<int> rowid;
+  const MushroomAttendanceEventsCompanion({
+    this.id = const Value.absent(),
+    this.employeeId = const Value.absent(),
+    this.planId = const Value.absent(),
+    this.eventType = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.source = const Value.absent(),
+    this.location = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomAttendanceEventsCompanion.insert({
+    required String id,
+    required String employeeId,
+    this.planId = const Value.absent(),
+    required String eventType,
+    this.timestamp = const Value.absent(),
+    required String source,
+    this.location = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        employeeId = Value(employeeId),
+        eventType = Value(eventType),
+        source = Value(source);
+  static Insertable<MushroomAttendanceEvent> custom({
+    Expression<String>? id,
+    Expression<String>? employeeId,
+    Expression<String>? planId,
+    Expression<String>? eventType,
+    Expression<DateTime>? timestamp,
+    Expression<String>? source,
+    Expression<String>? location,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (employeeId != null) 'employee_id': employeeId,
+      if (planId != null) 'plan_id': planId,
+      if (eventType != null) 'event_type': eventType,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (source != null) 'source': source,
+      if (location != null) 'location': location,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomAttendanceEventsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? employeeId,
+      Value<String?>? planId,
+      Value<String>? eventType,
+      Value<DateTime>? timestamp,
+      Value<String>? source,
+      Value<String?>? location,
+      Value<int>? rowid}) {
+    return MushroomAttendanceEventsCompanion(
+      id: id ?? this.id,
+      employeeId: employeeId ?? this.employeeId,
+      planId: planId ?? this.planId,
+      eventType: eventType ?? this.eventType,
+      timestamp: timestamp ?? this.timestamp,
+      source: source ?? this.source,
+      location: location ?? this.location,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (employeeId.present) {
+      map['employee_id'] = Variable<String>(employeeId.value);
+    }
+    if (planId.present) {
+      map['plan_id'] = Variable<String>(planId.value);
+    }
+    if (eventType.present) {
+      map['event_type'] = Variable<String>(eventType.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (location.present) {
+      map['location'] = Variable<String>(location.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomAttendanceEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('planId: $planId, ')
+          ..write('eventType: $eventType, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('source: $source, ')
+          ..write('location: $location, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MushroomBreakPoliciesTable extends MushroomBreakPolicies
+    with TableInfo<$MushroomBreakPoliciesTable, MushroomBreakPolicy> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomBreakPoliciesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _standardBreakMinutesMeta =
+      const VerificationMeta('standardBreakMinutes');
+  @override
+  late final GeneratedColumn<int> standardBreakMinutes = GeneratedColumn<int>(
+      'standard_break_minutes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(30));
+  static const VerificationMeta _graceMinutesMeta =
+      const VerificationMeta('graceMinutes');
+  @override
+  late final GeneratedColumn<int> graceMinutes = GeneratedColumn<int>(
+      'grace_minutes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(5));
+  static const VerificationMeta _extraBreakRuleMeta =
+      const VerificationMeta('extraBreakRule');
+  @override
+  late final GeneratedColumn<String> extraBreakRule = GeneratedColumn<String>(
+      'extra_break_rule', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('unpaid'));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, standardBreakMinutes, graceMinutes, extraBreakRule];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_break_policies';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MushroomBreakPolicy> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('standard_break_minutes')) {
+      context.handle(
+          _standardBreakMinutesMeta,
+          standardBreakMinutes.isAcceptableOrUnknown(
+              data['standard_break_minutes']!, _standardBreakMinutesMeta));
+    }
+    if (data.containsKey('grace_minutes')) {
+      context.handle(
+          _graceMinutesMeta,
+          graceMinutes.isAcceptableOrUnknown(
+              data['grace_minutes']!, _graceMinutesMeta));
+    }
+    if (data.containsKey('extra_break_rule')) {
+      context.handle(
+          _extraBreakRuleMeta,
+          extraBreakRule.isAcceptableOrUnknown(
+              data['extra_break_rule']!, _extraBreakRuleMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomBreakPolicy map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomBreakPolicy(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      standardBreakMinutes: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}standard_break_minutes'])!,
+      graceMinutes: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}grace_minutes'])!,
+      extraBreakRule: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}extra_break_rule'])!,
+    );
+  }
+
+  @override
+  $MushroomBreakPoliciesTable createAlias(String alias) {
+    return $MushroomBreakPoliciesTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomBreakPolicy extends DataClass
+    implements Insertable<MushroomBreakPolicy> {
+  final String id;
+  final int standardBreakMinutes;
+  final int graceMinutes;
+  final String extraBreakRule;
+  const MushroomBreakPolicy(
+      {required this.id,
+      required this.standardBreakMinutes,
+      required this.graceMinutes,
+      required this.extraBreakRule});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['standard_break_minutes'] = Variable<int>(standardBreakMinutes);
+    map['grace_minutes'] = Variable<int>(graceMinutes);
+    map['extra_break_rule'] = Variable<String>(extraBreakRule);
+    return map;
+  }
+
+  MushroomBreakPoliciesCompanion toCompanion(bool nullToAbsent) {
+    return MushroomBreakPoliciesCompanion(
+      id: Value(id),
+      standardBreakMinutes: Value(standardBreakMinutes),
+      graceMinutes: Value(graceMinutes),
+      extraBreakRule: Value(extraBreakRule),
+    );
+  }
+
+  factory MushroomBreakPolicy.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomBreakPolicy(
+      id: serializer.fromJson<String>(json['id']),
+      standardBreakMinutes:
+          serializer.fromJson<int>(json['standardBreakMinutes']),
+      graceMinutes: serializer.fromJson<int>(json['graceMinutes']),
+      extraBreakRule: serializer.fromJson<String>(json['extraBreakRule']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'standardBreakMinutes': serializer.toJson<int>(standardBreakMinutes),
+      'graceMinutes': serializer.toJson<int>(graceMinutes),
+      'extraBreakRule': serializer.toJson<String>(extraBreakRule),
+    };
+  }
+
+  MushroomBreakPolicy copyWith(
+          {String? id,
+          int? standardBreakMinutes,
+          int? graceMinutes,
+          String? extraBreakRule}) =>
+      MushroomBreakPolicy(
+        id: id ?? this.id,
+        standardBreakMinutes: standardBreakMinutes ?? this.standardBreakMinutes,
+        graceMinutes: graceMinutes ?? this.graceMinutes,
+        extraBreakRule: extraBreakRule ?? this.extraBreakRule,
+      );
+  MushroomBreakPolicy copyWithCompanion(MushroomBreakPoliciesCompanion data) {
+    return MushroomBreakPolicy(
+      id: data.id.present ? data.id.value : this.id,
+      standardBreakMinutes: data.standardBreakMinutes.present
+          ? data.standardBreakMinutes.value
+          : this.standardBreakMinutes,
+      graceMinutes: data.graceMinutes.present
+          ? data.graceMinutes.value
+          : this.graceMinutes,
+      extraBreakRule: data.extraBreakRule.present
+          ? data.extraBreakRule.value
+          : this.extraBreakRule,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomBreakPolicy(')
+          ..write('id: $id, ')
+          ..write('standardBreakMinutes: $standardBreakMinutes, ')
+          ..write('graceMinutes: $graceMinutes, ')
+          ..write('extraBreakRule: $extraBreakRule')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, standardBreakMinutes, graceMinutes, extraBreakRule);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomBreakPolicy &&
+          other.id == this.id &&
+          other.standardBreakMinutes == this.standardBreakMinutes &&
+          other.graceMinutes == this.graceMinutes &&
+          other.extraBreakRule == this.extraBreakRule);
+}
+
+class MushroomBreakPoliciesCompanion
+    extends UpdateCompanion<MushroomBreakPolicy> {
+  final Value<String> id;
+  final Value<int> standardBreakMinutes;
+  final Value<int> graceMinutes;
+  final Value<String> extraBreakRule;
+  final Value<int> rowid;
+  const MushroomBreakPoliciesCompanion({
+    this.id = const Value.absent(),
+    this.standardBreakMinutes = const Value.absent(),
+    this.graceMinutes = const Value.absent(),
+    this.extraBreakRule = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomBreakPoliciesCompanion.insert({
+    required String id,
+    this.standardBreakMinutes = const Value.absent(),
+    this.graceMinutes = const Value.absent(),
+    this.extraBreakRule = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id);
+  static Insertable<MushroomBreakPolicy> custom({
+    Expression<String>? id,
+    Expression<int>? standardBreakMinutes,
+    Expression<int>? graceMinutes,
+    Expression<String>? extraBreakRule,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (standardBreakMinutes != null)
+        'standard_break_minutes': standardBreakMinutes,
+      if (graceMinutes != null) 'grace_minutes': graceMinutes,
+      if (extraBreakRule != null) 'extra_break_rule': extraBreakRule,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomBreakPoliciesCompanion copyWith(
+      {Value<String>? id,
+      Value<int>? standardBreakMinutes,
+      Value<int>? graceMinutes,
+      Value<String>? extraBreakRule,
+      Value<int>? rowid}) {
+    return MushroomBreakPoliciesCompanion(
+      id: id ?? this.id,
+      standardBreakMinutes: standardBreakMinutes ?? this.standardBreakMinutes,
+      graceMinutes: graceMinutes ?? this.graceMinutes,
+      extraBreakRule: extraBreakRule ?? this.extraBreakRule,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (standardBreakMinutes.present) {
+      map['standard_break_minutes'] = Variable<int>(standardBreakMinutes.value);
+    }
+    if (graceMinutes.present) {
+      map['grace_minutes'] = Variable<int>(graceMinutes.value);
+    }
+    if (extraBreakRule.present) {
+      map['extra_break_rule'] = Variable<String>(extraBreakRule.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomBreakPoliciesCompanion(')
+          ..write('id: $id, ')
+          ..write('standardBreakMinutes: $standardBreakMinutes, ')
+          ..write('graceMinutes: $graceMinutes, ')
+          ..write('extraBreakRule: $extraBreakRule, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MushroomDailyTimesheetsTable extends MushroomDailyTimesheets
+    with TableInfo<$MushroomDailyTimesheetsTable, MushroomDailyTimesheet> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomDailyTimesheetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _employeeIdMeta =
+      const VerificationMeta('employeeId');
+  @override
+  late final GeneratedColumn<String> employeeId = GeneratedColumn<String>(
+      'employee_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _planDateMeta =
+      const VerificationMeta('planDate');
+  @override
+  late final GeneratedColumn<DateTime> planDate = GeneratedColumn<DateTime>(
+      'plan_date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _checkInTimeMeta =
+      const VerificationMeta('checkInTime');
+  @override
+  late final GeneratedColumn<DateTime> checkInTime = GeneratedColumn<DateTime>(
+      'check_in_time', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _checkOutTimeMeta =
+      const VerificationMeta('checkOutTime');
+  @override
+  late final GeneratedColumn<DateTime> checkOutTime = GeneratedColumn<DateTime>(
+      'check_out_time', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _totalBreakTakenMinutesMeta =
+      const VerificationMeta('totalBreakTakenMinutes');
+  @override
+  late final GeneratedColumn<int> totalBreakTakenMinutes = GeneratedColumn<int>(
+      'total_break_taken_minutes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _standardBreakAllowedMinutesMeta =
+      const VerificationMeta('standardBreakAllowedMinutes');
+  @override
+  late final GeneratedColumn<int> standardBreakAllowedMinutes =
+      GeneratedColumn<int>('standard_break_allowed_minutes', aliasedName, false,
+          type: DriftSqlType.int,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(0));
+  static const VerificationMeta _extraBreakMinutesMeta =
+      const VerificationMeta('extraBreakMinutes');
+  @override
+  late final GeneratedColumn<int> extraBreakMinutes = GeneratedColumn<int>(
+      'extra_break_minutes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _grossWorkedMinutesMeta =
+      const VerificationMeta('grossWorkedMinutes');
+  @override
+  late final GeneratedColumn<int> grossWorkedMinutes = GeneratedColumn<int>(
+      'gross_worked_minutes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _paidMinutesMeta =
+      const VerificationMeta('paidMinutes');
+  @override
+  late final GeneratedColumn<int> paidMinutes = GeneratedColumn<int>(
+      'paid_minutes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _overtimeMinutesMeta =
+      const VerificationMeta('overtimeMinutes');
+  @override
+  late final GeneratedColumn<int> overtimeMinutes = GeneratedColumn<int>(
+      'overtime_minutes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _assignedTeamColorMeta =
+      const VerificationMeta('assignedTeamColor');
+  @override
+  late final GeneratedColumn<String> assignedTeamColor =
+      GeneratedColumn<String>('assigned_team_color', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _assignedRoomsJsonMeta =
+      const VerificationMeta('assignedRoomsJson');
+  @override
+  late final GeneratedColumn<String> assignedRoomsJson =
+      GeneratedColumn<String>('assigned_rooms_json', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('normal'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        employeeId,
+        planDate,
+        checkInTime,
+        checkOutTime,
+        totalBreakTakenMinutes,
+        standardBreakAllowedMinutes,
+        extraBreakMinutes,
+        grossWorkedMinutes,
+        paidMinutes,
+        overtimeMinutes,
+        assignedTeamColor,
+        assignedRoomsJson,
+        status
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_daily_timesheets';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MushroomDailyTimesheet> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('employee_id')) {
+      context.handle(
+          _employeeIdMeta,
+          employeeId.isAcceptableOrUnknown(
+              data['employee_id']!, _employeeIdMeta));
+    } else if (isInserting) {
+      context.missing(_employeeIdMeta);
+    }
+    if (data.containsKey('plan_date')) {
+      context.handle(_planDateMeta,
+          planDate.isAcceptableOrUnknown(data['plan_date']!, _planDateMeta));
+    } else if (isInserting) {
+      context.missing(_planDateMeta);
+    }
+    if (data.containsKey('check_in_time')) {
+      context.handle(
+          _checkInTimeMeta,
+          checkInTime.isAcceptableOrUnknown(
+              data['check_in_time']!, _checkInTimeMeta));
+    }
+    if (data.containsKey('check_out_time')) {
+      context.handle(
+          _checkOutTimeMeta,
+          checkOutTime.isAcceptableOrUnknown(
+              data['check_out_time']!, _checkOutTimeMeta));
+    }
+    if (data.containsKey('total_break_taken_minutes')) {
+      context.handle(
+          _totalBreakTakenMinutesMeta,
+          totalBreakTakenMinutes.isAcceptableOrUnknown(
+              data['total_break_taken_minutes']!, _totalBreakTakenMinutesMeta));
+    }
+    if (data.containsKey('standard_break_allowed_minutes')) {
+      context.handle(
+          _standardBreakAllowedMinutesMeta,
+          standardBreakAllowedMinutes.isAcceptableOrUnknown(
+              data['standard_break_allowed_minutes']!,
+              _standardBreakAllowedMinutesMeta));
+    }
+    if (data.containsKey('extra_break_minutes')) {
+      context.handle(
+          _extraBreakMinutesMeta,
+          extraBreakMinutes.isAcceptableOrUnknown(
+              data['extra_break_minutes']!, _extraBreakMinutesMeta));
+    }
+    if (data.containsKey('gross_worked_minutes')) {
+      context.handle(
+          _grossWorkedMinutesMeta,
+          grossWorkedMinutes.isAcceptableOrUnknown(
+              data['gross_worked_minutes']!, _grossWorkedMinutesMeta));
+    }
+    if (data.containsKey('paid_minutes')) {
+      context.handle(
+          _paidMinutesMeta,
+          paidMinutes.isAcceptableOrUnknown(
+              data['paid_minutes']!, _paidMinutesMeta));
+    }
+    if (data.containsKey('overtime_minutes')) {
+      context.handle(
+          _overtimeMinutesMeta,
+          overtimeMinutes.isAcceptableOrUnknown(
+              data['overtime_minutes']!, _overtimeMinutesMeta));
+    }
+    if (data.containsKey('assigned_team_color')) {
+      context.handle(
+          _assignedTeamColorMeta,
+          assignedTeamColor.isAcceptableOrUnknown(
+              data['assigned_team_color']!, _assignedTeamColorMeta));
+    }
+    if (data.containsKey('assigned_rooms_json')) {
+      context.handle(
+          _assignedRoomsJsonMeta,
+          assignedRoomsJson.isAcceptableOrUnknown(
+              data['assigned_rooms_json']!, _assignedRoomsJsonMeta));
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomDailyTimesheet map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomDailyTimesheet(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      employeeId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}employee_id'])!,
+      planDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}plan_date'])!,
+      checkInTime: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}check_in_time']),
+      checkOutTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}check_out_time']),
+      totalBreakTakenMinutes: attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}total_break_taken_minutes'])!,
+      standardBreakAllowedMinutes: attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}standard_break_allowed_minutes'])!,
+      extraBreakMinutes: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}extra_break_minutes'])!,
+      grossWorkedMinutes: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}gross_worked_minutes'])!,
+      paidMinutes: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}paid_minutes'])!,
+      overtimeMinutes: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}overtime_minutes'])!,
+      assignedTeamColor: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}assigned_team_color']),
+      assignedRoomsJson: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}assigned_rooms_json']),
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+    );
+  }
+
+  @override
+  $MushroomDailyTimesheetsTable createAlias(String alias) {
+    return $MushroomDailyTimesheetsTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomDailyTimesheet extends DataClass
+    implements Insertable<MushroomDailyTimesheet> {
+  final String id;
+  final String employeeId;
+  final DateTime planDate;
+  final DateTime? checkInTime;
+  final DateTime? checkOutTime;
+  final int totalBreakTakenMinutes;
+  final int standardBreakAllowedMinutes;
+  final int extraBreakMinutes;
+  final int grossWorkedMinutes;
+  final int paidMinutes;
+  final int overtimeMinutes;
+  final String? assignedTeamColor;
+  final String? assignedRoomsJson;
+  final String status;
+  const MushroomDailyTimesheet(
+      {required this.id,
+      required this.employeeId,
+      required this.planDate,
+      this.checkInTime,
+      this.checkOutTime,
+      required this.totalBreakTakenMinutes,
+      required this.standardBreakAllowedMinutes,
+      required this.extraBreakMinutes,
+      required this.grossWorkedMinutes,
+      required this.paidMinutes,
+      required this.overtimeMinutes,
+      this.assignedTeamColor,
+      this.assignedRoomsJson,
+      required this.status});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['employee_id'] = Variable<String>(employeeId);
+    map['plan_date'] = Variable<DateTime>(planDate);
+    if (!nullToAbsent || checkInTime != null) {
+      map['check_in_time'] = Variable<DateTime>(checkInTime);
+    }
+    if (!nullToAbsent || checkOutTime != null) {
+      map['check_out_time'] = Variable<DateTime>(checkOutTime);
+    }
+    map['total_break_taken_minutes'] = Variable<int>(totalBreakTakenMinutes);
+    map['standard_break_allowed_minutes'] =
+        Variable<int>(standardBreakAllowedMinutes);
+    map['extra_break_minutes'] = Variable<int>(extraBreakMinutes);
+    map['gross_worked_minutes'] = Variable<int>(grossWorkedMinutes);
+    map['paid_minutes'] = Variable<int>(paidMinutes);
+    map['overtime_minutes'] = Variable<int>(overtimeMinutes);
+    if (!nullToAbsent || assignedTeamColor != null) {
+      map['assigned_team_color'] = Variable<String>(assignedTeamColor);
+    }
+    if (!nullToAbsent || assignedRoomsJson != null) {
+      map['assigned_rooms_json'] = Variable<String>(assignedRoomsJson);
+    }
+    map['status'] = Variable<String>(status);
+    return map;
+  }
+
+  MushroomDailyTimesheetsCompanion toCompanion(bool nullToAbsent) {
+    return MushroomDailyTimesheetsCompanion(
+      id: Value(id),
+      employeeId: Value(employeeId),
+      planDate: Value(planDate),
+      checkInTime: checkInTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(checkInTime),
+      checkOutTime: checkOutTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(checkOutTime),
+      totalBreakTakenMinutes: Value(totalBreakTakenMinutes),
+      standardBreakAllowedMinutes: Value(standardBreakAllowedMinutes),
+      extraBreakMinutes: Value(extraBreakMinutes),
+      grossWorkedMinutes: Value(grossWorkedMinutes),
+      paidMinutes: Value(paidMinutes),
+      overtimeMinutes: Value(overtimeMinutes),
+      assignedTeamColor: assignedTeamColor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(assignedTeamColor),
+      assignedRoomsJson: assignedRoomsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(assignedRoomsJson),
+      status: Value(status),
+    );
+  }
+
+  factory MushroomDailyTimesheet.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomDailyTimesheet(
+      id: serializer.fromJson<String>(json['id']),
+      employeeId: serializer.fromJson<String>(json['employeeId']),
+      planDate: serializer.fromJson<DateTime>(json['planDate']),
+      checkInTime: serializer.fromJson<DateTime?>(json['checkInTime']),
+      checkOutTime: serializer.fromJson<DateTime?>(json['checkOutTime']),
+      totalBreakTakenMinutes:
+          serializer.fromJson<int>(json['totalBreakTakenMinutes']),
+      standardBreakAllowedMinutes:
+          serializer.fromJson<int>(json['standardBreakAllowedMinutes']),
+      extraBreakMinutes: serializer.fromJson<int>(json['extraBreakMinutes']),
+      grossWorkedMinutes: serializer.fromJson<int>(json['grossWorkedMinutes']),
+      paidMinutes: serializer.fromJson<int>(json['paidMinutes']),
+      overtimeMinutes: serializer.fromJson<int>(json['overtimeMinutes']),
+      assignedTeamColor:
+          serializer.fromJson<String?>(json['assignedTeamColor']),
+      assignedRoomsJson:
+          serializer.fromJson<String?>(json['assignedRoomsJson']),
+      status: serializer.fromJson<String>(json['status']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'employeeId': serializer.toJson<String>(employeeId),
+      'planDate': serializer.toJson<DateTime>(planDate),
+      'checkInTime': serializer.toJson<DateTime?>(checkInTime),
+      'checkOutTime': serializer.toJson<DateTime?>(checkOutTime),
+      'totalBreakTakenMinutes': serializer.toJson<int>(totalBreakTakenMinutes),
+      'standardBreakAllowedMinutes':
+          serializer.toJson<int>(standardBreakAllowedMinutes),
+      'extraBreakMinutes': serializer.toJson<int>(extraBreakMinutes),
+      'grossWorkedMinutes': serializer.toJson<int>(grossWorkedMinutes),
+      'paidMinutes': serializer.toJson<int>(paidMinutes),
+      'overtimeMinutes': serializer.toJson<int>(overtimeMinutes),
+      'assignedTeamColor': serializer.toJson<String?>(assignedTeamColor),
+      'assignedRoomsJson': serializer.toJson<String?>(assignedRoomsJson),
+      'status': serializer.toJson<String>(status),
+    };
+  }
+
+  MushroomDailyTimesheet copyWith(
+          {String? id,
+          String? employeeId,
+          DateTime? planDate,
+          Value<DateTime?> checkInTime = const Value.absent(),
+          Value<DateTime?> checkOutTime = const Value.absent(),
+          int? totalBreakTakenMinutes,
+          int? standardBreakAllowedMinutes,
+          int? extraBreakMinutes,
+          int? grossWorkedMinutes,
+          int? paidMinutes,
+          int? overtimeMinutes,
+          Value<String?> assignedTeamColor = const Value.absent(),
+          Value<String?> assignedRoomsJson = const Value.absent(),
+          String? status}) =>
+      MushroomDailyTimesheet(
+        id: id ?? this.id,
+        employeeId: employeeId ?? this.employeeId,
+        planDate: planDate ?? this.planDate,
+        checkInTime: checkInTime.present ? checkInTime.value : this.checkInTime,
+        checkOutTime:
+            checkOutTime.present ? checkOutTime.value : this.checkOutTime,
+        totalBreakTakenMinutes:
+            totalBreakTakenMinutes ?? this.totalBreakTakenMinutes,
+        standardBreakAllowedMinutes:
+            standardBreakAllowedMinutes ?? this.standardBreakAllowedMinutes,
+        extraBreakMinutes: extraBreakMinutes ?? this.extraBreakMinutes,
+        grossWorkedMinutes: grossWorkedMinutes ?? this.grossWorkedMinutes,
+        paidMinutes: paidMinutes ?? this.paidMinutes,
+        overtimeMinutes: overtimeMinutes ?? this.overtimeMinutes,
+        assignedTeamColor: assignedTeamColor.present
+            ? assignedTeamColor.value
+            : this.assignedTeamColor,
+        assignedRoomsJson: assignedRoomsJson.present
+            ? assignedRoomsJson.value
+            : this.assignedRoomsJson,
+        status: status ?? this.status,
+      );
+  MushroomDailyTimesheet copyWithCompanion(
+      MushroomDailyTimesheetsCompanion data) {
+    return MushroomDailyTimesheet(
+      id: data.id.present ? data.id.value : this.id,
+      employeeId:
+          data.employeeId.present ? data.employeeId.value : this.employeeId,
+      planDate: data.planDate.present ? data.planDate.value : this.planDate,
+      checkInTime:
+          data.checkInTime.present ? data.checkInTime.value : this.checkInTime,
+      checkOutTime: data.checkOutTime.present
+          ? data.checkOutTime.value
+          : this.checkOutTime,
+      totalBreakTakenMinutes: data.totalBreakTakenMinutes.present
+          ? data.totalBreakTakenMinutes.value
+          : this.totalBreakTakenMinutes,
+      standardBreakAllowedMinutes: data.standardBreakAllowedMinutes.present
+          ? data.standardBreakAllowedMinutes.value
+          : this.standardBreakAllowedMinutes,
+      extraBreakMinutes: data.extraBreakMinutes.present
+          ? data.extraBreakMinutes.value
+          : this.extraBreakMinutes,
+      grossWorkedMinutes: data.grossWorkedMinutes.present
+          ? data.grossWorkedMinutes.value
+          : this.grossWorkedMinutes,
+      paidMinutes:
+          data.paidMinutes.present ? data.paidMinutes.value : this.paidMinutes,
+      overtimeMinutes: data.overtimeMinutes.present
+          ? data.overtimeMinutes.value
+          : this.overtimeMinutes,
+      assignedTeamColor: data.assignedTeamColor.present
+          ? data.assignedTeamColor.value
+          : this.assignedTeamColor,
+      assignedRoomsJson: data.assignedRoomsJson.present
+          ? data.assignedRoomsJson.value
+          : this.assignedRoomsJson,
+      status: data.status.present ? data.status.value : this.status,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomDailyTimesheet(')
+          ..write('id: $id, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('planDate: $planDate, ')
+          ..write('checkInTime: $checkInTime, ')
+          ..write('checkOutTime: $checkOutTime, ')
+          ..write('totalBreakTakenMinutes: $totalBreakTakenMinutes, ')
+          ..write('standardBreakAllowedMinutes: $standardBreakAllowedMinutes, ')
+          ..write('extraBreakMinutes: $extraBreakMinutes, ')
+          ..write('grossWorkedMinutes: $grossWorkedMinutes, ')
+          ..write('paidMinutes: $paidMinutes, ')
+          ..write('overtimeMinutes: $overtimeMinutes, ')
+          ..write('assignedTeamColor: $assignedTeamColor, ')
+          ..write('assignedRoomsJson: $assignedRoomsJson, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      employeeId,
+      planDate,
+      checkInTime,
+      checkOutTime,
+      totalBreakTakenMinutes,
+      standardBreakAllowedMinutes,
+      extraBreakMinutes,
+      grossWorkedMinutes,
+      paidMinutes,
+      overtimeMinutes,
+      assignedTeamColor,
+      assignedRoomsJson,
+      status);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomDailyTimesheet &&
+          other.id == this.id &&
+          other.employeeId == this.employeeId &&
+          other.planDate == this.planDate &&
+          other.checkInTime == this.checkInTime &&
+          other.checkOutTime == this.checkOutTime &&
+          other.totalBreakTakenMinutes == this.totalBreakTakenMinutes &&
+          other.standardBreakAllowedMinutes ==
+              this.standardBreakAllowedMinutes &&
+          other.extraBreakMinutes == this.extraBreakMinutes &&
+          other.grossWorkedMinutes == this.grossWorkedMinutes &&
+          other.paidMinutes == this.paidMinutes &&
+          other.overtimeMinutes == this.overtimeMinutes &&
+          other.assignedTeamColor == this.assignedTeamColor &&
+          other.assignedRoomsJson == this.assignedRoomsJson &&
+          other.status == this.status);
+}
+
+class MushroomDailyTimesheetsCompanion
+    extends UpdateCompanion<MushroomDailyTimesheet> {
+  final Value<String> id;
+  final Value<String> employeeId;
+  final Value<DateTime> planDate;
+  final Value<DateTime?> checkInTime;
+  final Value<DateTime?> checkOutTime;
+  final Value<int> totalBreakTakenMinutes;
+  final Value<int> standardBreakAllowedMinutes;
+  final Value<int> extraBreakMinutes;
+  final Value<int> grossWorkedMinutes;
+  final Value<int> paidMinutes;
+  final Value<int> overtimeMinutes;
+  final Value<String?> assignedTeamColor;
+  final Value<String?> assignedRoomsJson;
+  final Value<String> status;
+  final Value<int> rowid;
+  const MushroomDailyTimesheetsCompanion({
+    this.id = const Value.absent(),
+    this.employeeId = const Value.absent(),
+    this.planDate = const Value.absent(),
+    this.checkInTime = const Value.absent(),
+    this.checkOutTime = const Value.absent(),
+    this.totalBreakTakenMinutes = const Value.absent(),
+    this.standardBreakAllowedMinutes = const Value.absent(),
+    this.extraBreakMinutes = const Value.absent(),
+    this.grossWorkedMinutes = const Value.absent(),
+    this.paidMinutes = const Value.absent(),
+    this.overtimeMinutes = const Value.absent(),
+    this.assignedTeamColor = const Value.absent(),
+    this.assignedRoomsJson = const Value.absent(),
+    this.status = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomDailyTimesheetsCompanion.insert({
+    required String id,
+    required String employeeId,
+    required DateTime planDate,
+    this.checkInTime = const Value.absent(),
+    this.checkOutTime = const Value.absent(),
+    this.totalBreakTakenMinutes = const Value.absent(),
+    this.standardBreakAllowedMinutes = const Value.absent(),
+    this.extraBreakMinutes = const Value.absent(),
+    this.grossWorkedMinutes = const Value.absent(),
+    this.paidMinutes = const Value.absent(),
+    this.overtimeMinutes = const Value.absent(),
+    this.assignedTeamColor = const Value.absent(),
+    this.assignedRoomsJson = const Value.absent(),
+    this.status = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        employeeId = Value(employeeId),
+        planDate = Value(planDate);
+  static Insertable<MushroomDailyTimesheet> custom({
+    Expression<String>? id,
+    Expression<String>? employeeId,
+    Expression<DateTime>? planDate,
+    Expression<DateTime>? checkInTime,
+    Expression<DateTime>? checkOutTime,
+    Expression<int>? totalBreakTakenMinutes,
+    Expression<int>? standardBreakAllowedMinutes,
+    Expression<int>? extraBreakMinutes,
+    Expression<int>? grossWorkedMinutes,
+    Expression<int>? paidMinutes,
+    Expression<int>? overtimeMinutes,
+    Expression<String>? assignedTeamColor,
+    Expression<String>? assignedRoomsJson,
+    Expression<String>? status,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (employeeId != null) 'employee_id': employeeId,
+      if (planDate != null) 'plan_date': planDate,
+      if (checkInTime != null) 'check_in_time': checkInTime,
+      if (checkOutTime != null) 'check_out_time': checkOutTime,
+      if (totalBreakTakenMinutes != null)
+        'total_break_taken_minutes': totalBreakTakenMinutes,
+      if (standardBreakAllowedMinutes != null)
+        'standard_break_allowed_minutes': standardBreakAllowedMinutes,
+      if (extraBreakMinutes != null) 'extra_break_minutes': extraBreakMinutes,
+      if (grossWorkedMinutes != null)
+        'gross_worked_minutes': grossWorkedMinutes,
+      if (paidMinutes != null) 'paid_minutes': paidMinutes,
+      if (overtimeMinutes != null) 'overtime_minutes': overtimeMinutes,
+      if (assignedTeamColor != null) 'assigned_team_color': assignedTeamColor,
+      if (assignedRoomsJson != null) 'assigned_rooms_json': assignedRoomsJson,
+      if (status != null) 'status': status,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomDailyTimesheetsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? employeeId,
+      Value<DateTime>? planDate,
+      Value<DateTime?>? checkInTime,
+      Value<DateTime?>? checkOutTime,
+      Value<int>? totalBreakTakenMinutes,
+      Value<int>? standardBreakAllowedMinutes,
+      Value<int>? extraBreakMinutes,
+      Value<int>? grossWorkedMinutes,
+      Value<int>? paidMinutes,
+      Value<int>? overtimeMinutes,
+      Value<String?>? assignedTeamColor,
+      Value<String?>? assignedRoomsJson,
+      Value<String>? status,
+      Value<int>? rowid}) {
+    return MushroomDailyTimesheetsCompanion(
+      id: id ?? this.id,
+      employeeId: employeeId ?? this.employeeId,
+      planDate: planDate ?? this.planDate,
+      checkInTime: checkInTime ?? this.checkInTime,
+      checkOutTime: checkOutTime ?? this.checkOutTime,
+      totalBreakTakenMinutes:
+          totalBreakTakenMinutes ?? this.totalBreakTakenMinutes,
+      standardBreakAllowedMinutes:
+          standardBreakAllowedMinutes ?? this.standardBreakAllowedMinutes,
+      extraBreakMinutes: extraBreakMinutes ?? this.extraBreakMinutes,
+      grossWorkedMinutes: grossWorkedMinutes ?? this.grossWorkedMinutes,
+      paidMinutes: paidMinutes ?? this.paidMinutes,
+      overtimeMinutes: overtimeMinutes ?? this.overtimeMinutes,
+      assignedTeamColor: assignedTeamColor ?? this.assignedTeamColor,
+      assignedRoomsJson: assignedRoomsJson ?? this.assignedRoomsJson,
+      status: status ?? this.status,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (employeeId.present) {
+      map['employee_id'] = Variable<String>(employeeId.value);
+    }
+    if (planDate.present) {
+      map['plan_date'] = Variable<DateTime>(planDate.value);
+    }
+    if (checkInTime.present) {
+      map['check_in_time'] = Variable<DateTime>(checkInTime.value);
+    }
+    if (checkOutTime.present) {
+      map['check_out_time'] = Variable<DateTime>(checkOutTime.value);
+    }
+    if (totalBreakTakenMinutes.present) {
+      map['total_break_taken_minutes'] =
+          Variable<int>(totalBreakTakenMinutes.value);
+    }
+    if (standardBreakAllowedMinutes.present) {
+      map['standard_break_allowed_minutes'] =
+          Variable<int>(standardBreakAllowedMinutes.value);
+    }
+    if (extraBreakMinutes.present) {
+      map['extra_break_minutes'] = Variable<int>(extraBreakMinutes.value);
+    }
+    if (grossWorkedMinutes.present) {
+      map['gross_worked_minutes'] = Variable<int>(grossWorkedMinutes.value);
+    }
+    if (paidMinutes.present) {
+      map['paid_minutes'] = Variable<int>(paidMinutes.value);
+    }
+    if (overtimeMinutes.present) {
+      map['overtime_minutes'] = Variable<int>(overtimeMinutes.value);
+    }
+    if (assignedTeamColor.present) {
+      map['assigned_team_color'] = Variable<String>(assignedTeamColor.value);
+    }
+    if (assignedRoomsJson.present) {
+      map['assigned_rooms_json'] = Variable<String>(assignedRoomsJson.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomDailyTimesheetsCompanion(')
+          ..write('id: $id, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('planDate: $planDate, ')
+          ..write('checkInTime: $checkInTime, ')
+          ..write('checkOutTime: $checkOutTime, ')
+          ..write('totalBreakTakenMinutes: $totalBreakTakenMinutes, ')
+          ..write('standardBreakAllowedMinutes: $standardBreakAllowedMinutes, ')
+          ..write('extraBreakMinutes: $extraBreakMinutes, ')
+          ..write('grossWorkedMinutes: $grossWorkedMinutes, ')
+          ..write('paidMinutes: $paidMinutes, ')
+          ..write('overtimeMinutes: $overtimeMinutes, ')
+          ..write('assignedTeamColor: $assignedTeamColor, ')
+          ..write('assignedRoomsJson: $assignedRoomsJson, ')
+          ..write('status: $status, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MushroomPayrollCalculationsTable extends MushroomPayrollCalculations
+    with
+        TableInfo<$MushroomPayrollCalculationsTable,
+            MushroomPayrollCalculation> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomPayrollCalculationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _employeeIdMeta =
+      const VerificationMeta('employeeId');
+  @override
+  late final GeneratedColumn<String> employeeId = GeneratedColumn<String>(
+      'employee_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _payPeriodMeta =
+      const VerificationMeta('payPeriod');
+  @override
+  late final GeneratedColumn<String> payPeriod = GeneratedColumn<String>(
+      'pay_period', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _totalPaidHoursMeta =
+      const VerificationMeta('totalPaidHours');
+  @override
+  late final GeneratedColumn<double> totalPaidHours = GeneratedColumn<double>(
+      'total_paid_hours', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.0));
+  static const VerificationMeta _totalOvertimeHoursMeta =
+      const VerificationMeta('totalOvertimeHours');
+  @override
+  late final GeneratedColumn<double> totalOvertimeHours =
+      GeneratedColumn<double>('total_overtime_hours', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(0.0));
+  static const VerificationMeta _basePayMeta =
+      const VerificationMeta('basePay');
+  @override
+  late final GeneratedColumn<double> basePay = GeneratedColumn<double>(
+      'base_pay', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.0));
+  static const VerificationMeta _overtimePayMeta =
+      const VerificationMeta('overtimePay');
+  @override
+  late final GeneratedColumn<double> overtimePay = GeneratedColumn<double>(
+      'overtime_pay', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.0));
+  static const VerificationMeta _totalPayMeta =
+      const VerificationMeta('totalPay');
+  @override
+  late final GeneratedColumn<double> totalPay = GeneratedColumn<double>(
+      'total_pay', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.0));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        employeeId,
+        payPeriod,
+        totalPaidHours,
+        totalOvertimeHours,
+        basePay,
+        overtimePay,
+        totalPay,
+        createdAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_payroll_calculations';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MushroomPayrollCalculation> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('employee_id')) {
+      context.handle(
+          _employeeIdMeta,
+          employeeId.isAcceptableOrUnknown(
+              data['employee_id']!, _employeeIdMeta));
+    } else if (isInserting) {
+      context.missing(_employeeIdMeta);
+    }
+    if (data.containsKey('pay_period')) {
+      context.handle(_payPeriodMeta,
+          payPeriod.isAcceptableOrUnknown(data['pay_period']!, _payPeriodMeta));
+    } else if (isInserting) {
+      context.missing(_payPeriodMeta);
+    }
+    if (data.containsKey('total_paid_hours')) {
+      context.handle(
+          _totalPaidHoursMeta,
+          totalPaidHours.isAcceptableOrUnknown(
+              data['total_paid_hours']!, _totalPaidHoursMeta));
+    }
+    if (data.containsKey('total_overtime_hours')) {
+      context.handle(
+          _totalOvertimeHoursMeta,
+          totalOvertimeHours.isAcceptableOrUnknown(
+              data['total_overtime_hours']!, _totalOvertimeHoursMeta));
+    }
+    if (data.containsKey('base_pay')) {
+      context.handle(_basePayMeta,
+          basePay.isAcceptableOrUnknown(data['base_pay']!, _basePayMeta));
+    }
+    if (data.containsKey('overtime_pay')) {
+      context.handle(
+          _overtimePayMeta,
+          overtimePay.isAcceptableOrUnknown(
+              data['overtime_pay']!, _overtimePayMeta));
+    }
+    if (data.containsKey('total_pay')) {
+      context.handle(_totalPayMeta,
+          totalPay.isAcceptableOrUnknown(data['total_pay']!, _totalPayMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomPayrollCalculation map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomPayrollCalculation(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      employeeId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}employee_id'])!,
+      payPeriod: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}pay_period'])!,
+      totalPaidHours: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}total_paid_hours'])!,
+      totalOvertimeHours: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}total_overtime_hours'])!,
+      basePay: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}base_pay'])!,
+      overtimePay: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}overtime_pay'])!,
+      totalPay: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}total_pay'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $MushroomPayrollCalculationsTable createAlias(String alias) {
+    return $MushroomPayrollCalculationsTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomPayrollCalculation extends DataClass
+    implements Insertable<MushroomPayrollCalculation> {
+  final String id;
+  final String employeeId;
+  final String payPeriod;
+  final double totalPaidHours;
+  final double totalOvertimeHours;
+  final double basePay;
+  final double overtimePay;
+  final double totalPay;
+  final DateTime createdAt;
+  const MushroomPayrollCalculation(
+      {required this.id,
+      required this.employeeId,
+      required this.payPeriod,
+      required this.totalPaidHours,
+      required this.totalOvertimeHours,
+      required this.basePay,
+      required this.overtimePay,
+      required this.totalPay,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['employee_id'] = Variable<String>(employeeId);
+    map['pay_period'] = Variable<String>(payPeriod);
+    map['total_paid_hours'] = Variable<double>(totalPaidHours);
+    map['total_overtime_hours'] = Variable<double>(totalOvertimeHours);
+    map['base_pay'] = Variable<double>(basePay);
+    map['overtime_pay'] = Variable<double>(overtimePay);
+    map['total_pay'] = Variable<double>(totalPay);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  MushroomPayrollCalculationsCompanion toCompanion(bool nullToAbsent) {
+    return MushroomPayrollCalculationsCompanion(
+      id: Value(id),
+      employeeId: Value(employeeId),
+      payPeriod: Value(payPeriod),
+      totalPaidHours: Value(totalPaidHours),
+      totalOvertimeHours: Value(totalOvertimeHours),
+      basePay: Value(basePay),
+      overtimePay: Value(overtimePay),
+      totalPay: Value(totalPay),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory MushroomPayrollCalculation.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomPayrollCalculation(
+      id: serializer.fromJson<String>(json['id']),
+      employeeId: serializer.fromJson<String>(json['employeeId']),
+      payPeriod: serializer.fromJson<String>(json['payPeriod']),
+      totalPaidHours: serializer.fromJson<double>(json['totalPaidHours']),
+      totalOvertimeHours:
+          serializer.fromJson<double>(json['totalOvertimeHours']),
+      basePay: serializer.fromJson<double>(json['basePay']),
+      overtimePay: serializer.fromJson<double>(json['overtimePay']),
+      totalPay: serializer.fromJson<double>(json['totalPay']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'employeeId': serializer.toJson<String>(employeeId),
+      'payPeriod': serializer.toJson<String>(payPeriod),
+      'totalPaidHours': serializer.toJson<double>(totalPaidHours),
+      'totalOvertimeHours': serializer.toJson<double>(totalOvertimeHours),
+      'basePay': serializer.toJson<double>(basePay),
+      'overtimePay': serializer.toJson<double>(overtimePay),
+      'totalPay': serializer.toJson<double>(totalPay),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  MushroomPayrollCalculation copyWith(
+          {String? id,
+          String? employeeId,
+          String? payPeriod,
+          double? totalPaidHours,
+          double? totalOvertimeHours,
+          double? basePay,
+          double? overtimePay,
+          double? totalPay,
+          DateTime? createdAt}) =>
+      MushroomPayrollCalculation(
+        id: id ?? this.id,
+        employeeId: employeeId ?? this.employeeId,
+        payPeriod: payPeriod ?? this.payPeriod,
+        totalPaidHours: totalPaidHours ?? this.totalPaidHours,
+        totalOvertimeHours: totalOvertimeHours ?? this.totalOvertimeHours,
+        basePay: basePay ?? this.basePay,
+        overtimePay: overtimePay ?? this.overtimePay,
+        totalPay: totalPay ?? this.totalPay,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  MushroomPayrollCalculation copyWithCompanion(
+      MushroomPayrollCalculationsCompanion data) {
+    return MushroomPayrollCalculation(
+      id: data.id.present ? data.id.value : this.id,
+      employeeId:
+          data.employeeId.present ? data.employeeId.value : this.employeeId,
+      payPeriod: data.payPeriod.present ? data.payPeriod.value : this.payPeriod,
+      totalPaidHours: data.totalPaidHours.present
+          ? data.totalPaidHours.value
+          : this.totalPaidHours,
+      totalOvertimeHours: data.totalOvertimeHours.present
+          ? data.totalOvertimeHours.value
+          : this.totalOvertimeHours,
+      basePay: data.basePay.present ? data.basePay.value : this.basePay,
+      overtimePay:
+          data.overtimePay.present ? data.overtimePay.value : this.overtimePay,
+      totalPay: data.totalPay.present ? data.totalPay.value : this.totalPay,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomPayrollCalculation(')
+          ..write('id: $id, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('payPeriod: $payPeriod, ')
+          ..write('totalPaidHours: $totalPaidHours, ')
+          ..write('totalOvertimeHours: $totalOvertimeHours, ')
+          ..write('basePay: $basePay, ')
+          ..write('overtimePay: $overtimePay, ')
+          ..write('totalPay: $totalPay, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, employeeId, payPeriod, totalPaidHours,
+      totalOvertimeHours, basePay, overtimePay, totalPay, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomPayrollCalculation &&
+          other.id == this.id &&
+          other.employeeId == this.employeeId &&
+          other.payPeriod == this.payPeriod &&
+          other.totalPaidHours == this.totalPaidHours &&
+          other.totalOvertimeHours == this.totalOvertimeHours &&
+          other.basePay == this.basePay &&
+          other.overtimePay == this.overtimePay &&
+          other.totalPay == this.totalPay &&
+          other.createdAt == this.createdAt);
+}
+
+class MushroomPayrollCalculationsCompanion
+    extends UpdateCompanion<MushroomPayrollCalculation> {
+  final Value<String> id;
+  final Value<String> employeeId;
+  final Value<String> payPeriod;
+  final Value<double> totalPaidHours;
+  final Value<double> totalOvertimeHours;
+  final Value<double> basePay;
+  final Value<double> overtimePay;
+  final Value<double> totalPay;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const MushroomPayrollCalculationsCompanion({
+    this.id = const Value.absent(),
+    this.employeeId = const Value.absent(),
+    this.payPeriod = const Value.absent(),
+    this.totalPaidHours = const Value.absent(),
+    this.totalOvertimeHours = const Value.absent(),
+    this.basePay = const Value.absent(),
+    this.overtimePay = const Value.absent(),
+    this.totalPay = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomPayrollCalculationsCompanion.insert({
+    required String id,
+    required String employeeId,
+    required String payPeriod,
+    this.totalPaidHours = const Value.absent(),
+    this.totalOvertimeHours = const Value.absent(),
+    this.basePay = const Value.absent(),
+    this.overtimePay = const Value.absent(),
+    this.totalPay = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        employeeId = Value(employeeId),
+        payPeriod = Value(payPeriod);
+  static Insertable<MushroomPayrollCalculation> custom({
+    Expression<String>? id,
+    Expression<String>? employeeId,
+    Expression<String>? payPeriod,
+    Expression<double>? totalPaidHours,
+    Expression<double>? totalOvertimeHours,
+    Expression<double>? basePay,
+    Expression<double>? overtimePay,
+    Expression<double>? totalPay,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (employeeId != null) 'employee_id': employeeId,
+      if (payPeriod != null) 'pay_period': payPeriod,
+      if (totalPaidHours != null) 'total_paid_hours': totalPaidHours,
+      if (totalOvertimeHours != null)
+        'total_overtime_hours': totalOvertimeHours,
+      if (basePay != null) 'base_pay': basePay,
+      if (overtimePay != null) 'overtime_pay': overtimePay,
+      if (totalPay != null) 'total_pay': totalPay,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomPayrollCalculationsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? employeeId,
+      Value<String>? payPeriod,
+      Value<double>? totalPaidHours,
+      Value<double>? totalOvertimeHours,
+      Value<double>? basePay,
+      Value<double>? overtimePay,
+      Value<double>? totalPay,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return MushroomPayrollCalculationsCompanion(
+      id: id ?? this.id,
+      employeeId: employeeId ?? this.employeeId,
+      payPeriod: payPeriod ?? this.payPeriod,
+      totalPaidHours: totalPaidHours ?? this.totalPaidHours,
+      totalOvertimeHours: totalOvertimeHours ?? this.totalOvertimeHours,
+      basePay: basePay ?? this.basePay,
+      overtimePay: overtimePay ?? this.overtimePay,
+      totalPay: totalPay ?? this.totalPay,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (employeeId.present) {
+      map['employee_id'] = Variable<String>(employeeId.value);
+    }
+    if (payPeriod.present) {
+      map['pay_period'] = Variable<String>(payPeriod.value);
+    }
+    if (totalPaidHours.present) {
+      map['total_paid_hours'] = Variable<double>(totalPaidHours.value);
+    }
+    if (totalOvertimeHours.present) {
+      map['total_overtime_hours'] = Variable<double>(totalOvertimeHours.value);
+    }
+    if (basePay.present) {
+      map['base_pay'] = Variable<double>(basePay.value);
+    }
+    if (overtimePay.present) {
+      map['overtime_pay'] = Variable<double>(overtimePay.value);
+    }
+    if (totalPay.present) {
+      map['total_pay'] = Variable<double>(totalPay.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomPayrollCalculationsCompanion(')
+          ..write('id: $id, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('payPeriod: $payPeriod, ')
+          ..write('totalPaidHours: $totalPaidHours, ')
+          ..write('totalOvertimeHours: $totalOvertimeHours, ')
+          ..write('basePay: $basePay, ')
+          ..write('overtimePay: $overtimePay, ')
+          ..write('totalPay: $totalPay, ')
+          ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -23531,6 +27177,21 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MushroomPermissionOverridesTable(this);
   late final $MushroomYieldSurveysTable mushroomYieldSurveys =
       $MushroomYieldSurveysTable(this);
+  late final $MushroomHarvestPlansTable mushroomHarvestPlans =
+      $MushroomHarvestPlansTable(this);
+  late final $MushroomShiftsTable mushroomShifts = $MushroomShiftsTable(this);
+  late final $MushroomPickerTeamsTable mushroomPickerTeams =
+      $MushroomPickerTeamsTable(this);
+  late final $MushroomRoomAssignmentsTable mushroomRoomAssignments =
+      $MushroomRoomAssignmentsTable(this);
+  late final $MushroomAttendanceEventsTable mushroomAttendanceEvents =
+      $MushroomAttendanceEventsTable(this);
+  late final $MushroomBreakPoliciesTable mushroomBreakPolicies =
+      $MushroomBreakPoliciesTable(this);
+  late final $MushroomDailyTimesheetsTable mushroomDailyTimesheets =
+      $MushroomDailyTimesheetsTable(this);
+  late final $MushroomPayrollCalculationsTable mushroomPayrollCalculations =
+      $MushroomPayrollCalculationsTable(this);
   late final $ChatConversationsTable chatConversations =
       $ChatConversationsTable(this);
   late final $ChatParticipantsTable chatParticipants =
@@ -23597,6 +27258,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         mushroomEmployeeDepartmentRoles,
         mushroomPermissionOverrides,
         mushroomYieldSurveys,
+        mushroomHarvestPlans,
+        mushroomShifts,
+        mushroomPickerTeams,
+        mushroomRoomAssignments,
+        mushroomAttendanceEvents,
+        mushroomBreakPolicies,
+        mushroomDailyTimesheets,
+        mushroomPayrollCalculations,
         chatConversations,
         chatParticipants,
         chatMessages,
@@ -32561,6 +36230,10 @@ typedef $$MushroomEmployeesTableCreateCompanionBuilder
   Value<String> passwordHash,
   Value<String> status,
   Value<String?> linkedUserId,
+  Value<String?> employmentType,
+  Value<double?> baseRate,
+  Value<String?> defaultShed,
+  Value<String?> pickerTeamColor,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -32573,6 +36246,10 @@ typedef $$MushroomEmployeesTableUpdateCompanionBuilder
   Value<String> passwordHash,
   Value<String> status,
   Value<String?> linkedUserId,
+  Value<String?> employmentType,
+  Value<double?> baseRate,
+  Value<String?> defaultShed,
+  Value<String?> pickerTeamColor,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -32606,6 +36283,20 @@ class $$MushroomEmployeesTableFilterComposer
 
   ColumnFilters<String> get linkedUserId => $composableBuilder(
       column: $table.linkedUserId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get employmentType => $composableBuilder(
+      column: $table.employmentType,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get baseRate => $composableBuilder(
+      column: $table.baseRate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get defaultShed => $composableBuilder(
+      column: $table.defaultShed, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get pickerTeamColor => $composableBuilder(
+      column: $table.pickerTeamColor,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -32643,6 +36334,20 @@ class $$MushroomEmployeesTableOrderingComposer
       column: $table.linkedUserId,
       builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get employmentType => $composableBuilder(
+      column: $table.employmentType,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get baseRate => $composableBuilder(
+      column: $table.baseRate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get defaultShed => $composableBuilder(
+      column: $table.defaultShed, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get pickerTeamColor => $composableBuilder(
+      column: $table.pickerTeamColor,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 }
@@ -32676,6 +36381,18 @@ class $$MushroomEmployeesTableAnnotationComposer
 
   GeneratedColumn<String> get linkedUserId => $composableBuilder(
       column: $table.linkedUserId, builder: (column) => column);
+
+  GeneratedColumn<String> get employmentType => $composableBuilder(
+      column: $table.employmentType, builder: (column) => column);
+
+  GeneratedColumn<double> get baseRate =>
+      $composableBuilder(column: $table.baseRate, builder: (column) => column);
+
+  GeneratedColumn<String> get defaultShed => $composableBuilder(
+      column: $table.defaultShed, builder: (column) => column);
+
+  GeneratedColumn<String> get pickerTeamColor => $composableBuilder(
+      column: $table.pickerTeamColor, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -32716,6 +36433,10 @@ class $$MushroomEmployeesTableTableManager extends RootTableManager<
             Value<String> passwordHash = const Value.absent(),
             Value<String> status = const Value.absent(),
             Value<String?> linkedUserId = const Value.absent(),
+            Value<String?> employmentType = const Value.absent(),
+            Value<double?> baseRate = const Value.absent(),
+            Value<String?> defaultShed = const Value.absent(),
+            Value<String?> pickerTeamColor = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -32727,6 +36448,10 @@ class $$MushroomEmployeesTableTableManager extends RootTableManager<
             passwordHash: passwordHash,
             status: status,
             linkedUserId: linkedUserId,
+            employmentType: employmentType,
+            baseRate: baseRate,
+            defaultShed: defaultShed,
+            pickerTeamColor: pickerTeamColor,
             createdAt: createdAt,
             rowid: rowid,
           ),
@@ -32738,6 +36463,10 @@ class $$MushroomEmployeesTableTableManager extends RootTableManager<
             Value<String> passwordHash = const Value.absent(),
             Value<String> status = const Value.absent(),
             Value<String?> linkedUserId = const Value.absent(),
+            Value<String?> employmentType = const Value.absent(),
+            Value<double?> baseRate = const Value.absent(),
+            Value<String?> defaultShed = const Value.absent(),
+            Value<String?> pickerTeamColor = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -32749,6 +36478,10 @@ class $$MushroomEmployeesTableTableManager extends RootTableManager<
             passwordHash: passwordHash,
             status: status,
             linkedUserId: linkedUserId,
+            employmentType: employmentType,
+            baseRate: baseRate,
+            defaultShed: defaultShed,
+            pickerTeamColor: pickerTeamColor,
             createdAt: createdAt,
             rowid: rowid,
           ),
@@ -33494,6 +37227,1788 @@ typedef $$MushroomYieldSurveysTableProcessedTableManager
               MushroomYieldSurvey>
         ),
         MushroomYieldSurvey,
+        PrefetchHooks Function()>;
+typedef $$MushroomHarvestPlansTableCreateCompanionBuilder
+    = MushroomHarvestPlansCompanion Function({
+  required String id,
+  required DateTime planDate,
+  Value<String?> zoneId,
+  Value<String?> createdBy,
+  Value<String> status,
+  Value<int> totalTargetBoxes,
+  Value<int> rowid,
+});
+typedef $$MushroomHarvestPlansTableUpdateCompanionBuilder
+    = MushroomHarvestPlansCompanion Function({
+  Value<String> id,
+  Value<DateTime> planDate,
+  Value<String?> zoneId,
+  Value<String?> createdBy,
+  Value<String> status,
+  Value<int> totalTargetBoxes,
+  Value<int> rowid,
+});
+
+class $$MushroomHarvestPlansTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomHarvestPlansTable> {
+  $$MushroomHarvestPlansTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get planDate => $composableBuilder(
+      column: $table.planDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get zoneId => $composableBuilder(
+      column: $table.zoneId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get totalTargetBoxes => $composableBuilder(
+      column: $table.totalTargetBoxes,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomHarvestPlansTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomHarvestPlansTable> {
+  $$MushroomHarvestPlansTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get planDate => $composableBuilder(
+      column: $table.planDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get zoneId => $composableBuilder(
+      column: $table.zoneId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get totalTargetBoxes => $composableBuilder(
+      column: $table.totalTargetBoxes,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomHarvestPlansTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomHarvestPlansTable> {
+  $$MushroomHarvestPlansTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get planDate =>
+      $composableBuilder(column: $table.planDate, builder: (column) => column);
+
+  GeneratedColumn<String> get zoneId =>
+      $composableBuilder(column: $table.zoneId, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get totalTargetBoxes => $composableBuilder(
+      column: $table.totalTargetBoxes, builder: (column) => column);
+}
+
+class $$MushroomHarvestPlansTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomHarvestPlansTable,
+    MushroomHarvestPlan,
+    $$MushroomHarvestPlansTableFilterComposer,
+    $$MushroomHarvestPlansTableOrderingComposer,
+    $$MushroomHarvestPlansTableAnnotationComposer,
+    $$MushroomHarvestPlansTableCreateCompanionBuilder,
+    $$MushroomHarvestPlansTableUpdateCompanionBuilder,
+    (
+      MushroomHarvestPlan,
+      BaseReferences<_$AppDatabase, $MushroomHarvestPlansTable,
+          MushroomHarvestPlan>
+    ),
+    MushroomHarvestPlan,
+    PrefetchHooks Function()> {
+  $$MushroomHarvestPlansTableTableManager(
+      _$AppDatabase db, $MushroomHarvestPlansTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomHarvestPlansTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomHarvestPlansTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomHarvestPlansTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<DateTime> planDate = const Value.absent(),
+            Value<String?> zoneId = const Value.absent(),
+            Value<String?> createdBy = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<int> totalTargetBoxes = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomHarvestPlansCompanion(
+            id: id,
+            planDate: planDate,
+            zoneId: zoneId,
+            createdBy: createdBy,
+            status: status,
+            totalTargetBoxes: totalTargetBoxes,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required DateTime planDate,
+            Value<String?> zoneId = const Value.absent(),
+            Value<String?> createdBy = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<int> totalTargetBoxes = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomHarvestPlansCompanion.insert(
+            id: id,
+            planDate: planDate,
+            zoneId: zoneId,
+            createdBy: createdBy,
+            status: status,
+            totalTargetBoxes: totalTargetBoxes,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomHarvestPlansTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $MushroomHarvestPlansTable,
+        MushroomHarvestPlan,
+        $$MushroomHarvestPlansTableFilterComposer,
+        $$MushroomHarvestPlansTableOrderingComposer,
+        $$MushroomHarvestPlansTableAnnotationComposer,
+        $$MushroomHarvestPlansTableCreateCompanionBuilder,
+        $$MushroomHarvestPlansTableUpdateCompanionBuilder,
+        (
+          MushroomHarvestPlan,
+          BaseReferences<_$AppDatabase, $MushroomHarvestPlansTable,
+              MushroomHarvestPlan>
+        ),
+        MushroomHarvestPlan,
+        PrefetchHooks Function()>;
+typedef $$MushroomShiftsTableCreateCompanionBuilder = MushroomShiftsCompanion
+    Function({
+  required String id,
+  required String planId,
+  required String role,
+  required String employeeId,
+  Value<DateTime?> startTime,
+  Value<String?> shedRoomListJson,
+  Value<int> rowid,
+});
+typedef $$MushroomShiftsTableUpdateCompanionBuilder = MushroomShiftsCompanion
+    Function({
+  Value<String> id,
+  Value<String> planId,
+  Value<String> role,
+  Value<String> employeeId,
+  Value<DateTime?> startTime,
+  Value<String?> shedRoomListJson,
+  Value<int> rowid,
+});
+
+class $$MushroomShiftsTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomShiftsTable> {
+  $$MushroomShiftsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get role => $composableBuilder(
+      column: $table.role, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get startTime => $composableBuilder(
+      column: $table.startTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get shedRoomListJson => $composableBuilder(
+      column: $table.shedRoomListJson,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomShiftsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomShiftsTable> {
+  $$MushroomShiftsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get role => $composableBuilder(
+      column: $table.role, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get startTime => $composableBuilder(
+      column: $table.startTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get shedRoomListJson => $composableBuilder(
+      column: $table.shedRoomListJson,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomShiftsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomShiftsTable> {
+  $$MushroomShiftsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get planId =>
+      $composableBuilder(column: $table.planId, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startTime =>
+      $composableBuilder(column: $table.startTime, builder: (column) => column);
+
+  GeneratedColumn<String> get shedRoomListJson => $composableBuilder(
+      column: $table.shedRoomListJson, builder: (column) => column);
+}
+
+class $$MushroomShiftsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomShiftsTable,
+    MushroomShift,
+    $$MushroomShiftsTableFilterComposer,
+    $$MushroomShiftsTableOrderingComposer,
+    $$MushroomShiftsTableAnnotationComposer,
+    $$MushroomShiftsTableCreateCompanionBuilder,
+    $$MushroomShiftsTableUpdateCompanionBuilder,
+    (
+      MushroomShift,
+      BaseReferences<_$AppDatabase, $MushroomShiftsTable, MushroomShift>
+    ),
+    MushroomShift,
+    PrefetchHooks Function()> {
+  $$MushroomShiftsTableTableManager(
+      _$AppDatabase db, $MushroomShiftsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomShiftsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomShiftsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomShiftsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> planId = const Value.absent(),
+            Value<String> role = const Value.absent(),
+            Value<String> employeeId = const Value.absent(),
+            Value<DateTime?> startTime = const Value.absent(),
+            Value<String?> shedRoomListJson = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomShiftsCompanion(
+            id: id,
+            planId: planId,
+            role: role,
+            employeeId: employeeId,
+            startTime: startTime,
+            shedRoomListJson: shedRoomListJson,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String planId,
+            required String role,
+            required String employeeId,
+            Value<DateTime?> startTime = const Value.absent(),
+            Value<String?> shedRoomListJson = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomShiftsCompanion.insert(
+            id: id,
+            planId: planId,
+            role: role,
+            employeeId: employeeId,
+            startTime: startTime,
+            shedRoomListJson: shedRoomListJson,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomShiftsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $MushroomShiftsTable,
+    MushroomShift,
+    $$MushroomShiftsTableFilterComposer,
+    $$MushroomShiftsTableOrderingComposer,
+    $$MushroomShiftsTableAnnotationComposer,
+    $$MushroomShiftsTableCreateCompanionBuilder,
+    $$MushroomShiftsTableUpdateCompanionBuilder,
+    (
+      MushroomShift,
+      BaseReferences<_$AppDatabase, $MushroomShiftsTable, MushroomShift>
+    ),
+    MushroomShift,
+    PrefetchHooks Function()>;
+typedef $$MushroomPickerTeamsTableCreateCompanionBuilder
+    = MushroomPickerTeamsCompanion Function({
+  required String id,
+  required String planId,
+  required String colorCode,
+  Value<String?> teamLeaderId,
+  Value<int> headcount,
+  Value<double> rateEstimate,
+  Value<String?> memberIdsJson,
+  Value<int> rowid,
+});
+typedef $$MushroomPickerTeamsTableUpdateCompanionBuilder
+    = MushroomPickerTeamsCompanion Function({
+  Value<String> id,
+  Value<String> planId,
+  Value<String> colorCode,
+  Value<String?> teamLeaderId,
+  Value<int> headcount,
+  Value<double> rateEstimate,
+  Value<String?> memberIdsJson,
+  Value<int> rowid,
+});
+
+class $$MushroomPickerTeamsTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomPickerTeamsTable> {
+  $$MushroomPickerTeamsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get colorCode => $composableBuilder(
+      column: $table.colorCode, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get teamLeaderId => $composableBuilder(
+      column: $table.teamLeaderId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get headcount => $composableBuilder(
+      column: $table.headcount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get rateEstimate => $composableBuilder(
+      column: $table.rateEstimate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get memberIdsJson => $composableBuilder(
+      column: $table.memberIdsJson, builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomPickerTeamsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomPickerTeamsTable> {
+  $$MushroomPickerTeamsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get colorCode => $composableBuilder(
+      column: $table.colorCode, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get teamLeaderId => $composableBuilder(
+      column: $table.teamLeaderId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get headcount => $composableBuilder(
+      column: $table.headcount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get rateEstimate => $composableBuilder(
+      column: $table.rateEstimate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get memberIdsJson => $composableBuilder(
+      column: $table.memberIdsJson,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomPickerTeamsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomPickerTeamsTable> {
+  $$MushroomPickerTeamsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get planId =>
+      $composableBuilder(column: $table.planId, builder: (column) => column);
+
+  GeneratedColumn<String> get colorCode =>
+      $composableBuilder(column: $table.colorCode, builder: (column) => column);
+
+  GeneratedColumn<String> get teamLeaderId => $composableBuilder(
+      column: $table.teamLeaderId, builder: (column) => column);
+
+  GeneratedColumn<int> get headcount =>
+      $composableBuilder(column: $table.headcount, builder: (column) => column);
+
+  GeneratedColumn<double> get rateEstimate => $composableBuilder(
+      column: $table.rateEstimate, builder: (column) => column);
+
+  GeneratedColumn<String> get memberIdsJson => $composableBuilder(
+      column: $table.memberIdsJson, builder: (column) => column);
+}
+
+class $$MushroomPickerTeamsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomPickerTeamsTable,
+    MushroomPickerTeam,
+    $$MushroomPickerTeamsTableFilterComposer,
+    $$MushroomPickerTeamsTableOrderingComposer,
+    $$MushroomPickerTeamsTableAnnotationComposer,
+    $$MushroomPickerTeamsTableCreateCompanionBuilder,
+    $$MushroomPickerTeamsTableUpdateCompanionBuilder,
+    (
+      MushroomPickerTeam,
+      BaseReferences<_$AppDatabase, $MushroomPickerTeamsTable,
+          MushroomPickerTeam>
+    ),
+    MushroomPickerTeam,
+    PrefetchHooks Function()> {
+  $$MushroomPickerTeamsTableTableManager(
+      _$AppDatabase db, $MushroomPickerTeamsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomPickerTeamsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomPickerTeamsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomPickerTeamsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> planId = const Value.absent(),
+            Value<String> colorCode = const Value.absent(),
+            Value<String?> teamLeaderId = const Value.absent(),
+            Value<int> headcount = const Value.absent(),
+            Value<double> rateEstimate = const Value.absent(),
+            Value<String?> memberIdsJson = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomPickerTeamsCompanion(
+            id: id,
+            planId: planId,
+            colorCode: colorCode,
+            teamLeaderId: teamLeaderId,
+            headcount: headcount,
+            rateEstimate: rateEstimate,
+            memberIdsJson: memberIdsJson,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String planId,
+            required String colorCode,
+            Value<String?> teamLeaderId = const Value.absent(),
+            Value<int> headcount = const Value.absent(),
+            Value<double> rateEstimate = const Value.absent(),
+            Value<String?> memberIdsJson = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomPickerTeamsCompanion.insert(
+            id: id,
+            planId: planId,
+            colorCode: colorCode,
+            teamLeaderId: teamLeaderId,
+            headcount: headcount,
+            rateEstimate: rateEstimate,
+            memberIdsJson: memberIdsJson,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomPickerTeamsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $MushroomPickerTeamsTable,
+    MushroomPickerTeam,
+    $$MushroomPickerTeamsTableFilterComposer,
+    $$MushroomPickerTeamsTableOrderingComposer,
+    $$MushroomPickerTeamsTableAnnotationComposer,
+    $$MushroomPickerTeamsTableCreateCompanionBuilder,
+    $$MushroomPickerTeamsTableUpdateCompanionBuilder,
+    (
+      MushroomPickerTeam,
+      BaseReferences<_$AppDatabase, $MushroomPickerTeamsTable,
+          MushroomPickerTeam>
+    ),
+    MushroomPickerTeam,
+    PrefetchHooks Function()>;
+typedef $$MushroomRoomAssignmentsTableCreateCompanionBuilder
+    = MushroomRoomAssignmentsCompanion Function({
+  required String id,
+  required String planId,
+  required String roomId,
+  Value<int> boxTarget,
+  Value<int> trolleyCount,
+  Value<String?> teamAssignmentsJson,
+  Value<String?> pickingInstructionsJson,
+  Value<String?> notes,
+  Value<int> rowid,
+});
+typedef $$MushroomRoomAssignmentsTableUpdateCompanionBuilder
+    = MushroomRoomAssignmentsCompanion Function({
+  Value<String> id,
+  Value<String> planId,
+  Value<String> roomId,
+  Value<int> boxTarget,
+  Value<int> trolleyCount,
+  Value<String?> teamAssignmentsJson,
+  Value<String?> pickingInstructionsJson,
+  Value<String?> notes,
+  Value<int> rowid,
+});
+
+class $$MushroomRoomAssignmentsTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomRoomAssignmentsTable> {
+  $$MushroomRoomAssignmentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get boxTarget => $composableBuilder(
+      column: $table.boxTarget, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get trolleyCount => $composableBuilder(
+      column: $table.trolleyCount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get teamAssignmentsJson => $composableBuilder(
+      column: $table.teamAssignmentsJson,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get pickingInstructionsJson => $composableBuilder(
+      column: $table.pickingInstructionsJson,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomRoomAssignmentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomRoomAssignmentsTable> {
+  $$MushroomRoomAssignmentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get boxTarget => $composableBuilder(
+      column: $table.boxTarget, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get trolleyCount => $composableBuilder(
+      column: $table.trolleyCount,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get teamAssignmentsJson => $composableBuilder(
+      column: $table.teamAssignmentsJson,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get pickingInstructionsJson => $composableBuilder(
+      column: $table.pickingInstructionsJson,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomRoomAssignmentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomRoomAssignmentsTable> {
+  $$MushroomRoomAssignmentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get planId =>
+      $composableBuilder(column: $table.planId, builder: (column) => column);
+
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<int> get boxTarget =>
+      $composableBuilder(column: $table.boxTarget, builder: (column) => column);
+
+  GeneratedColumn<int> get trolleyCount => $composableBuilder(
+      column: $table.trolleyCount, builder: (column) => column);
+
+  GeneratedColumn<String> get teamAssignmentsJson => $composableBuilder(
+      column: $table.teamAssignmentsJson, builder: (column) => column);
+
+  GeneratedColumn<String> get pickingInstructionsJson => $composableBuilder(
+      column: $table.pickingInstructionsJson, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+}
+
+class $$MushroomRoomAssignmentsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomRoomAssignmentsTable,
+    MushroomRoomAssignment,
+    $$MushroomRoomAssignmentsTableFilterComposer,
+    $$MushroomRoomAssignmentsTableOrderingComposer,
+    $$MushroomRoomAssignmentsTableAnnotationComposer,
+    $$MushroomRoomAssignmentsTableCreateCompanionBuilder,
+    $$MushroomRoomAssignmentsTableUpdateCompanionBuilder,
+    (
+      MushroomRoomAssignment,
+      BaseReferences<_$AppDatabase, $MushroomRoomAssignmentsTable,
+          MushroomRoomAssignment>
+    ),
+    MushroomRoomAssignment,
+    PrefetchHooks Function()> {
+  $$MushroomRoomAssignmentsTableTableManager(
+      _$AppDatabase db, $MushroomRoomAssignmentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomRoomAssignmentsTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomRoomAssignmentsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomRoomAssignmentsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> planId = const Value.absent(),
+            Value<String> roomId = const Value.absent(),
+            Value<int> boxTarget = const Value.absent(),
+            Value<int> trolleyCount = const Value.absent(),
+            Value<String?> teamAssignmentsJson = const Value.absent(),
+            Value<String?> pickingInstructionsJson = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomRoomAssignmentsCompanion(
+            id: id,
+            planId: planId,
+            roomId: roomId,
+            boxTarget: boxTarget,
+            trolleyCount: trolleyCount,
+            teamAssignmentsJson: teamAssignmentsJson,
+            pickingInstructionsJson: pickingInstructionsJson,
+            notes: notes,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String planId,
+            required String roomId,
+            Value<int> boxTarget = const Value.absent(),
+            Value<int> trolleyCount = const Value.absent(),
+            Value<String?> teamAssignmentsJson = const Value.absent(),
+            Value<String?> pickingInstructionsJson = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomRoomAssignmentsCompanion.insert(
+            id: id,
+            planId: planId,
+            roomId: roomId,
+            boxTarget: boxTarget,
+            trolleyCount: trolleyCount,
+            teamAssignmentsJson: teamAssignmentsJson,
+            pickingInstructionsJson: pickingInstructionsJson,
+            notes: notes,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomRoomAssignmentsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $MushroomRoomAssignmentsTable,
+        MushroomRoomAssignment,
+        $$MushroomRoomAssignmentsTableFilterComposer,
+        $$MushroomRoomAssignmentsTableOrderingComposer,
+        $$MushroomRoomAssignmentsTableAnnotationComposer,
+        $$MushroomRoomAssignmentsTableCreateCompanionBuilder,
+        $$MushroomRoomAssignmentsTableUpdateCompanionBuilder,
+        (
+          MushroomRoomAssignment,
+          BaseReferences<_$AppDatabase, $MushroomRoomAssignmentsTable,
+              MushroomRoomAssignment>
+        ),
+        MushroomRoomAssignment,
+        PrefetchHooks Function()>;
+typedef $$MushroomAttendanceEventsTableCreateCompanionBuilder
+    = MushroomAttendanceEventsCompanion Function({
+  required String id,
+  required String employeeId,
+  Value<String?> planId,
+  required String eventType,
+  Value<DateTime> timestamp,
+  required String source,
+  Value<String?> location,
+  Value<int> rowid,
+});
+typedef $$MushroomAttendanceEventsTableUpdateCompanionBuilder
+    = MushroomAttendanceEventsCompanion Function({
+  Value<String> id,
+  Value<String> employeeId,
+  Value<String?> planId,
+  Value<String> eventType,
+  Value<DateTime> timestamp,
+  Value<String> source,
+  Value<String?> location,
+  Value<int> rowid,
+});
+
+class $$MushroomAttendanceEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomAttendanceEventsTable> {
+  $$MushroomAttendanceEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get eventType => $composableBuilder(
+      column: $table.eventType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get source => $composableBuilder(
+      column: $table.source, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get location => $composableBuilder(
+      column: $table.location, builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomAttendanceEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomAttendanceEventsTable> {
+  $$MushroomAttendanceEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get eventType => $composableBuilder(
+      column: $table.eventType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get source => $composableBuilder(
+      column: $table.source, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get location => $composableBuilder(
+      column: $table.location, builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomAttendanceEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomAttendanceEventsTable> {
+  $$MushroomAttendanceEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => column);
+
+  GeneratedColumn<String> get planId =>
+      $composableBuilder(column: $table.planId, builder: (column) => column);
+
+  GeneratedColumn<String> get eventType =>
+      $composableBuilder(column: $table.eventType, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
+}
+
+class $$MushroomAttendanceEventsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomAttendanceEventsTable,
+    MushroomAttendanceEvent,
+    $$MushroomAttendanceEventsTableFilterComposer,
+    $$MushroomAttendanceEventsTableOrderingComposer,
+    $$MushroomAttendanceEventsTableAnnotationComposer,
+    $$MushroomAttendanceEventsTableCreateCompanionBuilder,
+    $$MushroomAttendanceEventsTableUpdateCompanionBuilder,
+    (
+      MushroomAttendanceEvent,
+      BaseReferences<_$AppDatabase, $MushroomAttendanceEventsTable,
+          MushroomAttendanceEvent>
+    ),
+    MushroomAttendanceEvent,
+    PrefetchHooks Function()> {
+  $$MushroomAttendanceEventsTableTableManager(
+      _$AppDatabase db, $MushroomAttendanceEventsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomAttendanceEventsTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomAttendanceEventsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomAttendanceEventsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> employeeId = const Value.absent(),
+            Value<String?> planId = const Value.absent(),
+            Value<String> eventType = const Value.absent(),
+            Value<DateTime> timestamp = const Value.absent(),
+            Value<String> source = const Value.absent(),
+            Value<String?> location = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomAttendanceEventsCompanion(
+            id: id,
+            employeeId: employeeId,
+            planId: planId,
+            eventType: eventType,
+            timestamp: timestamp,
+            source: source,
+            location: location,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String employeeId,
+            Value<String?> planId = const Value.absent(),
+            required String eventType,
+            Value<DateTime> timestamp = const Value.absent(),
+            required String source,
+            Value<String?> location = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomAttendanceEventsCompanion.insert(
+            id: id,
+            employeeId: employeeId,
+            planId: planId,
+            eventType: eventType,
+            timestamp: timestamp,
+            source: source,
+            location: location,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomAttendanceEventsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $MushroomAttendanceEventsTable,
+        MushroomAttendanceEvent,
+        $$MushroomAttendanceEventsTableFilterComposer,
+        $$MushroomAttendanceEventsTableOrderingComposer,
+        $$MushroomAttendanceEventsTableAnnotationComposer,
+        $$MushroomAttendanceEventsTableCreateCompanionBuilder,
+        $$MushroomAttendanceEventsTableUpdateCompanionBuilder,
+        (
+          MushroomAttendanceEvent,
+          BaseReferences<_$AppDatabase, $MushroomAttendanceEventsTable,
+              MushroomAttendanceEvent>
+        ),
+        MushroomAttendanceEvent,
+        PrefetchHooks Function()>;
+typedef $$MushroomBreakPoliciesTableCreateCompanionBuilder
+    = MushroomBreakPoliciesCompanion Function({
+  required String id,
+  Value<int> standardBreakMinutes,
+  Value<int> graceMinutes,
+  Value<String> extraBreakRule,
+  Value<int> rowid,
+});
+typedef $$MushroomBreakPoliciesTableUpdateCompanionBuilder
+    = MushroomBreakPoliciesCompanion Function({
+  Value<String> id,
+  Value<int> standardBreakMinutes,
+  Value<int> graceMinutes,
+  Value<String> extraBreakRule,
+  Value<int> rowid,
+});
+
+class $$MushroomBreakPoliciesTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomBreakPoliciesTable> {
+  $$MushroomBreakPoliciesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get standardBreakMinutes => $composableBuilder(
+      column: $table.standardBreakMinutes,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get graceMinutes => $composableBuilder(
+      column: $table.graceMinutes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get extraBreakRule => $composableBuilder(
+      column: $table.extraBreakRule,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomBreakPoliciesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomBreakPoliciesTable> {
+  $$MushroomBreakPoliciesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get standardBreakMinutes => $composableBuilder(
+      column: $table.standardBreakMinutes,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get graceMinutes => $composableBuilder(
+      column: $table.graceMinutes,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get extraBreakRule => $composableBuilder(
+      column: $table.extraBreakRule,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomBreakPoliciesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomBreakPoliciesTable> {
+  $$MushroomBreakPoliciesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get standardBreakMinutes => $composableBuilder(
+      column: $table.standardBreakMinutes, builder: (column) => column);
+
+  GeneratedColumn<int> get graceMinutes => $composableBuilder(
+      column: $table.graceMinutes, builder: (column) => column);
+
+  GeneratedColumn<String> get extraBreakRule => $composableBuilder(
+      column: $table.extraBreakRule, builder: (column) => column);
+}
+
+class $$MushroomBreakPoliciesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomBreakPoliciesTable,
+    MushroomBreakPolicy,
+    $$MushroomBreakPoliciesTableFilterComposer,
+    $$MushroomBreakPoliciesTableOrderingComposer,
+    $$MushroomBreakPoliciesTableAnnotationComposer,
+    $$MushroomBreakPoliciesTableCreateCompanionBuilder,
+    $$MushroomBreakPoliciesTableUpdateCompanionBuilder,
+    (
+      MushroomBreakPolicy,
+      BaseReferences<_$AppDatabase, $MushroomBreakPoliciesTable,
+          MushroomBreakPolicy>
+    ),
+    MushroomBreakPolicy,
+    PrefetchHooks Function()> {
+  $$MushroomBreakPoliciesTableTableManager(
+      _$AppDatabase db, $MushroomBreakPoliciesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomBreakPoliciesTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomBreakPoliciesTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomBreakPoliciesTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<int> standardBreakMinutes = const Value.absent(),
+            Value<int> graceMinutes = const Value.absent(),
+            Value<String> extraBreakRule = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomBreakPoliciesCompanion(
+            id: id,
+            standardBreakMinutes: standardBreakMinutes,
+            graceMinutes: graceMinutes,
+            extraBreakRule: extraBreakRule,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<int> standardBreakMinutes = const Value.absent(),
+            Value<int> graceMinutes = const Value.absent(),
+            Value<String> extraBreakRule = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomBreakPoliciesCompanion.insert(
+            id: id,
+            standardBreakMinutes: standardBreakMinutes,
+            graceMinutes: graceMinutes,
+            extraBreakRule: extraBreakRule,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomBreakPoliciesTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $MushroomBreakPoliciesTable,
+        MushroomBreakPolicy,
+        $$MushroomBreakPoliciesTableFilterComposer,
+        $$MushroomBreakPoliciesTableOrderingComposer,
+        $$MushroomBreakPoliciesTableAnnotationComposer,
+        $$MushroomBreakPoliciesTableCreateCompanionBuilder,
+        $$MushroomBreakPoliciesTableUpdateCompanionBuilder,
+        (
+          MushroomBreakPolicy,
+          BaseReferences<_$AppDatabase, $MushroomBreakPoliciesTable,
+              MushroomBreakPolicy>
+        ),
+        MushroomBreakPolicy,
+        PrefetchHooks Function()>;
+typedef $$MushroomDailyTimesheetsTableCreateCompanionBuilder
+    = MushroomDailyTimesheetsCompanion Function({
+  required String id,
+  required String employeeId,
+  required DateTime planDate,
+  Value<DateTime?> checkInTime,
+  Value<DateTime?> checkOutTime,
+  Value<int> totalBreakTakenMinutes,
+  Value<int> standardBreakAllowedMinutes,
+  Value<int> extraBreakMinutes,
+  Value<int> grossWorkedMinutes,
+  Value<int> paidMinutes,
+  Value<int> overtimeMinutes,
+  Value<String?> assignedTeamColor,
+  Value<String?> assignedRoomsJson,
+  Value<String> status,
+  Value<int> rowid,
+});
+typedef $$MushroomDailyTimesheetsTableUpdateCompanionBuilder
+    = MushroomDailyTimesheetsCompanion Function({
+  Value<String> id,
+  Value<String> employeeId,
+  Value<DateTime> planDate,
+  Value<DateTime?> checkInTime,
+  Value<DateTime?> checkOutTime,
+  Value<int> totalBreakTakenMinutes,
+  Value<int> standardBreakAllowedMinutes,
+  Value<int> extraBreakMinutes,
+  Value<int> grossWorkedMinutes,
+  Value<int> paidMinutes,
+  Value<int> overtimeMinutes,
+  Value<String?> assignedTeamColor,
+  Value<String?> assignedRoomsJson,
+  Value<String> status,
+  Value<int> rowid,
+});
+
+class $$MushroomDailyTimesheetsTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomDailyTimesheetsTable> {
+  $$MushroomDailyTimesheetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get planDate => $composableBuilder(
+      column: $table.planDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get checkInTime => $composableBuilder(
+      column: $table.checkInTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get checkOutTime => $composableBuilder(
+      column: $table.checkOutTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get totalBreakTakenMinutes => $composableBuilder(
+      column: $table.totalBreakTakenMinutes,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get standardBreakAllowedMinutes => $composableBuilder(
+      column: $table.standardBreakAllowedMinutes,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get extraBreakMinutes => $composableBuilder(
+      column: $table.extraBreakMinutes,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get grossWorkedMinutes => $composableBuilder(
+      column: $table.grossWorkedMinutes,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get paidMinutes => $composableBuilder(
+      column: $table.paidMinutes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get overtimeMinutes => $composableBuilder(
+      column: $table.overtimeMinutes,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get assignedTeamColor => $composableBuilder(
+      column: $table.assignedTeamColor,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get assignedRoomsJson => $composableBuilder(
+      column: $table.assignedRoomsJson,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomDailyTimesheetsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomDailyTimesheetsTable> {
+  $$MushroomDailyTimesheetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get planDate => $composableBuilder(
+      column: $table.planDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get checkInTime => $composableBuilder(
+      column: $table.checkInTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get checkOutTime => $composableBuilder(
+      column: $table.checkOutTime,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get totalBreakTakenMinutes => $composableBuilder(
+      column: $table.totalBreakTakenMinutes,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get standardBreakAllowedMinutes => $composableBuilder(
+      column: $table.standardBreakAllowedMinutes,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get extraBreakMinutes => $composableBuilder(
+      column: $table.extraBreakMinutes,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get grossWorkedMinutes => $composableBuilder(
+      column: $table.grossWorkedMinutes,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get paidMinutes => $composableBuilder(
+      column: $table.paidMinutes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get overtimeMinutes => $composableBuilder(
+      column: $table.overtimeMinutes,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get assignedTeamColor => $composableBuilder(
+      column: $table.assignedTeamColor,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get assignedRoomsJson => $composableBuilder(
+      column: $table.assignedRoomsJson,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomDailyTimesheetsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomDailyTimesheetsTable> {
+  $$MushroomDailyTimesheetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get planDate =>
+      $composableBuilder(column: $table.planDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get checkInTime => $composableBuilder(
+      column: $table.checkInTime, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get checkOutTime => $composableBuilder(
+      column: $table.checkOutTime, builder: (column) => column);
+
+  GeneratedColumn<int> get totalBreakTakenMinutes => $composableBuilder(
+      column: $table.totalBreakTakenMinutes, builder: (column) => column);
+
+  GeneratedColumn<int> get standardBreakAllowedMinutes => $composableBuilder(
+      column: $table.standardBreakAllowedMinutes, builder: (column) => column);
+
+  GeneratedColumn<int> get extraBreakMinutes => $composableBuilder(
+      column: $table.extraBreakMinutes, builder: (column) => column);
+
+  GeneratedColumn<int> get grossWorkedMinutes => $composableBuilder(
+      column: $table.grossWorkedMinutes, builder: (column) => column);
+
+  GeneratedColumn<int> get paidMinutes => $composableBuilder(
+      column: $table.paidMinutes, builder: (column) => column);
+
+  GeneratedColumn<int> get overtimeMinutes => $composableBuilder(
+      column: $table.overtimeMinutes, builder: (column) => column);
+
+  GeneratedColumn<String> get assignedTeamColor => $composableBuilder(
+      column: $table.assignedTeamColor, builder: (column) => column);
+
+  GeneratedColumn<String> get assignedRoomsJson => $composableBuilder(
+      column: $table.assignedRoomsJson, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+}
+
+class $$MushroomDailyTimesheetsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomDailyTimesheetsTable,
+    MushroomDailyTimesheet,
+    $$MushroomDailyTimesheetsTableFilterComposer,
+    $$MushroomDailyTimesheetsTableOrderingComposer,
+    $$MushroomDailyTimesheetsTableAnnotationComposer,
+    $$MushroomDailyTimesheetsTableCreateCompanionBuilder,
+    $$MushroomDailyTimesheetsTableUpdateCompanionBuilder,
+    (
+      MushroomDailyTimesheet,
+      BaseReferences<_$AppDatabase, $MushroomDailyTimesheetsTable,
+          MushroomDailyTimesheet>
+    ),
+    MushroomDailyTimesheet,
+    PrefetchHooks Function()> {
+  $$MushroomDailyTimesheetsTableTableManager(
+      _$AppDatabase db, $MushroomDailyTimesheetsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomDailyTimesheetsTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomDailyTimesheetsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomDailyTimesheetsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> employeeId = const Value.absent(),
+            Value<DateTime> planDate = const Value.absent(),
+            Value<DateTime?> checkInTime = const Value.absent(),
+            Value<DateTime?> checkOutTime = const Value.absent(),
+            Value<int> totalBreakTakenMinutes = const Value.absent(),
+            Value<int> standardBreakAllowedMinutes = const Value.absent(),
+            Value<int> extraBreakMinutes = const Value.absent(),
+            Value<int> grossWorkedMinutes = const Value.absent(),
+            Value<int> paidMinutes = const Value.absent(),
+            Value<int> overtimeMinutes = const Value.absent(),
+            Value<String?> assignedTeamColor = const Value.absent(),
+            Value<String?> assignedRoomsJson = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomDailyTimesheetsCompanion(
+            id: id,
+            employeeId: employeeId,
+            planDate: planDate,
+            checkInTime: checkInTime,
+            checkOutTime: checkOutTime,
+            totalBreakTakenMinutes: totalBreakTakenMinutes,
+            standardBreakAllowedMinutes: standardBreakAllowedMinutes,
+            extraBreakMinutes: extraBreakMinutes,
+            grossWorkedMinutes: grossWorkedMinutes,
+            paidMinutes: paidMinutes,
+            overtimeMinutes: overtimeMinutes,
+            assignedTeamColor: assignedTeamColor,
+            assignedRoomsJson: assignedRoomsJson,
+            status: status,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String employeeId,
+            required DateTime planDate,
+            Value<DateTime?> checkInTime = const Value.absent(),
+            Value<DateTime?> checkOutTime = const Value.absent(),
+            Value<int> totalBreakTakenMinutes = const Value.absent(),
+            Value<int> standardBreakAllowedMinutes = const Value.absent(),
+            Value<int> extraBreakMinutes = const Value.absent(),
+            Value<int> grossWorkedMinutes = const Value.absent(),
+            Value<int> paidMinutes = const Value.absent(),
+            Value<int> overtimeMinutes = const Value.absent(),
+            Value<String?> assignedTeamColor = const Value.absent(),
+            Value<String?> assignedRoomsJson = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomDailyTimesheetsCompanion.insert(
+            id: id,
+            employeeId: employeeId,
+            planDate: planDate,
+            checkInTime: checkInTime,
+            checkOutTime: checkOutTime,
+            totalBreakTakenMinutes: totalBreakTakenMinutes,
+            standardBreakAllowedMinutes: standardBreakAllowedMinutes,
+            extraBreakMinutes: extraBreakMinutes,
+            grossWorkedMinutes: grossWorkedMinutes,
+            paidMinutes: paidMinutes,
+            overtimeMinutes: overtimeMinutes,
+            assignedTeamColor: assignedTeamColor,
+            assignedRoomsJson: assignedRoomsJson,
+            status: status,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomDailyTimesheetsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $MushroomDailyTimesheetsTable,
+        MushroomDailyTimesheet,
+        $$MushroomDailyTimesheetsTableFilterComposer,
+        $$MushroomDailyTimesheetsTableOrderingComposer,
+        $$MushroomDailyTimesheetsTableAnnotationComposer,
+        $$MushroomDailyTimesheetsTableCreateCompanionBuilder,
+        $$MushroomDailyTimesheetsTableUpdateCompanionBuilder,
+        (
+          MushroomDailyTimesheet,
+          BaseReferences<_$AppDatabase, $MushroomDailyTimesheetsTable,
+              MushroomDailyTimesheet>
+        ),
+        MushroomDailyTimesheet,
+        PrefetchHooks Function()>;
+typedef $$MushroomPayrollCalculationsTableCreateCompanionBuilder
+    = MushroomPayrollCalculationsCompanion Function({
+  required String id,
+  required String employeeId,
+  required String payPeriod,
+  Value<double> totalPaidHours,
+  Value<double> totalOvertimeHours,
+  Value<double> basePay,
+  Value<double> overtimePay,
+  Value<double> totalPay,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+typedef $$MushroomPayrollCalculationsTableUpdateCompanionBuilder
+    = MushroomPayrollCalculationsCompanion Function({
+  Value<String> id,
+  Value<String> employeeId,
+  Value<String> payPeriod,
+  Value<double> totalPaidHours,
+  Value<double> totalOvertimeHours,
+  Value<double> basePay,
+  Value<double> overtimePay,
+  Value<double> totalPay,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$MushroomPayrollCalculationsTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomPayrollCalculationsTable> {
+  $$MushroomPayrollCalculationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get payPeriod => $composableBuilder(
+      column: $table.payPeriod, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get totalPaidHours => $composableBuilder(
+      column: $table.totalPaidHours,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get totalOvertimeHours => $composableBuilder(
+      column: $table.totalOvertimeHours,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get basePay => $composableBuilder(
+      column: $table.basePay, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get overtimePay => $composableBuilder(
+      column: $table.overtimePay, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get totalPay => $composableBuilder(
+      column: $table.totalPay, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomPayrollCalculationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomPayrollCalculationsTable> {
+  $$MushroomPayrollCalculationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get payPeriod => $composableBuilder(
+      column: $table.payPeriod, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get totalPaidHours => $composableBuilder(
+      column: $table.totalPaidHours,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get totalOvertimeHours => $composableBuilder(
+      column: $table.totalOvertimeHours,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get basePay => $composableBuilder(
+      column: $table.basePay, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get overtimePay => $composableBuilder(
+      column: $table.overtimePay, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get totalPay => $composableBuilder(
+      column: $table.totalPay, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomPayrollCalculationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomPayrollCalculationsTable> {
+  $$MushroomPayrollCalculationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get employeeId => $composableBuilder(
+      column: $table.employeeId, builder: (column) => column);
+
+  GeneratedColumn<String> get payPeriod =>
+      $composableBuilder(column: $table.payPeriod, builder: (column) => column);
+
+  GeneratedColumn<double> get totalPaidHours => $composableBuilder(
+      column: $table.totalPaidHours, builder: (column) => column);
+
+  GeneratedColumn<double> get totalOvertimeHours => $composableBuilder(
+      column: $table.totalOvertimeHours, builder: (column) => column);
+
+  GeneratedColumn<double> get basePay =>
+      $composableBuilder(column: $table.basePay, builder: (column) => column);
+
+  GeneratedColumn<double> get overtimePay => $composableBuilder(
+      column: $table.overtimePay, builder: (column) => column);
+
+  GeneratedColumn<double> get totalPay =>
+      $composableBuilder(column: $table.totalPay, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$MushroomPayrollCalculationsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomPayrollCalculationsTable,
+    MushroomPayrollCalculation,
+    $$MushroomPayrollCalculationsTableFilterComposer,
+    $$MushroomPayrollCalculationsTableOrderingComposer,
+    $$MushroomPayrollCalculationsTableAnnotationComposer,
+    $$MushroomPayrollCalculationsTableCreateCompanionBuilder,
+    $$MushroomPayrollCalculationsTableUpdateCompanionBuilder,
+    (
+      MushroomPayrollCalculation,
+      BaseReferences<_$AppDatabase, $MushroomPayrollCalculationsTable,
+          MushroomPayrollCalculation>
+    ),
+    MushroomPayrollCalculation,
+    PrefetchHooks Function()> {
+  $$MushroomPayrollCalculationsTableTableManager(
+      _$AppDatabase db, $MushroomPayrollCalculationsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomPayrollCalculationsTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomPayrollCalculationsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomPayrollCalculationsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> employeeId = const Value.absent(),
+            Value<String> payPeriod = const Value.absent(),
+            Value<double> totalPaidHours = const Value.absent(),
+            Value<double> totalOvertimeHours = const Value.absent(),
+            Value<double> basePay = const Value.absent(),
+            Value<double> overtimePay = const Value.absent(),
+            Value<double> totalPay = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomPayrollCalculationsCompanion(
+            id: id,
+            employeeId: employeeId,
+            payPeriod: payPeriod,
+            totalPaidHours: totalPaidHours,
+            totalOvertimeHours: totalOvertimeHours,
+            basePay: basePay,
+            overtimePay: overtimePay,
+            totalPay: totalPay,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String employeeId,
+            required String payPeriod,
+            Value<double> totalPaidHours = const Value.absent(),
+            Value<double> totalOvertimeHours = const Value.absent(),
+            Value<double> basePay = const Value.absent(),
+            Value<double> overtimePay = const Value.absent(),
+            Value<double> totalPay = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomPayrollCalculationsCompanion.insert(
+            id: id,
+            employeeId: employeeId,
+            payPeriod: payPeriod,
+            totalPaidHours: totalPaidHours,
+            totalOvertimeHours: totalOvertimeHours,
+            basePay: basePay,
+            overtimePay: overtimePay,
+            totalPay: totalPay,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomPayrollCalculationsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $MushroomPayrollCalculationsTable,
+        MushroomPayrollCalculation,
+        $$MushroomPayrollCalculationsTableFilterComposer,
+        $$MushroomPayrollCalculationsTableOrderingComposer,
+        $$MushroomPayrollCalculationsTableAnnotationComposer,
+        $$MushroomPayrollCalculationsTableCreateCompanionBuilder,
+        $$MushroomPayrollCalculationsTableUpdateCompanionBuilder,
+        (
+          MushroomPayrollCalculation,
+          BaseReferences<_$AppDatabase, $MushroomPayrollCalculationsTable,
+              MushroomPayrollCalculation>
+        ),
+        MushroomPayrollCalculation,
         PrefetchHooks Function()>;
 typedef $$ChatConversationsTableCreateCompanionBuilder
     = ChatConversationsCompanion Function({
@@ -35522,6 +41037,27 @@ class $AppDatabaseManager {
               _db, _db.mushroomPermissionOverrides);
   $$MushroomYieldSurveysTableTableManager get mushroomYieldSurveys =>
       $$MushroomYieldSurveysTableTableManager(_db, _db.mushroomYieldSurveys);
+  $$MushroomHarvestPlansTableTableManager get mushroomHarvestPlans =>
+      $$MushroomHarvestPlansTableTableManager(_db, _db.mushroomHarvestPlans);
+  $$MushroomShiftsTableTableManager get mushroomShifts =>
+      $$MushroomShiftsTableTableManager(_db, _db.mushroomShifts);
+  $$MushroomPickerTeamsTableTableManager get mushroomPickerTeams =>
+      $$MushroomPickerTeamsTableTableManager(_db, _db.mushroomPickerTeams);
+  $$MushroomRoomAssignmentsTableTableManager get mushroomRoomAssignments =>
+      $$MushroomRoomAssignmentsTableTableManager(
+          _db, _db.mushroomRoomAssignments);
+  $$MushroomAttendanceEventsTableTableManager get mushroomAttendanceEvents =>
+      $$MushroomAttendanceEventsTableTableManager(
+          _db, _db.mushroomAttendanceEvents);
+  $$MushroomBreakPoliciesTableTableManager get mushroomBreakPolicies =>
+      $$MushroomBreakPoliciesTableTableManager(_db, _db.mushroomBreakPolicies);
+  $$MushroomDailyTimesheetsTableTableManager get mushroomDailyTimesheets =>
+      $$MushroomDailyTimesheetsTableTableManager(
+          _db, _db.mushroomDailyTimesheets);
+  $$MushroomPayrollCalculationsTableTableManager
+      get mushroomPayrollCalculations =>
+          $$MushroomPayrollCalculationsTableTableManager(
+              _db, _db.mushroomPayrollCalculations);
   $$ChatConversationsTableTableManager get chatConversations =>
       $$ChatConversationsTableTableManager(_db, _db.chatConversations);
   $$ChatParticipantsTableTableManager get chatParticipants =>
