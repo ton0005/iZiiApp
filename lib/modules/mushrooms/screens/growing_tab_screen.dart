@@ -1323,7 +1323,90 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                 const AlwaysStoppedAnimation<Color>(FarmColors.forestGreen),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
+
+        // Real Harvesting Plan 24/07/2026 Summary Card for Selected Room
+        Builder(builder: (context) {
+          final roomData = _getRoomHarvestPlanDetails(roomName);
+          if (roomData == null) return const SizedBox.shrink();
+
+          final boxes = roomData['boxes'] as int;
+          final flush = roomData['flush'] as int;
+          final trolley = roomData['trolley'] as int;
+          final teams = roomData['teams'] as String;
+          final zone = roomData['zone'] as String;
+          final instructions = roomData['instructions'] as String;
+
+          return Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDF4),
+              border: Border.all(color: FarmColors.forestGreen.withOpacity(0.4)),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.analytics_rounded, color: FarmColors.forestGreen, size: 16),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'HARVEST PLAN (24/07/2026)',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: FarmColors.forestGreenText),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Flush $flush · $zone',
+                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue.shade900),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Target: $boxes boxes ${trolley > 0 ? "($trolley Trolleys)" : ""}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                    ),
+                    Text(
+                      'Teams: $teams',
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: FarmColors.forestGreenText),
+                    ),
+                  ],
+                ),
+                if (instructions != '—') ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Notes: $instructions',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: instructions.contains('MYCOSENSE')
+                          ? Colors.purple
+                          : (instructions.contains('WASH') ? Colors.red : Colors.grey.shade700),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        }),
+        const SizedBox(height: 8),
         const Text('PIPELINE JOB CHECKLIST',
             style: TextStyle(
                 fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey)),
@@ -1965,6 +2048,45 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
         ],
       ),
     );
+  }
+
+  Map<String, dynamic>? _getRoomHarvestPlanDetails(String roomName) {
+    const planData = [
+      {'room': 'Room 1', 'flush': 3, 'boxes': 500, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '55, 50, SSA, XLF, LF, Tidy Up??'},
+      {'room': 'Room 3', 'flush': 1, 'boxes': 1000, 'trolley': 16, 'teams': 'IVORY x 8 + PEARL x 8', 'zone': 'PP-500', 'instructions': 'CLUMPS (WASH TROLLEYS)'},
+      {'room': 'Room 4', 'flush': 1, 'boxes': 100, 'trolley': 8, 'teams': 'PEARL x 8 < 3', 'zone': 'PP-500', 'instructions': 'CLUMPS (WASH TROLLEYS)'},
+      {'room': 'Room 11', 'flush': 1, 'boxes': 20, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '50, CLUMPS (WASH TROLLEYS)'},
+      {'room': 'Room 13', 'flush': 1, 'boxes': 30, 'trolley': 4, 'teams': 'REST x 4', 'zone': 'PP-500', 'instructions': '50, 40, 55A'},
+      {'room': 'Room 15', 'flush': 3, 'boxes': 100, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '50s'},
+      {'room': 'Room 16', 'flush': 2, 'boxes': 30, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '50s'},
+      {'room': 'Room 17', 'flush': 1, 'boxes': 20, 'trolley': 0, 'teams': 'PEACH x 8', 'zone': 'PP-500', 'instructions': '55, 55A, mainly edges'},
+      {'room': 'Room 22', 'flush': 3, 'boxes': 300, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': 'CLUMPS (WASH TROLLEYS)'},
+      {'room': 'Room 23', 'flush': 1, 'boxes': 50, 'trolley': 8, 'teams': 'IVORY x 8 < 3', 'zone': 'PP-500', 'instructions': 'MB, CB'},
+      {'room': 'Room 24', 'flush': 2, 'boxes': 600, 'trolley': 16, 'teams': 'PURPLE x 8 + REST x 6', 'zone': 'M1-500', 'instructions': '55, 50, Soft??'},
+      {'room': 'Room 26', 'flush': 2, 'boxes': 800, 'trolley': 16, 'teams': 'SAPPHIRE x 8 + INDIGO x 7 + REST x 1', 'zone': 'M1-500', 'instructions': 'Check One Box'},
+      {'room': 'Room 29', 'flush': 3, 'boxes': 1, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '50s'},
+      {'room': 'Room 30', 'flush': 2, 'boxes': 1, 'trolley': 11, 'teams': 'SKY x 11', 'zone': 'PP-500', 'instructions': '50s'},
+      {'room': 'Room 36', 'flush': 2, 'boxes': 50, 'trolley': 0, 'teams': '—', 'zone': 'M3-300', 'instructions': '50s'},
+      {'room': 'Room 41', 'flush': 2, 'boxes': 500, 'trolley': 8, 'teams': 'ALPHA (VOL)', 'zone': 'M1-300', 'instructions': '55, 30, Keep moving bigger one from T/A'},
+      {'room': 'Room 42', 'flush': 2, 'boxes': 1000, 'trolley': 16, 'teams': 'GREY x 8 + RUBY x 8', 'zone': 'PP-200', 'instructions': '55, 30, Keep moving bigger one from T/A'},
+      {'room': 'Room 43', 'flush': 1, 'boxes': 600, 'trolley': 16, 'teams': 'SUNSHINE x 8 + YELLOW x 7 + REST x 1', 'zone': 'PP-200', 'instructions': 'L/OSSA'},
+      {'room': 'Room 44', 'flush': 2, 'boxes': 150, 'trolley': 0, 'teams': '—', 'zone': 'PP-200', 'instructions': 'INSTRUCTION: 55 cm only'},
+      {'room': 'Room 48', 'flush': 2, 'boxes': 300, 'trolley': 10, 'teams': 'APPLE x 8 + MANGO x 2', 'zone': 'M1-500', 'instructions': 'MB, CB'},
+      {'room': 'Room 50', 'flush': 1, 'boxes': 1400, 'trolley': 16, 'teams': 'JADE x 8 + AMBER x 6 + REST x 2', 'zone': 'M1-500', 'instructions': 'MYCOSENSE INSTRUCTION: 6,1,7'},
+      {'room': 'Room 51', 'flush': 1, 'boxes': 1200, 'trolley': 16, 'teams': 'VENUS x 8 + LIME x 8', 'zone': 'M1-500', 'instructions': 'MYCOSENSE INSTRUCTION: 6,1,7'},
+      {'room': 'Room 52', 'flush': 1, 'boxes': 600, 'trolley': 8, 'teams': 'BLACK x 8', 'zone': 'M1-500', 'instructions': 'MYCOSENSE INSTRUCTION: 5,7'},
+      {'room': 'Room 52A', 'flush': 1, 'boxes': 400, 'trolley': 8, 'teams': 'OPAL x 7 + REST x 1', 'zone': 'M1-500', 'instructions': 'MYCOSENSE Clumps (WASH TROLLEYS)'},
+      {'room': 'Room 60', 'flush': 1, 'boxes': 20, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': 'Check'},
+      {'room': 'Room 61', 'flush': 3, 'boxes': 1, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': 'MB, CB'},
+      {'room': 'Room 63', 'flush': 1, 'boxes': 200, 'trolley': 0, 'teams': 'PEACH x 8', 'zone': 'PP-500', 'instructions': 'Clumps (WASH TROLLEYS)'},
+      {'room': 'Room 64', 'flush': 1, 'boxes': 100, 'trolley': 8, 'teams': 'PEACH x 8 < 63 REST x 4', 'zone': 'PP-500', 'instructions': '—'},
+    ];
+
+    try {
+      return planData.firstWhere((r) => r['room'] == roomName);
+    } catch (_) {
+      return null;
+    }
   }
 }
 

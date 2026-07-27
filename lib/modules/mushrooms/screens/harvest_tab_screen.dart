@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repository.dart';
 import '../bloc/mushrooms_bloc.dart';
 import 'continuous_scanner_screen.dart';
+import 'harvest_attendance_screen.dart';
 
 class HarvestTabScreen extends StatefulWidget {
   final bool isDark;
@@ -43,10 +44,12 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
   final TextEditingController _empIdController = TextEditingController();
   late String _roomSelected;
 
-  String _subMode = 'active'; // 'active', 'planning', or 'orders'
+  String _subMode = 'active'; // 'active', 'planning', 'teams', or 'orders'
   List<Map<String, dynamic>> _yieldSurveys = [];
   List<Map<String, dynamic>> _employees = [];
+  List<Map<String, dynamic>> _teamsList = [];
   bool _isLoadingPlanning = false;
+  bool _isLoadingTeams = false;
 
   // Manual Allocation inputs
   final Map<String, TextEditingController> _allocControllers = {};
@@ -72,6 +75,19 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
         (k) => widget.localRooms[k]!['plant'] == widget.activePlant,
         orElse: () => widget.localRooms.keys.first);
     _loadPlanningData();
+    _loadTeamsData();
+  }
+
+  Future<void> _loadTeamsData() async {
+    setState(() => _isLoadingTeams = true);
+    final repo = MushroomsRepository();
+    final teams = await repo.getPickerTeamsDetails();
+    if (mounted) {
+      setState(() {
+        _teamsList = teams;
+        _isLoadingTeams = false;
+      });
+    }
   }
 
   Future<void> _loadPlanningData() async {
@@ -303,6 +319,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                   children: [
                     _buildSubTabButton('active', 'Active Harvesting', Icons.dns_rounded),
                     _buildSubTabButton('planning', 'Harvest Planning', Icons.analytics_rounded),
+                    _buildSubTabButton('teams', 'Team Management', Icons.groups_rounded),
                     _buildSubTabButton('orders', 'Orders Management', Icons.shopping_basket_rounded),
                   ],
                 ),
@@ -398,7 +415,11 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       )
                     ],
                   )
-                : (_subMode == 'planning' ? _buildPlanningView() : _buildOrdersManagementView()),
+                : (_subMode == 'planning'
+                    ? _buildPlanningView()
+                    : (_subMode == 'teams'
+                        ? _buildTeamsManagementView()
+                        : _buildOrdersManagementView())),
           )
         ],
       ),
@@ -1199,226 +1220,459 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     );
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  //  Real Harvesting Plan (Friday 24/07/2026) Sheet View
+  // ══════════════════════════════════════════════════════════════════════════
+
+  static const List<Map<String, dynamic>> _realHarvestPlanData = [
+    {'room': 'Room 1', 'flush': 3, 'boxes': 500, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '55, 50, SSA, XLF, LF, Tidy Up??'},
+    {'room': 'Room 3', 'flush': 1, 'boxes': 1000, 'trolley': 16, 'teams': 'IVORY x 8 + PEARL x 8', 'zone': 'PP-500', 'instructions': 'CLUMPS (WASH TROLLEYS)'},
+    {'room': 'Room 4', 'flush': 1, 'boxes': 100, 'trolley': 8, 'teams': 'PEARL x 8 < 3', 'zone': 'PP-500', 'instructions': 'CLUMPS (WASH TROLLEYS)'},
+    {'room': 'Room 11', 'flush': 1, 'boxes': 20, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '50, CLUMPS (WASH TROLLEYS)'},
+    {'room': 'Room 13', 'flush': 1, 'boxes': 30, 'trolley': 4, 'teams': 'REST x 4', 'zone': 'PP-500', 'instructions': '50, 40, 55A'},
+    {'room': 'Room 15', 'flush': 3, 'boxes': 100, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '50s'},
+    {'room': 'Room 15', 'flush': 3, 'boxes': 10, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '50, SSA'},
+    {'room': 'Room 16', 'flush': 2, 'boxes': 30, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '50s'},
+    {'room': 'Room 16', 'flush': 2, 'boxes': 5, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': 'Check 1 / O 55A'},
+    {'room': 'Room 17', 'flush': 1, 'boxes': 1, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': 'CLUMPS (WASH TROLLEYS)'},
+    {'room': 'Room 17', 'flush': 1, 'boxes': 20, 'trolley': 0, 'teams': 'PEACH x 8', 'zone': 'PP-500', 'instructions': '55, 55A, mainly edges'},
+    {'room': 'Room 22', 'flush': 3, 'boxes': 300, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': 'CLUMPS (WASH TROLLEYS)'},
+    {'room': 'Room 23', 'flush': 1, 'boxes': 50, 'trolley': 8, 'teams': 'IVORY x 8 < 3', 'zone': 'PP-500', 'instructions': 'MB, CB'},
+    {'room': 'Room 24', 'flush': 2, 'boxes': 600, 'trolley': 16, 'teams': 'PURPLE x 8 + REST x 6', 'zone': 'M1-500', 'instructions': '55, 50, Soft??'},
+    {'room': 'Room 26', 'flush': 2, 'boxes': 800, 'trolley': 16, 'teams': 'SAPPHIRE x 8 + INDIGO x 7 + REST x 1', 'zone': 'M1-500', 'instructions': 'Check One Box'},
+    {'room': 'Room 29', 'flush': 3, 'boxes': 1, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': '50s'},
+    {'room': 'Room 30', 'flush': 2, 'boxes': 1, 'trolley': 11, 'teams': 'SKY x 11', 'zone': 'PP-500', 'instructions': '50s'},
+    {'room': 'Room 36', 'flush': 2, 'boxes': 50, 'trolley': 0, 'teams': '—', 'zone': 'M3-300', 'instructions': '50s'},
+    {'room': 'Room 41', 'flush': 2, 'boxes': 500, 'trolley': 8, 'teams': 'ALPHA (VOL)', 'zone': 'M1-300', 'instructions': '55, 30, Keep moving bigger one from T/A'},
+    {'room': 'Room 42', 'flush': 2, 'boxes': 1000, 'trolley': 16, 'teams': 'GREY x 8 + RUBY x 8', 'zone': 'PP-200', 'instructions': '55, 30, Keep moving bigger one from T/A'},
+    {'room': 'Room 43', 'flush': 1, 'boxes': 600, 'trolley': 16, 'teams': 'SUNSHINE x 8 + YELLOW x 7 + REST x 1', 'zone': 'PP-200', 'instructions': 'L/OSSA'},
+    {'room': 'Room 44', 'flush': 2, 'boxes': 150, 'trolley': 0, 'teams': '—', 'zone': 'PP-200', 'instructions': 'INSTRUCTION: 55 cm only'},
+    {'room': 'Room 48', 'flush': 2, 'boxes': 300, 'trolley': 10, 'teams': 'APPLE x 8 + MANGO x 2', 'zone': 'M1-500', 'instructions': 'MB, CB'},
+    {'room': 'Room 50', 'flush': 1, 'boxes': 1400, 'trolley': 16, 'teams': 'JADE x 8 + AMBER x 6 + REST x 2', 'zone': 'M1-500', 'instructions': 'MYCOSENSE INSTRUCTION: 6,1,7'},
+    {'room': 'Room 51', 'flush': 1, 'boxes': 1200, 'trolley': 16, 'teams': 'VENUS x 8 + LIME x 8', 'zone': 'M1-500', 'instructions': 'MYCOSENSE INSTRUCTION: 6,1,7'},
+    {'room': 'Room 52', 'flush': 1, 'boxes': 600, 'trolley': 8, 'teams': 'BLACK x 8', 'zone': 'M1-500', 'instructions': 'MYCOSENSE INSTRUCTION: 5,7'},
+    {'room': 'Room 52A', 'flush': 1, 'boxes': 400, 'trolley': 8, 'teams': 'OPAL x 7 + REST x 1', 'zone': 'M1-500', 'instructions': 'MYCOSENSE Clumps (WASH TROLLEYS)'},
+    {'room': 'Room 60', 'flush': 1, 'boxes': 20, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': 'Check'},
+    {'room': 'Room 61', 'flush': 3, 'boxes': 1, 'trolley': 0, 'teams': '—', 'zone': 'PP-500', 'instructions': 'MB, CB'},
+    {'room': 'Room 63', 'flush': 1, 'boxes': 200, 'trolley': 0, 'teams': 'PEACH x 8', 'zone': 'PP-500', 'instructions': 'Clumps (WASH TROLLEYS)'},
+    {'room': 'Room 64', 'flush': 1, 'boxes': 100, 'trolley': 8, 'teams': 'PEACH x 8 < 63 REST x 4', 'zone': 'PP-500', 'instructions': '—'},
+  ];
+
   Widget _buildPlanningView() {
     if (_isLoadingPlanning) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          flex: 4,
-          child: _buildAllocationPanel(),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          flex: 6,
-          child: _buildSchedulePanel(),
-        ),
-      ],
-    );
-  }
+    final cardBg = widget.isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderColor = widget.isDark ? Colors.white12 : Colors.grey.shade300;
 
-  Widget _buildAllocationPanel() {
-    final activePlantRooms = widget.localRooms.keys
-        .where((k) => widget.localRooms[k]!['plant'] == widget.activePlant)
-        .toList();
+    final filteredPlanRows = _realHarvestPlanData.where((r) {
+      final roomName = r['room'] as String;
+      final isM2 = int.parse(roomName.replaceAll(RegExp(r'[^0-9]'), '')) >= 33;
+      if (widget.activePlant == 'M1' && isM2) return false;
+      if (widget.activePlant == 'M2' && !isM2) return false;
+      return true;
+    }).toList();
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        border: Border.all(color: FarmColors.borderLight),
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Manual Allocation Panel',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  Text(
-                    'Distribute picking requests based on yield surveys',
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                ],
-              ),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.refresh_rounded, size: 14),
-                label: const Text('Refresh'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  backgroundColor: widget.isDark ? Colors.white10 : Colors.grey.shade100,
-                  foregroundColor: widget.isDark ? Colors.white : Colors.black87,
-                ),
-                onPressed: _loadPlanningData,
-              ),
-            ],
-          ),
-          const Divider(height: 24),
-          const Text(
-            'Yield Survey Reference (Surveyor Logs)',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: FarmColors.forestGreenText),
-          ),
-          const SizedBox(height: 8),
+          // Header Sheet Banner
           Container(
-            height: 140,
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: widget.isDark ? Colors.white10 : Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: widget.isDark ? Colors.white24 : Colors.grey.shade200),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF1B4332), Color(0xFF2D6A4F)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: _yieldSurveys.isEmpty
-                ? const Center(child: Text('No yield surveys recorded.', style: TextStyle(fontSize: 11, color: Colors.grey)))
-                : ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: _yieldSurveys.length,
-                    itemBuilder: (c, idx) {
-                      final s = _yieldSurveys[idx];
-                      final isCurrentPlant = _getPlantFromRoomName(s['roomName']) == widget.activePlant;
-                      if (!isCurrentPlant) return const SizedBox.shrink();
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'HARVESTING PLAN · FRIDAY 24/07/2026',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white70,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Costa Mushroom Monarto Plan (${widget.activePlant})',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                Wrap(
+                  spacing: 12,
+                  children: [
+                    _buildSheetKpiBadge('TARGET BOXES', '42,374', Icons.inventory_2_rounded),
+                    _buildSheetKpiBadge('SENIORS', '163 (41,186b)', Icons.groups_rounded),
+                    _buildSheetKpiBadge('TRAINEES', '11 (1,188b)', Icons.school_rounded),
+                    _buildSheetKpiBadge('TOTAL HEADCOUNT', '174 Pickers', Icons.people_alt_rounded),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Personnel Roster Accordion Card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: cardBg,
+              border: Border.all(color: borderColor),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.assignment_ind_rounded, color: FarmColors.forestGreen, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'SHIFT ROSTER & PERSONNEL ASSIGNMENTS',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Divider(height: 1),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 24,
+                  runSpacing: 16,
+                  children: [
+                    _buildRosterColumn('SUPERVISORS', [
+                      '07:00 · Delwar (Shed M2)',
+                      '12:00 · Gurpreet (Shed M1)',
+                      '04:45 · Thong',
+                    ]),
+                    _buildRosterColumn('TEAM LEADERS', [
+                      '06:30 · Shiplu (Shed 24/26/23)',
+                      '06:30 · Birdi (Shed 50/51/48)',
+                      '06:30 · Rakesh (Shed 41/42/43/63)',
+                      '06:00 · Karen (Shed 30/3)',
+                      '06:30 · Anab (Shed 22/16)',
+                      '06:30 · Ruping (Shed 52/52A)',
+                    ]),
+                    _buildRosterColumn('BOX MOVERS (DAY SHIFT D/S)', [
+                      '08:30 · Bohdan (Shed 50)',
+                      '10:00 · Efraim (Shed 24)',
+                      '10:00 · Marcell (Shed 48/50/51)',
+                      '09:00 · Wilson (Shed 43)',
+                      '05:00 · Hugo (Shed 26)',
+                      '08:00 · Ismar (3) · Azhari (51) · Zacaria (42)',
+                      '07:30 · Charles, Meta, Billy, W. Selino, Dykes',
+                    ]),
+                    _buildRosterColumn('BOX MOVERS (AFTERNOON A/N)', [
+                      '22:00 · Rose',
+                      '23:00 · Tiva (Shed 50)',
+                      '21:00 · Jackson (Shed 51)',
+                      '23:00 · Wilson (24) · Nicholas (25)',
+                      '23:00 · Brian (3) · Simon (58)',
+                    ]),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Picker Teams & Rate W Speed Grid
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: cardBg,
+              border: Border.all(color: borderColor),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.speed_rounded, color: FarmColors.forestGreen, size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          'PICKER TEAMS & ESTIMATED SPEED (RATE W kg/hr)',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      'Rest Slots: 7:30 (14) · 8:00 (2) · 9:00 (4) · VOL (20)',
+                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Divider(height: 1),
+                const SizedBox(height: 12),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 180,
+                    mainAxisExtent: 58,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemCount: _teamsList.length,
+                  itemBuilder: (context, idx) {
+                    final t = _teamsList[idx];
+                    final colorName = t['colorCode'] as String;
+                    final teamColor = _parseTeamColor(colorName);
+                    final rate = t['rateEstimate'];
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: teamColor.withOpacity(0.08),
+                        border: Border.all(color: teamColor.withOpacity(0.3)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                colorName.toUpperCase(),
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: teamColor),
+                              ),
+                              Text(
+                                '${t['headcount']} HV',
+                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Rate W: $rate kg/h',
+                            style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Detailed Room Harvesting Allocations Table
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: cardBg,
+              border: Border.all(color: borderColor),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.table_chart_rounded, color: FarmColors.forestGreen, size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          'DETAILED ROOM HARVESTING ALLOCATION (${filteredPlanRows.length} Rooms)',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: FarmColors.forestGreen,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => HarvestAttendanceScreen(isDark: widget.isDark),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.edit_calendar_rounded, size: 16),
+                          label: const Text('Create/Edit Harvest Plan'),
+                        ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: widget.isDark ? Colors.white10 : Colors.grey.shade200,
+                            foregroundColor: widget.isDark ? Colors.white : Colors.black87,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          ),
+                          onPressed: _loadPlanningData,
+                          icon: const Icon(Icons.refresh_rounded, size: 16),
+                          label: const Text('Sync Real Data'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Divider(height: 1),
+                const SizedBox(height: 12),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    columnSpacing: 24,
+                    headingRowHeight: 40,
+                    dataRowMinHeight: 44,
+                    dataRowMaxHeight: 52,
+                    columns: const [
+                      DataColumn(label: Text('ROOM#', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                      DataColumn(label: Text('FLUSH', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                      DataColumn(label: Text('BOXES TARGET', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                      DataColumn(label: Text('TROLLEY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                      DataColumn(label: Text('TEAMS ASSIGNED', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                      DataColumn(label: Text('P.M. / ZONE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                      DataColumn(label: Text('PICKING INSTRUCTIONS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    ],
+                    rows: filteredPlanRows.map((r) {
+                      final boxes = r['boxes'] as int;
+                      final isHighYield = boxes >= 500;
+
+                      return DataRow(
+                        cells: [
+                          DataCell(
                             Text(
-                              s['roomName'].toString().replaceAll('Room', 'Grow Room'),
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                              r['room'] as String,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: FarmColors.forestGreenText),
                             ),
-                            Text(
-                              '${s['strain']} — Cycle ${s['cycle']}',
-                              style: const TextStyle(fontSize: 11, color: Colors.grey),
-                            ),
+                          ),
+                          DataCell(
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: FarmColors.forestGreen.withOpacity(0.1),
+                                color: Colors.blue.shade50,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                '${s['expectedYield'].toInt()} kg expected',
-                                style: const TextStyle(color: FarmColors.forestGreenText, fontWeight: FontWeight.bold, fontSize: 11),
+                                'Flush ${r['flush']}',
+                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.blue.shade800),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          DataCell(
+                            Text(
+                              '$boxes boxes',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: isHighYield ? FarmColors.forestGreen : Colors.black87,
+                              ),
+                            ),
+                          ),
+                          DataCell(Text(r['trolley'] > 0 ? '${r['trolley']}' : '—', style: const TextStyle(fontSize: 12))),
+                          DataCell(
+                            Text(
+                              r['teams'] as String,
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                            ),
+                          ),
+                          DataCell(
+                            Text(
+                              r['zone'] as String,
+                              style: TextStyle(fontSize: 11, color: Colors.grey.shade700, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          DataCell(
+                            Text(
+                              r['instructions'] as String,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: (r['instructions'] as String).contains('MYCOSENSE')
+                                    ? Colors.purple.shade700
+                                    : ((r['instructions'] as String).contains('WASH')
+                                        ? Colors.red.shade700
+                                        : Colors.grey.shade800),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       );
-                    },
+                    }).toList(),
                   ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Input Manual Allocation',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: ListView.builder(
-              itemCount: activePlantRooms.length,
-              itemBuilder: (c, idx) {
-                final rName = activePlantRooms[idx];
-                final survey = _findYieldSurvey(rName);
-                final strain = survey.isNotEmpty ? survey['strain'] as String : 'Cup';
-                final cycle = survey.isNotEmpty ? survey['cycle'] as int : 1;
-
-                if (!_allocControllers.containsKey(rName)) {
-                  _allocControllers[rName] = TextEditingController();
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              rName.replaceAll('Room', 'Grow Room'),
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                            ),
-                            Text(
-                              '$strain (Cycle $cycle)',
-                              style: const TextStyle(fontSize: 10, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        flex: 2,
-                        child: SizedBox(
-                          height: 36,
-                          child: DropdownButtonFormField<String>(
-                            value: _allocTypes[rName] ?? 'White',
-                            items: const [
-                              DropdownMenuItem(value: 'White', child: Text('White', style: TextStyle(fontSize: 11))),
-                              DropdownMenuItem(value: 'Brown', child: Text('Brown', style: TextStyle(fontSize: 11))),
-                            ],
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
-                            ),
-                            onChanged: (val) {
-                              if (val != null) {
-                                setState(() {
-                                  _allocTypes[rName] = val;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        flex: 2,
-                        child: SizedBox(
-                          height: 36,
-                          child: TextFormField(
-                            controller: _allocControllers[rName],
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              hintText: '0',
-                              labelText: 'Allocation (kg)',
-                              floatingLabelBehavior: FloatingLabelBehavior.never,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: FarmColors.forestGreen,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onPressed: _onConfirmAllocation,
-              child: const Text('Confirm Allocation', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSheetKpiBadge(String label, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 16),
+          const SizedBox(width: 6),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(label, style: const TextStyle(fontSize: 9, color: Colors.white70, fontWeight: FontWeight.bold)),
+              Text(value, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRosterColumn(String category, List<String> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          category,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: FarmColors.forestGreenText),
+        ),
+        const SizedBox(height: 6),
+        ...items.map((it) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text('• $it', style: const TextStyle(fontSize: 11)),
+            )),
+      ],
     );
   }
 
@@ -1967,10 +2221,453 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       ? Colors.red
                       : (crew.isEmpty ? Colors.grey : Colors.green),
                 ),
-              )
+              ),
             ],
           );
         }).toList(),
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  Harvest Team Management View & Dialogs
+  // ══════════════════════════════════════════════════════════════════════════
+
+  Widget _buildTeamsManagementView() {
+    final cardBg = widget.isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderColor = widget.isDark ? Colors.white12 : Colors.grey.shade300;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header Actions Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Harvest Picker Teams (${_teamsList.length} Teams)',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    'Manage picker team assignments, leader roles, and estimated picking speeds.',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: FarmColors.forestGreen,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+                onPressed: _showAddTeamDialog,
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: const Text('Add New Team'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          if (_isLoadingTeams)
+            const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator()))
+          else if (_teamsList.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: cardBg,
+                border: Border.all(color: borderColor),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Center(
+                child: Text('No harvest teams found. Click "+ Add New Team" to create one.'),
+              ),
+            )
+          else
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 420,
+                mainAxisExtent: 250,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: _teamsList.length,
+              itemBuilder: (context, idx) {
+                final team = _teamsList[idx];
+                final teamColor = _parseTeamColor(team['colorCode'] as String);
+                final members = (team['members'] as List<dynamic>?) ?? [];
+
+                return Container(
+                  decoration: BoxDecoration(
+                    color: cardBg,
+                    border: Border.all(color: borderColor),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Team Header Row
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: teamColor.withOpacity(0.2),
+                            radius: 20,
+                            child: Icon(Icons.groups_rounded, color: teamColor, size: 22),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${team['colorCode']} Team',
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                                Text(
+                                  'Leader: ${team['teamLeaderName'] ?? 'Unassigned'}',
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.person_add_alt_1_rounded, size: 20),
+                            tooltip: 'Assign Pickers',
+                            onPressed: () => _showManageTeamMembersDialog(team),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.edit_rounded, size: 18),
+                            tooltip: 'Edit Team',
+                            onPressed: () => _showEditTeamDialog(team),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Colors.redAccent),
+                            tooltip: 'Delete Team',
+                            onPressed: () => _showDeleteTeamDialog(team),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      const Divider(height: 1),
+                      const SizedBox(height: 12),
+
+                      // Stat Row
+                      Row(
+                        children: [
+                          _buildMiniStat('Headcount', '${team['headcount']} Pickers', Icons.people_outline),
+                          const SizedBox(width: 16),
+                          _buildMiniStat('Est. Rate', '${team['rateEstimate']} kg/hr', Icons.speed_rounded),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Members chips
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: members.map((m) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: teamColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: teamColor.withOpacity(0.3)),
+                                ),
+                                child: Text(
+                                  '${m['name']} (${m['id']})',
+                                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: teamColor),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
+    );
+  }
+
+  Color _parseTeamColor(String name) {
+    switch (name.toLowerCase()) {
+      case 'purple':
+        return Colors.purple;
+      case 'pearl':
+        return Colors.teal;
+      case 'ivory':
+        return Colors.amber.shade800;
+      case 'sapphire':
+        return Colors.blue;
+      case 'gold':
+        return Colors.orange;
+      case 'ruby':
+        return Colors.redAccent;
+      case 'emerald':
+        return Colors.green;
+      default:
+        return Colors.indigo;
+    }
+  }
+
+  Widget _buildMiniStat(String label, String value, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: Colors.grey),
+        const SizedBox(width: 4),
+        Text('$label: ', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+        Text(value, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  void _showAddTeamDialog() {
+    final formKey = GlobalKey<FormState>();
+    String colorCode = '';
+    String? teamLeaderId;
+    double rateEstimate = 25.0;
+
+    final harvestEmps = _employees
+        .where((e) => e['department']?.toString().toLowerCase().contains('harvest') == true)
+        .toList();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Add Harvest Team'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Team Name / Color (e.g. Amber, Emerald)'),
+                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+                onSaved: (val) => colorCode = val!.trim(),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Team Leader'),
+                value: teamLeaderId,
+                items: [
+                  const DropdownMenuItem(value: null, child: Text('No Leader Assigned')),
+                  ...harvestEmps.map((e) => DropdownMenuItem<String>(
+                        value: e['id'] as String,
+                        child: Text('${e['name']} (${e['id']})'),
+                      )),
+                ],
+                onChanged: (val) => teamLeaderId = val,
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                initialValue: '25.0',
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Estimated Rate (kg/hr)'),
+                validator: (val) => val == null || double.tryParse(val) == null ? 'Invalid rate' : null,
+                onSaved: (val) => rateEstimate = double.parse(val!),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                formKey.currentState!.save();
+                final repo = MushroomsRepository();
+                await repo.addPickerTeam(
+                  colorCode: colorCode,
+                  teamLeaderId: teamLeaderId,
+                  rateEstimate: rateEstimate,
+                );
+                if (ctx.mounted) Navigator.pop(ctx);
+                _loadTeamsData();
+              }
+            },
+            child: const Text('Add Team', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditTeamDialog(Map<String, dynamic> team) {
+    final formKey = GlobalKey<FormState>();
+    String colorCode = team['colorCode'] as String;
+    String? teamLeaderId = team['teamLeaderId'] as String?;
+    double rateEstimate = (team['rateEstimate'] as num?)?.toDouble() ?? 25.0;
+
+    final harvestEmps = _employees
+        .where((e) => e['department']?.toString().toLowerCase().contains('harvest') == true)
+        .toList();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Edit ${team['colorCode']} Team'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                initialValue: colorCode,
+                decoration: const InputDecoration(labelText: 'Team Name / Color'),
+                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+                onSaved: (val) => colorCode = val!.trim(),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Team Leader'),
+                value: harvestEmps.any((e) => e['id'] == teamLeaderId) ? teamLeaderId : null,
+                items: [
+                  const DropdownMenuItem(value: null, child: Text('No Leader Assigned')),
+                  ...harvestEmps.map((e) => DropdownMenuItem<String>(
+                        value: e['id'] as String,
+                        child: Text('${e['name']} (${e['id']})'),
+                      )),
+                ],
+                onChanged: (val) => teamLeaderId = val,
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                initialValue: rateEstimate.toString(),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Estimated Rate (kg/hr)'),
+                validator: (val) => val == null || double.tryParse(val) == null ? 'Invalid rate' : null,
+                onSaved: (val) => rateEstimate = double.parse(val!),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                formKey.currentState!.save();
+                final repo = MushroomsRepository();
+                await repo.updatePickerTeam(
+                  id: team['id'] as String,
+                  colorCode: colorCode,
+                  teamLeaderId: teamLeaderId,
+                  rateEstimate: rateEstimate,
+                );
+                if (ctx.mounted) Navigator.pop(ctx);
+                _loadTeamsData();
+              }
+            },
+            child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteTeamDialog(Map<String, dynamic> team) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete ${team['colorCode']} Team?'),
+        content: Text(
+          'Are you sure you want to delete this team? Pickers currently assigned to ${team['colorCode']} Team will be reset to "NEW".',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              final repo = MushroomsRepository();
+              await repo.deletePickerTeam(
+                team['id'] as String,
+                team['colorCode'] as String,
+              );
+              if (ctx.mounted) Navigator.pop(ctx);
+              _loadTeamsData();
+            },
+            child: const Text('Delete Team', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showManageTeamMembersDialog(Map<String, dynamic> team) {
+    final harvestEmps = _employees
+        .where((e) => e['department']?.toString().toLowerCase().contains('harvest') == true)
+        .toList();
+
+    final List<String> currentMemberIds = ((team['members'] as List<dynamic>?) ?? [])
+        .map((m) => m['id'] as String)
+        .toList();
+
+    final Set<String> selectedIds = Set.from(currentMemberIds);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text('Manage ${team['colorCode']} Team Pickers'),
+          content: SizedBox(
+            width: 400,
+            height: 350,
+            child: harvestEmps.isEmpty
+                ? const Center(child: Text('No Harvest department employees found.'))
+                : ListView.builder(
+                    itemCount: harvestEmps.length,
+                    itemBuilder: (context, idx) {
+                      final emp = harvestEmps[idx];
+                      final empId = emp['id'] as String;
+                      final isSelected = selectedIds.contains(empId);
+
+                      return CheckboxListTile(
+                        title: Text(emp['name'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        subtitle: Text('ID: $empId • Role: ${emp['role']}', style: const TextStyle(fontSize: 11)),
+                        value: isSelected,
+                        onChanged: (val) {
+                          setDialogState(() {
+                            if (val == true) {
+                              selectedIds.add(empId);
+                            } else {
+                              selectedIds.remove(empId);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
+              onPressed: () async {
+                final repo = MushroomsRepository();
+                await repo.assignEmployeesToTeam(team['colorCode'] as String, selectedIds.toList());
+                if (ctx.mounted) Navigator.pop(ctx);
+                _loadTeamsData();
+              },
+              child: const Text('Save Assignments', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       ),
     );
   }

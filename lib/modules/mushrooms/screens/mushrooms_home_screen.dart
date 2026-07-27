@@ -347,12 +347,12 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             body: EmployeesTabScreen(
               isDark: isDark,
               employees: _employees,
-              onAddEmployee: (id, name, role, dept, [pass, status]) async {
-                await _repository.addEmployee(id, name, role, dept, pass, status);
+              onAddEmployee: (id, name, role, dept, [pass, status, team]) async {
+                await _repository.addEmployee(id, name, role, dept, pass, status, team);
                 _loadMushroomData();
               },
-              onEditEmployee: (id, name, role, dept, [status]) async {
-                await _repository.updateEmployee(id, name, role, dept, status);
+              onEditEmployee: (id, name, role, dept, [status, team]) async {
+                await _repository.updateEmployee(id, name, role, dept, status, team);
                 _loadMushroomData();
               },
               onImportEmployees: (list) async {

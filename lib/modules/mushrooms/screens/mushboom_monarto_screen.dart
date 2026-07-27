@@ -1595,16 +1595,16 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   }
 
   void _onAddEmployee(String id, String name, String role,
-      [String? department, String? password, String? status]) async {
+      [String? department, String? password, String? status, String? pickerTeamColor]) async {
     final repo = MushroomsRepository();
-    await repo.addEmployee(id, name, role, department, password, status);
+    await repo.addEmployee(id, name, role, department, password, status, pickerTeamColor);
     _loadMushroomData();
   }
 
   void _onEditEmployee(String id, String name, String role,
-      [String? department, String? status]) async {
+      [String? department, String? status, String? pickerTeamColor]) async {
     final repo = MushroomsRepository();
-    await repo.updateEmployee(id, name, role, department, status);
+    await repo.updateEmployee(id, name, role, department, status, pickerTeamColor);
     _loadMushroomData();
   }
 

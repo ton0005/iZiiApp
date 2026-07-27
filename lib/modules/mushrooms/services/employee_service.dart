@@ -272,7 +272,7 @@ class EmployeeServiceImpl implements EmployeeService {
   Future<void> seedDefaultData() async {
     // Seed Departments
     final depts = [
-      MushroomDepartment(id: 'DEP001', name: 'Harvesting', description: 'Responsible for mushroom picking and grading', createdAt: DateTime.now()),
+      MushroomDepartment(id: 'DEP001', name: 'Harvest', description: 'Responsible for mushroom picking and grading', createdAt: DateTime.now()),
       MushroomDepartment(id: 'DEP002', name: 'Growing', description: 'Responsible for watering, composting and climate control', createdAt: DateTime.now()),
       MushroomDepartment(id: 'DEP003', name: 'Maintenance', description: 'Responsible for mechanical repairs and cleaning', createdAt: DateTime.now()),
     ];
@@ -307,7 +307,7 @@ class EmployeeServiceImpl implements EmployeeService {
         id: 'EMP003',
         name: 'Hùng V. (Specialist)',
         role: 'Harvest Picker',
-        department: 'Harvesting',
+        department: 'Harvest',
         passwordHash: defaultPasswordHash,
         status: 'active',
         createdAt: DateTime.now(),
@@ -316,7 +316,7 @@ class EmployeeServiceImpl implements EmployeeService {
         id: 'EMP004',
         name: 'Phúc D. (Picker)',
         role: 'Harvest Picker',
-        department: 'Harvesting',
+        department: 'Harvest',
         passwordHash: defaultPasswordHash,
         status: 'active',
         createdAt: DateTime.now(),

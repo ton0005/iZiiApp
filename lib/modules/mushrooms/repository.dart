@@ -93,16 +93,209 @@ class MushroomsRepository {
       'name': e.name,
       'role': e.role,
       'department': e.department,
+      'pickerTeamColor': e.pickerTeamColor ?? (e.department?.toLowerCase().contains('harvest') == true ? 'NEW' : null),
+      'employmentType': e.employmentType,
+      'baseRate': e.baseRate,
+      'defaultShed': e.defaultShed,
       'createdAt': e.createdAt.toIso8601String(),
     }).toList();
   }
 
-  Future<void> addEmployee(String id, String name, String role, [String? department, String? password, String? status]) async {
+  Future<List<String>> getTeams() async {
+    final Set<String> teams = {
+      'NEW', 'MANGO', 'LIME', 'PEACH', 'BLACK', 'PURPLE', 'IVORY', 'YELLOW',
+      'GREY', 'AMBER', 'SAPPHIRE', 'PEARL', 'APPLE', 'PINK', 'RUBY', 'ALPHA',
+      'JADE', 'INDIGO', 'OPAL', 'SUNSHINE', 'VENUS', 'SKY', 'GROUP 1'
+    };
+    try {
+      final dbTeams = await _db.select(_db.mushroomPickerTeams).get();
+      for (final t in dbTeams) {
+        if (t.colorCode.trim().isNotEmpty) {
+          teams.add(t.colorCode.trim());
+        }
+      }
+    } catch (_) {}
+    try {
+      final emps = await _db.select(_db.mushroomEmployees).get();
+      for (final e in emps) {
+        if (e.pickerTeamColor != null && e.pickerTeamColor!.trim().isNotEmpty) {
+          teams.add(e.pickerTeamColor!.trim());
+        }
+      }
+    } catch (_) {}
+    return teams.toList();
+  }
+
+  // === PICKER TEAMS MANAGEMENT ===
+
+  Future<List<Map<String, dynamic>>> getPickerTeamsDetails() async {
+    final defaultTeamsData = [
+      {'name': 'MANGO', 'rate': 28.5},
+      {'name': 'LIME', 'rate': 31.5},
+      {'name': 'PEACH', 'rate': 30.3},
+      {'name': 'BLACK', 'rate': 29.8},
+      {'name': 'PURPLE', 'rate': 31.5},
+      {'name': 'IVORY', 'rate': 28.7},
+      {'name': 'YELLOW', 'rate': 31.0},
+      {'name': 'GREY', 'rate': 31.9},
+      {'name': 'AMBER', 'rate': 31.4},
+      {'name': 'SAPPHIRE', 'rate': 35.6},
+      {'name': 'PEARL', 'rate': 36.6},
+      {'name': 'APPLE', 'rate': 30.3},
+      {'name': 'PINK', 'rate': 32.8},
+      {'name': 'RUBY', 'rate': 37.3},
+      {'name': 'ALPHA', 'rate': 32.8},
+      {'name': 'JADE', 'rate': 36.0},
+      {'name': 'INDIGO', 'rate': 34.5},
+      {'name': 'OPAL', 'rate': 28.3},
+      {'name': 'SUNSHINE', 'rate': 25.4},
+      {'name': 'VENUS', 'rate': 24.1},
+      {'name': 'SKY', 'rate': 25.0},
+      {'name': 'GROUP 1', 'rate': 25.0},
+    ];
+    try {
+      final dbTeams = await _db.select(_db.mushroomPickerTeams).get();
+      if (dbTeams.isEmpty) {
+        for (final tData in defaultTeamsData) {
+          final tName = tData['name'] as String;
+          final tRate = tData['rate'] as double;
+          final id = 'TEAM_${tName.replaceAll(' ', '_').toUpperCase()}';
+          await _db.into(_db.mushroomPickerTeams).insertOnConflictUpdate(
+            MushroomPickerTeam(
+              id: id,
+              planId: 'PLAN_DEFAULT',
+              colorCode: tName,
+              headcount: 0,
+              rateEstimate: tRate,
+            ),
+          );
+        }
+      }
+
+      final allTeams = await _db.select(_db.mushroomPickerTeams).get();
+      final allEmployees = await _db.select(_db.mushroomEmployees).get();
+
+      return allTeams.map((t) {
+        final teamLeader = allEmployees.firstWhere(
+          (e) => e.id == t.teamLeaderId,
+          orElse: () => MushroomEmployee(
+            id: '',
+            name: 'Unassigned',
+            role: '',
+            passwordHash: '',
+            status: 'active',
+            createdAt: DateTime.now(),
+          ),
+        );
+
+        final members = allEmployees
+            .where((e) =>
+                e.pickerTeamColor?.toLowerCase() == t.colorCode.toLowerCase())
+            .map((e) => {
+                  'id': e.id,
+                  'name': e.name,
+                  'role': e.role,
+                  'department': e.department,
+                })
+            .toList();
+
+        return {
+          'id': t.id,
+          'planId': t.planId,
+          'colorCode': t.colorCode,
+          'teamLeaderId': t.teamLeaderId,
+          'teamLeaderName': teamLeader.name,
+          'rateEstimate': t.rateEstimate,
+          'headcount': members.length,
+          'members': members,
+        };
+      }).toList();
+    } catch (e) {
+      print('Error getting picker teams details: $e');
+      return [];
+    }
+  }
+
+  Future<void> addPickerTeam({
+    required String colorCode,
+    String? teamLeaderId,
+    double rateEstimate = 25.0,
+  }) async {
+    final id = 'TEAM_${DateTime.now().millisecondsSinceEpoch}';
+    await _db.into(_db.mushroomPickerTeams).insertOnConflictUpdate(
+      MushroomPickerTeam(
+        id: id,
+        planId: 'PLAN_DEFAULT',
+        colorCode: colorCode,
+        teamLeaderId: teamLeaderId,
+        headcount: 0,
+        rateEstimate: rateEstimate,
+      ),
+    );
+    await SyncService().queueMutation('mushroom_picker_teams', 'insert', {
+      'id': id,
+      'plan_id': 'PLAN_DEFAULT',
+      'color_code': colorCode,
+      'team_leader_id': teamLeaderId,
+      'rate_estimate': rateEstimate,
+    });
+  }
+
+  Future<void> updatePickerTeam({
+    required String id,
+    required String colorCode,
+    String? teamLeaderId,
+    double rateEstimate = 25.0,
+  }) async {
+    await (_db.update(_db.mushroomPickerTeams)..where((t) => t.id.equals(id))).write(
+      MushroomPickerTeamsCompanion(
+        colorCode: Value(colorCode),
+        teamLeaderId: Value(teamLeaderId),
+        rateEstimate: Value(rateEstimate),
+      ),
+    );
+    await SyncService().queueMutation('mushroom_picker_teams', 'update', {
+      'id': id,
+      'color_code': colorCode,
+      'team_leader_id': teamLeaderId,
+      'rate_estimate': rateEstimate,
+    });
+  }
+
+  Future<void> deletePickerTeam(String id, String colorCode) async {
+    final emps = await _db.select(_db.mushroomEmployees).get();
+    for (final e in emps) {
+      if (e.pickerTeamColor?.toLowerCase() == colorCode.toLowerCase()) {
+        await (_db.update(_db.mushroomEmployees)..where((emp) => emp.id.equals(e.id))).write(
+          const MushroomEmployeesCompanion(
+            pickerTeamColor: Value('NEW'),
+          ),
+        );
+      }
+    }
+    await (_db.delete(_db.mushroomPickerTeams)..where((t) => t.id.equals(id))).go();
+    await SyncService().queueMutation('mushroom_picker_teams', 'delete', {
+      'id': id,
+    });
+  }
+
+  Future<void> assignEmployeesToTeam(String teamColorCode, List<String> employeeIds) async {
+    for (final empId in employeeIds) {
+      await (_db.update(_db.mushroomEmployees)..where((e) => e.id.equals(empId))).write(
+        MushroomEmployeesCompanion(
+          pickerTeamColor: Value(teamColorCode),
+        ),
+      );
+    }
+  }
+
+  Future<void> addEmployee(String id, String name, String role, [String? department, String? password, String? status, String? pickerTeamColor]) async {
     final passwordToHash = (password != null && password.isNotEmpty) ? password : 'password123';
     final algorithm = Sha256();
     final hash = await algorithm.hash(utf8.encode(passwordToHash));
     final passwordHash = hash.bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
     final statusVal = (status != null && status.isNotEmpty) ? status : 'active';
+    final teamVal = pickerTeamColor ?? (department?.toLowerCase().contains('harvest') == true ? 'NEW' : null);
 
     await _db.into(_db.mushroomEmployees).insertOnConflictUpdate(
       MushroomEmployeesCompanion.insert(
@@ -112,6 +305,7 @@ class MushroomsRepository {
         department: Value(department),
         passwordHash: Value(passwordHash),
         status: Value(statusVal),
+        pickerTeamColor: Value(teamVal),
         createdAt: Value(DateTime.now()),
       ),
     );
@@ -142,18 +336,22 @@ class MushroomsRepository {
       'role': role,
       'department': department,
       'status': statusVal,
+      'picker_team_color': teamVal,
       'created_at': DateTime.now().toIso8601String(),
     });
   }
 
-  Future<void> updateEmployee(String id, String name, String role, [String? department, String? status]) async {
+  Future<void> updateEmployee(String id, String name, String role, [String? department, String? status, String? pickerTeamColor]) async {
     final statusVal = (status != null && status.isNotEmpty) ? status : 'active';
+    final teamVal = pickerTeamColor ?? (department?.toLowerCase().contains('harvest') == true ? 'NEW' : null);
+
     await (_db.update(_db.mushroomEmployees)..where((e) => e.id.equals(id))).write(
       MushroomEmployeesCompanion(
         name: Value(name),
         role: Value(role),
         department: Value(department),
         status: Value(statusVal),
+        pickerTeamColor: Value(teamVal),
       ),
     );
     await SyncService().queueMutation('mushroom_employees', 'update', {
@@ -162,6 +360,7 @@ class MushroomsRepository {
       'role': role,
       'department': department,
       'status': statusVal,
+      'picker_team_color': teamVal,
     });
   }
 
@@ -174,20 +373,66 @@ class MushroomsRepository {
 
   Future<List<Map<String, dynamic>>> getDepartments() async {
     try {
-      final file = await _getDepartmentsFile();
-      if (!await file.exists()) {
-        final defaults = [
-          {'id': 'DEP001', 'name': 'Harvesting', 'description': 'Responsible for mushroom picking and grading'},
-          {'id': 'DEP002', 'name': 'Growing', 'description': 'Responsible for watering, composting and climate control'},
-          {'id': 'DEP003', 'name': 'Maintenance', 'description': 'Responsible for mechanical repairs and cleaning'},
-          {'id': 'DEP004', 'name': 'Sales', 'description': 'Responsible for retail orders and shipping logistics'},
-        ];
-        await file.writeAsString(jsonEncode(defaults));
-        return defaults;
+      final List<Map<String, dynamic>> results = [];
+      final Set<String> seenNames = {};
+
+      // 1. Query SQLite mushroomDepartments table
+      try {
+        final dbDepts = await _db.select(_db.mushroomDepartments).get();
+        for (final d in dbDepts) {
+          if (!seenNames.contains(d.name)) {
+            seenNames.add(d.name);
+            results.add({
+              'id': d.id,
+              'name': d.name,
+              'description': d.description ?? '',
+            });
+          }
+        }
+      } catch (_) {}
+
+      // 2. Query SQLite mushroomEmployees table for any distinct department values in DB
+      try {
+        final emps = await _db.select(_db.mushroomEmployees).get();
+        for (final e in emps) {
+          final deptName = e.department?.trim();
+          if (deptName != null && deptName.isNotEmpty && !seenNames.contains(deptName)) {
+            seenNames.add(deptName);
+            results.add({
+              'id': 'DEP_${deptName.toUpperCase().replaceAll(' ', '_')}',
+              'name': deptName,
+              'description': 'Database Department',
+            });
+          }
+        }
+      } catch (_) {}
+
+      // 3. Fallback to JSON file if no database records found
+      if (results.isEmpty) {
+        final file = await _getDepartmentsFile();
+        if (!await file.exists()) {
+          final defaults = [
+            {'id': 'DEP001', 'name': 'Harvest', 'description': 'Responsible for mushroom picking and grading'},
+            {'id': 'DEP002', 'name': 'Growing', 'description': 'Responsible for watering, composting and climate control'},
+            {'id': 'DEP003', 'name': 'Maintenance', 'description': 'Responsible for mechanical repairs and cleaning'},
+            {'id': 'DEP004', 'name': 'Sales', 'description': 'Responsible for retail orders and shipping logistics'},
+          ];
+          await file.writeAsString(jsonEncode(defaults));
+          return defaults;
+        }
+        final content = await file.readAsString();
+        final decoded = jsonDecode(content) as List<dynamic>;
+        final fileList = decoded.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        for (final item in fileList) {
+          final name = item['name'] as String;
+          if (!seenNames.contains(name)) {
+            seenNames.add(name);
+            results.add(item);
+          }
+        }
       }
-      final content = await file.readAsString();
-      final decoded = jsonDecode(content) as List<dynamic>;
-      return decoded.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+
+      return results;
     } catch (e) {
       print('Error loading departments: $e');
       return [];
@@ -211,6 +456,16 @@ class MushroomsRepository {
       'description': description,
     });
     await saveDepartments(list);
+    try {
+      await _db.into(_db.mushroomDepartments).insertOnConflictUpdate(
+        MushroomDepartment(
+          id: id,
+          name: name,
+          description: description,
+          createdAt: DateTime.now(),
+        ),
+      );
+    } catch (_) {}
     await SyncService().queueMutation('mushroom_departments', 'insert', {
       'id': id,
       'name': name,
@@ -228,6 +483,14 @@ class MushroomsRepository {
         'description': description,
       };
       await saveDepartments(list);
+      try {
+        await (_db.update(_db.mushroomDepartments)..where((d) => d.id.equals(id))).write(
+          MushroomDepartmentsCompanion(
+            name: Value(name),
+            description: Value(description),
+          ),
+        );
+      } catch (_) {}
       await SyncService().queueMutation('mushroom_departments', 'update', {
         'id': id,
         'name': name,
@@ -240,6 +503,9 @@ class MushroomsRepository {
     final list = await getDepartments();
     list.removeWhere((element) => element['id'] == id);
     await saveDepartments(list);
+    try {
+      await (_db.delete(_db.mushroomDepartments)..where((d) => d.id.equals(id))).go();
+    } catch (_) {}
     await SyncService().queueMutation('mushroom_departments', 'delete', {
       'id': id,
     });
@@ -300,8 +566,22 @@ class MushroomsRepository {
   }
 
   Future<List<String>> getRoles() async {
+    final Set<String> rolesSet = {};
     final list = await getRolesWithLevels();
-    return list.map((e) => e['name'] as String).toList();
+    for (final e in list) {
+      if (e['name'] != null) {
+        rolesSet.add(e['name'] as String);
+      }
+    }
+    try {
+      final emps = await _db.select(_db.mushroomEmployees).get();
+      for (final emp in emps) {
+        if (emp.role.trim().isNotEmpty) {
+          rolesSet.add(emp.role.trim());
+        }
+      }
+    } catch (_) {}
+    return rolesSet.toList();
   }
 
   Future<void> saveRoles(List<Map<String, dynamic>> roles) async {
