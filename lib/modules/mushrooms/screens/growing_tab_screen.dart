@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'mushboom_monarto_screen.dart'; // For FarmColors and shared definitions
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
+import '../widgets/plant_map_widget.dart';
 
 class GrowingTabScreen extends StatefulWidget {
   final bool isDark;
@@ -622,72 +623,22 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   }
 
   Widget _buildFloorMap() {
-    final topRow = widget.activePlant == 'M2' ? m2TopRow : m1TopRow;
-    final bottomRow = widget.activePlant == 'M2' ? m2BottomRow : m1BottomRow;
-    final int columnCount = topRow.length;
-
-    // Calculate width of each column (max of top cell width and bottom cell width)
-    final List<double> columnWidths = List.generate(columnCount, (i) {
-      final topName = topRow[i];
-      final bottomName = bottomRow[i];
-
-      final topWidth = _getRoomBaseWidth(topName);
-      final bottomWidth = _getRoomBaseWidth(bottomName);
-
-      return topWidth > bottomWidth ? topWidth : bottomWidth;
-    });
-
-    // Total width is sum of each column's width + 12px horizontal margin (6px left, 6px right)
-    final double totalCorridorWidth =
-        columnWidths.fold(0.0, (sum, w) => sum + w + 12.0);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Title & Filter Status summary
-        _buildFloorMapHeader(),
-        // Scrollable physical layout
-        Expanded(
-          child: Scrollbar(
-            controller: _horizontalScrollController,
-            thumbVisibility: true,
-            trackVisibility: true,
-            scrollbarOrientation: ScrollbarOrientation.bottom,
-            child: SingleChildScrollView(
-              controller: _horizontalScrollController,
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(
-                  left: 20, right: 20, top: 10, bottom: 24),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Top Line of Rooms
-                    Row(
-                      children: List.generate(columnCount, (i) {
-                        return _buildCell(topRow[i], columnWidths[i], true);
-                      }),
-                    ),
-                    const SizedBox(height: 12),
-                    // Central Walkway Corridor (Running horizontally through the whole plant)
-                    _buildCentralCorridor(totalCorridorWidth),
-                    const SizedBox(height: 12),
-                    // Bottom Line of Rooms
-                    Row(
-                      children: List.generate(columnCount, (i) {
-                        return _buildCell(bottomRow[i], columnWidths[i], false);
-                      }),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        // Stage color Legend at the bottom
-        _buildLegend(),
-      ],
+    return PlantMapWidget(
+      isDark: widget.isDark,
+      activePlant: widget.activePlant,
+      localRooms: widget.localRooms,
+      roomCrews: widget.roomCrews,
+      roomFilter: widget.roomFilter,
+      selectedRoomNames: widget.selectedRoomName != null ? {widget.selectedRoomName!} : {},
+      onRoomSelected: (rName) => widget.onRoomSelected(rName),
+      onPlantChanged: (plant) => widget.onPlantChanged(plant),
+      onRoomFilterChanged: (filter) => widget.onRoomFilterChanged(filter),
+      isMaximized: _isMapMaximized,
+      onToggleMaximize: () {
+        setState(() {
+          _isMapMaximized = !_isMapMaximized;
+        });
+      },
     );
   }
 

@@ -179,5 +179,33 @@ void main() {
       final jobX = lastEvent.firstWhere((j) => j['id'] == 'job_x');
       expect(jobX['status'], equals('in_progress'));
     });
+
+    test('JobListService - updateJobStatus auto resets room status to idle when job completed', () async {
+      await employeeService.login('EMP001', 'password123');
+
+      await growRoomService.addRoom(name: 'Room Reset', plantName: 'M1');
+      final allRooms = await growRoomService.getRooms();
+      final room = allRooms.firstWhere((r) => r['name'] == 'Room Reset');
+      final roomId = room['id'] as String;
+
+      await jobListService.addJobToRoom(
+        roomId: roomId,
+        jobData: {'id': 'job_water', 'name': 'Watering Task', 'job_type': 'watering'},
+      );
+
+      // Start job -> Room becomes active watering
+      await jobListService.updateJobStatus('job_water', 'in_progress');
+      final activeRooms = await growRoomService.watchRoomsByPlant('M1').first;
+      final targetActive = activeRooms.firstWhere((r) => r['id'] == roomId);
+      expect(targetActive['status'], equals('active'));
+      expect(targetActive['current_stage'], equals('watering'));
+
+      // Complete job -> Room automatically resets to idle!
+      await jobListService.updateJobStatus('job_water', 'completed');
+      final idleRooms = await growRoomService.watchRoomsByPlant('M1').first;
+      final targetIdle = idleRooms.firstWhere((r) => r['id'] == roomId);
+      expect(targetIdle['status'], equals('idle'));
+      expect(targetIdle['current_stage'], equals('idle'));
+    });
   });
 }

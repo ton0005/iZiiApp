@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:drift/drift.dart' as d;
 import 'package:izii_app/core/database/app_database.dart';
 import 'package:flutter/material.dart';
@@ -5,9 +8,12 @@ import 'mushboom_monarto_screen.dart'; // For FarmColors
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repository.dart';
+import '../services/harvest_plan_excel_service.dart';
 import '../bloc/mushrooms_bloc.dart';
 import 'continuous_scanner_screen.dart';
 import 'harvest_attendance_screen.dart';
+import 'create_harvest_plan_screen.dart';
+import 'review_harvest_plan_screen.dart';
 
 class HarvestTabScreen extends StatefulWidget {
   final bool isDark;
@@ -78,6 +84,8 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     _loadTeamsData();
   }
 
+  final HarvestPlanExcelService _excelService = HarvestPlanExcelService();
+
   Future<void> _loadTeamsData() async {
     setState(() => _isLoadingTeams = true);
     final repo = MushroomsRepository();
@@ -87,6 +95,86 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
         _teamsList = teams;
         _isLoadingTeams = false;
       });
+    }
+  }
+
+  Future<void> _importTeamsFromExcel() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv', 'txt', 'xlsx'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final file = File(result.files.single.path!);
+        String content;
+        if (file.path.toLowerCase().endsWith('.xlsx')) {
+          final bytes = await file.readAsBytes();
+          content = _excelService.convertXlsxBytesToCsvString(bytes);
+        } else {
+          content = await file.readAsString();
+        }
+
+        final parsedTeams = _excelService.parsePickerTeamsFromCsvContent(content);
+
+        if (parsedTeams.isEmpty) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No team rows found in selected CSV file.')),
+            );
+          }
+          return;
+        }
+
+        final repo = MushroomsRepository();
+        await repo.upsertPickerTeams(parsedTeams);
+        await _loadTeamsData();
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Successfully imported & upserted ${parsedTeams.length} Picker Teams into SQLite!'),
+              backgroundColor: FarmColors.forestGreen,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error importing teams: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportTeamsToExcel() async {
+    try {
+      final repo = MushroomsRepository();
+      final teams = await repo.getPickerTeamsDetails();
+      final file = await _excelService.exportPickerTeamsToCsvFile(teams);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Picker Teams exported: ${file.path}'),
+            backgroundColor: FarmColors.forestGreen,
+            action: SnackBarAction(
+              label: 'Share/Open',
+              textColor: Colors.white,
+              onPressed: () {
+                Share.shareXFiles([XFile(file.path)], text: 'PICKER TEAMS & ESTIMATED SPEED CSV');
+              },
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error exporting teams: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
@@ -1515,16 +1603,43 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           ),
+                          onPressed: () async {
+                            final res = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => CreateHarvestPlanScreen(
+                                  isDark: widget.isDark,
+                                  localRooms: widget.localRooms,
+                                  roomCrews: widget.roomCrews,
+                                ),
+                              ),
+                            );
+                            if (res == true) _loadPlanningData();
+                          },
+                          icon: const Icon(Icons.add_circle_rounded, size: 16),
+                          label: const Text('+ Create Harvest Plan', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: widget.isDark ? Colors.white10 : Colors.grey.shade200,
+                            foregroundColor: widget.isDark ? Colors.white : Colors.black87,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          ),
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => HarvestAttendanceScreen(isDark: widget.isDark),
+                                builder: (_) => ReviewHarvestPlanScreen(
+                                  isDark: widget.isDark,
+                                  userRole: 'Manager',
+                                  localRooms: widget.localRooms,
+                                  roomCrews: widget.roomCrews,
+                                ),
                               ),
                             );
                           },
-                          icon: const Icon(Icons.edit_calendar_rounded, size: 16),
-                          label: const Text('Create/Edit Harvest Plan'),
+                          icon: const Icon(Icons.analytics_rounded, size: 16),
+                          label: const Text('Review Plans'),
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
@@ -2243,34 +2358,113 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Actions Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Harvest Picker Teams (${_teamsList.length} Teams)',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'Manage picker team assignments, leader roles, and estimated picking speeds.',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ],
-              ),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: FarmColors.forestGreen,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                onPressed: _showAddTeamDialog,
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: const Text('Add New Team'),
-              ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth >= 700;
+              return isWide
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Harvest Picker Teams (${_teamsList.length} Teams)',
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 2),
+                            const Text(
+                              'Manage picker team assignments, leader roles, and estimated picking speeds.',
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.teal.shade700,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              ),
+                              onPressed: _importTeamsFromExcel,
+                              icon: const Icon(Icons.file_upload_rounded, size: 18),
+                              label: const Text('Import Teams (CSV/XLSX)'),
+                            ),
+                            OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              ),
+                              onPressed: _exportTeamsToExcel,
+                              icon: const Icon(Icons.file_download_rounded, size: 18, color: FarmColors.forestGreen),
+                              label: const Text('Export Teams (CSV)', style: TextStyle(color: FarmColors.forestGreenText, fontWeight: FontWeight.bold)),
+                            ),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: FarmColors.forestGreen,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              ),
+                              onPressed: _showAddTeamDialog,
+                              icon: const Icon(Icons.add_rounded, size: 18),
+                              label: const Text('Add New Team'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Harvest Picker Teams (${_teamsList.length} Teams)',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2),
+                        const Text(
+                          'Manage picker team assignments, leader roles, and estimated picking speeds.',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.teal.shade700,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              ),
+                              onPressed: _importTeamsFromExcel,
+                              icon: const Icon(Icons.file_upload_rounded, size: 18),
+                              label: const Text('Import Teams (CSV/XLSX)'),
+                            ),
+                            OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              ),
+                              onPressed: _exportTeamsToExcel,
+                              icon: const Icon(Icons.file_download_rounded, size: 18, color: FarmColors.forestGreen),
+                              label: const Text('Export Teams (CSV)', style: TextStyle(color: FarmColors.forestGreenText, fontWeight: FontWeight.bold)),
+                            ),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: FarmColors.forestGreen,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              ),
+                              onPressed: _showAddTeamDialog,
+                              icon: const Icon(Icons.add_rounded, size: 18),
+                              label: const Text('Add New Team'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+            },
           ),
           const SizedBox(height: 16),
 

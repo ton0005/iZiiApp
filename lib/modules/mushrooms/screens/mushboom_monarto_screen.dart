@@ -425,6 +425,10 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
               if (roomEntry.isNotEmpty) {
                 final rName = roomEntry['name'] as String;
                 final filteredJobs = state.selectedRoomJobs.where((j) {
+                  final jRoomId = j['room_id'] ?? j['roomId'];
+                  if (jRoomId != null && jRoomId != state.selectedRoomId) {
+                    return false;
+                  }
                   return _isJobVisible(j, _activeRole, _employees);
                 }).toList();
 

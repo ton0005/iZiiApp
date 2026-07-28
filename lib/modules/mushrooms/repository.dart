@@ -279,6 +279,52 @@ class MushroomsRepository {
     });
   }
 
+  Future<void> upsertPickerTeams(List<Map<String, dynamic>> teams) async {
+    for (final team in teams) {
+      final name = team['name']?.toString() ?? team['colorCode']?.toString() ?? 'WHITE';
+      final speed = (team['speedRateW'] as num?)?.toDouble() ?? (team['speed_rate_w'] as num?)?.toDouble() ?? 25.0;
+      final headcount = (team['headcountHV'] as num?)?.toInt() ?? (team['headcount_hv'] as num?)?.toInt() ?? 0;
+
+      final existing = await (_db.select(_db.mushroomPickerTeams)
+            ..where((t) => t.colorCode.equals(name)))
+          .getSingleOrNull();
+
+      if (existing != null) {
+        await (_db.update(_db.mushroomPickerTeams)..where((t) => t.id.equals(existing.id))).write(
+          MushroomPickerTeamsCompanion(
+            rateEstimate: Value(speed),
+            headcount: Value(headcount),
+          ),
+        );
+        await SyncService().queueMutation('mushroom_picker_teams', 'update', {
+          'id': existing.id,
+          'color_code': name,
+          'rate_estimate': speed,
+          'headcount': headcount,
+        });
+      } else {
+        final id = 'TEAM_${DateTime.now().millisecondsSinceEpoch}_${name.hashCode}';
+        await _db.into(_db.mushroomPickerTeams).insertOnConflictUpdate(
+          MushroomPickerTeam(
+            id: id,
+            planId: 'PLAN_DEFAULT',
+            colorCode: name,
+            teamLeaderId: null,
+            headcount: headcount,
+            rateEstimate: speed,
+          ),
+        );
+        await SyncService().queueMutation('mushroom_picker_teams', 'insert', {
+          'id': id,
+          'plan_id': 'PLAN_DEFAULT',
+          'color_code': name,
+          'rate_estimate': speed,
+          'headcount': headcount,
+        });
+      }
+    }
+  }
+
   Future<void> assignEmployeesToTeam(String teamColorCode, List<String> employeeIds) async {
     for (final empId in employeeIds) {
       await (_db.update(_db.mushroomEmployees)..where((e) => e.id.equals(empId))).write(
@@ -1015,6 +1061,43 @@ class MushroomsRepository {
         'current_stage': job.jobType,
         'updated_at': DateTime.now().toIso8601String(),
       });
+    } else if (newStatus == 'completed' || newStatus == 'done' || newStatus == 'todo') {
+      // Check if there are remaining in_progress jobs for this room
+      final remainingInProgressJob = await (_db.select(_db.mushroomJobs)
+            ..where((tbl) => tbl.roomId.equals(job.roomId) & tbl.status.equals('in_progress')))
+          .getSingleOrNull();
+
+      if (remainingInProgressJob != null) {
+        final stageStr = remainingInProgressJob.isSoloJob ? 'alone_worker' : remainingInProgressJob.jobType;
+        await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+          GrowRoomsCompanion(
+            status: const Value('active'),
+            currentStage: Value(stageStr),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+        await SyncService().queueMutation('grow_rooms', 'update', {
+          'id': job.roomId,
+          'status': 'active',
+          'current_stage': stageStr,
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+      } else {
+        // No remaining in_progress jobs -> Auto-reset room status to idle!
+        await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+          GrowRoomsCompanion(
+            status: const Value('idle'),
+            currentStage: const Value('idle'),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+        await SyncService().queueMutation('grow_rooms', 'update', {
+          'id': job.roomId,
+          'status': 'idle',
+          'current_stage': 'idle',
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+      }
     }
   }
 

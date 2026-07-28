@@ -482,6 +482,12 @@ class SyncService {
         return _upsertMushroomRoomCrew(data);
       case 'mushroom_employees':
         return _upsertMushroomEmployee(data);
+      case 'mushroom_departments':
+        return _upsertMushroomDepartment(data);
+      case 'mushroom_roles':
+        return _upsertMushroomRole(data);
+      case 'mushroom_picker_teams':
+        return _upsertMushroomPickerTeam(data);
       default:
         _log('   ⚠️ Bảng "$table" chưa được hỗ trợ đồng bộ PULL.');
         return false;
@@ -1112,10 +1118,60 @@ class SyncService {
         name: data['name'] as String? ?? '',
         role: data['role'] as String? ?? '',
         department: data['department'] as String?,
-        passwordHash: data['password_hash'] as String? ?? '',
+        passwordHash: data['password_hash'] as String? ?? data['passwordHash'] as String? ?? '',
         status: data['status'] as String? ?? 'active',
-        linkedUserId: data['linked_user_id'] as String?,
+        linkedUserId: data['linked_user_id'] as String? ?? data['linkedUserId'] as String?,
         createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
+        employmentType: data['employment_type'] as String? ?? data['employmentType'] as String?,
+        baseRate: (data['base_rate'] as num?)?.toDouble() ?? (data['baseRate'] as num?)?.toDouble(),
+        defaultShed: data['default_shed'] as String? ?? data['defaultShed'] as String?,
+        pickerTeamColor: data['picker_team_color'] as String? ?? data['pickerTeamColor'] as String?,
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomDepartment(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomDepartments).insertOnConflictUpdate(
+      MushroomDepartment(
+        id: id,
+        name: data['name'] as String? ?? '',
+        description: data['description'] as String?,
+        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomRole(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomEmployeeDepartmentRoles).insertOnConflictUpdate(
+      MushroomEmployeeDepartmentRole(
+        id: id,
+        employeeId: data['employee_id'] as String? ?? data['employeeId'] as String? ?? '',
+        departmentId: data['department_id'] as String? ?? data['departmentId'] as String? ?? '',
+        roleKey: data['role_key'] as String? ?? data['roleKey'] as String? ?? data['name'] as String? ?? '',
+        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomPickerTeam(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomPickerTeams).insertOnConflictUpdate(
+      MushroomPickerTeam(
+        id: id,
+        planId: data['plan_id'] as String? ?? data['planId'] as String? ?? '',
+        colorCode: data['color_code'] as String? ?? data['colorCode'] as String? ?? data['name'] as String? ?? 'WHITE',
+        teamLeaderId: data['team_leader_id'] as String? ?? data['teamLeaderId'] as String?,
+        headcount: (data['headcount'] as num?)?.toInt() ?? (data['headcount_hv'] as num?)?.toInt() ?? (data['headcountHV'] as num?)?.toInt() ?? 0,
+        rateEstimate: (data['rate_estimate'] as num?)?.toDouble() ?? (data['speed_rate_w'] as num?)?.toDouble() ?? (data['speedRateW'] as num?)?.toDouble() ?? 0.0,
+        memberIdsJson: data['member_ids_json'] as String? ?? data['memberIdsJson'] as String?,
       ),
     );
     return true;

@@ -108,8 +108,9 @@ class RoomsUpdatedEvent extends MushroomsEvent {
 }
 
 class RoomJobsUpdatedEvent extends MushroomsEvent {
+  final String roomId;
   final List<Map<String, dynamic>> jobs;
-  RoomJobsUpdatedEvent(this.jobs);
+  RoomJobsUpdatedEvent(this.roomId, this.jobs);
 }
 
 // === STATE ===
@@ -196,7 +197,7 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
   Future<void> _onLoadRoomDetails(LoadRoomDetailsEvent event, Emitter<MushroomsState> emit) async {
     _jobsSubscription?.cancel();
     _jobsSubscription = _jobService.watchJobsByRoom(event.roomId).listen((jobs) {
-      add(RoomJobsUpdatedEvent(jobs));
+      add(RoomJobsUpdatedEvent(event.roomId, jobs));
     });
     final alarmActive = await _jobService.isAnySoloAlarmActive();
     emit(state.copyWith(
@@ -210,7 +211,9 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
   }
 
   void _onRoomJobsUpdated(RoomJobsUpdatedEvent event, Emitter<MushroomsState> emit) {
-    emit(state.copyWith(selectedRoomJobs: event.jobs));
+    if (event.roomId == state.selectedRoomId) {
+      emit(state.copyWith(selectedRoomJobs: event.jobs));
+    }
   }
 
   Future<void> _onStartCycle(StartCycleEvent event, Emitter<MushroomsState> emit) async {
