@@ -1,0 +1,83 @@
+ 3 thay đổi lên server...
+I/flutter (18696): [SyncService]    📦 grow_rooms → update
+I/flutter (18696): [SyncService]    📦 mushroom_jobs → update
+I/flutter (18696): [SyncService]    📦 tasks → update
+I/flutter (18696): [ChatWS] Received event: event_reaction
+I/flutter (18696): [ChatWS] Real-time event reaction received: {id: room_10, status: idle, current_stage: idle, day_in_cycle: 1, updated_at: 2026-08-02T22:47:39.636448}
+2
+I/flutter (18696): [ChatWS] Received event: event_reaction
+I/flutter (18696): [ChatWS] Real-time event reaction received: {id: f18a5f61-5688-4f0a-86d2-ae97654692bd, status: completed, completed_at: 2026-08-02T22:47:39.656276, alarm_triggered: false}
+I/flutter (18696): [ChatWS] Received event: sync_trigger
+I/flutter (18696): [ChatWS] Real-time event reaction received: {id: 786be66a-38d1-4f00-a1ac-f049c6f487cf, status: done}
+I/flutter (18696): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (18696): [SyncService] ✅ PUSH thành công! Server đã nhận 3 thay đổi.
+I/flutter (18696): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (18696): [SyncService] 📥 Nhận được 4 cập nhật từ Server. Đang lọc và áp dụng...
+2
+I/flutter (18696): [SyncService]    🔄 grow_rooms → update: id=room_10
+I/flutter (18696): [SyncService]    🔄 mushroom_jobs → update: id=f18a5f61-5688-4f0a-86d2-ae97654692bd
+I/flutter (18696): [SyncService]    🔄 tasks → update: id=786be66a-38d1-4f00-a1ac-f049c6f487cf
+I/flutter (18696): [SyncService] ✅ Đã ghi 4 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (18696): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (18696): [SyncService] Đang kết nối tới server: http://10.107.156.93:8080 ...
+I/flutter (18696): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (18696): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (18696): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (18696): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (18696): [SyncService] Đang kết nối tới server: http://10.107.156.93:8080 ...
+I/flutter (18696): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (18696): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (18696): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (18696): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (18696): [ChatWS] Received event: heartbeat
+I/flutter (18696): [SyncService] Đang kết nối tới server: http://10.107.156.93:8080 ...
+I/flutter (18696): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (18696): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (18696): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (18696): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (18696): [ChatWS] Sent event: heartbeat
+I/flutter (18696): [SyncService] Đang kết nối tới server: http://10.107.156.93:8080 ...
+I/flutter (18696): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (18696): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (18696): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (18696): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+I/flutter (18696): [SyncService] Đang kết nối tới server: http://10.107.156.93:8080 ...
+I/flutter (18696): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (18696): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (18696): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (18696): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (18696): [ChatWS] Received event: event_reaction
+I/flutter (18696): [ChatWS] Real-time event reaction received: {id: ccd1521d-ea80-4286-8a7b-ae524376926c, room_id: room_10, job_type: alone_worker, name: Alone Worker (Solo), status: in_progress, assignee: Admin Growing, is_solo_job: true, time_limit_minutes: 45, started_at: 2026-08-02T22:48:03.625850, alarm_triggered: false, linked_task_id: 57b65637-f495-4cb4-8e51-e78fd4f0e2c1, co_level: 0.0, co2_level: 0.0, check_in_time: 2026-08-02T22:47:51.360885, check_out_time: null, created_at: 2026-08-02T22:48:03.625850}
+2
+I/flutter (18696): [ChatWS] Received event: event_reaction
+I/flutter (18696): [ChatWS] Real-time event reaction received: {id: 038cea6c-1243-465e-aa1e-66bc9e8911cb, job_id: ccd1521d-ea80-4286-8a7b-ae524376926c, check_in_interval_minutes: 45, grace_period_minutes: 5, escalation_target: supervisor, auto_start_on_job_begin: true, alarm_type: push_inapp, created_at: 2026-08-02T22:48:03.734817}
+I/flutter (18696): [ChatWS] Received event: event_reaction
+I/flutter (18696): [ChatWS] Real-time event reaction received: {id: 6a4455fb-0b97-47dd-92ab-a4232beb0651, job_id: ccd1521d-ea80-4286-8a7b-ae524376926c, worker_id: Admin Growing, event_type: start, notes: Alone Worker job started. Limit: 45 mins. CO: 0.0 ppm, CO2: 0.0 ppm, timestamp: 2026-08-02T22:48:03.785871}
+I/flutter (18696): [ChatWS] Received event: sync_trigger
+I/flutter (18696): [ChatWS] Real-time event reaction received: {id: room_10, status: active, current_stage: alone_worker, updated_at: 2026-08-02T22:48:03.845862}
+I/flutter (18696): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (18696): [SyncService] Đang kết nối tới server: http://10.107.156.93:8080 ...
+I/flutter (18696): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (18696): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (18696): [SyncService] 📥 Nhận được 4 cập nhật từ Server. Đang lọc và áp dụng...
+I/flutter (18696): [SyncService]    🔄 mushroom_jobs → insert: id=ccd1521d-ea80-4286-8a7b-ae524376926c
+I/flutter (18696): [SyncService]    🔄 mushroom_job_safety_configs → insert: id=038cea6c-1243-465e-aa1e-66bc9e8911cb
+I/flutter (18696): [SyncService]    🔄 mushroom_safety_checkin_logs → insert: id=6a4455fb-0b97-47dd-92ab-a4232beb0651
+I/flutter (18696): [SyncService]    🔄 grow_rooms → update: id=room_10
+I/flutter (18696): [SyncService] ✅ Đã ghi 4 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (18696): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (18696): [SyncService] Đang kết nối tới server: http://10.107.156.93:8080 ...
+I/flutter (18696): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (18696): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (18696): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (18696): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (18696): [SyncService] Đang kết nối tới server: http://10.107.156.93:8080 ...
+I/flutter (18696): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (18696): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (18696): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (18696): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (18696): [ChatWS] Connection closed.

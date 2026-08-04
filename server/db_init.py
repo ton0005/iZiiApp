@@ -27,6 +27,17 @@ def init_db():
     # origin_server_id: server_id đầu tiên NHẬN mutation này từ device
     # (khác với server đang lưu bản ghi này, vốn có thể là do relay từ peer khác).
     # NULL = mutation cũ trước khi có multi-server, coi như thuộc server hiện tại.
+    # seq: SỐ THỨ TỰ ĐƠN ĐIỆU do server này cấp, tăng dần tuyệt đối.
+    #
+    # Vì sao cần: con trỏ delta cũ dùng `WHERE server_received_at > ?` tức so
+    # sánh CHUỖI thời gian. Trong mesh LAN 3 máy thì tạm ổn, nhưng khi thêm
+    # site hoặc adapter doanh nghiệp, chỉ cần lệch đồng hồ vài giây là mutation
+    # bị BỎ SÓT VĨNH VIỄN mà không có lỗi nào — kiểu hỏng tệ nhất vì im lặng.
+    # seq do chính server cấp nên miễn nhiễm với lệch đồng hồ và với việc chỉnh
+    # giờ hệ thống lùi lại.
+    #
+    # actor_user_id / actor_device_id: phục vụ audit — "AI đã đổi cái gì".
+    # Bắt buộc cho kiểm toán an toàn lao động và cho đối soát với ERP.
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS sync_mutations (
         id TEXT PRIMARY KEY,
@@ -35,16 +46,45 @@ def init_db():
         operation TEXT,
         data TEXT,
         server_received_at TEXT,
-        origin_server_id TEXT
+        origin_server_id TEXT,
+        seq INTEGER,
+        actor_user_id TEXT,
+        actor_device_id TEXT,
+        schema_version INTEGER DEFAULT 1
     )""")
 
-    # 1b. Migration nhẹ: nếu DB cũ đã tồn tại trước khi có cột này, thêm cột
-    # bằng ALTER TABLE (CREATE TABLE IF NOT EXISTS không tự thêm cột cho bảng
-    # đã có sẵn).
+    # 1b. Migration nhẹ cho DB đã tồn tại — CREATE TABLE IF NOT EXISTS không tự
+    # thêm cột vào bảng có sẵn.
     cursor.execute('PRAGMA table_info(sync_mutations)')
     existing_cols = {row[1] for row in cursor.fetchall()}
-    if "origin_server_id" not in existing_cols:
-        cursor.execute('ALTER TABLE sync_mutations ADD COLUMN origin_server_id TEXT')
+    for col, ddl in (
+        ("origin_server_id", 'ALTER TABLE sync_mutations ADD COLUMN origin_server_id TEXT'),
+        ("seq",              'ALTER TABLE sync_mutations ADD COLUMN seq INTEGER'),
+        ("actor_user_id",    'ALTER TABLE sync_mutations ADD COLUMN actor_user_id TEXT'),
+        ("actor_device_id",  'ALTER TABLE sync_mutations ADD COLUMN actor_device_id TEXT'),
+        ("schema_version",   'ALTER TABLE sync_mutations ADD COLUMN schema_version INTEGER DEFAULT 1'),
+    ):
+        if col not in existing_cols:
+            cursor.execute(ddl)
+
+    # Indexes for fast mutation delta lookup.
+    # idx_sync_mutations_seq là index QUAN TRỌNG NHẤT — mọi truy vấn delta mới
+    # đều đi qua nó.
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_sync_mutations_seq ON sync_mutations(seq)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_sync_mutations_received_at ON sync_mutations(server_received_at)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_sync_mutations_origin ON sync_mutations(origin_server_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_sync_mutations_table ON sync_mutations("table")')
+
+    # 1c. Bộ đếm seq — giữ riêng thay vì dùng AUTOINCREMENT vì `id` đã là
+    # PRIMARY KEY dạng TEXT (UUID do client sinh), không thể vừa là rowid tăng
+    # dần. Bảng 1 dòng, cập nhật bằng UPDATE ... RETURNING trong cùng
+    # transaction với INSERT nên không có race giữa các connection.
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS sync_sequence (
+        name    TEXT PRIMARY KEY,
+        current INTEGER NOT NULL DEFAULT 0
+    )""")
+    cursor.execute("INSERT OR IGNORE INTO sync_sequence (name, current) VALUES ('mutation', 0)")
 
     # 2. Server Registry — danh sách các peer server đã biết (phục vụ
     # multi-server sync + mDNS discovery cache).
@@ -54,9 +94,22 @@ def init_db():
         zone TEXT,
         host TEXT,
         port INTEGER,
+        peer_url TEXT,
         last_synced_at TEXT,
+        last_synced_seq INTEGER,
         last_seen_online_at TEXT
     )""")
+
+    cursor.execute('PRAGMA table_info(known_servers)')
+    ks_cols = {row[1] for row in cursor.fetchall()}
+    for col, ddl in (
+        ("peer_url", 'ALTER TABLE known_servers ADD COLUMN peer_url TEXT'),
+        # Con trỏ đồng bộ với peer, dạng seq. Thay thế last_synced_at (chuỗi
+        # thời gian của peer) vốn phụ thuộc đồng hồ máy peer.
+        ("last_synced_seq", 'ALTER TABLE known_servers ADD COLUMN last_synced_seq INTEGER'),
+    ):
+        if col not in ks_cols:
+            cursor.execute(ddl)
     
     # 3. Registered Devices
     cursor.execute("""
@@ -112,9 +165,160 @@ def init_db():
         PRIMARY KEY (user_id, event_type)
     )""")
     
+    # 7. Webhook Subscriptions
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS webhook_subscriptions (
+        id TEXT PRIMARY KEY,
+        url TEXT NOT NULL,
+        event_filter TEXT,
+        secret_token TEXT,
+        is_active INTEGER DEFAULT 1,
+        created_at TEXT
+    )""")
+
+    # 8. Webhook Dead-Letter Queue — event đã hết số lần retry mà vẫn không
+    # gửi được. Trước đây những event này mất im lặng (chỉ còn dòng print).
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS webhook_dead_letters (
+        id TEXT PRIMARY KEY,
+        url TEXT NOT NULL,
+        event_id TEXT,
+        event_type TEXT,
+        payload TEXT,
+        last_error TEXT,
+        attempts INTEGER,
+        failed_at TEXT,
+        replayed_at TEXT
+    )""")
+    cursor.execute(
+        'CREATE INDEX IF NOT EXISTS idx_webhook_dead_letters_failed_at ON webhook_dead_letters(failed_at)'
+    )
+
+    # 9. Schema Migrations — theo dõi các migration dữ liệu chỉ được chạy MỘT
+    # LẦN (khác với CREATE TABLE IF NOT EXISTS vốn idempotent tự nhiên).
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS schema_migrations (
+        name TEXT PRIMARY KEY,
+        applied_at TEXT,
+        detail TEXT
+    )""")
+
     conn.commit()
+
+    _run_data_migrations(conn)
+
     conn.close()
     print(f"SQLite Database initialized successfully at: {os.path.abspath(DB_PATH)}")
+
+
+def _migration_applied(conn, name: str) -> bool:
+    row = conn.execute("SELECT 1 FROM schema_migrations WHERE name = ?", (name,)).fetchone()
+    return row is not None
+
+
+def _mark_migration(conn, name: str, detail: str = "") -> None:
+    from datetime import datetime, timezone
+    conn.execute(
+        "INSERT OR REPLACE INTO schema_migrations (name, applied_at, detail) VALUES (?, ?, ?)",
+        (name, datetime.now(timezone.utc).isoformat(), detail),
+    )
+    conn.commit()
+
+
+def _run_data_migrations(conn) -> None:
+    """
+    Các migration dữ liệu chạy một lần duy nhất, có ghi sổ trong
+    schema_migrations để lần khởi động sau không chạy lại.
+    """
+    # ── 001: dọn timestamp naive ────────────────────────────────────────────
+    # Trước đây server_received_at được ghi bằng datetime.now() (naive, giờ
+    # local). Sau khi chuyển sang UTC-aware, hai định dạng cùng tồn tại trong
+    # một cột TEXT:
+    #     naive: 2026-08-01T13:00:00.123456
+    #     UTC:   2026-08-01T03:30:00.123456+00:00
+    # Truy vấn delta dùng `WHERE server_received_at > ?` tức so sánh CHUỖI. Giờ
+    # local (UTC+9:30) luôn lớn hơn giờ UTC cùng thời điểm, nên mọi hàng naive
+    # sẽ luôn thoả điều kiện và bị trả về lặp lại ở mỗi chu kỳ sync 45s.
+    #
+    # sync_mutations là MUTATION LOG (nhật ký thay đổi), không phải bảng state:
+    # client Drift đã áp dụng và lưu dữ liệu thật ở local rồi. Vì vậy xoá các
+    # hàng định dạng cũ là an toàn và dứt điểm.
+    name = "001_purge_naive_timestamps"
+    if not _migration_applied(conn, name):
+        try:
+            cur = conn.execute(
+                "DELETE FROM sync_mutations "
+                "WHERE server_received_at IS NOT NULL "
+                "  AND server_received_at NOT LIKE '%+00:00' "
+                "  AND server_received_at NOT LIKE '%Z'"
+            )
+            deleted = cur.rowcount
+            conn.commit()
+            _mark_migration(conn, name, f"deleted={deleted}")
+            if deleted > 0:
+                print(
+                    f"🧹 [MIGRATION] {name}: đã xoá {deleted} mutation có timestamp "
+                    f"định dạng cũ (naive local-time)."
+                )
+            else:
+                print(f"✅ [MIGRATION] {name}: không có bản ghi nào cần dọn.")
+        except Exception as e:
+            print(f"⚠️  [MIGRATION] {name} thất bại: {e} — sẽ thử lại lần khởi động sau.")
+
+    # ── 002: cấp seq cho các mutation đã có ─────────────────────────────────
+    # Các bản ghi ghi trước khi có cột seq đang để NULL. Nếu cứ để vậy thì truy
+    # vấn `WHERE seq > ?` sẽ BỎ QUA chúng hoàn toàn (NULL không thoả mọi phép
+    # so sánh) → thiết bị mới sẽ không bao giờ nhận được dữ liệu lịch sử.
+    #
+    # Gán seq theo thứ tự server_received_at tăng dần để giữ đúng trình tự nhân
+    # quả, rồi đẩy bộ đếm lên quá giá trị lớn nhất.
+    name = "002_backfill_mutation_seq"
+    if not _migration_applied(conn, name):
+        try:
+            rows = conn.execute(
+                "SELECT id FROM sync_mutations WHERE seq IS NULL "
+                "ORDER BY server_received_at ASC, id ASC"
+            ).fetchall()
+            start = conn.execute(
+                "SELECT COALESCE(MAX(seq), 0) FROM sync_mutations"
+            ).fetchone()[0]
+            n = start
+            for r in rows:
+                n += 1
+                conn.execute("UPDATE sync_mutations SET seq = ? WHERE id = ?", (n, r[0]))
+            conn.execute(
+                "UPDATE sync_sequence SET current = ? WHERE name = 'mutation' AND current < ?",
+                (n, n),
+            )
+            conn.commit()
+            _mark_migration(conn, name, f"backfilled={len(rows)} max_seq={n}")
+            print(f"✅ [MIGRATION] {name}: đã cấp seq cho {len(rows)} mutation (max_seq={n}).")
+        except Exception as e:
+            print(f"⚠️  [MIGRATION] {name} thất bại: {e} — sẽ thử lại lần khởi động sau.")
+
+
+def prune_old_mutations(days: int = 30) -> int:
+    """
+    Prunes mutations older than `days` days from sync_mutations table
+    to prevent unlimited table growth.
+    """
+    from datetime import datetime, timezone, timedelta
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM sync_mutations WHERE server_received_at < ?", (cutoff,))
+        deleted_count = cursor.rowcount
+        conn.commit()
+        if deleted_count > 0:
+            try:
+                print(f"🧹 [DB] Pruned {deleted_count} mutations older than {days} days.")
+            except Exception:
+                print(f"[DB] Pruned {deleted_count} mutations older than {days} days.")
+        return deleted_count
+    finally:
+        conn.close()
+
 
 if __name__ == "__main__":
     init_db()

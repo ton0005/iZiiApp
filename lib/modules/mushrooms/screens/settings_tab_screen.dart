@@ -1,20 +1,23 @@
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, File;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:path/path.dart' as p;
 
 import '../../../core/settings/settings_service.dart';
 import '../../../core/server/server_control_panel.dart';
 import '../../../core/server/server_manager.dart';
+import '../../../core/database/database_backup_service.dart';
 
 /// Settings tab screen for the Mushrooms module.
 ///
 /// Sections:
 /// 1. Server Control Panel (Windows only) — Start/Stop/Restart embedded server
 /// 2. Sync Configuration — Server URL, auth token
-/// 3. Language & Region
-/// 4. About & System Info
+/// 3. Database Backup & Restore — Manage SQLite backups and restores
+/// 4. Language & Region
+/// 5. About & System Info
 class SettingsTabScreen extends StatefulWidget {
   final bool isDark;
 
@@ -29,16 +32,23 @@ class SettingsTabScreen extends StatefulWidget {
 
 class _SettingsTabScreenState extends State<SettingsTabScreen> {
   final SettingsService _settingsService = SettingsService();
+  final DatabaseBackupService _backupService = DatabaseBackupService();
 
   final _urlController = TextEditingController();
   final _tokenController = TextEditingController();
   bool _isSaving = false;
   String _selectedLanguage = 'en';
 
+  // Backup State
+  List<BackupFileInfo> _backups = [];
+  bool _isBackupLoading = false;
+  String? _activeDbPath;
+
   @override
   void initState() {
     super.initState();
     _loadSettings();
+    _loadBackups();
   }
 
   @override
@@ -61,6 +71,102 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
     }
   }
 
+  Future<void> _loadBackups() async {
+    setState(() => _isBackupLoading = true);
+    try {
+      final activeFile = await _backupService.getActiveDatabaseFile();
+      final backups = await _backupService.listBackups();
+      if (mounted) {
+        setState(() {
+          _activeDbPath = activeFile.path;
+          _backups = backups;
+          _isBackupLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isBackupLoading = false);
+    }
+  }
+
+  Future<void> _handleCreateBackup() async {
+    try {
+      final backupFile = await _backupService.createBackup();
+      await _loadBackups();
+      if (mounted && backupFile != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
+                const SizedBox(width: 8),
+                Expanded(child: Text('Backup created: ${p.basename(backupFile.path)}')),
+              ],
+            ),
+            backgroundColor: const Color(0xFF10B981),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Backup error: $e'), backgroundColor: Colors.redAccent),
+        );
+      }
+    }
+  }
+
+  Future<void> _confirmRestore(BackupFileInfo backup) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.amber),
+            SizedBox(width: 8),
+            Text('Restore Database?'),
+          ],
+        ),
+        content: Text(
+          'Restoring "${backup.fileName}" will overwrite the active database. Make sure to restart iZiiApp afterwards.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, foregroundColor: Colors.white),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Restore Now'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await _backupService.restoreBackup(backup.path);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ Database restored successfully! Please restart iZiiApp.'),
+              backgroundColor: Color(0xFF10B981),
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Restore failed: $e'), backgroundColor: Colors.redAccent),
+          );
+        }
+      }
+    }
+  }
+
   Future<void> _saveSettings() async {
     setState(() => _isSaving = true);
     await _settingsService.saveSyncServerUrl(_urlController.text.trim());
@@ -80,8 +186,7 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           ),
           backgroundColor: const Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -128,7 +233,19 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           _buildSyncConfigCard(isDark),
           const SizedBox(height: 32),
 
-          // ── Section 3: Language & Region ──────────────────────────
+          // ── Section 3: Database Backup & Restore ───────────────────
+          _buildSectionHeader(
+            icon: Icons.storage_rounded,
+            title: 'Database Backup & Restore',
+            subtitle: 'Backup or restore active SQLite database',
+            color: const Color(0xFF10B981),
+            isDark: isDark,
+          ),
+          const SizedBox(height: 12),
+          _buildDatabaseBackupCard(isDark),
+          const SizedBox(height: 32),
+
+          // ── Section 4: Language & Region ──────────────────────────
           _buildSectionHeader(
             icon: Icons.translate_rounded,
             title: 'Language & Region',
@@ -140,7 +257,7 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           _buildLanguageCard(isDark),
           const SizedBox(height: 32),
 
-          // ── Section 4: About & System Info ────────────────────────
+          // ── Section 5: About & System Info ────────────────────────
           _buildSectionHeader(
             icon: Icons.info_outline_rounded,
             title: 'About',
@@ -172,10 +289,10 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.12),
+            color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: color, size: 20),
+          child: Icon(icon, size: 20, color: color),
         ),
         const SizedBox(width: 12),
         Column(
@@ -185,7 +302,7 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
               title,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.bold,
                 color: isDark ? Colors.white : Colors.black87,
               ),
             ),
@@ -193,13 +310,13 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
               subtitle,
               style: TextStyle(
                 fontSize: 12,
-                color: isDark ? Colors.white38 : Colors.black45,
+                color: isDark ? Colors.white54 : Colors.black45,
               ),
             ),
           ],
         ),
       ],
-    ).animate().fadeIn(duration: 300.ms).slideX(begin: -0.05, end: 0);
+    );
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -212,30 +329,25 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Server URL
           _buildLabel('Server URL', isDark),
           const SizedBox(height: 6),
           _buildTextField(
             controller: _urlController,
-            hint: 'http://10.146.147.160:8080',
+            hint: 'http://127.0.0.1:8080',
             icon: Icons.link_rounded,
             isDark: isDark,
           ),
           const SizedBox(height: 16),
-
-          // Auth Token
-          _buildLabel('Auth Token (optional)', isDark),
+          _buildLabel('Auth Token (Optional)', isDark),
           const SizedBox(height: 6),
           _buildTextField(
             controller: _tokenController,
-            hint: 'Enter authentication token',
-            icon: Icons.vpn_key_rounded,
+            hint: 'Enter token if authentication is enabled',
+            icon: Icons.key_rounded,
             isDark: isDark,
             obscure: true,
           ),
           const SizedBox(height: 20),
-
-          // Save Button
           Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
@@ -245,17 +357,13 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.save_rounded, size: 18),
-              label: Text(_isSaving ? 'Saving...' : 'Save Configuration'),
+              label: Text(_isSaving ? 'Saving...' : 'Save Settings'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF06B6D4),
                 foregroundColor: Colors.white,
-                elevation: 0,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -270,86 +378,169 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  Language Card
+  //  Database Backup & Restore Card
   // ══════════════════════════════════════════════════════════════════════════
 
-  Widget _buildLanguageCard(bool isDark) {
+  Widget _buildDatabaseBackupCard(bool isDark) {
     return _buildCard(
       isDark: isDark,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildLabel('Display Language', isDark),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              _buildLanguageOption(
-                flag: '🇬🇧',
-                label: 'English',
-                code: 'en',
-                isDark: isDark,
+          // Active DB File Banner
+          if (_activeDbPath != null) ...[
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white10 : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(10),
               ),
-              const SizedBox(width: 12),
-              _buildLanguageOption(
-                flag: '🇻🇳',
-                label: 'Tiếng Việt',
-                code: 'vi',
-                isDark: isDark,
+              child: Row(
+                children: [
+                  const Icon(Icons.folder_open_rounded, size: 18, color: Color(0xFF10B981)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Active DB: $_activeDbPath',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontFamily: 'monospace',
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Available Backups (${_backups.length})',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.backup_rounded, size: 16),
+                label: const Text('Create Backup Now'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF10B981),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: _handleCreateBackup,
               ),
             ],
           ),
+          const SizedBox(height: 12),
+
+          if (_isBackupLoading)
+            const Center(child: Padding(padding: EdgeInsets.all(12.0), child: CircularProgressIndicator()))
+          else if (_backups.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                'No database backups created yet. Click "Create Backup Now" to create one.',
+                style: TextStyle(fontSize: 12, color: isDark ? Colors.white54 : Colors.black45),
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _backups.length,
+              separatorBuilder: (ctx, i) => const Divider(height: 1),
+              itemBuilder: (ctx, i) {
+                final b = _backups[i];
+                final sizeMb = (b.sizeBytes / (1024 * 1024)).toStringAsFixed(2);
+                final dateStr = "${b.modifiedAt.year}-${b.modifiedAt.month.toString().padLeft(2, '0')}-${b.modifiedAt.day.toString().padLeft(2, '0')} ${b.modifiedAt.hour.toString().padLeft(2, '0')}:${b.modifiedAt.minute.toString().padLeft(2, '0')}";
+
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.insert_drive_file_rounded, color: Color(0xFF10B981)),
+                  title: Text(
+                    b.fileName,
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87),
+                  ),
+                  subtitle: Text(
+                    '$dateStr • $sizeMb MB',
+                    style: TextStyle(fontSize: 11, color: isDark ? Colors.white54 : Colors.black45),
+                  ),
+                  trailing: OutlinedButton.icon(
+                    icon: const Icon(Icons.restore_rounded, size: 14),
+                    label: const Text('Restore', style: TextStyle(fontSize: 12)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF10B981),
+                      side: const BorderSide(color: Color(0xFF10B981)),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    ),
+                    onPressed: () => _confirmRestore(b),
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildLanguageOption({
-    required String flag,
-    required String label,
-    required String code,
-    required bool isDark,
-  }) {
-    final isSelected = _selectedLanguage == code;
-    return Expanded(
-      child: InkWell(
-        onTap: () => setState(() => _selectedLanguage = code),
-        borderRadius: BorderRadius.circular(12),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.15 : 0.08)
-                : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey.withValues(alpha: 0.06)),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected
-                  ? const Color(0xFFF59E0B).withValues(alpha: 0.5)
-                  : Colors.transparent,
-              width: 1.5,
+  // ══════════════════════════════════════════════════════════════════════════
+  //  Language & Region Card
+  // ══════════════════════════════════════════════════════════════════════════
+
+  Widget _buildLanguageCard(bool isDark) {
+    return _buildCard(
+      isDark: isDark,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Display Language',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Select interface language',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.white54 : Colors.black45,
+                  ),
+                ),
+              ],
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(flag, style: const TextStyle(fontSize: 22)),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-              ),
-              if (isSelected) ...[
-                const SizedBox(width: 8),
-                const Icon(Icons.check_circle_rounded,
-                    color: Color(0xFFF59E0B), size: 18),
-              ],
+          DropdownButton<String>(
+            value: _selectedLanguage,
+            dropdownColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
+            underline: const SizedBox(),
+            items: const [
+              DropdownMenuItem(value: 'en', child: Text('English')),
             ],
+            onChanged: (val) {
+              if (val != null) setState(() => _selectedLanguage = val);
+            },
           ),
-        ),
+        ],
       ),
     );
   }
@@ -464,15 +655,10 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           color: isDark ? Colors.white24 : Colors.black26,
           fontSize: 13,
         ),
-        prefixIcon: Icon(icon,
-            size: 18,
-            color: isDark ? Colors.white38 : Colors.black38),
+        prefixIcon: Icon(icon, size: 18, color: isDark ? Colors.white38 : Colors.black38),
         filled: true,
-        fillColor: isDark
-            ? Colors.white.withValues(alpha: 0.05)
-            : const Color(0xFFF8F8F6),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF8F8F6),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
@@ -487,8 +673,7 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide:
-              const BorderSide(color: Color(0xFF06B6D4), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFF06B6D4), width: 1.5),
         ),
       ),
     );

@@ -12,12 +12,11 @@ class SettingsService {
 
   Future<void> saveLanguage(String code) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_languageCode, code);
+    await prefs.setString(_languageCode, 'en');
   }
 
   Future<String> getLanguage() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_languageCode) ?? 'vi';
+    return 'en';
   }
 
   Future<void> saveGeminiApiKey(String key) async {
@@ -65,6 +64,32 @@ class SettingsService {
   Future<String?> getLastSyncTimestamp() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_lastSyncTimestamp);
+  }
+
+  // ── Con trỏ đồng bộ dạng sequence ──────────────────────────────────────────
+  //
+  // Thay cho last_sync_timestamp vì so sánh chuỗi thời gian phụ thuộc đồng hồ
+  // server; lệch vài giây là bỏ sót bản ghi mà không có lỗi nào.
+  //
+  // Lưu THEO TỪNG SERVER URL: seq là số thứ tự trong log của riêng một server,
+  // gửi seq của server A cho server B là vô nghĩa và sẽ làm mất dữ liệu. Cơ chế
+  // cũ dùng một key toàn cục nên đổi server là hỏng ngay.
+  String _seqKeyFor(String serverUrl) =>
+      'last_sync_seq::${serverUrl.trim().replaceAll(RegExp(r'/+$'), '')}';
+
+  Future<void> saveLastSyncSeq(String serverUrl, int seq) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_seqKeyFor(serverUrl), seq);
+  }
+
+  Future<int?> getLastSyncSeq(String serverUrl) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_seqKeyFor(serverUrl));
+  }
+
+  Future<void> clearLastSyncSeq(String serverUrl) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_seqKeyFor(serverUrl));
   }
 
   Future<void> saveActiveUserId(String userId) async {

@@ -467,14 +467,18 @@ class MushroomsRepository {
           return defaults;
         }
         final content = await file.readAsString();
-        final decoded = jsonDecode(content) as List<dynamic>;
-        final fileList = decoded.map((e) => Map<String, dynamic>.from(e as Map)).toList();
-        for (final item in fileList) {
-          final name = item['name'] as String;
-          if (!seenNames.contains(name)) {
-            seenNames.add(name);
-            results.add(item);
-          }
+        if (content.trim().isNotEmpty) {
+          try {
+            final decoded = jsonDecode(content) as List<dynamic>;
+            final fileList = decoded.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+            for (final item in fileList) {
+              final name = item['name'] as String;
+              if (!seenNames.contains(name)) {
+                seenNames.add(name);
+                results.add(item);
+              }
+            }
+          } catch (_) {}
         }
       }
 
@@ -583,26 +587,30 @@ class MushroomsRepository {
         return defaults;
       }
       final content = await file.readAsString();
-      final decoded = jsonDecode(content) as List<dynamic>;
       final result = <Map<String, dynamic>>[];
-      for (final item in decoded) {
-        if (item is String) {
-          int level = 0;
-          final r = item.toLowerCase();
-          if (r.contains('manager') || r.contains('site manager')) {
-            level = 3;
-          } else if (r.contains('lead') || r.contains('supervisor')) {
-            level = 2;
-          } else if (r.contains('specialist')) {
-            level = 1;
+      if (content.trim().isNotEmpty) {
+        try {
+          final decoded = jsonDecode(content) as List<dynamic>;
+          for (final item in decoded) {
+            if (item is String) {
+              int level = 0;
+              final r = item.toLowerCase();
+              if (r.contains('manager') || r.contains('site manager')) {
+                level = 3;
+              } else if (r.contains('lead') || r.contains('supervisor')) {
+                level = 2;
+              } else if (r.contains('specialist')) {
+                level = 1;
+              }
+              result.add({'name': item, 'level': level});
+            } else if (item is Map) {
+              result.add({
+                'name': item['name'] as String,
+                'level': item['level'] as int? ?? 0,
+              });
+            }
           }
-          result.add({'name': item, 'level': level});
-        } else if (item is Map) {
-          result.add({
-            'name': item['name'] as String,
-            'level': item['level'] as int? ?? 0,
-          });
-        }
+        } catch (_) {}
       }
       return result;
     } catch (e) {
@@ -769,8 +777,8 @@ class MushroomsRepository {
       await SyncService().queueMutation('mushroom_jobs', 'update', {
         'id': job.id,
         'status': 'completed',
-        'completedAt': DateTime.now().toIso8601String(),
-        'alarmTriggered': false,
+        'completed_at': DateTime.now().toIso8601String(),
+        'alarm_triggered': false,
       });
 
       // Update any linked Task status to 'done'
@@ -841,12 +849,12 @@ class MushroomsRepository {
       // Queue mushroom_jobs mutation
       await SyncService().queueMutation('mushroom_jobs', 'insert', {
         'id': jobId,
-        'roomId': roomId,
-        'jobType': step['type']!,
+        'room_id': roomId,
+        'job_type': step['type']!,
         'name': step['name']!,
         'status': isFirst ? 'in_progress' : 'pending',
-        'planDetails': step['type'] == 'watering' ? (wateringPlan ?? '2 Side 2L/m2') : null,
-        'prochlorazRate': step['type'] == 'prochloraz' ? (prochlorazRate ?? '1.3g/m2') : null,
+        'plan_details': step['type'] == 'watering' ? (wateringPlan ?? '2 Side 2L/m2') : null,
+        'prochloraz_rate': step['type'] == 'prochloraz' ? (prochlorazRate ?? '1.3g/m2') : null,
         'created_at': DateTime.now().toIso8601String(),
       });
     }
@@ -927,16 +935,16 @@ class MushroomsRepository {
 
     await SyncService().queueMutation('mushroom_jobs', 'insert', {
       'id': jobId,
-      'roomId': roomId,
-      'jobType': 'alone_worker',
+      'room_id': roomId,
+      'job_type': 'alone_worker',
       'name': title,
       'status': 'in_progress',
       'assignee': assignee,
-      'isSoloJob': true,
-      'timeLimitMinutes': timeLimitMinutes,
-      'startedAt': DateTime.now().toIso8601String(),
-      'alarmTriggered': false,
-      'linkedTaskId': taskId,
+      'is_solo_job': true,
+      'time_limit_minutes': timeLimitMinutes,
+      'started_at': DateTime.now().toIso8601String(),
+      'alarm_triggered': false,
+      'linked_task_id': taskId,
       'co_level': coLevel,
       'co2_level': co2Level,
       'check_in_time': checkInTime?.toIso8601String(),
@@ -960,12 +968,12 @@ class MushroomsRepository {
 
       await SyncService().queueMutation('mushroom_job_safety_configs', 'insert', {
         'id': safetyConfigId,
-        'jobId': jobId,
-        'checkInIntervalMinutes': timeLimitMinutes,
-        'gracePeriodMinutes': 5,
-        'escalationTarget': 'supervisor',
-        'autoStartOnJobBegin': true,
-        'alarmType': 'push_inapp',
+        'job_id': jobId,
+        'check_in_interval_minutes': timeLimitMinutes,
+        'grace_period_minutes': 5,
+        'escalation_target': 'supervisor',
+        'auto_start_on_job_begin': true,
+        'alarm_type': 'push_inapp',
         'created_at': DateTime.now().toIso8601String(),
       });
 
@@ -983,9 +991,9 @@ class MushroomsRepository {
 
       await SyncService().queueMutation('mushroom_safety_checkin_logs', 'insert', {
         'id': logId,
-        'jobId': jobId,
-        'workerId': assignee,
-        'eventType': 'start',
+        'job_id': jobId,
+        'worker_id': assignee,
+        'event_type': 'start',
         'notes': 'Alone Worker job started. Limit: $timeLimitMinutes mins. CO: $coLevel ppm, CO2: $co2Level ppm',
         'timestamp': DateTime.now().toIso8601String(),
       });
@@ -1023,8 +1031,8 @@ class MushroomsRepository {
     await SyncService().queueMutation('mushroom_jobs', 'update', {
       'id': jobId,
       'status': newStatus,
-      'completedAt': newStatus == 'completed' ? DateTime.now().toIso8601String() : null,
-      'alarmTriggered': newStatus == 'completed' ? false : job.alarmTriggered,
+      'completed_at': newStatus == 'completed' ? DateTime.now().toIso8601String() : null,
+      'alarm_triggered': newStatus == 'completed' ? false : job.alarmTriggered,
     });
 
     // Sync status back to linked project task
@@ -1171,28 +1179,46 @@ class MushroomsRepository {
       roomId: roomId,
       jobType: jobType,
       name: name,
-      status: const Value('todo'),
+      status: const Value('in_progress'),
       assignee: Value(assignee),
       priority: Value(priority),
       scheduledAt: Value(scheduledAt),
       planDetails: Value(planDetails),
       prochlorazRate: Value(prochlorazRate),
       linkedTaskId: Value(taskId),
+      startedAt: Value(DateTime.now()),
     ));
 
     await SyncService().queueMutation('mushroom_jobs', 'insert', {
       'id': jobId,
-      'roomId': roomId,
-      'jobType': jobType,
+      'room_id': roomId,
+      'job_type': jobType,
       'name': name,
-      'status': 'todo',
+      'status': 'in_progress',
       'assignee': assignee,
       'priority': priority,
-      'scheduledAt': scheduledAt?.toIso8601String(),
-      'planDetails': planDetails,
-      'prochlorazRate': prochlorazRate,
-      'linkedTaskId': taskId,
+      'scheduled_at': scheduledAt?.toIso8601String(),
+      'plan_details': planDetails,
+      'prochloraz_rate': prochlorazRate,
+      'linked_task_id': taskId,
+      'started_at': DateTime.now().toIso8601String(),
       'created_at': DateTime.now().toIso8601String(),
+    });
+
+    final stageStr = jobType == 'alone_worker' ? 'alone_worker' : jobType;
+    await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+      GrowRoomsCompanion(
+        status: const Value('active'),
+        currentStage: Value(stageStr),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+
+    await SyncService().queueMutation('grow_rooms', 'update', {
+      'id': roomId,
+      'status': 'active',
+      'current_stage': stageStr,
+      'updated_at': DateTime.now().toIso8601String(),
     });
   }
 
@@ -1836,8 +1862,8 @@ class MushroomsRepository {
 
       await SyncService().queueMutation('mushroom_jobs', 'insert', {
         'id': jobId,
-        'roomId': roomId,
-        'jobType': 'picking',
+        'room_id': roomId,
+        'job_type': 'picking',
         'name': 'Manual Picking Task',
         'status': 'pending',
         'assignee': pickerName,

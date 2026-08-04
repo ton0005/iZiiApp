@@ -17,6 +17,7 @@ import '../../../core/settings/settings_service.dart';
 import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../models/ble_models.dart';
 import '../services/ble_transport_service.dart';
+import '../../../core/events/app_event_bus.dart';
 
 // --- Events ---
 abstract class ChatEvent extends Equatable {
@@ -589,6 +590,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       case 'sync_trigger':
         print('[ChatWS] Sync trigger received from WebSocket. Pulling updates...');
         SyncService().triggerSync(isManual: true);
+        break;
+
+      case 'event_reaction':
+        print('[ChatWS] Real-time event reaction received: ${wsEvent.data}');
+        try {
+          final domainEvent = AppDomainEvent.fromMap(data);
+          AppEventBus().emit(domainEvent);
+        } catch (e) {
+          print('[ChatWS] Error parsing event_reaction: $e');
+        }
         break;
 
       case 'message_received':

@@ -1,6 +1,6 @@
 @echo off
 cd /d "%~dp0"
-title iZiiApp Standalone Sync Server v2.0
+if "%IZIIAPP_SERVER_DB_PATH%"=="" set "IZIIAPP_SERVER_DB_PATH=%~dp0data\iziiapp.db"
 
 echo ============================================
 echo   iZiiApp Server v2.0 - Repository Pattern

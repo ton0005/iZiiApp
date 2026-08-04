@@ -257,6 +257,23 @@ class JobListServiceImpl implements JobListService {
         'co2_level': co2Level,
         'created_at': DateTime.now().toIso8601String(),
       });
+
+      if (status == 'in_progress' || isSoloJob || jobType == 'alone_worker') {
+        final stageStr = (isSoloJob || jobType == 'alone_worker') ? 'alone_worker' : jobType;
+        await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+          GrowRoomsCompanion(
+            status: const Value('active'),
+            currentStage: Value(stageStr),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+        await SyncService().queueMutation('grow_rooms', 'update', {
+          'id': roomId,
+          'status': 'active',
+          'current_stage': stageStr,
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+      }
     });
   }
 

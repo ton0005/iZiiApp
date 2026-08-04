@@ -39,6 +39,10 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Environment configuration
+server/.env
+*.env
+
 # PyInstaller build artifacts
 server/dist/
 server/build/

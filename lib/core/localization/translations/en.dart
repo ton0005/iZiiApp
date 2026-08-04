@@ -31,6 +31,14 @@ const Map<String, String> enTranslations = {
   'settings_sync_desc':
       'Sync offline data between mobile, Windows, and Cloud Server.',
   'settings_go_to_sync': 'Go to Sync Screen',
+  'settings_ble_title': 'Bluetooth P2P Connection',
+  'settings_ble_desc':
+      'Allow other devices to discover and send peer-to-peer (P2P) encrypted messages over Bluetooth offline.',
+  'settings_ble_toggle': 'Enable Bluetooth Chat P2P',
+  'settings_notif_title': 'Notification Settings',
+  'settings_notif_desc':
+      'Customize notifications for new messages, mentions, and calls across Push, In-app, and Email channels.',
+  'settings_notif_config': 'Detailed Configuration',
 
   // Profile Screen
   'profile_member_since': 'Member since',

@@ -48,6 +48,15 @@ void main() {
       expect(await service.hasPermission('305629', 'createJob'), isTrue);
     });
 
+    test('Đăng nhập thành công với thông tin đúng của Costa User (333333) và mật khẩu Costa@123', () async {
+      final success = await service.login('333333', 'Costa@123');
+      expect(success, isTrue);
+
+      final currentId = await service.getCurrentEmployeeId();
+      expect(currentId, equals('333333'));
+    });
+
+
     test('Thêm nhân viên mới (Manager/Supervisor) với mật khẩu tùy chỉnh và đăng nhập thành công', () async {
       final repo = MushroomsRepository(db);
       await repo.addEmployee('SUP888', 'Nam Tran (Supervisor)', 'Supervisor', 'Growing', 'mypassword123');

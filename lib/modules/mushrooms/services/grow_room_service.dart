@@ -124,10 +124,16 @@ class GrowRoomServiceImpl implements GrowRoomService {
 
     final deterministicId = name.toLowerCase().replaceAll(' ', '_');
     
-    // Check duplication
+    // Check duplication by ID and name
     final existing = await getRoomById(deterministicId);
     if (existing != null) {
       throw Exception('Phòng trồng đã tồn tại.');
+    }
+
+    final allRooms = await getRooms();
+    final duplicateName = allRooms.any((r) => (r['name'] as String).trim().toLowerCase() == name.trim().toLowerCase());
+    if (duplicateName) {
+      throw Exception('Phòng trồng với tên/số này đã tồn tại.');
     }
 
     await _db.into(_db.growRooms).insertOnConflictUpdate(GrowRoom(

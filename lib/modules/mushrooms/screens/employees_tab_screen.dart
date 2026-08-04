@@ -1172,7 +1172,9 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
 
   void _showScanCardDialog() {
     _isScannerProcessing = false;
-    _dialogScannerController = MobileScannerController();
+    _dialogScannerController = MobileScannerController(
+      cameraResolution: const Size(1280, 720),
+    );
 
     showDialog(
       context: context,

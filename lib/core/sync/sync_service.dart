@@ -9,6 +9,7 @@ import '../settings/settings_service.dart';
 import 'outbox_queue.dart';
 import 'sync_config_repository.dart';
 import '../device_identity/ble_device_discovery_service.dart';
+import '../device_identity/device_identity_service.dart';
 import 'ble_sync_manager.dart';
 import '../../modules/communication/repository/chat_repository.dart';
 
@@ -50,6 +51,18 @@ class SyncService {
       return await _settingsService.getActiveUserId();
     } catch (_) {
       return 'default_user';
+    }
+  }
+
+  /// Device ID dùng cho audit trail gửi kèm mỗi lần push.
+  /// Trả về null nếu chưa khởi tạo được danh tính — audit thiếu thông tin vẫn
+  /// tốt hơn là chặn cả luồng đồng bộ.
+  Future<String?> _getActiveDeviceId() async {
+    try {
+      final identity = await DeviceIdentityService().getOrCreateIdentity();
+      return identity.deviceId;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -150,11 +163,22 @@ class SyncService {
             'operation': m['operation'],
             'data': m['data'],
             'timestamp': m['timestamp'],
+            // Phiên bản cấu trúc của `data`. Tăng lên khi đổi schema để
+            // adapter bên ngoài (SAP/OPC) biết cách diễn giải đúng.
+            'schema_version': 1,
           }).toList();
+
+          // Audit: AI đã tạo ra những thay đổi này. Bắt buộc cho kiểm toán
+          // ATVSLĐ và cho đối soát khi tích hợp ERP.
+          final actorDeviceId = await _getActiveDeviceId();
 
           final response = await _dio.post(
             '$url/sync/push',
-            data: {'mutations': payload},
+            data: {
+              'mutations': payload,
+              'actor_user_id': userId,
+              if (actorDeviceId != null) 'actor_device_id': actorDeviceId,
+            },
             options: Options(headers: {
               if (token.isNotEmpty) 'Authorization': 'Bearer $token',
               'Content-Type': 'application/json',
@@ -314,6 +338,19 @@ class SyncService {
     }
   }
 
+  /// Số trang tối đa kéo trong một lần sync, chặn vòng lặp chạy vô tận nếu
+  /// server liên tục báo còn dữ liệu. Phần dư sẽ được kéo ở lần sync kế tiếp.
+  static const int _maxPullPages = 50;
+
+  /// Kéo thay đổi từ server, LẶP QUA TỪNG TRANG cho tới khi hết.
+  ///
+  /// Server nay giới hạn mỗi lần trả tối đa 1000 bản ghi và kèm `has_more` +
+  /// `next_cursor`. Nếu client chỉ gọi một lần như bản cũ thì sẽ chỉ nhận được
+  /// trang đầu và ÂM THẦM mất phần còn lại.
+  ///
+  /// Con trỏ ưu tiên `after_seq` (số thứ tự đơn điệu do server cấp, không phụ
+  /// thuộc đồng hồ). Lần đầu tiên sau khi nâng cấp, client chưa có seq nên
+  /// dùng `since` cũ một lần rồi chuyển hẳn sang seq.
   Future<String?> _pullServerChanges(
     String url,
     String token,
@@ -322,59 +359,96 @@ class SyncService {
     bool isManual,
   ) async {
     _log('Đang kiểm tra cập nhật mới từ Server...');
+
+    int? afterSeq = await _settingsService.getLastSyncSeq(url);
+    String? serverTimestamp;
+    int totalApplied = 0;
+    int totalSkipped = 0;
+    final updatedTables = <String>{};
+
     try {
-      final response = await _dio.get(
-        '$url/sync/pull',
-        queryParameters: {if (lastSync != null) 'since': lastSync},
-        options: Options(headers: {
-          if (token.isNotEmpty) 'Authorization': 'Bearer $token',
-        }),
-      );
+      for (var page = 0; page < _maxPullPages; page++) {
+        final response = await _dio.get(
+          '$url/sync/pull',
+          queryParameters: {
+            if (afterSeq != null) 'after_seq': afterSeq
+            // Chỉ dùng mốc thời gian khi CHƯA từng có seq cho server này.
+            else if (lastSync != null) 'since': lastSync,
+          },
+          options: Options(headers: {
+            if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+          }),
+        );
 
-      if (response.statusCode == 200) {
+        if (response.statusCode != 200) break;
+
         final data = response.data;
-        if (data != null && data['updates'] != null) {
-          final updatesList = data['updates'] as List;
-          final serverTimestamp = data['timestamp'] as String?;
-          if (updatesList.isEmpty) {
-            _log('Không có cập nhật mới từ Server.');
-            return serverTimestamp;
-          }
-          _log('📥 Nhận được ${updatesList.length} cập nhật từ Server. Đang lọc và áp dụng...');
+        if (data == null || data['updates'] == null) break;
 
-          int applied = 0;
-          int skipped = 0;
-          final updatedTables = <String>{};
-          for (final update in updatesList) {
-            try {
-              final updateMap = update is Map<String, dynamic>
-                  ? update
-                  : Map<String, dynamic>.from(update as Map);
-              final wasApplied = await _applyServerUpdate(updateMap, configMap, isManual);
-              if (wasApplied) {
-                applied++;
-                if (updateMap['table'] != null) {
-                  updatedTables.add(updateMap['table'] as String);
-                }
-              } else {
-                skipped++;
+        final updatesList = data['updates'] as List;
+        serverTimestamp = data['timestamp'] as String? ?? serverTimestamp;
+        final nextCursor = data['next_cursor'];
+        final hasMore = data['has_more'] == true;
+
+        // Server báo con trỏ của mình đã vượt quá log của nó — thường do server
+        // vừa bị reset dữ liệu và seq quay về 0. Server đã tự phục vụ lại từ
+        // đầu, ta chỉ cần ghi nhận để biết mà đọc log.
+        if (data['cursor_reset'] == true) {
+          _log('ℹ️ Server đã reset dữ liệu — con trỏ đồng bộ được đặt lại từ đầu.');
+        }
+
+        for (final update in updatesList) {
+          try {
+            final updateMap = update is Map<String, dynamic>
+                ? update
+                : Map<String, dynamic>.from(update as Map);
+            final wasApplied = await _applyServerUpdate(updateMap, configMap, isManual);
+            if (wasApplied) {
+              totalApplied++;
+              if (updateMap['table'] != null) {
+                updatedTables.add(updateMap['table'] as String);
               }
-            } catch (e) {
-              skipped++;
-              _log('   ⚠️ Lỗi áp dụng 1 cập nhật: $e');
+            } else {
+              totalSkipped++;
             }
+          } catch (e) {
+            totalSkipped++;
+            _log('   ⚠️ Lỗi áp dụng 1 cập nhật: $e');
           }
-          _log('✅ Đã ghi $applied bản ghi vào database local (bỏ qua/lọc $skipped).');
-          if (applied > 0 && updatedTables.isNotEmpty) {
-            if (!_syncEventController.isClosed) {
-              _syncEventController.add(SyncEvent(updatedTables.toList()));
-            }
-          }
-          return serverTimestamp;
-        } else {
-          _log('Không có cập nhật mới từ Server.');
+        }
+
+        // Chỉ tiến con trỏ SAU KHI trang đã được ghi vào DB local. Nếu app bị
+        // đóng giữa chừng, lần sau sẽ kéo lại trang đó — mutation là idempotent
+        // theo id nên ghi lại vô hại.
+        if (nextCursor is int) {
+          afterSeq = nextCursor;
+          await _settingsService.saveLastSyncSeq(url, nextCursor);
+        }
+
+        if (updatesList.isNotEmpty) {
+          _log('📥 Trang ${page + 1}: nhận ${updatesList.length} cập nhật'
+              '${hasMore ? ' (còn nữa...)' : ''}');
+        }
+
+        if (!hasMore) break;
+
+        if (page == _maxPullPages - 1) {
+          _log('ℹ️ Còn dữ liệu sau $_maxPullPages trang, sẽ kéo tiếp ở lần đồng bộ sau.');
         }
       }
+
+      if (totalApplied == 0 && totalSkipped == 0) {
+        _log('Không có cập nhật mới từ Server.');
+      } else {
+        _log('✅ Đã ghi $totalApplied bản ghi vào database local (bỏ qua/lọc $totalSkipped).');
+      }
+
+      if (totalApplied > 0 && updatedTables.isNotEmpty) {
+        if (!_syncEventController.isClosed) {
+          _syncEventController.add(SyncEvent(updatedTables.toList()));
+        }
+      }
+      return serverTimestamp;
     } on DioException catch (e) {
       _log('⚠️ Không thể kéo dữ liệu từ Server: ${e.message}');
     }
@@ -864,10 +938,18 @@ class SyncService {
     return true;
   }
 
+  Timer? _debounceSyncTimer;
+
   /// Queue a local mutation to be synchronized later
   Future<void> queueMutation(String table, String operation, Map<String, dynamic> data) async {
     await _outbox.addMutation(table, operation, data);
     _log('📝 Đã lưu ngoại tuyến thay đổi: $table -> $operation');
+
+    // Trigger instant HTTP server sync with short 300ms debounce to batch rapid changes
+    _debounceSyncTimer?.cancel();
+    _debounceSyncTimer = Timer(const Duration(milliseconds: 300), () {
+      triggerSync(isManual: false);
+    });
 
     // Trigger instant BLE sync for any connected peers
     try {
@@ -898,20 +980,35 @@ class SyncService {
 
     final existing = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
+    dynamic getVal(String camel, String snake) {
+      return data[camel] ?? data[snake];
+    }
+
+    final statusVal = data['status'] as String? ?? existing?.status ?? 'idle';
+    final stageVal = getVal('currentStage', 'current_stage') as String? ?? existing?.currentStage ?? 'idle';
+    final dayInCycleVal = (getVal('dayInCycle', 'day_in_cycle') as num?)?.toInt() ?? existing?.dayInCycle ?? 1;
+    final targetYieldVal = (getVal('targetYield', 'target_yield') as num?)?.toDouble() ?? existing?.targetYield ?? 0.0;
+    final pickedYieldVal = (getVal('pickedYield', 'picked_yield') as num?)?.toDouble() ?? existing?.pickedYield ?? 0.0;
+    final pickingPlanJsonVal = getVal('pickingPlanJson', 'picking_plan_json') as String? ?? existing?.pickingPlanJson;
+    final createdAtVal = getVal('createdAt', 'created_at') != null
+        ? DateTime.tryParse(getVal('createdAt', 'created_at').toString()) ?? existing?.createdAt ?? DateTime.now()
+        : existing?.createdAt ?? DateTime.now();
+    final updatedAtVal = getVal('updatedAt', 'updated_at') != null
+        ? DateTime.tryParse(getVal('updatedAt', 'updated_at').toString())
+        : DateTime.now();
+
     await _db.into(_db.growRooms).insertOnConflictUpdate(
       GrowRoom(
         id: id,
         name: data['name'] as String? ?? existing?.name ?? '',
-        status: data['status'] as String? ?? existing?.status ?? 'idle',
-        currentStage: data['current_stage'] as String? ?? existing?.currentStage ?? 'idle',
-        dayInCycle: (data['day_in_cycle'] as num?)?.toInt() ?? existing?.dayInCycle ?? 1,
-        targetYield: (data['targetYield'] as num?)?.toDouble() ?? existing?.targetYield ?? 0.0,
-        pickedYield: (data['pickedYield'] as num?)?.toDouble() ?? existing?.pickedYield ?? 0.0,
-        pickingPlanJson: data['pickingPlanJson'] as String? ?? existing?.pickingPlanJson,
-        createdAt: data['created_at'] != null 
-            ? DateTime.tryParse(data['created_at'].toString()) ?? existing?.createdAt ?? DateTime.now() 
-            : existing?.createdAt ?? DateTime.now(),
-        updatedAt: data['updated_at'] != null ? DateTime.tryParse(data['updated_at'].toString()) : DateTime.now(),
+        status: statusVal,
+        currentStage: stageVal,
+        dayInCycle: dayInCycleVal,
+        targetYield: targetYieldVal,
+        pickedYield: pickedYieldVal,
+        pickingPlanJson: pickingPlanJsonVal,
+        createdAt: createdAtVal,
+        updatedAt: updatedAtVal,
       ),
     );
     return true;

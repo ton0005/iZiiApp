@@ -1,6 +1,6 @@
-pip install fastapi uvicorn
+pip install fastapi uvicorn httpx zeroconf
 python --version
-Python 3.14.6 June 10, 2026
-C:\Users\CHANH\AppData\Local\Programs\Python\Python311\python.exe server/app.py
+Python 3.11+
+python server/app.py
 
 Get-Process -Id (Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue

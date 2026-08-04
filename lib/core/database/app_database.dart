@@ -450,15 +450,54 @@ LazyDatabase _openConnection() {
     final envPath = Platform.environment['IZIIAPP_DB_PATH'];
     if (envPath != null && envPath.isNotEmpty) {
       file = File(envPath);
-    } else {
-      const explicitPath = r'C:\Users\CHANH\OneDrive\Documents\izii_app_db.sqlite';
-      final explicitFile = File(explicitPath);
-      if (explicitFile.existsSync()) {
-        file = explicitFile;
-      } else {
-        final dbFolder = await getApplicationDocumentsDirectory();
-        file = File(p.join(dbFolder.path, 'izii_app_db.sqlite'));
+    } else if (Platform.isWindows) {
+      final localAppData = Platform.environment['LOCALAPPDATA'] ?? r'C:\Users\CHANH\AppData\Local';
+      final secureDir = Directory(p.join(localAppData, 'izii_app', 'data'));
+      if (!secureDir.existsSync()) {
+        secureDir.createSync(recursive: true);
       }
+      file = File(p.join(secureDir.path, 'izii_app_db.sqlite'));
+
+      // ── Migration một lần từ DB cũ nằm trong OneDrive ────────────────────
+      //
+      // ⚠️ CẨN TRỌNG: đoạn này từng là cái bẫy khi reset dữ liệu. Điều kiện cũ
+      // chỉ là `if (!file.existsSync())`, nghĩa là MỖI LẦN xoá DB local, lần
+      // chạy kế tiếp app sẽ âm thầm copy lại toàn bộ dữ liệu cũ từ OneDrive —
+      // người dùng tưởng đã reset sạch nhưng dữ liệu cũ quay về nguyên vẹn.
+      //
+      // Giờ có thêm file cờ: migration chỉ chạy đúng MỘT lần trong đời máy.
+      // Sau khi đã migrate (hoặc sau khi reset chủ động), cờ tồn tại và đoạn
+      // này không bao giờ chạy lại nữa.
+      final legacyFlag = File(p.join(secureDir.path, '.legacy_migrated'));
+      if (!file.existsSync() && !legacyFlag.existsSync()) {
+        final legacyFile = File(
+          p.join(
+            Platform.environment['USERPROFILE'] ?? r'C:\Users\CHANH',
+            'OneDrive',
+            'Documents',
+            'izii_app_db.sqlite',
+          ),
+        );
+        if (legacyFile.existsSync()) {
+          try {
+            legacyFile.copySync(file.path);
+          } catch (_) {
+            file = legacyFile;
+          }
+        }
+        // Đánh dấu đã xử lý, kể cả khi không tìm thấy file cũ — để lần sau
+        // không dò lại nữa.
+        try {
+          legacyFlag.writeAsStringSync(
+            'Legacy OneDrive DB migration handled at '
+            '${DateTime.now().toIso8601String()}.\n'
+            'Xoá file này chỉ khi bạn thực sự muốn nạp lại DB cũ từ OneDrive.\n',
+          );
+        } catch (_) {}
+      }
+    } else {
+      final dbFolder = await getApplicationSupportDirectory();
+      file = File(p.join(dbFolder.path, 'izii_app_db.sqlite'));
     }
 
     // Fix for Android: ensure native SQLite library is loaded correctly

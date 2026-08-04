@@ -29,8 +29,33 @@ class SQLiteSyncRepository(ISyncRepository):
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
     
+    # Số bản ghi tối đa trả về trong 1 lần pull nếu client không chỉ định.
+    # Không để vô hạn: một thiết bị mới hoặc adapter mới kết nối sẽ kéo TOÀN BỘ
+    # mutation log trong một request → nổ RAM cả hai đầu.
+    DEFAULT_PULL_LIMIT = 1000
+    MAX_PULL_LIMIT = 5000
+
+    def _next_seq(self, cursor) -> int:
+        """
+        Cấp số thứ tự đơn điệu tiếp theo. Gọi TRONG cùng transaction với INSERT
+        để hai connection ghi đồng thời không thể nhận cùng một seq
+        (SQLite serialise ghi ở mức transaction).
+        """
+        cursor.execute(
+            "UPDATE sync_sequence SET current = current + 1 WHERE name = 'mutation'"
+        )
+        row = cursor.execute(
+            "SELECT current FROM sync_sequence WHERE name = 'mutation'"
+        ).fetchone()
+        return int(row[0])
+
     def push_mutations(
-        self, mutations: List[Dict[str, Any]], timestamp: str, default_origin_server_id: Optional[str] = None
+        self,
+        mutations: List[Dict[str, Any]],
+        timestamp: str,
+        default_origin_server_id: Optional[str] = None,
+        actor_user_id: Optional[str] = None,
+        actor_device_id: Optional[str] = None,
     ) -> int:
         """
         default_origin_server_id: dùng khi mutation đến từ DEVICE (chưa có
@@ -38,42 +63,108 @@ class SQLiteSyncRepository(ISyncRepository):
         này. Khi RELAY từ peer server khác (qua peer_sync router), mutation đã
         có sẵn origin_server_id gốc và PHẢI được giữ nguyên, không ghi đè,
         để tránh vòng lặp relay vô hạn giữa các server.
+
+        actor_user_id / actor_device_id: ai là người thực hiện thay đổi. Với
+        mutation relay từ peer thì giữ nguyên actor gốc trong payload; chỉ dùng
+        tham số này khi mutation đến thẳng từ device.
+
+        seq LUÔN do server NÀY cấp mới, kể cả với mutation relay — vì seq là
+        "thứ tự trong log của riêng server này", không phải thuộc tính toàn cục
+        của mutation. Nhờ vậy peer B pull từ A theo seq của A vẫn nhất quán.
         """
         cursor = self.conn.cursor()
         count = 0
         for m in mutations:
             origin = m.get("origin_server_id") or default_origin_server_id
+            seq = self._next_seq(cursor)
             cursor.execute("""
-                INSERT OR REPLACE INTO sync_mutations (id, client_id, "table", operation, data, server_received_at, origin_server_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (m["id"], m.get("client_id"), m["table"], m["operation"],
-                  json.dumps(m["data"]), timestamp, origin))
+                INSERT OR REPLACE INTO sync_mutations
+                    (id, client_id, "table", operation, data, server_received_at,
+                     origin_server_id, seq, actor_user_id, actor_device_id, schema_version)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                m["id"], m.get("client_id"), m["table"], m["operation"],
+                json.dumps(m["data"]), timestamp, origin, seq,
+                m.get("actor_user_id") or actor_user_id,
+                m.get("actor_device_id") or actor_device_id,
+                int(m.get("schema_version") or 1),
+            ))
             count += 1
         self.conn.commit()
         return count
-    
+
     def pull_mutations(
-        self, since: Optional[str] = None, exclude_origin_server_id: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+        self,
+        since: Optional[str] = None,
+        exclude_origin_server_id: Optional[str] = None,
+        after_seq: Optional[int] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """
+        Trả về dict: {updates, next_cursor, has_more, ...} — KHÁC bản cũ vốn
+        trả thẳng list. Router chịu trách nhiệm giữ tương thích ngược cho client.
+
+        HAI CHẾ ĐỘ CON TRỎ:
+          - after_seq (MỚI, nên dùng): lọc theo số thứ tự đơn điệu do server
+            cấp. Miễn nhiễm với lệch đồng hồ giữa các máy.
+          - since (CŨ, giữ để tương thích): lọc theo chuỗi thời gian. Chỉ dùng
+            khi client chưa cập nhật. Nếu truyền cả hai thì after_seq thắng.
+
         exclude_origin_server_id: dùng khi 1 peer server gọi pull — loại bỏ
         các mutation mà chính peer đó là nơi khởi tạo (origin), vì peer đã có
         sẵn dữ liệu này, gửi lại chỉ tốn băng thông. Không dùng khi device
         thường (mobile app) gọi pull.
         """
+        eff_limit = limit if limit and limit > 0 else self.DEFAULT_PULL_LIMIT
+        eff_limit = min(eff_limit, self.MAX_PULL_LIMIT)
+
+        # ── Tự phục hồi khi con trỏ vượt quá log ────────────────────────────
+        # Tình huống thật: server bị reset dữ liệu (reset_data.ps1 hoặc
+        # /admin/reset xoá bảng) nên seq quay về 0, trong khi thiết bị vẫn giữ
+        # con trỏ cũ ví dụ 5000. Truy vấn `seq > 5000` sẽ KHÔNG BAO GIỜ trả về
+        # gì và thiết bị đứng im vĩnh viễn mà không báo lỗi.
+        #
+        # Phát hiện và phục vụ lại từ đầu, kèm cờ cursor_reset để client biết
+        # mà ghi log. Tự lành trong đúng một vòng gọi.
+        cursor_reset = False
+        if after_seq is not None:
+            max_seq = self.get_max_seq()
+            if after_seq > max_seq:
+                cursor_reset = True
+                after_seq = None
+                since = None
+
         cursor = self.conn.cursor()
         query = 'SELECT * FROM sync_mutations WHERE 1=1'
         params: list = []
-        if since:
+
+        if after_seq is not None:
+            # Bản ghi cũ có seq NULL sẽ không lọt vào đây — migration 002 trong
+            # db_init.py đã cấp seq cho toàn bộ, nên không mất dữ liệu.
+            query += ' AND seq IS NOT NULL AND seq > ?'
+            params.append(after_seq)
+        elif since:
             query += ' AND server_received_at > ?'
             params.append(since)
+
         if exclude_origin_server_id:
             query += ' AND (origin_server_id IS NULL OR origin_server_id != ?)'
             params.append(exclude_origin_server_id)
+
+        # ORDER BY seq là bắt buộc khi phân trang — không có thứ tự ổn định thì
+        # trang sau có thể bỏ sót hoặc lặp bản ghi.
+        # Lấy dư 1 bản ghi để biết còn trang tiếp hay không mà không cần COUNT.
+        query += ' ORDER BY seq ASC LIMIT ?'
+        params.append(eff_limit + 1)
+
         cursor.execute(query, params)
         rows = cursor.fetchall()
-        
-        return [{
+
+        has_more = len(rows) > eff_limit
+        if has_more:
+            rows = rows[:eff_limit]
+
+        updates = [{
             "id": r["id"],
             "client_id": r["client_id"],
             "table": r["table"],
@@ -81,8 +172,61 @@ class SQLiteSyncRepository(ISyncRepository):
             "data": json.loads(r["data"]),
             "server_received_at": r["server_received_at"],
             "origin_server_id": r["origin_server_id"],
+            "seq": r["seq"],
+            "actor_user_id": r["actor_user_id"],
+            "actor_device_id": r["actor_device_id"],
+            "schema_version": r["schema_version"] if r["schema_version"] is not None else 1,
         } for r in rows]
+
+        # next_cursor = seq của bản ghi cuối cùng đã trả. Client lưu lại và gửi
+        # làm after_seq cho lần sau. Nếu không có bản ghi nào thì giữ nguyên con
+        # trỏ cũ để không nhảy cóc.
+        next_cursor = updates[-1]["seq"] if updates else after_seq
+
+        return {
+            "updates": updates,
+            "next_cursor": next_cursor,
+            "has_more": has_more,
+            "count": len(updates),
+            "cursor_reset": cursor_reset,
+        }
+
+    def get_max_seq(self) -> int:
+        row = self.conn.execute(
+            "SELECT COALESCE(MAX(seq), 0) FROM sync_mutations"
+        ).fetchone()
+        return int(row[0])
     
+    def get_mutations_by_table(self, table: str) -> List[Dict[str, Any]]:
+        """
+        Lấy toàn bộ mutation của MỘT bảng, sắp xếp theo server_received_at tăng
+        dần. Dùng cho validate nghiệp vụ (vd unique room_number) — cần thứ tự
+        thời gian để mutation mới nhất của cùng 1 record ghi đè bản cũ khi dựng
+        index. Có index idx_sync_mutations_table nên truy vấn này rẻ.
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(
+            'SELECT * FROM sync_mutations WHERE "table" = ? ORDER BY server_received_at ASC',
+            (table,),
+        )
+        rows = cursor.fetchall()
+
+        result: List[Dict[str, Any]] = []
+        for r in rows:
+            try:
+                parsed = json.loads(r["data"])
+            except Exception:
+                continue  # bỏ qua bản ghi data hỏng thay vì làm chết request
+            result.append({
+                "id": r["id"],
+                "table": r["table"],
+                "operation": r["operation"],
+                "data": parsed,
+                "server_received_at": r["server_received_at"],
+                "origin_server_id": r["origin_server_id"],
+            })
+        return result
+
     def get_status(self) -> Dict[str, Any]:
         cursor = self.conn.cursor()
         cursor.execute('SELECT "table", count(*) as cnt FROM sync_mutations GROUP BY "table"')
@@ -93,6 +237,53 @@ class SQLiteSyncRepository(ISyncRepository):
         total = cursor.fetchone()["total"]
         
         return {"total_records": total, "tables": tables}
+
+    def update_peer_sync_status(
+        self,
+        peer_id: str,
+        last_synced_at: Optional[str] = None,
+        last_seen_online_at: Optional[str] = None,
+        zone: Optional[str] = None,
+        peer_url: Optional[str] = None,
+        last_synced_seq: Optional[int] = None,
+    ) -> None:
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            INSERT INTO known_servers
+                (server_id, zone, peer_url, last_synced_at, last_synced_seq, last_seen_online_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(server_id) DO UPDATE SET
+                last_synced_at = COALESCE(excluded.last_synced_at, known_servers.last_synced_at),
+                last_synced_seq = COALESCE(excluded.last_synced_seq, known_servers.last_synced_seq),
+                last_seen_online_at = COALESCE(excluded.last_seen_online_at, known_servers.last_seen_online_at),
+                zone = COALESCE(excluded.zone, known_servers.zone),
+                peer_url = COALESCE(excluded.peer_url, known_servers.peer_url)
+        """, (peer_id, zone, peer_url, last_synced_at, last_synced_seq, last_seen_online_at))
+        self.conn.commit()
+
+    def get_peer_last_synced(self, peer_id_or_url: str) -> Optional[str]:
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT last_synced_at FROM known_servers WHERE server_id = ? OR peer_url = ?",
+            (peer_id_or_url, peer_id_or_url),
+        )
+        row = cursor.fetchone()
+        return row["last_synced_at"] if row else None
+
+    def get_peer_last_seq(self, peer_id_or_url: str) -> Optional[int]:
+        """
+        Con trỏ seq đã đồng bộ tới với peer. Đây là seq TRONG LOG CỦA PEER, nên
+        chỉ có ý nghĩa khi gửi lại đúng peer đó.
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT last_synced_seq FROM known_servers WHERE server_id = ? OR peer_url = ?",
+            (peer_id_or_url, peer_id_or_url),
+        )
+        row = cursor.fetchone()
+        if not row or row["last_synced_seq"] is None:
+            return None
+        return int(row["last_synced_seq"])
 
 
 class SQLiteDeviceRepository(IDeviceRepository):

@@ -3,10 +3,8 @@ import io
 import os
 
 # Stable data directory resolution
-def get_stable_data_dir():
-    if getattr(sys, 'frozen', False):
-        return os.path.join(os.path.dirname(sys.executable), "data")
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+from database import DB_PATH, get_db_connection, get_stable_data_dir
+from datetime import datetime, timezone
 
 LOG_DIR = os.path.join(get_stable_data_dir(), "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -86,73 +84,132 @@ if log_file:
     sys.stderr = DualLogger(sys.stderr, log_file)
     print(f"📖 [LOG] Server log file initialized at: {LOG_FILE_PATH}")
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from typing import List
+from typing import List, Optional
+import hmac
 import json
 import os
-from datetime import datetime
 from contextlib import asynccontextmanager
 
 import asyncio
 import httpx
 
-from database import DB_PATH, get_db_connection
-from db_init import init_db
+from db_init import init_db, prune_old_mutations
 from server_config import CONFIG
 from server_discovery import ServerDiscovery
 from repository.sqlite_repo import SQLiteSyncRepository
-from routers import sync, devices, messages, notifications, attachments, peer_sync
-
-# LƯU Ý: init_db() giờ chỉ được định nghĩa DUY NHẤT ở db_init.py.
-# app.py không tự định nghĩa schema nữa — tránh 2 nơi có thể lệch nhau.
-# Nếu cần thêm bảng mới (vd server_registry, peer_sync_log cho multi-server),
-# chỉ sửa ở db_init.py.
+from routers import sync, devices, messages, notifications, attachments, peer_sync, call, webhooks, admin
+from event_engine import iZiiEventEngine, close_http_client
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  Multi-Server Peer Sync — Background Polling Task
 # ══════════════════════════════════════════════════════════════════════════════
 
-_peer_last_sync: dict[str, str] = {}  # peer_url -> last server_time nhận được
+_peer_last_sync: dict[str, int] = {}  # peer_url -> seq cuối cùng đã đồng bộ từ peer đó
 discovery: ServerDiscovery | None = None  # gán trong lifespan(), dùng bởi _peer_sync_loop
 
 
+# Số trang tối đa kéo trong một chu kỳ, chặn trường hợp peer có log khổng lồ
+# làm vòng lặp chạy mãi không nhả. Phần còn lại sẽ được kéo ở chu kỳ sau.
+_MAX_PAGES_PER_CYCLE = 20
+
+
 async def _sync_with_one_peer(client: httpx.AsyncClient, peer_url: str) -> None:
-    since = _peer_last_sync.get(peer_url)
-    try:
-        resp = await client.get(
-            f"{peer_url}/peer-sync/pull",
-            params={"since": since, "requester_server_id": CONFIG.server_id},
-            timeout=10.0,
-        )
-        resp.raise_for_status()
-        body = resp.json()
-    except httpx.HTTPError as e:
-        print(f"⚠️  [PEER-SYNC] Không kết nối được peer {peer_url}: {e} (có thể đang offline)")
-        return
+    """
+    Kéo delta từ MỘT peer, lặp qua các trang cho tới khi hết hoặc chạm trần.
 
-    updates = body.get("updates", [])
-    if updates:
+    Con trỏ dùng `after_seq` — số thứ tự đơn điệu trong log của PEER. Trước đây
+    dùng `server_time` (chuỗi thời gian của peer) làm mốc; chỉ cần đồng hồ hai
+    máy lệch vài giây là mutation bị bỏ sót vĩnh viễn mà không có lỗi nào.
+    """
+    # Con trỏ seq: ưu tiên RAM, không có thì đọc từ known_servers.
+    after_seq = _peer_last_sync.get(peer_url)
+    if after_seq is None:
         conn = get_db_connection()
-        repo = SQLiteSyncRepository(conn)
-        now = datetime.now().isoformat()
         try:
-            count = repo.push_mutations(updates, now)
-            print(f"🔁 [PEER-SYNC] Đã áp dụng {count} mutations từ {peer_url}")
-
-            # Relay tiếp cho các device đang connect trực tiếp WebSocket vào
-            # server này, để họ thấy dữ liệu từ zone khác gần như real-time.
-            tables = list({m["table"] for m in updates})
-            event_data = {"event": "sync_trigger", "data": {"tables": tables, "timestamp": now}}
-            ws_manager = getattr(app.state, "ws_manager", None)
-            if ws_manager:
-                await ws_manager.broadcast(json.dumps(event_data), exclude=None)
+            after_seq = SQLiteSyncRepository(conn).get_peer_last_seq(peer_url)
         finally:
             conn.close()
 
-    _peer_last_sync[peer_url] = body.get("server_time", since)
+    headers = {}
+    if CONFIG.server_secret:
+        headers["X-iZii-Server-Token"] = CONFIG.server_secret
+
+    total_applied = 0
+    tables_touched: set[str] = set()
+    remote_server_id = peer_url
+    remote_zone = None
+
+    for _page in range(_MAX_PAGES_PER_CYCLE):
+        params: dict = {"requester_server_id": CONFIG.server_id}
+        if after_seq is not None:
+            params["after_seq"] = after_seq
+
+        try:
+            resp = await client.get(
+                f"{peer_url}/peer-sync/pull", params=params, headers=headers, timeout=10.0
+            )
+            resp.raise_for_status()
+            body = resp.json()
+        except httpx.HTTPError as e:
+            print(f"⚠️  [PEER-SYNC] Không kết nối được peer {peer_url}: {e} (có thể đang offline)")
+            return   # KHÔNG cập nhật con trỏ -> chu kỳ sau kéo bù
+
+        remote_server_id = body.get("server_id", peer_url)
+        remote_zone = body.get("zone")
+        updates = body.get("updates", [])
+        next_cursor = body.get("next_cursor")
+        has_more = bool(body.get("has_more"))
+
+        if updates:
+            now_utc = datetime.now(timezone.utc).isoformat()
+            conn = get_db_connection()
+            try:
+                count = SQLiteSyncRepository(conn).push_mutations(updates, now_utc)
+            finally:
+                conn.close()
+            total_applied += count
+            tables_touched.update(m["table"] for m in updates)
+
+        # Chỉ tiến con trỏ khi trang đã được ghi thành công.
+        if next_cursor is not None:
+            after_seq = next_cursor
+            _peer_last_sync[peer_url] = after_seq
+            conn = get_db_connection()
+            try:
+                SQLiteSyncRepository(conn).update_peer_sync_status(
+                    peer_id=remote_server_id,
+                    last_synced_seq=after_seq,
+                    zone=remote_zone,
+                    peer_url=peer_url,
+                )
+            finally:
+                conn.close()
+
+        if not has_more:
+            break
+    else:
+        print(
+            f"ℹ️  [PEER-SYNC] {peer_url} còn dữ liệu sau {_MAX_PAGES_PER_CYCLE} trang, "
+            f"sẽ kéo tiếp ở chu kỳ sau."
+        )
+
+    if total_applied:
+        print(f"🔁 [PEER-SYNC] Đã áp dụng {total_applied} mutations từ {peer_url}")
+        # Relay tiếp cho các device đang connect trực tiếp WebSocket vào server này
+        event_data = {
+            "event": "sync_trigger",
+            "data": {
+                "tables": sorted(tables_touched),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            },
+        }
+        ws_manager = getattr(app.state, "ws_manager", None)
+        if ws_manager:
+            await ws_manager.broadcast(json.dumps(event_data), exclude=None)
 
 
 async def _peer_sync_loop() -> None:
@@ -190,6 +247,7 @@ async def lifespan(app: FastAPI):
     global discovery
     # Startup
     init_db()
+    prune_old_mutations(days=30)
     print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
     print(f"✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB")
     print(f"🌐 Server identity: server_id={CONFIG.server_id} zone={CONFIG.zone}")
@@ -212,6 +270,8 @@ async def lifespan(app: FastAPI):
     peer_sync_task.cancel()
     if discovery:
         await discovery.close()
+    # Đóng httpx.AsyncClient dùng chung của event engine (webhook dispatch)
+    await close_http_client()
     print("🛑 Server shutting down...")
 
 
@@ -229,7 +289,7 @@ app = FastAPI(
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origin_regex=r"^https?://(localhost(:\d+)?|127\.0\.0\.1(:\d+)?|10\.\d+\.\d+\.\d+(:\d+)?|172\.(1[6-9]|2[0-9]|3[01])\.\d+\.\d+(:\d+)?|192\.168\.\d+\.\d+(:\d+)?)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -242,6 +302,14 @@ app.include_router(messages.router)
 app.include_router(notifications.router)
 app.include_router(attachments.router)
 app.include_router(peer_sync.router)  # Server-to-Server delta sync (multi-server)
+app.include_router(call.router)
+app.include_router(webhooks.router)
+app.include_router(webhooks.event_router)
+app.include_router(admin.router)  # /admin/reset — cần X-iZii-Server-Token
+
+# Cho admin router chạm tới con trỏ sync đang nằm trong RAM, để lệnh reset xoá
+# được cả bộ nhớ chứ không chỉ bảng known_servers dưới đĩa.
+app.state.peer_last_sync = _peer_last_sync
 
 # Mount static uploads directory for attachments serving
 uploads_dir = os.path.join(get_stable_data_dir(), "uploads")
@@ -260,7 +328,7 @@ async def device_health_check():
         "server_id": CONFIG.server_id,
         "zone": CONFIG.zone,
         "status": "ok",
-        "server_time": datetime.now().isoformat(),
+        "server_time": datetime.now(timezone.utc).isoformat(),
     }
 
 
@@ -294,35 +362,73 @@ ws_manager = ConnectionManager()
 app.state.ws_manager = ws_manager
 
 
-def log_latency(event_type: str, sent_at_str: str):
-    """Log latency measurements for WebSocket events."""
+def _write_latency_sync(event_type: str, sent_at_str: str):
     try:
         if not sent_at_str:
             return
-        # Parse timezone-aware ISO string
         client_dt = datetime.fromisoformat(sent_at_str.replace('Z', '+00:00'))
         server_dt = datetime.now(client_dt.tzinfo)
         diff = server_dt - client_dt
         latency_ms = diff.total_seconds() * 1000
         
-        # Use relative path instead of hardcoded absolute path
-        log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "testlog.txt")
+        log_path = os.path.join(get_stable_data_dir(), "logs", "latency.log")
         os.makedirs(os.path.dirname(log_path), exist_ok=True)
         with open(log_path, "a", encoding="utf-8") as f:
-            f.write(f"[{datetime.now().isoformat()}] EVENT: {event_type} | Sent: {sent_at_str} | Recv: {datetime.now().isoformat()} | Latency: {latency_ms:.2f} ms\n")
+            f.write(f"[{datetime.now(timezone.utc).isoformat()}] EVENT: {event_type} | Sent: {sent_at_str} | Recv: {datetime.now(timezone.utc).isoformat()} | Latency: {latency_ms:.2f} ms\n")
     except Exception as e:
         print(f"Error logging latency: {str(e)}")
 
 
+async def log_latency(event_type: str, sent_at_str: str):
+    """Log latency measurements asynchronously without blocking event loop."""
+    await asyncio.to_thread(_write_latency_sync, event_type, sent_at_str)
+
+
+# Giữ tham chiếu tới task nền để GC không thu hồi giữa chừng.
+_ws_background_tasks: set = set()
+
+
+# ── WebSocket Authentication ────────────────────────────────────────────────
+# Token bắt buộc cho MỌI kết nối /chat. Ưu tiên IZIIAPP_WS_SECRET; nếu không
+# set thì dùng chung IZIIAPP_SERVER_SECRET để đỡ phải quản lý 2 secret.
+# Client gửi token theo 1 trong 2 cách:
+#   - query param:  ws://host:8080/chat?token=<secret>
+#   - header:       X-iZii-WS-Token: <secret>
+# (query param tiện cho Flutter/web vì WebSocket API của trình duyệt không
+#  cho phép set header tuỳ ý khi handshake).
+WS_SECRET = CONFIG.ws_secret or CONFIG.server_secret
+
+
+def _ws_token_is_valid(token: Optional[str]) -> bool:
+    if not token or not WS_SECRET:
+        return False
+    return hmac.compare_digest(token, WS_SECRET)
+
+
 @app.websocket("/chat")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(None)):
+    # Không cấu hình secret => từ chối tất cả, thay vì âm thầm mở toang.
+    if not WS_SECRET:
+        print(
+            "⛔ [WS] Từ chối kết nối: chưa cấu hình IZIIAPP_WS_SECRET "
+            "(hoặc IZIIAPP_SERVER_SECRET). Set biến môi trường rồi khởi động lại."
+        )
+        await websocket.close(code=1008, reason="Server chưa cấu hình WS secret")
+        return
+
+    supplied = token or websocket.headers.get("X-iZii-WS-Token")
+    if not _ws_token_is_valid(supplied):
+        print(f"⛔ [WS] Từ chối kết nối từ {websocket.client}: token thiếu hoặc sai.")
+        await websocket.close(code=1008, reason="Invalid or missing token")
+        return
+
     await ws_manager.connect(websocket)
     try:
         while True:
             data = await websocket.receive_text()
             print(f"💬 [WS] Broadcast message: {data[:120]}...")
             
-            # Log latency measurement for events containing 'sent_at' or 'timestamp'
+            # Log latency measurement asynchronously for events containing 'sent_at' or 'timestamp'
             try:
                 payload = json.loads(data)
                 event = payload.get("event")
@@ -330,7 +436,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 if isinstance(msg_data, dict):
                     sent_at = msg_data.get("sent_at") or msg_data.get("timestamp")
                     if sent_at:
-                        log_latency(f"WS_{event}", sent_at)
+                        _t = asyncio.create_task(log_latency(f"WS_{event}", sent_at))
+                        _ws_background_tasks.add(_t)
+                        _t.add_done_callback(_ws_background_tasks.discard)
             except Exception:
                 pass
                 

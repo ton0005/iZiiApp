@@ -49,7 +49,6 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           _isAuthenticated = true;
           _currentEmployeeId = empId;
         });
-        // Kích hoạt SwitchUserEvent cho ChatBloc để đồng nhất Identity trong Chat
         try {
           context.read<ChatBloc>().add(SwitchUserEvent(empId));
         } catch (_) {}
@@ -347,18 +346,21 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             body: EmployeesTabScreen(
               isDark: isDark,
               employees: _employees,
-              onAddEmployee: (id, name, role, dept, [pass, status, team]) async {
-                await _repository.addEmployee(id, name, role, dept, pass, status, team);
+              onAddEmployee: (id, name, role, dept,
+                  [pass, status, team]) async {
+                await _repository.addEmployee(
+                    id, name, role, dept, pass, status, team);
                 _loadMushroomData();
               },
               onEditEmployee: (id, name, role, dept, [status, team]) async {
-                await _repository.updateEmployee(id, name, role, dept, status, team);
+                await _repository.updateEmployee(
+                    id, name, role, dept, status, team);
                 _loadMushroomData();
               },
               onImportEmployees: (list) async {
                 for (var emp in list) {
-                  await _repository.addEmployee(
-                      emp['id']!, emp['name']!, emp['role']!, emp['department']);
+                  await _repository.addEmployee(emp['id']!, emp['name']!,
+                      emp['role']!, emp['department']);
                 }
                 _loadMushroomData();
               },
@@ -401,7 +403,6 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             _isAuthenticated = true;
             _currentEmployeeId = empId;
           });
-          // Kích hoạt SwitchUserEvent cho ChatBloc để đồng nhất Identity trong Chat
           try {
             context.read<ChatBloc>().add(SwitchUserEvent(empId));
           } catch (_) {}
@@ -597,7 +598,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
               ),
               QuickAccessCard(
                 title: 'Employees & Roles',
-                subtitle: 'Register new personnel, modify roles & scan ID cards',
+                subtitle:
+                    'Register new personnel, modify roles & scan ID cards',
                 icon: Icons.people_alt_rounded,
                 color: const Color(0xFF8B5CF6),
                 isDark: isDark,

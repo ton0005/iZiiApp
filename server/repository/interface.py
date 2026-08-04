@@ -19,6 +19,8 @@ class ISyncRepository(ABC):
     def push_mutations(
         self, mutations: List[Dict[str, Any]], timestamp: str,
         default_origin_server_id: Optional[str] = None,
+        actor_user_id: Optional[str] = None,
+        actor_device_id: Optional[str] = None,
     ) -> int:
         """
         Store a batch of sync mutations from a client device (or relayed
@@ -39,23 +41,74 @@ class ISyncRepository(ABC):
     def pull_mutations(
         self, since: Optional[str] = None,
         exclude_origin_server_id: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        after_seq: Optional[int] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """
-        Retrieve mutations since a given timestamp.
-        If since is None, returns all mutations.
+        Retrieve a PAGE of mutations. Returns a dict:
+            {updates: [...], next_cursor: int|None, has_more: bool, count: int}
+
+        Two cursor modes:
+        - after_seq (preferred): filter by the server-assigned monotonic
+          sequence. Immune to clock skew between machines, unlike a timestamp
+          cursor where a few seconds of drift silently drops mutations.
+        - since (legacy): filter by timestamp string. Kept only for clients
+          that have not migrated yet. If both are given, after_seq wins.
 
         exclude_origin_server_id: when set, mutations whose origin_server_id
         matches this value are excluded from the result. Used by peer
         servers pulling delta from each other — the requester doesn't need
         mutations it originated itself, saving bandwidth. Regular device
         clients should leave this as None.
+
+        limit: page size. Implementations MUST enforce a sane upper bound —
+        an unbounded pull lets a fresh device drag the entire log in one
+        request and blow up memory on both ends.
         """
         pass
+
+    @abstractmethod
+    def get_max_seq(self) -> int:
+        """Highest sequence number currently in the log (0 if empty)."""
+        pass
     
+    @abstractmethod
+    def get_mutations_by_table(self, table: str) -> List[Dict[str, Any]]:
+        """
+        Return every mutation for a single table, ordered by server_received_at
+        ascending, with `data` already parsed from JSON.
+
+        Used by business-rule validation (e.g. unique room_number) which needs
+        chronological order so the newest mutation for a given record wins when
+        building a lookup index.
+        """
+        pass
+
     @abstractmethod
     def get_status(self) -> Dict[str, Any]:
         """
         Get sync status summary: total records and per-table counts.
+        """
+        pass
+
+    @abstractmethod
+    def update_peer_sync_status(
+        self,
+        peer_id: str,
+        last_synced_at: Optional[str] = None,
+        last_seen_online_at: Optional[str] = None,
+        zone: Optional[str] = None,
+        peer_url: Optional[str] = None,
+    ) -> None:
+        """
+        Persist peer server last synced timestamp in SQLite known_servers table.
+        """
+        pass
+
+    @abstractmethod
+    def get_peer_last_synced(self, peer_id_or_url: str) -> Optional[str]:
+        """
+        Get last synced timestamp for a peer server from known_servers table.
         """
         pass
 

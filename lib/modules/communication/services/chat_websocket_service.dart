@@ -36,11 +36,12 @@ class ChatWebSocketService {
 
     try {
       final baseUrl = await _settingsService.getSyncServerUrl();
-      // Sanitize and reconstruct the WebSocket URL using Uri parser to ignore hashes/paths/trailing slashes
       final uri = Uri.parse(baseUrl.trim());
       final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
       final portStr = uri.hasPort ? ':${uri.port}' : '';
-      final wsUrl = '$scheme://${uri.host}$portStr/chat';
+      final syncToken = await _settingsService.getSyncToken();
+      final effectiveToken = syncToken.isNotEmpty ? syncToken : 'iZiiServerSecretKey2026';
+      final wsUrl = '$scheme://${uri.host}$portStr/chat?token=${Uri.encodeComponent(effectiveToken)}';
 
       print('[ChatWS] Connecting to $wsUrl ...');
       _channel = WebSocketChannel.connect(Uri.parse(wsUrl));

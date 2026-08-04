@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:izii_app/core/bloc/app_bloc.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
 
@@ -62,7 +63,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   String? _lastLoadedRoomId;
   String _activeRole =
       'Growing Lead'; // Vinh (Growing Lead), Hải (Harvest Supervisor), Trúc (Cool Room Manager), Nam (Maintenance Lead)
-  String _language = 'en'; // vi or en
+  String get _language => Localizations.localeOf(context).languageCode;
   String _roomFilter = 'all'; // all, active, idle
 
   String? _tasksSelectedRoomName;
@@ -424,9 +425,20 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                   orElse: () => {});
               if (roomEntry.isNotEmpty) {
                 final rName = roomEntry['name'] as String;
+                // Chỉ nhận job THỰC SỰ khai báo đúng phòng này.
+                //
+                // Trước đây điều kiện là:
+                //     if (jRoomId != null && jRoomId != state.selectedRoomId)
+                // tức job THIẾU room_id sẽ lọt qua và bị gán vào bất kỳ phòng
+                // nào đang được chọn — fail-open. Hiện _mapJob (job_list_service
+                // .dart:88-114) luôn kèm 'room_id' nên chưa lộ, nhưng chỉ cần
+                // một nguồn job khác (API ngoài, cache, mock) quên field này là
+                // lỗi "phòng nào cũng hiện job giống nhau" tái diễn.
+                //
+                // Giờ đổi thành fail-closed: không xác định được phòng thì loại.
                 final filteredJobs = state.selectedRoomJobs.where((j) {
                   final jRoomId = j['room_id'] ?? j['roomId'];
-                  if (jRoomId != null && jRoomId != state.selectedRoomId) {
+                  if (jRoomId == null || jRoomId != state.selectedRoomId) {
                     return false;
                   }
                   return _isJobVisible(j, _activeRole, _employees);

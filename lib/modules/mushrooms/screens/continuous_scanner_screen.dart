@@ -34,7 +34,9 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen>
   final TextEditingController _manualIdController = TextEditingController();
 
   // Mobile Scanner Controllers
-  final MobileScannerController _controller = MobileScannerController();
+  final MobileScannerController _controller = MobileScannerController(
+    cameraResolution: const Size(1280, 720),
+  );
   late AnimationController _animationController;
   bool _isProcessing = false;
   bool _isTorchOn = false;

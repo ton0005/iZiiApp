@@ -77,7 +77,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='iziiapp_server',
+    name='izii_server',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -97,19 +97,19 @@ exe = EXE(
 
 ## 3. Các bước tiến hành Rebuild
 
-1. Mở PowerShell hoặc Command Prompt tại thư mục gốc của dự án (`izii_app`):
+1. Mở PowerShell hoặc Command Prompt tại thư mục server (`izii_app`):
    ```powershell
-   cd C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app
+   cd C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\server
    ```
 
 2. Chạy lệnh PyInstaller với cờ `--clean` để xóa bộ nhớ cache cũ và build lại:
    ```bash
-   pyinstaller --clean iziiapp_server.spec
+   pyinstaller --clean izii_server.spec
    ```
-
+   pyinstaller --noconfirm izii_server.spec
 3. Quá trình build sẽ tạo ra:
    - Thư mục `build/` chứa các file log trung gian.
-   - Thư mục `dist/` chứa sản phẩm đầu ra: `dist/iziiapp_server.exe` (~36MB).
+   - Thư mục `dist/` chứa sản phẩm đầu ra: `dist/izii_server.exe` (~36MB).
 
 ---
 
@@ -120,7 +120,7 @@ Sau khi quá trình build hoàn tất, kiểm tra file thực thi trong thư m�
 1. Chạy thử server:
    ```powershell
    cd dist
-   .\iziiapp_server.exe
+   .\izii_server.exe
    ```
 
 2. Xác nhận log xuất hiện thông báo:

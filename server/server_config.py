@@ -15,7 +15,51 @@ Ví dụ file .env trên máy chạy Server-M1:
     IZIIAPP_SYNC_INTERVAL_SECONDS=45
 """
 import os
+import sys
+import io
 from dataclasses import dataclass, field
+
+# Ensure UTF-8 output encoding on Windows consoles
+if sys.platform.startswith('win'):
+    try:
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
+
+def _load_env_file():
+    """
+    Lightweight .env file parser so server loads environment variables automatically
+    without requiring external libraries or manual OS export.
+    """
+    candidate_paths = [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"),
+        os.path.join(os.getcwd(), ".env"),
+    ]
+    if getattr(sys, 'frozen', False):
+        candidate_paths.insert(0, os.path.join(os.path.dirname(sys.executable), ".env"))
+    for env_path in candidate_paths:
+        if os.path.exists(env_path):
+            try:
+                with open(env_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line or line.startswith("#") or "=" not in line:
+                            continue
+                        k, v = line.split("=", 1)
+                        k = k.strip()
+                        v = v.strip().strip("'").strip('"')
+                        if k and k not in os.environ:
+                            os.environ[k] = v
+                break
+            except Exception as e:
+                print(f"⚠️  [CONFIG] Could not parse .env file at {env_path}: {e}")
+
+
+# Load .env file automatically on module import
+_load_env_file()
 
 
 def _parse_peers(raw: str) -> list[str]:
@@ -28,6 +72,8 @@ class ServerConfig:
     zone: str
     peers: list[str] = field(default_factory=list)
     sync_interval_seconds: int = 45
+    server_secret: str = ""
+    ws_secret: str = ""
 
 
 def load_server_config() -> ServerConfig:
@@ -35,6 +81,25 @@ def load_server_config() -> ServerConfig:
     zone = os.environ.get("IZIIAPP_ZONE", "default")
     peers_raw = os.environ.get("IZIIAPP_PEERS", "")
     interval = int(os.environ.get("IZIIAPP_SYNC_INTERVAL_SECONDS", "45"))
+    secret = os.environ.get("IZIIAPP_SERVER_SECRET", "")
+    ws_secret = os.environ.get("IZIIAPP_WS_SECRET", "")
+    if not ws_secret and not secret:
+        try:
+            print(
+                "⛔ [CONFIG] Chưa set IZIIAPP_WS_SECRET lẫn IZIIAPP_SERVER_SECRET — "
+                "WebSocket /chat sẽ TỪ CHỐI mọi kết nối. Set 1 trong 2 biến này "
+                "rồi khởi động lại server."
+            )
+        except Exception:
+            pass
+    if not secret:
+        try:
+            print(
+                "⚠️  [CONFIG] IZIIAPP_SERVER_SECRET chưa được set — "
+                "/peer-sync/* endpoints đang hoạt động ở chế độ mở (không yêu cầu X-iZii-Server-Token)."
+            )
+        except Exception:
+            pass
 
     if server_id == "server-standalone":
         print(
@@ -49,6 +114,8 @@ def load_server_config() -> ServerConfig:
         zone=zone,
         peers=_parse_peers(peers_raw),
         sync_interval_seconds=interval,
+        server_secret=secret,
+        ws_secret=ws_secret,
     )
 
 

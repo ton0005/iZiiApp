@@ -67,91 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Language Configurations ---
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              elevation: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.language_rounded,
-                            color: Color(0xFF10B981)),
-                        const SizedBox(width: 8),
-                        Text(
-                          context.tr('settings_language'),
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      context.tr('settings_language_desc'),
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ChoiceChip(
-                            label: const Center(
-                              child: Text(
-                                'Tiếng Việt',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            selected:
-                                Localizations.localeOf(context).languageCode ==
-                                    'vi',
-                            selectedColor:
-                                const Color(0xFF10B981).withValues(alpha: 0.25),
-                            checkmarkColor: const Color(0xFF10B981),
-                            onSelected: (selected) {
-                              if (selected) {
-                                context
-                                    .read<AppBloc>()
-                                    .add(const ChangeLocaleEvent(Locale('vi')));
-                              }
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ChoiceChip(
-                            label: const Center(
-                              child: Text(
-                                'English',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            selected:
-                                Localizations.localeOf(context).languageCode ==
-                                    'en',
-                            selectedColor:
-                                const Color(0xFF10B981).withValues(alpha: 0.25),
-                            checkmarkColor: const Color(0xFF10B981),
-                            onSelected: (selected) {
-                              if (selected) {
-                                context
-                                    .read<AppBloc>()
-                                    .add(const ChangeLocaleEvent(Locale('en')));
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
-            const SizedBox(height: 16),
 
             // --- AI Configurations ---
             Card(
@@ -286,27 +202,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.bluetooth_rounded, color: Color(0xFF6366F1)),
-                        SizedBox(width: 8),
+                        const Icon(Icons.bluetooth_rounded, color: Color(0xFF6366F1)),
+                        const SizedBox(width: 8),
                         Text(
-                          'Kết nối P2P Bluetooth',
-                          style: TextStyle(
+                          context.tr('settings_ble_title'),
+                          style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Cho phép thiết bị khác phát hiện và gửi tin nhắn bảo mật ngang hàng (P2P) qua Bluetooth khi ngoại tuyến.',
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    Text(
+                      context.tr('settings_ble_desc'),
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
-                      title: const Text(
-                        'Kích hoạt Bluetooth Chat P2P',
-                        style: TextStyle(
+                      title: Text(
+                        context.tr('settings_ble_toggle'),
+                        style: const TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                       value: _isBleEnabled,
@@ -341,30 +257,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.notifications_rounded,
+                        const Icon(Icons.notifications_rounded,
                             color: Color(0xFFEC4899)),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Cài đặt thông báo',
-                          style: TextStyle(
+                          context.tr('settings_notif_title'),
+                          style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Tùy chỉnh thông báo cho tin nhắn mới, nhắc tên và cuộc gọi qua các kênh Push, In-app, Email.',
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    Text(
+                      context.tr('settings_notif_desc'),
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.tune_rounded),
-                        label: const Text('Cấu hình chi tiết',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        label: Text(context.tr('settings_notif_config'),
+                            style: const TextStyle(fontWeight: FontWeight.bold)),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           backgroundColor: const Color(0xFFEC4899),

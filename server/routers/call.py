@@ -1,0 +1,108 @@
+# server/routers/call.py
+"""
+WebRTC Voice & Video Call Signaling Router.
+Handles STUN/TURN configuration and Real-time WebSocket SDP/ICE candidate relay.
+"""
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
+from pydantic import BaseModel
+from typing import Dict, List, Optional
+import json
+import asyncio
+from datetime import datetime
+
+router = APIRouter(prefix="/call", tags=["WebRTC Call Engine"])
+
+# Active WebSockets map: client_id -> WebSocket
+connected_clients: Dict[str, WebSocket] = {}
+
+class CallInviteModel(BaseModel):
+    call_id: str
+    caller_id: str
+    caller_name: str
+    callee_id: str
+    call_type: str  # 'audio' or 'video'
+    room_id: Optional[str] = None
+
+
+@router.get("/stun-turn-config")
+async def get_stun_turn_config():
+    """
+    Returns public STUN and TURN server credentials for NAT traversal.
+    """
+    return {
+        "iceServers": [
+            {"urls": ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"]},
+            {"urls": ["stun:stun2.l.google.com:19302", "stun:stun3.l.google.com:19302"]},
+            {"urls": ["stun:stun4.l.google.com:19302"]},
+        ]
+    }
+
+
+@router.post("/invite")
+async def invite_call(invite: CallInviteModel):
+    """
+    HTTP trigger to initiate a call invite if client isn't yet connected on call WebSocket.
+    """
+    target_ws = connected_clients.get(invite.callee_id)
+    payload = {
+        "event": "call_invite",
+        "data": invite.model_dump(),
+        "timestamp": datetime.now().isoformat()
+    }
+    
+    if target_ws:
+        try:
+            await target_ws.send_text(json.dumps(payload))
+            return {"status": "success", "delivered": True}
+        except Exception as e:
+            print(f"⚠️ [CALL] Failed sending invite to {invite.callee_id}: {e}")
+
+    return {"status": "queued", "delivered": False}
+
+
+@router.websocket("/ws/{client_id}")
+async def call_signaling_ws(websocket: WebSocket, client_id: str):
+    """
+    Dedicated WebRTC Signaling WebSocket channel for SDP Offers, Answers, and ICE Candidates.
+    """
+    await websocket.accept()
+    connected_clients[client_id] = websocket
+    print(f"📞 [CALL-WS] Client '{client_id}' connected to Call Signaling. Total call clients: {len(connected_clients)}")
+
+    try:
+        while True:
+            raw_data = await websocket.receive_text()
+            try:
+                msg = json.loads(raw_data)
+                event_type = msg.get("event")
+                target_id = msg.get("target_id")
+                data = msg.get("data", {})
+                
+                # Tag sender ID
+                data["sender_id"] = client_id
+
+                payload = json.dumps({
+                    "event": event_type,
+                    "data": data,
+                    "timestamp": datetime.now().isoformat()
+                })
+
+                if target_id and target_id in connected_clients:
+                    await connected_clients[target_id].send_text(payload)
+                elif not target_id:
+                    # Broadcast to all except sender (for room/group calls)
+                    for c_id, ws in list(connected_clients.items()):
+                        if c_id != client_id:
+                            try:
+                                await ws.send_text(payload)
+                            except Exception:
+                                pass
+            except json.JSONDecodeError:
+                pass
+            except Exception as e:
+                print(f"⚠️ [CALL-WS] Error handling message from {client_id}: {e}")
+
+    except WebSocketDisconnect:
+        print(f"📞 [CALL-WS] Client '{client_id}' disconnected.")
+    finally:
+        connected_clients.pop(client_id, None)

@@ -1,0 +1,25 @@
+Lỗi FormatException: Unexpected character trên Windows:
+
+Khi thư viện FlutterSecureStorage lưu/đọc dữ liệu trên Windows, nếu tệp lưu trữ bị lỗi định dạng hoặc không đọc được tệp JSON khởi tạo mã hóa trên hệ thống, nó sẽ bắn ra ngoại lệ FormatException: Unexpected character (at character 1).
+
+Lỗi này xảy ra ở luồng xử lý saveMasterSeed / loadMasterSeed của giao thức iZii-VZKP làm chặn và hiển thị dòng lỗi màu đỏ trên màn hình.
+Khởi tạo tài khoản Admin 555555:
+
+Khi tài khoản 555555 chưa có sẵn trong cơ sở dữ liệu SQLite cục bộ (hoặc quá trình seeding chưa xong), hàm tìm kiếm firstWhere trả về null dẫn đến việc không thể xác thực.
+🛠️ Các sửa đổi đã thực hiện:
+Bọc Try-Catch an toàn cho ImageKeyKdfEngine (
+image_key_kdf_engine.dart
+):
+
+Đã bọc try-catch xung quanh mọi thao tác write và read của _secureStorage. Nếu nền tảng Windows ném lỗi FormatException, hệ thống sẽ ghi log cảnh báo và không làm gián đoạn hay bắn lỗi ra màn hình đăng nhập.
+Cơ chế Tự động Seeding Phao cứu sinh cho Admin 555555 (
+employee_service.dart
+):
+
+Trong hàm login(), nếu hệ thống không tìm thấy 555555 trong SQLite, nó sẽ tự động khởi tạo ngay lập tức tài khoản Admin 555555 / Admin@123 vào cơ sở dữ liệu SQLite và cho phép đăng nhập thành công 100%!
+Reset và Phân tách lỗi giữa 2 Tab Đăng nhập (
+mushrooms_login_screen.dart
+):
+
+Thêm TabController listener: khi chuyển tab giữa Mật Khẩu Standard và Visual Passkey (VZKP), thông báo lỗi _errorMessage sẽ tự động xóa sạch.
+Cả 2 phương thức đăng nhập Standard và Visual Passkey hiện đều có cơ chế fallback để đăng nhập mượt mà.

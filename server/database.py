@@ -15,7 +15,7 @@ def get_stable_data_dir():
         return os.path.join(os.path.dirname(sys.executable), "data")
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
-DB_PATH = os.path.join(get_stable_data_dir(), "iziiapp.db")
+DB_PATH = os.environ.get("IZIIAPP_SERVER_DB_PATH", os.path.join(get_stable_data_dir(), "iziiapp.db"))
 
 
 def get_db_connection():

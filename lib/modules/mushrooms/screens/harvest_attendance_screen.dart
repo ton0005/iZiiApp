@@ -1030,7 +1030,9 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               alignment: Alignment.center,
               children: [
                 MobileScanner(
-                  controller: _scannerController ??= MobileScannerController(),
+                  controller: _scannerController ??= MobileScannerController(
+                    cameraResolution: const Size(1280, 720),
+                  ),
                   onDetect: (capture) {
                     if (_isScannerProcessing) return;
                     final List<Barcode> barcodes = capture.barcodes;

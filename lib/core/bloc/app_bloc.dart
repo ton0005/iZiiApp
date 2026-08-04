@@ -33,7 +33,7 @@ class AppState extends Equatable {
   
   const AppState({
     this.themeMode = ThemeMode.dark,
-    this.locale = const Locale('vi'),
+    this.locale = const Locale('en'),
   });
   
   AppState copyWith({ThemeMode? themeMode, Locale? locale}) {
@@ -71,8 +71,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     });
 
     on<ChangeLocaleEvent>((event, emit) async {
-      await _settingsService.saveLanguage(event.locale.languageCode);
-      emit(state.copyWith(locale: event.locale));
+      await _settingsService.saveLanguage('en');
+      emit(state.copyWith(locale: const Locale('en')));
     });
   }
 }

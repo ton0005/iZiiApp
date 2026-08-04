@@ -18,6 +18,8 @@ import '../../../core/database/app_database.dart';
 import '../../../core/device_identity/device_discovery_service.dart';
 import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../../../core/device_identity/device_identity_models.dart';
+import '../call/call_bloc.dart';
+import '../call/call_screen.dart';
 import '../../../core/settings/settings_service.dart';
 import '../bloc/chat_bloc.dart';
 import '../models/chat_models.dart';
@@ -161,6 +163,33 @@ class _ConversationScreenState extends State<ConversationScreen> {
     } else {
       _sendMessage();
     }
+  }
+
+  void _startCall(BuildContext context, String callType, User companion) {
+    final chatBloc = context.read<ChatBloc>();
+    final currentUserId = chatBloc.currentUserId ?? 'user_1';
+    final currentUserName = 'Me';
+    final callId = 'call_${DateTime.now().millisecondsSinceEpoch}';
+
+    final callBloc = CallBloc();
+    callBloc.initSignaling(currentUserId);
+    callBloc.add(StartCallEvent(
+      callId: callId,
+      callerId: currentUserId,
+      callerName: currentUserName,
+      calleeId: companion.id,
+      calleeName: companion.name,
+      callType: callType,
+    ));
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: callBloc,
+          child: const CallScreen(),
+        ),
+      ),
+    );
   }
 
   TextInputAction _getTextInputAction() {
@@ -406,12 +435,27 @@ class _ConversationScreenState extends State<ConversationScreen> {
             },
           ),
           actions: [
-            // Voice call button helper
-            IconButton(
-              icon:
-                  Icon(Icons.phone_rounded, color: ChatTheme.getAccent(isDark)),
-              onPressed: () {
-                // Call companion logic
+            FutureBuilder<User?>(
+              future: chatBloc.chatRepository
+                  .getCompanion(widget.conversationId, currentUserId),
+              builder: (context, snapshot) {
+                final companion = snapshot.data;
+                if (companion == null) return const SizedBox();
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.phone_rounded, color: ChatTheme.getAccent(isDark)),
+                      tooltip: 'Voice Call',
+                      onPressed: () => _startCall(context, 'audio', companion),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.videocam_rounded, color: ChatTheme.getAccent(isDark)),
+                      tooltip: 'Video Call',
+                      onPressed: () => _startCall(context, 'video', companion),
+                    ),
+                  ],
+                );
               },
             ),
             // Font Size Selection Menu

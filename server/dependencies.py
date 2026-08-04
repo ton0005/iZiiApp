@@ -11,7 +11,8 @@ to PostgreSQL, only this file needs to change — endpoint code stays the same.
 Usage in routers:
     @router.get("/sync/pull")
     async def sync_pull(repo: ISyncRepository = Depends(get_sync_repo)):
-        return repo.pull_mutations(since=since)
+        page = repo.pull_mutations(after_seq=after_seq, limit=limit)
+        return {"updates": page["updates"], "next_cursor": page["next_cursor"]}
 """
 from fastapi import Depends
 from database import get_db_connection

@@ -47,7 +47,6 @@ class _IZiiAppState extends State<IZiiApp> with WidgetsBindingObserver {
           themeMode: state.themeMode,
           locale: state.locale,
           supportedLocales: const [
-            Locale('vi'),
             Locale('en'),
           ],
           localizationsDelegates: const [

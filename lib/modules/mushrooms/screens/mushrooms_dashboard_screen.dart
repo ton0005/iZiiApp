@@ -1184,6 +1184,23 @@ class _RoomDetailsSheet extends StatefulWidget {
 class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
   Timer? _countdownTimer;
 
+  /// Chỉ trả về job THỰC SỰ thuộc phòng đang mở.
+  ///
+  /// Lớp phòng thủ: trước đây màn hình đọc thẳng `state.selectedRoomJobs` mà
+  /// không đối chiếu `widget.roomId`, nên khi state còn giữ job của phòng cũ
+  /// thì phòng nào cũng hiển thị y hệt nhau. Hai điều kiện dưới đây chặn cả
+  /// hai khả năng: state chưa kịp trỏ sang phòng này, và bản ghi lẫn phòng.
+  List<Map<String, dynamic>> _jobsForThisRoom(MushroomsState state) {
+    if (state.selectedRoomId != widget.roomId) {
+      return const <Map<String, dynamic>>[];
+    }
+    // Fail-CLOSED: job thiếu room_id thì loại, không mặc định cho qua.
+    return state.selectedRoomJobs.where((j) {
+      final jRoomId = j['room_id'] ?? j['roomId'];
+      return jRoomId != null && jRoomId == widget.roomId;
+    }).toList();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1192,7 +1209,7 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
         setState(() {});
         try {
           final state = context.read<MushroomsBloc>().state;
-          final jobs = state.selectedRoomJobs;
+          final jobs = _jobsForThisRoom(state);
           final soloJobs = jobs
               .where((j) =>
                   j['job_type'] == 'alone_worker' &&
@@ -1241,7 +1258,7 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
           );
         }
 
-        final jobs = state.selectedRoomJobs;
+        final jobs = _jobsForThisRoom(state);
         final soloJobs = jobs
             .where((j) =>
                 j['job_type'] == 'alone_worker' && j['status'] == 'in_progress')

@@ -31,6 +31,14 @@ const Map<String, String> viTranslations = {
   'settings_sync_desc':
       'Đồng bộ dữ liệu offline giữa mobile, Windows và Cloud Server.',
   'settings_go_to_sync': 'Màn hình Đồng bộ',
+  'settings_ble_title': 'Kết nối P2P Bluetooth',
+  'settings_ble_desc':
+      'Cho phép thiết bị khác phát hiện và gửi tin nhắn bảo mật ngang hàng (P2P) qua Bluetooth khi ngoại tuyến.',
+  'settings_ble_toggle': 'Kích hoạt Bluetooth Chat P2P',
+  'settings_notif_title': 'Cài đặt thông báo',
+  'settings_notif_desc':
+      'Tùy chỉnh thông báo cho tin nhắn mới, nhắc tên và cuộc gọi qua các kênh Push, In-app, Email.',
+  'settings_notif_config': 'Cấu hình chi tiết',
 
   // Profile Screen
   'profile_member_since': 'Thành viên từ',
