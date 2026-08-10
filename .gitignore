@@ -51,7 +51,7 @@ server/certs/
 *.srl
 
 # PyInstaller build artifacts
-server/dist/
-server/build/
+/server/dist/
+/server/build/
 
 _reset_backup_20260803-130428/
