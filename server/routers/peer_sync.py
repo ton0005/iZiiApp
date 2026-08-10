@@ -20,22 +20,45 @@ Endpoints:
                             polling)
 - GET  /peer-sync/health — kiểm tra tình trạng + để mDNS/monitor dùng
 """
+import hmac
 from datetime import datetime, timezone
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from pydantic import BaseModel
 
 from dependencies import get_sync_repo
 from repository.interface import ISyncRepository
+from security_tls import verify_peer_cn
 from server_config import CONFIG
 
 router = APIRouter(prefix="/peer-sync", tags=["Peer Sync (Server-to-Server)"])
 
 
 def _verify_server_secret(x_izii_server_token: Optional[str] = Header(None, alias="X-iZii-Server-Token")):
-    if CONFIG.server_secret and x_izii_server_token != CONFIG.server_secret:
-        raise HTTPException(status_code=401, detail="Invalid or missing X-iZii-Server-Token")
+    # hmac.compare_digest thay cho `!=` — so sánh thời gian hằng định, không rò
+    # rỉ thông tin về secret qua thời gian phản hồi.
+    if CONFIG.server_secret:
+        if not x_izii_server_token or not hmac.compare_digest(
+            x_izii_server_token, CONFIG.server_secret
+        ):
+            raise HTTPException(status_code=401, detail="Invalid or missing X-iZii-Server-Token")
+
+
+def _verify_peer(request: Request, token: Optional[str]) -> None:
+    """
+    Xác thực hai lớp cho mọi endpoint peer-sync:
+
+      1. mTLS  — nếu bật, chứng chỉ client đã được kiểm ở TẦNG TLS trước khi
+                 request tới đây. Ở đây chỉ siết thêm theo danh sách CN.
+      2. Secret — vẫn giữ để tương thích ngược và làm lớp phòng thủ thứ hai.
+
+    Thứ tự quan trọng: kiểm CN trước vì nó rẻ và cụ thể hơn.
+    """
+    cn_error = verify_peer_cn(request)
+    if cn_error:
+        raise HTTPException(status_code=403, detail=f"Chứng chỉ peer bị từ chối: {cn_error}")
+    _verify_server_secret(token)
 
 
 class PeerMutationModel(BaseModel):
@@ -59,6 +82,7 @@ class PeerPushPayload(BaseModel):
 
 @router.get("/pull")
 async def peer_pull(
+    request: Request,
     since: Optional[str] = None,
     after_seq: Optional[int] = None,
     limit: Optional[int] = None,
@@ -71,7 +95,7 @@ async def peer_pull(
     TRONG LOG CỦA SERVER NÀY, peer chỉ việc lưu lại và gửi trả cho đúng server
     này ở lần sau. Nhờ vậy hai server lệch đồng hồ vẫn đồng bộ chính xác.
     """
-    _verify_server_secret(x_izii_server_token)
+    _verify_peer(request, x_izii_server_token)
     try:
         page = repo.pull_mutations(
             since=since,
@@ -109,10 +133,11 @@ async def peer_pull(
 @router.post("/push")
 async def peer_push(
     payload: PeerPushPayload,
+    request: Request,
     x_izii_server_token: Optional[str] = Header(None, alias="X-iZii-Server-Token"),
     repo: ISyncRepository = Depends(get_sync_repo),
 ):
-    _verify_server_secret(x_izii_server_token)
+    _verify_peer(request, x_izii_server_token)
     if payload.from_server_id == CONFIG.server_id:
         raise HTTPException(status_code=400, detail="Không thể peer-sync với chính mình.")
 
@@ -131,10 +156,11 @@ async def peer_push(
 
 @router.get("/health")
 async def peer_health(
+    request: Request,
     x_izii_server_token: Optional[str] = Header(None, alias="X-iZii-Server-Token"),
     repo: ISyncRepository = Depends(get_sync_repo),
 ):
-    _verify_server_secret(x_izii_server_token)
+    _verify_peer(request, x_izii_server_token)
     status = repo.get_status()
     return {
         "server_id": CONFIG.server_id,

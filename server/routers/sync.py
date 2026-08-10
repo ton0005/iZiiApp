@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 
 from dependencies import get_sync_repo
 from repository.interface import ISyncRepository
+from security_auth import DeviceIdentity, optional_device
 from server_config import CONFIG
 from event_engine import iZiiEventEngine
 
@@ -143,8 +144,59 @@ def _assert_room_numbers_unique(repo: ISyncRepository, mutations: List[MutationM
         index[key] = record_id
 
 
+def _assert_alone_worker_has_session(
+    mutations: List[MutationModel],
+    device: Optional[DeviceIdentity],
+) -> None:
+    """
+    Công việc Alone Worker BẮT BUỘC phải có phiên làm việc đang mở (G1).
+
+    Đây là ràng buộc quan trọng nhất của toàn bộ tính năng điểm danh. Alone
+    Worker là cơ chế an toàn lao động: khi công nhân quá giờ trong phòng kín,
+    hệ thống phải báo được ĐÍCH DANH ai để đi tìm.
+
+    Nếu chấp nhận tạo công việc mà không biết ai đang làm, cảnh báo sẽ chỉ nói
+    được "máy nào" — vô dụng trong tình huống cần cứu người, và không có giá trị
+    trong điều tra tai nạn.
+
+    Chỉ ràng buộc đúng loại công việc này. Các công việc khác (tưới, phun thuốc)
+    vẫn tạo được bình thường để không cản trở sản xuất.
+    """
+    alone_jobs = [
+        m for m in mutations
+        if m.table in ("mushroom_jobs", "jobs")
+        and str(m.data.get("job_type", "")).lower() == "alone_worker"
+        and str(m.operation).lower() in ("insert", "create")
+    ]
+    if not alone_jobs:
+        return
+
+    # Điều kiện đúng là "có xác định được ĐÍCH DANH ai không", chứ không phải
+    # "có phiên hay không". Máy cá nhân của Manager/Supervisor đã biết chủ máy
+    # từ lúc cấp nên thoả điều kiện mà không cần điểm danh — bắt họ điểm danh
+    # trên iPhone riêng là thủ tục vô nghĩa, không tăng thêm chút an toàn nào.
+    if device is None or not device.identity_is_known:
+        print("⛔ [SESSION] Từ chối tạo Alone Worker: không xác định được người thực hiện.")
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error": "no_active_work_session",
+                "message": (
+                    "Chưa điểm danh đầu ca nên không tạo được công việc Làm việc một mình. "
+                    "Cảnh báo an toàn cần biết ĐÍCH DANH ai đang trong phòng."
+                ),
+                "action": "check_in_required",
+            },
+        )
+
+
 @router.post("/push")
-async def sync_push(payload: PushPayload, request: Request, repo: ISyncRepository = Depends(get_sync_repo)):
+async def sync_push(
+    payload: PushPayload,
+    request: Request,
+    repo: ISyncRepository = Depends(get_sync_repo),
+    device: Optional[DeviceIdentity] = Depends(optional_device),
+):
     now = datetime.now(timezone.utc).isoformat()
 
     print(f"\n{'='*50}")
@@ -155,6 +207,7 @@ async def sync_push(payload: PushPayload, request: Request, repo: ISyncRepositor
     # nguyên vẹn, nên đặt ngoài khối try/except bên dưới (khối đó bọc mọi lỗi
     # thành 500).
     _assert_room_numbers_unique(repo, payload.mutations)
+    _assert_alone_worker_has_session(payload.mutations, device)
 
     try:
         mutations_dicts = []
@@ -165,12 +218,15 @@ async def sync_push(payload: PushPayload, request: Request, repo: ISyncRepositor
                 print(f"       - {key}: {val_str}")
             mutations_dicts.append(m.model_dump())
 
+        # Danh tính LẤY TỪ TOKEN được ưu tiên hơn giá trị client tự khai:
+        # client có thể gửi actor_device_id tuỳ ý, còn token thì server xác
+        # thực được. Đây là điều làm audit trail đáng tin thay vì chỉ là ghi chú.
         count = repo.push_mutations(
             mutations_dicts,
             now,
             default_origin_server_id=CONFIG.server_id,
-            actor_user_id=payload.actor_user_id,
-            actor_device_id=payload.actor_device_id,
+            actor_user_id=(device.user_id if device and device.user_id else payload.actor_user_id),
+            actor_device_id=(device.device_id if device else payload.actor_device_id),
         )
 
         # Broadcast real-time domain events & Webhooks
@@ -227,7 +283,8 @@ async def sync_push(payload: PushPayload, request: Request, repo: ISyncRepositor
 async def sync_pull(since: Optional[str] = None,
                     after_seq: Optional[int] = None,
                     limit: Optional[int] = None,
-                    repo: ISyncRepository = Depends(get_sync_repo)):
+                    repo: ISyncRepository = Depends(get_sync_repo),
+                    device: Optional[DeviceIdentity] = Depends(optional_device)):
     """
     Hai chế độ con trỏ, chọn theo tham số client gửi lên:
 

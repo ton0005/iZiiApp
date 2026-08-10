@@ -12,6 +12,11 @@
 
     <!-- Camera & Storage Permissions for Attachments -->
     <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- NFC: đọc/ghi thẻ đăng ký thiết bị (luồng enrollment).
+         KHÔNG khai uses-feature required=true — máy không có NFC vẫn phải cài
+         được app và dùng đường quét QR thay thế. -->
+    <uses-permission android:name="android.permission.NFC"/>
+    <uses-feature android:name="android.hardware.nfc" android:required="false"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>

@@ -54,6 +54,13 @@ class SyncService {
     }
   }
 
+  /// Header mang device token của máy này với server tương ứng.
+  /// Trả map rỗng nếu máy chưa đăng ký — server ở chế độ mặc định vẫn cho qua.
+  Future<Map<String, String>> _deviceTokenHeader(String serverUrl) async {
+    final t = await _settingsService.getDeviceToken(serverUrl);
+    return (t != null && t.isNotEmpty) ? {'X-iZii-Device-Token': t} : {};
+  }
+
   /// Device ID dùng cho audit trail gửi kèm mỗi lần push.
   /// Trả về null nếu chưa khởi tạo được danh tính — audit thiếu thông tin vẫn
   /// tốt hơn là chặn cả luồng đồng bộ.
@@ -181,6 +188,10 @@ class SyncService {
             },
             options: Options(headers: {
               if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+              // Token RIÊNG của máy này, cấp qua luồng enrollment QR/NFC.
+              // Server dùng nó để xác thực danh tính thay vì tin vào
+              // actor_device_id do client tự khai.
+              ...await _deviceTokenHeader(url),
               'Content-Type': 'application/json',
             }),
           );
@@ -377,6 +388,7 @@ class SyncService {
           },
           options: Options(headers: {
             if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+            ...await _deviceTokenHeader(url),
           }),
         );
 

@@ -78,7 +78,9 @@
 		<string>bluetooth-peripheral</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>Ứng dụng cần truy cập Máy ảnh để chụp và gửi ảnh đính kèm trong tin nhắn.</string>
+	<string>Ứng dụng cần truy cập Máy ảnh để quét mã QR đăng ký thiết bị và chụp ảnh đính kèm trong tin nhắn.</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>Ứng dụng cần đọc thẻ NFC để đăng ký thiết bị này với máy chủ iZii.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Ứng dụng cần truy cập Thư viện ảnh để chọn và gửi ảnh đính kèm trong tin nhắn.</string>
 </dict>

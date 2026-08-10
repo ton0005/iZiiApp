@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/database/app_database.dart';
+import '../../../core/enrollment/device_user_service.dart';
 
 class ChatRepository {
   final AppDatabase _db;
@@ -212,7 +213,27 @@ class ChatRepository {
 
   // Fetch all users that are shared with or inside the trust network
   Future<List<User>> getReachableContacts(String currentUserId) async {
-    // Ensure default user and mock contacts exist in database
+    // ── Ưu tiên danh bạ THIẾT BỊ THẬT ───────────────────────────────────────
+    //
+    // Mô hình "một thiết bị = một User": mỗi máy đã đăng ký (qua QR/NFC) là một
+    // danh tính thật, `User.id` chính là `device_id` mà server xác thực được
+    // qua token. Khác hẳn User demo — vốn ai cũng có thể tự nhận là bất kỳ ai.
+    //
+    // Chỉ nạp danh bạ demo khi CHƯA có thiết bị nào đăng ký, để môi trường thử
+    // nghiệm vẫn có người để chat.
+    try {
+      final synced = await DeviceUserService().syncDirectory();
+      if (synced > 0) {
+        final real = _db.select(_db.users)
+          ..where((u) => u.id.equals(currentUserId).not());
+        return real.get();
+      }
+    } catch (_) {
+      // Mất mạng hoặc server bản cũ chưa có /devices/directory → rơi xuống
+      // danh bạ demo bên dưới.
+    }
+
+    // ── Fallback: danh bạ demo ──────────────────────────────────────────────
     await _db.into(_db.users).insert(
           User(
             id: 'default_user',

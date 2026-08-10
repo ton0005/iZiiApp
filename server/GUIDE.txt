@@ -1,6 +1,47 @@
-pip install fastapi uvicorn httpx zeroconf
-python --version
-Python 3.11+
-python server/app.py
+iZiiServer — Ghi chú lệnh nhanh
+===============================
 
-Get-Process -Id (Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+>>> Hướng dẫn cài đặt đầy đủ từng bước: xem SETUP.md <<<
+
+Yêu cầu: Python 3.11+
+
+Cài thư viện:
+    pip install -r requirements.txt
+
+Khởi tạo DB:
+    python db_init.py
+
+Chạy (từ thư mục server):
+    .\run_server.bat
+
+Chạy nền, không hiện cửa sổ:
+    wscript.exe start_background.vbs
+
+Kiểm tra nhanh:
+    curl.exe http://localhost:8080/health
+    Tai lieu API: http://localhost:8080/docs
+
+Xem log:
+    Get-Content data\logs\server.log -Tail 100 -Wait
+
+Giai phong cong 8080:
+    Get-Process -Id (Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+Kiem tra loi import truoc khi deploy:
+    python -c "import app"
+
+Dong goi .exe (chay TU TRONG thu muc server):
+    pyinstaller --noconfirm izii_server.spec
+
+Reset toan bo du lieu:
+    .\reset_data.ps1
+
+Sinh chung chi TLS/mTLS:
+    .\gen_dev_certs.ps1
+
+Chuyen sang PostgreSQL:
+    pip install "psycopg[binary,pool]"
+    python migrate_to_postgres.py
+
+LUU Y: sua .env xong PHAI khoi dong lai server —
+       cau hinh chi duoc doc mot lan luc khoi dong.

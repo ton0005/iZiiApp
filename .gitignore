@@ -43,7 +43,15 @@ app.*.map.json
 server/.env
 *.env
 
+# TLS certificates & private keys (sinh bằng server/gen_dev_certs.ps1)
+server/certs/
+*.key
+*.crt
+*.csr
+*.srl
+
 # PyInstaller build artifacts
 server/dist/
 server/build/
 
+_reset_backup_20260803-130428/

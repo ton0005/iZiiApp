@@ -17,7 +17,6 @@ import httpx
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional, Sequence, Tuple
 
-from database import get_db_connection
 from server_config import CONFIG
 
 
@@ -97,14 +96,15 @@ class iZiiEventEngine:
         hỏng luồng dispatch.
         """
         try:
-            conn = get_db_connection()
-            try:
+            from database import sql
+            from dependencies import open_connection
+            with open_connection() as conn:
                 conn.execute(
-                    """
+                    sql("""
                     INSERT INTO webhook_dead_letters
                         (id, url, event_id, event_type, payload, last_error, attempts, failed_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
+                    """),
                     (
                         f"dl_{uuid.uuid4().hex[:12]}",
                         url,
@@ -117,8 +117,6 @@ class iZiiEventEngine:
                     ),
                 )
                 conn.commit()
-            finally:
-                conn.close()
             print(f"💀 [WEBHOOK] Đã ghi dead-letter cho {url} (event {payload.get('event_id')}).")
         except Exception as e:
             print(f"⚠️ [WEBHOOK] Không ghi được dead-letter cho {url}: {e}")
@@ -173,17 +171,21 @@ class iZiiEventEngine:
         rồi truyền kết quả (dữ liệu) vào dispatch_event. Vừa hết lỗi, vừa giảm
         từ N lần đọc bảng (N = số mutation) xuống còn 1 lần cho cả batch.
         """
-        sql = "SELECT id, url, event_filter, secret_token FROM webhook_subscriptions WHERE is_active = 1"
+        query = "SELECT id, url, event_filter, secret_token FROM webhook_subscriptions WHERE is_active = 1"
         try:
             if conn is not None:
-                rows = conn.execute(sql).fetchall()
+                rows = conn.execute(query).fetchall()
             else:
-                own = get_db_connection()
-                try:
-                    rows = own.execute(sql).fetchall()
-                finally:
-                    own.close()
-            return [(r[0], r[1], r[2], r[3]) for r in rows]
+                from dependencies import open_connection
+                with open_connection() as own:
+                    rows = own.execute(query).fetchall()
+            # Truy cập theo TÊN CỘT chứ không theo chỉ số: sqlite3.Row hỗ trợ cả
+            # hai, nhưng psycopg dict_row chỉ hỗ trợ tên. Dùng tên là cách duy
+            # nhất chạy được trên cả hai backend.
+            return [
+                (r["id"], r["url"], r["event_filter"], r["secret_token"])
+                for r in rows
+            ]
         except Exception as e:
             print(f"⚠️ [EVENT-ENGINE] Không đọc được webhook_subscriptions: {e}")
             return []
@@ -274,17 +276,16 @@ class iZiiEventEngine:
         webhook_id = f"wh_{uuid.uuid4().hex[:12]}"
         created_at = datetime.now(timezone.utc).isoformat()
         
-        conn = get_db_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO webhook_subscriptions (id, url, event_filter, secret_token, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)",
+        from database import sql
+        from dependencies import open_connection
+        with open_connection() as conn:
+            conn.execute(
+                sql("INSERT INTO webhook_subscriptions (id, url, event_filter, secret_token, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)"),
                 (webhook_id, url, event_filter, secret_token, created_at)
             )
             conn.commit()
-        finally:
-            conn.close()
-            
+
+
         print(f"✅ [WEBHOOK] Registered Webhook {webhook_id}: {url} (filter='{event_filter}')")
         return {
             "id": webhook_id,
@@ -298,34 +299,32 @@ class iZiiEventEngine:
         """
         Lists all registered Webhook subscriptions.
         """
-        conn = get_db_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute("SELECT id, url, event_filter, is_active, created_at FROM webhook_subscriptions")
-            rows = cursor.fetchall()
+        from dependencies import open_connection
+        with open_connection() as conn:
+            rows = conn.execute(
+                "SELECT id, url, event_filter, is_active, created_at FROM webhook_subscriptions"
+            ).fetchall()
             return [
                 {
-                    "id": r[0],
-                    "url": r[1],
-                    "event_filter": r[2],
-                    "is_active": bool(r[3]),
-                    "created_at": r[4],
+                    "id": r["id"],
+                    "url": r["url"],
+                    "event_filter": r["event_filter"],
+                    "is_active": bool(r["is_active"]),
+                    "created_at": r["created_at"],
                 }
                 for r in rows
             ]
-        finally:
-            conn.close()
 
     def unregister_webhook(self, webhook_id: str) -> bool:
         """
         Deletes a Webhook subscription.
         """
-        conn = get_db_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM webhook_subscriptions WHERE id = ?", (webhook_id,))
-            deleted = cursor.rowcount > 0
+        from database import sql
+        from dependencies import open_connection
+        with open_connection() as conn:
+            cur = conn.execute(
+                sql("DELETE FROM webhook_subscriptions WHERE id = ?"), (webhook_id,)
+            )
+            deleted = cur.rowcount > 0
             conn.commit()
             return deleted
-        finally:
-            conn.close()

@@ -47,6 +47,24 @@ def get_db_connection():
     return conn
 
 
+def sql(query: str) -> str:
+    """
+    Đổi placeholder `?` (kiểu SQLite) sang `%s` (kiểu psycopg) khi đang chạy
+    PostgreSQL.
+
+    Nhờ vậy những truy vấn đơn giản dùng chung cho cả hai backend (webhook,
+    admin reset) chỉ cần viết MỘT lần với cú pháp `?`. Các truy vấn phức tạp
+    thì vẫn nên viết riêng trong sqlite_repo.py / postgres_repo.py cho rõ ràng.
+
+    Chỉ thay thế thô — không dùng cho query có chứa dấu `?` bên trong chuỗi
+    literal.
+    """
+    from server_config import CONFIG
+    if CONFIG.db_backend == "postgres":
+        return query.replace("?", "%s")
+    return query
+
+
 @contextmanager
 def db_session():
     """

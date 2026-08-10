@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/theme/izii_colors.dart';
+import '../../../core/enrollment/widgets/device_quick_actions_fab.dart';
+import '../../../core/session/widgets/session_banner.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
 import '../services/employee_service.dart';
@@ -415,6 +417,10 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? IZiiColors.darkBackground : IZiiColors.lightBackground,
+      // Menu nhanh cho luồng đăng ký thiết bị (QR / NFC). Đặt ở FAB thay vì
+      // chèn vào layout để không xô lệch bố cục hiện có và gỡ ra dễ dàng khi
+      // test xong.
+      floatingActionButton: DeviceQuickActionsFab(isDark: isDark),
       appBar: AppBar(
         title: const Text('Costa Mushrooms',
             style: TextStyle(fontWeight: FontWeight.w800)),
@@ -455,11 +461,21 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           final hasActiveAlarms = state.alarmActive;
 
           return SafeArea(
-            child: isTablet
-                ? _buildTabletGrid(context, localRooms, activeRoomsCount,
-                    runningJobsCount, hasActiveAlarms, isDark)
-                : _buildPhoneColumn(context, localRooms, activeRoomsCount,
-                    runningJobsCount, hasActiveAlarms, isDark),
+            child: Column(
+              children: [
+                // Thanh điểm danh đầu ca (G1) — đặt trên cùng vì đây là việc
+                // dễ quên nhất trong ngày, và hậu quả chỉ lộ ra khi công nhân
+                // định tạo công việc Alone Worker rồi bị chặn.
+                SessionBanner(isDark: isDark),
+                Expanded(
+                  child: isTablet
+                      ? _buildTabletGrid(context, localRooms, activeRoomsCount,
+                          runningJobsCount, hasActiveAlarms, isDark)
+                      : _buildPhoneColumn(context, localRooms, activeRoomsCount,
+                          runningJobsCount, hasActiveAlarms, isDark),
+                ),
+              ],
+            ),
           );
         },
       ),

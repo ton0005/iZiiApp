@@ -153,8 +153,15 @@ class ServerDiscovery:
 
     def get_discovered_peer_urls(self) -> list[str]:
         """Trả về danh sách URL peer đã phát hiện qua mDNS, dùng để hợp nhất
-        với CONFIG.peers (khai báo tĩnh) trong vòng lặp polling sync."""
-        return [f"http://{p['host']}:{p['port']}" for p in self.discovered_peers.values()]
+        với CONFIG.peers (khai báo tĩnh) trong vòng lặp polling sync.
+
+        Scheme bám theo cấu hình TLS của CHÍNH SERVER NÀY: trong một mesh thì
+        mọi server phải cùng bật hoặc cùng tắt TLS. Nếu ghép http với https,
+        peer sẽ gặp lỗi bắt tay và im lặng không đồng bộ.
+        """
+        from security_tls import tls_enabled
+        scheme = "https" if tls_enabled() else "http"
+        return [f"{scheme}://{p['host']}:{p['port']}" for p in self.discovered_peers.values()]
 
     # -------------------------------------------------------------------- close
     async def close(self) -> None:

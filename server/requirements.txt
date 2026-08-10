@@ -1,0 +1,24 @@
+# iZiiServer — Python dependencies
+# Cài: pip install -r requirements.txt
+#
+# Yêu cầu Python 3.11 trở lên (code dùng cú pháp `dict[str, str]` và
+# `X | None` ở type hint cấp module).
+
+# ── Bắt buộc ────────────────────────────────────────────────────────────────
+fastapi>=0.110
+uvicorn[standard]>=0.27          # [standard] kéo theo websockets + watchfiles
+httpx>=0.26                      # webhook dispatch + peer-sync polling
+zeroconf>=0.131                  # mDNS auto-discovery giữa các server
+
+# python-multipart: BẮT BUỘC dù không thấy import trực tiếp trong code.
+# FastAPI cần gói này để xử lý UploadFile ở routers/attachments.py. Thiếu nó
+# thì server vẫn khởi động bình thường nhưng endpoint upload sẽ lỗi 500 — một
+# lỗi rất dễ bỏ sót vì nó chỉ lộ ra khi có người đính kèm file.
+python-multipart>=0.0.9
+
+# ── Tuỳ chọn: PostgreSQL backend (IZIIAPP_DB_BACKEND=postgres) ──────────────
+# Bỏ qua nếu chỉ chạy SQLite.
+# psycopg[binary,pool]>=3.1
+
+# ── Tuỳ chọn: đóng gói thành .exe ───────────────────────────────────────────
+# pyinstaller>=6.3

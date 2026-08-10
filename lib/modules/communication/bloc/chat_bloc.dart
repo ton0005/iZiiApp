@@ -14,6 +14,7 @@ import '../models/chat_models.dart';
 import '../repository/chat_repository.dart';
 import '../services/chat_websocket_service.dart';
 import '../../../core/settings/settings_service.dart';
+import '../../../core/enrollment/device_user_service.dart';
 import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../models/ble_models.dart';
 import '../services/ble_transport_service.dart';
@@ -316,7 +317,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         await _db.into(_db.users).insert(mock, mode: InsertMode.insertOrIgnore);
       }
 
-      final activeUserId = await SettingsService().getActiveUserId();
+      // Danh tính của máy này = device_id (mô hình "một thiết bị = một User").
+      // ensureLocalUser() tạo User tương ứng và đặt luôn làm user hoạt động,
+      // nên Chat gửi đi dưới đúng danh tính mà server xác thực được qua token.
+      // Thất bại (chưa có danh tính thiết bị) thì rơi về user demo như cũ.
+      final deviceUserId = await DeviceUserService().ensureLocalUser();
+      final activeUserId = deviceUserId ?? await SettingsService().getActiveUserId();
       add(SwitchUserEvent(activeUserId));
     } catch (_) {}
 

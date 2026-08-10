@@ -3,7 +3,7 @@ import io
 import os
 
 # Stable data directory resolution
-from database import DB_PATH, get_db_connection, get_stable_data_dir
+from database import DB_PATH, get_stable_data_dir
 from datetime import datetime, timezone
 
 LOG_DIR = os.path.join(get_stable_data_dir(), "logs")
@@ -99,8 +99,13 @@ import httpx
 from db_init import init_db, prune_old_mutations
 from server_config import CONFIG
 from server_discovery import ServerDiscovery
-from repository.sqlite_repo import SQLiteSyncRepository
-from routers import sync, devices, messages, notifications, attachments, peer_sync, call, webhooks, admin
+from dependencies import open_connection, make_sync_repo
+from security_tls import httpx_client_kwargs, uvicorn_ssl_kwargs, describe as describe_tls
+from routers import (
+    sync, devices, messages, notifications, attachments,
+    peer_sync, call, webhooks, admin, enrollment, sessions,
+)
+from security_auth import describe_scopes
 from event_engine import iZiiEventEngine, close_http_client
 
 
@@ -128,11 +133,8 @@ async def _sync_with_one_peer(client: httpx.AsyncClient, peer_url: str) -> None:
     # Con trỏ seq: ưu tiên RAM, không có thì đọc từ known_servers.
     after_seq = _peer_last_sync.get(peer_url)
     if after_seq is None:
-        conn = get_db_connection()
-        try:
-            after_seq = SQLiteSyncRepository(conn).get_peer_last_seq(peer_url)
-        finally:
-            conn.close()
+        with open_connection() as conn:
+            after_seq = make_sync_repo(conn).get_peer_last_seq(peer_url)
 
     headers = {}
     if CONFIG.server_secret:
@@ -166,11 +168,8 @@ async def _sync_with_one_peer(client: httpx.AsyncClient, peer_url: str) -> None:
 
         if updates:
             now_utc = datetime.now(timezone.utc).isoformat()
-            conn = get_db_connection()
-            try:
-                count = SQLiteSyncRepository(conn).push_mutations(updates, now_utc)
-            finally:
-                conn.close()
+            with open_connection() as conn:
+                count = make_sync_repo(conn).push_mutations(updates, now_utc)
             total_applied += count
             tables_touched.update(m["table"] for m in updates)
 
@@ -178,16 +177,13 @@ async def _sync_with_one_peer(client: httpx.AsyncClient, peer_url: str) -> None:
         if next_cursor is not None:
             after_seq = next_cursor
             _peer_last_sync[peer_url] = after_seq
-            conn = get_db_connection()
-            try:
-                SQLiteSyncRepository(conn).update_peer_sync_status(
+            with open_connection() as conn:
+                make_sync_repo(conn).update_peer_sync_status(
                     peer_id=remote_server_id,
                     last_synced_seq=after_seq,
                     zone=remote_zone,
                     peer_url=peer_url,
                 )
-            finally:
-                conn.close()
 
         if not has_more:
             break
@@ -218,7 +214,9 @@ async def _peer_sync_loop() -> None:
         f"Peer tĩnh (.env): {CONFIG.peers or '(không có)'}. "
         f"Peer qua mDNS sẽ được cộng dồn động khi phát hiện."
     )
-    async with httpx.AsyncClient() as client:
+    # Client mang theo chứng chỉ của server này (nếu bật mTLS) và CA nội bộ để
+    # xác thực ngược lại peer. Không có TLS thì kwargs rỗng, hành vi như cũ.
+    async with httpx.AsyncClient(**httpx_client_kwargs()) as client:
         while True:
             # Hợp nhất peer khai báo tĩnh (IZIIAPP_PEERS) với peer phát hiện
             # động qua mDNS — cho phép thêm server mới vào mạng mà không cần
@@ -251,6 +249,9 @@ async def lifespan(app: FastAPI):
     print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
     print(f"✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB")
     print(f"🌐 Server identity: server_id={CONFIG.server_id} zone={CONFIG.zone}")
+    print(f"🗄️  Database backend: {CONFIG.db_backend}")
+    print(describe_tls())
+    print(describe_scopes())
 
     discovery = ServerDiscovery(port=8080)
     try:
@@ -272,6 +273,13 @@ async def lifespan(app: FastAPI):
         await discovery.close()
     # Đóng httpx.AsyncClient dùng chung của event engine (webhook dispatch)
     await close_http_client()
+    # Trả connection pool của Postgres về hệ thống (không làm gì nếu dùng SQLite)
+    if CONFIG.db_backend == "postgres":
+        try:
+            from db_postgres import close_pool
+            close_pool()
+        except Exception as e:
+            print(f"⚠️  [PG] Lỗi khi đóng pool: {e}")
     print("🛑 Server shutting down...")
 
 
@@ -305,7 +313,9 @@ app.include_router(peer_sync.router)  # Server-to-Server delta sync (multi-serve
 app.include_router(call.router)
 app.include_router(webhooks.router)
 app.include_router(webhooks.event_router)
-app.include_router(admin.router)  # /admin/reset — cần X-iZii-Server-Token
+app.include_router(admin.router)       # /admin/* — cần X-iZii-Admin-Token
+app.include_router(enrollment.router)  # /devices/enroll — công khai, gác bằng vé mời
+app.include_router(sessions.router)    # /sessions/* — điểm danh đầu ca (G1)
 
 # Cho admin router chạm tới con trỏ sync đang nằm trong RAM, để lệnh reset xoá
 # được cả bộ nhớ chứ không chỉ bảng known_servers dưới đĩa.
@@ -475,12 +485,17 @@ if __name__ == '__main__':
     # Check if running as a compiled PyInstaller bundle
     is_frozen = getattr(sys, 'frozen', False)
     
+    # Tham số TLS/mTLS — dict rỗng khi chưa cấu hình chứng chỉ, khi đó server
+    # chạy HTTP thuần y như trước.
+    ssl_kwargs = uvicorn_ssl_kwargs()
+
     if is_frozen:
         print("\n🚀 Starting iZiiApp Standalone Server v2.0 in Bundled Mode...")
         uvicorn.run(
             app,
             host="0.0.0.0",
-            port=8080
+            port=8080,
+            **ssl_kwargs,
         )
     else:
         print("\n🚀 Starting iZiiApp Standalone Server v2.0 in Development Mode...")
@@ -490,5 +505,6 @@ if __name__ == '__main__':
             port=8080,
             reload=True,
             reload_dirs=["./"],  # Watch server directory
-            reload_excludes=["build", ".dart_tool", ".git", "data", "__pycache__"]
+            reload_excludes=["build", ".dart_tool", ".git", "data", "__pycache__", "certs"],
+            **ssl_kwargs,
         )

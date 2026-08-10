@@ -92,6 +92,31 @@ class SettingsService {
     await prefs.remove(_seqKeyFor(serverUrl));
   }
 
+  // ── Device token (cấp qua luồng enrollment QR/NFC) ────────────────────────
+  //
+  // Token RIÊNG của máy này, khác hoàn toàn với IZIIAPP_SERVER_SECRET dùng
+  // chung trước đây. Thu hồi được riêng lẻ khi mất máy.
+  //
+  // Lưu theo từng server URL vì mỗi server cấp token riêng — một máy có thể
+  // đăng ký với cả M1 lẫn M2.
+  String _deviceTokenKeyFor(String serverUrl) =>
+      'device_token::${serverUrl.trim().replaceAll(RegExp(r'/+$'), '')}';
+
+  Future<void> saveDeviceToken(String serverUrl, String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_deviceTokenKeyFor(serverUrl), token);
+  }
+
+  Future<String?> getDeviceToken(String serverUrl) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_deviceTokenKeyFor(serverUrl));
+  }
+
+  Future<void> clearDeviceToken(String serverUrl) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_deviceTokenKeyFor(serverUrl));
+  }
+
   Future<void> saveActiveUserId(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_activeUserId, userId);

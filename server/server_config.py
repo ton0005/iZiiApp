@@ -72,8 +72,48 @@ class ServerConfig:
     zone: str
     peers: list[str] = field(default_factory=list)
     sync_interval_seconds: int = 45
+    # ── Phân tách phạm vi bí mật (B1) ────────────────────────────────────────
+    # server_secret : CHỈ dùng cho /peer-sync/* — server nói chuyện với server.
+    # admin_secret  : CHỈ dùng cho /admin/*    — thao tác quản trị nguy hiểm.
+    # ws_secret     : CHỈ dùng cho /chat       — WebSocket realtime.
+    # device token  : cấp riêng cho TỪNG thiết bị, xem bảng device_tokens.
+    #
+    # Trước đây cả ba dùng chung một chuỗi, nghĩa là thiết bị nào biết token
+    # đồng bộ cũng gọi được /admin/reset (xoá sạch DB) và /admin/config (ghi
+    # đè .env). Tách ra để một máy công nhân bị mất không kéo theo toàn hệ thống.
     server_secret: str = ""
+    admin_secret: str = ""
     ws_secret: str = ""
+
+    # Bật thì /sync/* yêu cầu device token hợp lệ. Mặc định TẮT để bản app cũ
+    # chưa enroll vẫn chạy; bật sau khi toàn bộ thiết bị đã đăng ký xong.
+    require_device_token: bool = False
+    # Thời gian sống của vé mời đăng ký thiết bị (giây).
+    enrollment_token_ttl: int = 600
+
+    # ── 6.3 — Backend cơ sở dữ liệu ──────────────────────────────────────────
+    # 'sqlite' (mặc định, chạy biên) hoặc 'postgres' (nhiều writer, nhiều site).
+    db_backend: str = "sqlite"
+    pg_dsn: str = ""
+    pg_pool_min: int = 1
+    pg_pool_max: int = 10
+
+    # ── 6.4 — TLS / mTLS ─────────────────────────────────────────────────────
+    # Bật khi có đủ 3 đường dẫn. Không set thì server chạy HTTP như cũ.
+    tls_cert_file: str = ""
+    tls_key_file: str = ""
+    tls_ca_file: str = ""
+    # True = BẮT BUỘC client trình chứng chỉ hợp lệ (mTLS thực thụ).
+    tls_require_client_cert: bool = False
+    # Danh sách CN được phép peer-sync, phân tách bằng dấu phẩy. Để trống =
+    # chấp nhận mọi chứng chỉ do CA của mình ký.
+    tls_allowed_peer_cns: list[str] = field(default_factory=list)
+
+    # ── 6.4 — OAuth2 client credentials cho outbound (SAP, ERP khác) ─────────
+    oauth_token_url: str = ""
+    oauth_client_id: str = ""
+    oauth_client_secret: str = ""
+    oauth_scope: str = ""
 
 
 def load_server_config() -> ServerConfig:
@@ -83,6 +123,25 @@ def load_server_config() -> ServerConfig:
     interval = int(os.environ.get("IZIIAPP_SYNC_INTERVAL_SECONDS", "45"))
     secret = os.environ.get("IZIIAPP_SERVER_SECRET", "")
     ws_secret = os.environ.get("IZIIAPP_WS_SECRET", "")
+
+    # Tương thích ngược: chưa khai IZIIAPP_ADMIN_SECRET thì tạm dùng chung
+    # server secret như trước, nhưng cảnh báo rõ để admin biết mà tách ra.
+    admin_secret = os.environ.get("IZIIAPP_ADMIN_SECRET", "")
+    if not admin_secret and secret:
+        admin_secret = secret
+        try:
+            print(
+                "⚠️  [CONFIG] Chưa set IZIIAPP_ADMIN_SECRET — tạm dùng chung "
+                "IZIIAPP_SERVER_SECRET cho /admin/*. Nghĩa là THIẾT BỊ NÀO biết "
+                "token đồng bộ cũng gọi được /admin/reset và /admin/config. "
+                "Hãy đặt một secret RIÊNG cho admin."
+            )
+        except Exception:
+            pass
+
+    require_device_token = os.environ.get(
+        "IZIIAPP_REQUIRE_DEVICE_TOKEN", ""
+    ).strip().lower() in ("1", "true", "yes")
     if not ws_secret and not secret:
         try:
             print(
@@ -109,13 +168,67 @@ def load_server_config() -> ServerConfig:
             "nếu muốn tham gia mesh nhiều server."
         )
 
+    db_backend = os.environ.get("IZIIAPP_DB_BACKEND", "sqlite").strip().lower()
+    if db_backend not in ("sqlite", "postgres"):
+        print(f"⚠️  [CONFIG] IZIIAPP_DB_BACKEND='{db_backend}' không hợp lệ — dùng 'sqlite'.")
+        db_backend = "sqlite"
+
+    pg_dsn = os.environ.get("IZIIAPP_PG_DSN", "")
+    if db_backend == "postgres" and not pg_dsn:
+        print(
+            "⛔ [CONFIG] IZIIAPP_DB_BACKEND=postgres nhưng thiếu IZIIAPP_PG_DSN — "
+            "quay về sqlite để server vẫn khởi động được."
+        )
+        db_backend = "sqlite"
+
+    def _int_env(key: str, default: int) -> int:
+        try:
+            return int(os.environ.get(key, str(default)))
+        except ValueError:
+            return default
+
+    tls_cert = os.environ.get("IZIIAPP_TLS_CERT_FILE", "")
+    tls_key = os.environ.get("IZIIAPP_TLS_KEY_FILE", "")
+    tls_ca = os.environ.get("IZIIAPP_TLS_CA_FILE", "")
+    require_client_cert = os.environ.get(
+        "IZIIAPP_TLS_REQUIRE_CLIENT_CERT", ""
+    ).strip().lower() in ("1", "true", "yes")
+
+    if require_client_cert and not tls_ca:
+        print(
+            "⛔ [CONFIG] Bật IZIIAPP_TLS_REQUIRE_CLIENT_CERT nhưng thiếu "
+            "IZIIAPP_TLS_CA_FILE — không có CA thì không xác thực được client. "
+            "Tắt yêu cầu client cert."
+        )
+        require_client_cert = False
+
+    allowed_cns = [
+        c.strip() for c in os.environ.get("IZIIAPP_TLS_ALLOWED_PEER_CNS", "").split(",") if c.strip()
+    ]
+
     return ServerConfig(
         server_id=server_id,
         zone=zone,
         peers=_parse_peers(peers_raw),
         sync_interval_seconds=interval,
         server_secret=secret,
+        admin_secret=admin_secret,
         ws_secret=ws_secret,
+        require_device_token=require_device_token,
+        enrollment_token_ttl=_int_env("IZIIAPP_ENROLLMENT_TOKEN_TTL", 600),
+        db_backend=db_backend,
+        pg_dsn=pg_dsn,
+        pg_pool_min=_int_env("IZIIAPP_PG_POOL_MIN", 1),
+        pg_pool_max=_int_env("IZIIAPP_PG_POOL_MAX", 10),
+        tls_cert_file=tls_cert,
+        tls_key_file=tls_key,
+        tls_ca_file=tls_ca,
+        tls_require_client_cert=require_client_cert,
+        tls_allowed_peer_cns=allowed_cns,
+        oauth_token_url=os.environ.get("IZIIAPP_OAUTH_TOKEN_URL", ""),
+        oauth_client_id=os.environ.get("IZIIAPP_OAUTH_CLIENT_ID", ""),
+        oauth_client_secret=os.environ.get("IZIIAPP_OAUTH_CLIENT_SECRET", ""),
+        oauth_scope=os.environ.get("IZIIAPP_OAUTH_SCOPE", ""),
     )
 
 

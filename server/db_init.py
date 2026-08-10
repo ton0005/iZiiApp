@@ -20,6 +20,16 @@ from database import get_db_connection, DB_PATH
 
 
 def init_db():
+    """
+    Khởi tạo schema. Tự chuyển hướng sang PostgreSQL khi
+    IZIIAPP_DB_BACKEND=postgres — app.py không cần biết đang chạy backend nào.
+    """
+    from server_config import CONFIG
+    if CONFIG.db_backend == "postgres":
+        from db_init_postgres import init_db_postgres
+        init_db_postgres()
+        return
+
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -194,7 +204,135 @@ def init_db():
         'CREATE INDEX IF NOT EXISTS idx_webhook_dead_letters_failed_at ON webhook_dead_letters(failed_at)'
     )
 
-    # 9. Schema Migrations — theo dõi các migration dữ liệu chỉ được chạy MỘT
+    # 9. Enrollment Tokens — "vé mời" dùng MỘT LẦN để đăng ký thiết bị mới.
+    #
+    # Thay cho việc phát IZIIAPP_SERVER_SECRET cho mọi máy: vé hết hạn sau vài
+    # phút và chỉ dùng được một lần, nên mất thẻ NFC / ảnh chụp QR không đồng
+    # nghĩa với mất cả hệ thống.
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS enrollment_tokens (
+        token       TEXT PRIMARY KEY,
+        created_by  TEXT,
+        created_at  TEXT,
+        expires_at  TEXT,
+        used_at     TEXT,
+        used_by     TEXT,
+        note        TEXT,
+        -- Vé mời mang sẵn CHẾ ĐỘ thiết bị. Quản lý quyết định lúc cấp mã, máy
+        -- chỉ việc quét — công nhân không phải chọn gì và không chọn sai được.
+        profile          TEXT DEFAULT 'shared',   -- 'shared' | 'personal'
+        owner_user_id    TEXT,                    -- bắt buộc khi profile='personal'
+        owner_user_name  TEXT,
+        session_max_hours INTEGER                 -- NULL = dùng mặc định của chế độ
+    )""")
+    cursor.execute(
+        'CREATE INDEX IF NOT EXISTS idx_enrollment_tokens_expires ON enrollment_tokens(expires_at)'
+    )
+    # Migration cho DB đã tồn tại
+    cursor.execute('PRAGMA table_info(enrollment_tokens)')
+    et_cols = {row[1] for row in cursor.fetchall()}
+    for col, ddl in (
+        ("profile", "ALTER TABLE enrollment_tokens ADD COLUMN profile TEXT DEFAULT 'shared'"),
+        ("owner_user_id", "ALTER TABLE enrollment_tokens ADD COLUMN owner_user_id TEXT"),
+        ("owner_user_name", "ALTER TABLE enrollment_tokens ADD COLUMN owner_user_name TEXT"),
+        ("session_max_hours", "ALTER TABLE enrollment_tokens ADD COLUMN session_max_hours INTEGER"),
+    ):
+        if col not in et_cols:
+            cursor.execute(ddl)
+
+    # 10. Device Tokens — token RIÊNG của từng thiết bị.
+    #
+    # Lưu HASH chứ không lưu token gốc: database bị lộ thì kẻ tấn công vẫn
+    # không mạo danh được thiết bị. Cùng nguyên tắc với lưu mật khẩu.
+    # HAI CHẾ ĐỘ THIẾT BỊ:
+    #
+    #   shared   — máy dùng chung (tablet đặt tại phòng). Nhiều ca dùng chung
+    #              một máy nên BẮT BUỘC điểm danh đầu ca, phiên hết hạn 12 giờ.
+    #
+    #   personal — máy cá nhân của Manager/Supervisor (iPhone, iPad riêng, mang
+    #              về nhà). Danh tính đã xác định từ lúc cấp máy nên KHÔNG cần
+    #              điểm danh; thời lượng ca tuỳ chỉnh hoặc không giới hạn.
+    #
+    # Phân biệt này quan trọng vì ràng buộc Alone Worker: yêu cầu điểm danh chỉ
+    # có ý nghĩa khi máy dùng chung. Bắt Manager điểm danh trên iPhone riêng là
+    # thủ tục vô nghĩa mà vẫn không tăng thêm chút an toàn nào.
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS device_tokens (
+        device_id   TEXT PRIMARY KEY,
+        token_hash  TEXT NOT NULL,
+        scope       TEXT DEFAULT 'device',
+        device_name TEXT,
+        user_id     TEXT,
+        issued_at   TEXT,
+        last_used_at TEXT,
+        revoked_at  TEXT,
+        profile           TEXT DEFAULT 'shared',
+        owner_user_id     TEXT,
+        owner_user_name   TEXT,
+        session_max_hours INTEGER
+    )""")
+    cursor.execute(
+        'CREATE INDEX IF NOT EXISTS idx_device_tokens_hash ON device_tokens(token_hash)'
+    )
+    cursor.execute('PRAGMA table_info(device_tokens)')
+    dt_cols = {row[1] for row in cursor.fetchall()}
+    for col, ddl in (
+        ("profile", "ALTER TABLE device_tokens ADD COLUMN profile TEXT DEFAULT 'shared'"),
+        ("owner_user_id", "ALTER TABLE device_tokens ADD COLUMN owner_user_id TEXT"),
+        ("owner_user_name", "ALTER TABLE device_tokens ADD COLUMN owner_user_name TEXT"),
+        ("session_max_hours", "ALTER TABLE device_tokens ADD COLUMN session_max_hours INTEGER"),
+    ):
+        if col not in dt_cols:
+            cursor.execute(ddl)
+
+    # 11. Work Sessions — PHIÊN LÀM VIỆC (G1)
+    #
+    # Tách danh tính NGƯỜI khỏi danh tính MÁY.
+    #
+    # Trước đây mô hình là "một thiết bị = một người": tablet dùng chung nhiều ca
+    # thì cả hai ca ghi là cùng một người. Với Chat chỉ khó chịu, nhưng với cảnh
+    # báo Alone Worker thì nghiêm trọng — "device-abc123 đang một mình trong
+    # Room 10" không cho biết phải đi cứu ai.
+    #
+    # Nay: máy đăng ký MỘT LẦN (device_tokens), người điểm danh MỖI CA
+    # (work_sessions). Mutation mang cả hai: actor_device_id do server xác thực
+    # qua token, actor_user_id lấy từ phiên đang mở.
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS work_sessions (
+        id            TEXT PRIMARY KEY,
+        device_id     TEXT NOT NULL,
+        user_id       TEXT NOT NULL,
+        user_name     TEXT,
+        department    TEXT,
+        zone          TEXT,
+        method        TEXT,          -- 'list' | 'pin' | 'nfc_badge' | 'auto'
+        started_at    TEXT NOT NULL,
+        ended_at      TEXT,          -- NULL = đang trong ca
+        ended_reason  TEXT           -- 'manual' | 'timeout' | 'replaced'
+    )""")
+    # Index cho truy vấn nóng nhất: "máy này có phiên nào đang mở không".
+    cursor.execute(
+        'CREATE INDEX IF NOT EXISTS idx_work_sessions_open '
+        'ON work_sessions(device_id, ended_at)'
+    )
+    cursor.execute(
+        'CREATE INDEX IF NOT EXISTS idx_work_sessions_user ON work_sessions(user_id, started_at)'
+    )
+
+    # 12. Employee PINs — mã PIN điểm danh.
+    #
+    # Lưu ở SERVER chứ không trong bảng nhân viên phía app: PIN là bí mật, không
+    # nên đồng bộ xuống mọi thiết bị qua mutation log. Chỉ lưu HASH kèm salt.
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS employee_pins (
+        user_id    TEXT PRIMARY KEY,
+        pin_hash   TEXT NOT NULL,
+        salt       TEXT NOT NULL,
+        updated_at TEXT,
+        updated_by TEXT
+    )""")
+
+    # 13. Schema Migrations — theo dõi các migration dữ liệu chỉ được chạy MỘT
     # LẦN (khác với CREATE TABLE IF NOT EXISTS vốn idempotent tự nhiên).
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -302,6 +440,11 @@ def prune_old_mutations(days: int = 30) -> int:
     Prunes mutations older than `days` days from sync_mutations table
     to prevent unlimited table growth.
     """
+    from server_config import CONFIG
+    if CONFIG.db_backend == "postgres":
+        from db_init_postgres import prune_old_mutations_postgres
+        return prune_old_mutations_postgres(days)
+
     from datetime import datetime, timezone, timedelta
     cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
     conn = get_db_connection()

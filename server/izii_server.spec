@@ -99,15 +99,39 @@ hiddenimports += [
 # Về mặt kỹ thuật đều được import tĩnh từ app.py nên PyInstaller tự tìm ra.
 # Liệt kê ở đây để nếu sau này ai đó chuyển sang import động thì bản build
 # không vỡ, và để đọc spec là biết ngay server gồm những gì.
+# ── PostgreSQL (tuỳ chọn) ───────────────────────────────────────────────────
+# psycopg được import LƯỜI trong db_postgres.py nên PyInstaller không tự tìm ra.
+# Chỉ bundle khi máy build đã cài psycopg — nếu chỉ chạy SQLite thì bỏ qua,
+# bản build sẽ nhẹ hơn.
+try:
+    _pg = collect_all('psycopg')
+    datas += _pg[0]; binaries += _pg[1]; hiddenimports += _pg[2]
+    for _m in ('psycopg_pool', 'psycopg_binary'):
+        try:
+            _r = collect_all(_m)
+            datas += _r[0]; binaries += _r[1]; hiddenimports += _r[2]
+        except Exception:
+            pass
+    print('[spec] Da bundle psycopg -> ban build ho tro IZIIAPP_DB_BACKEND=postgres')
+except Exception:
+    print('[spec] Khong tim thay psycopg -> ban build chi ho tro SQLite')
+
+# ── Module nội bộ ────────────────────────────────────────────────────────────
 hiddenimports += [
     'database',
     'db_init',
+    'db_init_postgres',
+    'db_postgres',
     'dependencies',
+    'security_tls',
+    'security_auth',
+    'oauth_client',
     'server_config',
     'server_discovery',
     'event_engine',
     'repository.interface',
     'repository.sqlite_repo',
+    'repository.postgres_repo',
     'routers.sync',
     'routers.peer_sync',
     'routers.devices',
@@ -117,6 +141,8 @@ hiddenimports += [
     'routers.call',
     'routers.webhooks',
     'routers.admin',
+    'routers.enrollment',
+    'routers.sessions',
 ]
 
 
