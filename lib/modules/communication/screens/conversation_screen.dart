@@ -20,6 +20,7 @@ import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../../../core/device_identity/device_identity_models.dart';
 import '../call/call_bloc.dart';
 import '../call/call_screen.dart';
+import '../call/incoming_call_service.dart';
 import '../../../core/settings/settings_service.dart';
 import '../bloc/chat_bloc.dart';
 import '../models/chat_models.dart';
@@ -181,8 +182,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final currentUserName = 'Me';
     final callId = 'call_${DateTime.now().millisecondsSinceEpoch}';
 
-    final callBloc = CallBloc();
-    await callBloc.initSignaling(currentUserId);
+    // Dùng LẠI bloc toàn cục thay vì tạo CallBloc mới mỗi lần bấm gọi.
+    // Hai bloc = hai kết nối /call/ws cùng một client_id, server chỉ giữ cái
+    // sau nên cái trước thành mồ côi và tín hiệu gửi vào đó rơi mất.
+    final callService = IncomingCallService();
+    await callService.ensureConnected(currentUserId);
+    final callBloc = callService.bloc;
     callBloc.add(StartCallEvent(
       callId: callId,
       callerId: currentUserId,
@@ -194,14 +199,20 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     if (!context.mounted) return;
 
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: callBloc,
-          child: const CallScreen(),
-        ),
-      ),
-    );
+    // Báo cho service biết màn hình gọi đã mở, để nó không đẩy thêm một màn
+    // hình nữa khi bloc chuyển sang trạng thái đổ chuông.
+    callService.markScreenOpen();
+    Navigator.of(context, rootNavigator: true)
+        .push(
+          MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (_) => BlocProvider.value(
+              value: callBloc,
+              child: const CallScreen(),
+            ),
+          ),
+        )
+        .whenComplete(callService.markScreenClosed);
   }
 
   TextInputAction _getTextInputAction() {

@@ -17,6 +17,21 @@ class CallSignalingService {
   Stream<Map<String, dynamic>> get onEvent => _eventController.stream;
   bool isConnected = false;
 
+  /// Gói tín hiệu này có phải gửi cho MÌNH không.
+  ///
+  /// Kênh `/chat` là BROADCAST — server phát cho mọi máy đang kết nối. Nếu
+  /// không lọc thì máy thứ ba cũng đổ chuông khi A gọi B, và tệ hơn là nhận
+  /// luôn cả SDP/ICE của cuộc gọi không liên quan tới mình.
+  ///
+  /// Lọc theo `target_id` (do bên gửi ghi) hoặc `callee_id` (có trong dữ liệu
+  /// lời mời). Không có cả hai thì cho qua — thà đổ chuông thừa còn hơn bỏ sót
+  /// cuộc gọi vì server phiên bản cũ chưa gắn trường này.
+  bool _isForMe(Map<String, dynamic> data, String clientId) {
+    final target = data['target_id'] ?? data['callee_id'];
+    if (target == null || target.toString().isEmpty) return true;
+    return target.toString() == clientId;
+  }
+
   Future<void> connect(String clientId) async {
     // Listen to ChatWebSocketService fallback events
     _chatWsSubscription?.cancel();
@@ -28,6 +43,7 @@ class CallSignalingService {
         if (senderId != null && senderId == clientId) {
           return; // Ignore own echo sent over /chat WebSocket
         }
+        if (!_isForMe(data, clientId)) return;
         if (!_eventController.isClosed) {
           _eventController.add({
             'event': evName,
@@ -58,9 +74,16 @@ class CallSignalingService {
       _channel!.stream.listen(
         (message) {
           try {
-            final Map<String, dynamic> data = jsonDecode(message as String);
+            final Map<String, dynamic> msg = jsonDecode(message as String);
+            // Server có lúc phát quảng bá khi không tìm thấy người nhận trên
+            // /call/ws, nên kênh trực tiếp cũng phải lọc như kênh /chat.
+            final payload = Map<String, dynamic>.from(msg['data'] ?? {});
+            if (msg['target_id'] != null) {
+              payload['target_id'] = msg['target_id'];
+            }
+            if (!_isForMe(payload, clientId)) return;
             if (!_eventController.isClosed) {
-              _eventController.add(data);
+              _eventController.add({'event': msg['event'], 'data': payload});
             }
           } catch (_) {}
         },

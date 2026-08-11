@@ -168,6 +168,15 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       final data = Map<String, dynamic>.from(msg['data'] ?? {});
 
       if (event == 'call_invite') {
+        // Bên gọi phát lời mời qua CẢ HAI kênh (/call/ws và /chat) để chắc ăn,
+        // nên cùng một cuộc gọi thường về tới hai lần. Bỏ qua bản trùng, nếu
+        // không máy sẽ đổ chuông chồng lên nhau.
+        final incomingId = data['call_id']?.toString();
+        if (incomingId != null &&
+            incomingId == activeCallId &&
+            state is CallRingingIncomingState) {
+          return;
+        }
         add(IncomingCallReceivedEvent(data));
       } else if (event == 'call_accept') {
         if (state is CallRingingOutgoingState) {

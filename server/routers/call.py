@@ -80,29 +80,40 @@ async def call_signaling_ws(websocket: WebSocket, client_id: str):
                 
                 # Tag sender ID
                 data["sender_id"] = client_id
+                # Nhét target_id vào CẢ hai chỗ. Kênh /chat là broadcast nên
+                # máy nhận phải tự lọc "gói này có phải cho mình không" — thiếu
+                # trường này thì máy thứ ba cũng đổ chuông và nhận luôn SDP/ICE
+                # của cuộc gọi không liên quan.
+                if target_id:
+                    data["target_id"] = target_id
 
                 payload = json.dumps({
                     "event": event_type,
+                    "target_id": target_id,
                     "data": data,
                     "timestamp": datetime.now().isoformat()
                 })
 
                 if target_id and target_id in connected_clients:
                     await connected_clients[target_id].send_text(payload)
-                else:
-                    # Fallback relay via main /chat WebSocket manager if target is not on /call/ws
-                    ws_state = getattr(getattr(websocket, "app", None), "state", None)
-                    ws_manager = getattr(ws_state, "ws_manager", None)
-                    if ws_manager:
-                        await ws_manager.broadcast(payload, exclude=websocket)
+                    continue
 
-                    # Also relay to any other /call/ws clients
-                    for c_id, ws in list(connected_clients.items()):
-                        if c_id != client_id and (not target_id or c_id != target_id):
-                            try:
-                                await ws.send_text(payload)
-                            except Exception:
-                                pass
+                # Người nhận chưa mở /call/ws — phát dự phòng qua kênh /chat.
+                # Máy nào cũng nhận được gói này nhưng chỉ máy đúng target_id
+                # mới xử lý.
+                #
+                # CỐ Ý KHÔNG gửi vòng cho mọi client /call/ws còn lại: đó là
+                # phát tán dữ liệu cuộc gọi cho người ngoài cuộc, và cũng không
+                # giúp gì vì máy đúng người đã được thử ở nhánh trên.
+                ws_state = getattr(getattr(websocket, "app", None), "state", None)
+                ws_manager = getattr(ws_state, "ws_manager", None)
+                if ws_manager:
+                    await ws_manager.broadcast(payload, exclude=None)
+                else:
+                    print(
+                        f"⚠️ [CALL-WS] '{target_id}' không online trên /call/ws "
+                        f"và không có ws_manager để phát dự phòng — gói {event_type} bị rơi."
+                    )
             except json.JSONDecodeError:
                 pass
             except Exception as e:

@@ -19,6 +19,7 @@ import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../models/ble_models.dart';
 import '../services/ble_transport_service.dart';
 import '../../../core/events/app_event_bus.dart';
+import '../call/incoming_call_service.dart';
 
 // --- Events ---
 abstract class ChatEvent extends Equatable {
@@ -582,6 +583,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           'presence': 'online_synced',
         },
       ));
+
+      // Kênh chat sống lại thì kênh gọi cũng phải sống lại. Nếu bỏ qua bước
+      // này, máy vẫn chat được nhưng không nhận được cuộc gọi nào — đúng triệu
+      // chứng đã gặp trước đây.
+      IncomingCallService().ensureConnected(_currentUserId!);
     }
   }
 
@@ -802,6 +808,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     _wsService.disconnect();
     _wsService.setUserId(event.userId);
     _wsService.connect();
+
+    // Mở kênh tín hiệu cuộc gọi ngay khi biết mình là ai — KHÔNG đợi tới lúc
+    // người dùng bấm gọi. Máy phải có mặt trên /call/ws thì người khác mới gọi
+    // tới được.
+    IncomingCallService().switchUser(event.userId);
 
     emit(state.copyWith(currentUserId: event.userId));
 
