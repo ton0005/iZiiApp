@@ -174,7 +174,8 @@ class CallBloc extends Bloc<CallEvent, CallState> {
           await _connectMediaAsCaller();
         }
       } else if (event == 'call_reject' || event == 'call_end') {
-        add(EndCallEvent());
+        _cleanupCall();
+        emit(CallEndedState(event == 'call_reject' ? 'Call rejected' : 'Call ended'));
       } else if (event == 'sdp_offer') {
         final sdp = data['sdp'];
         if (sdp != null) {
@@ -308,18 +309,22 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   }
 
   void _onRejectCall(RejectCallEvent event, Emitter<CallState> emit) {
-    if (activeCallId != null && currentPeerId != null) {
-      signaling.sendCallReject(callId: activeCallId!, calleeId: myClientId ?? '', targetId: currentPeerId!);
-    }
+    final cId = activeCallId;
+    final pId = currentPeerId;
     _cleanupCall();
+    if (cId != null && pId != null) {
+      signaling.sendCallReject(callId: cId, calleeId: myClientId ?? '', targetId: pId);
+    }
     emit(CallEndedState('Call rejected'));
   }
 
   void _onEndCall(EndCallEvent event, Emitter<CallState> emit) {
-    if (activeCallId != null && currentPeerId != null) {
-      signaling.sendCallEnd(callId: activeCallId!, targetId: currentPeerId!);
-    }
+    final cId = activeCallId;
+    final pId = currentPeerId;
     _cleanupCall();
+    if (cId != null && pId != null) {
+      signaling.sendCallEnd(callId: cId, targetId: pId);
+    }
     emit(CallEndedState('Call ended'));
   }
 
@@ -369,6 +374,8 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   }
 
   void _cleanupCall() {
+    activeCallId = null;
+    currentPeerId = null;
     _callDurationTimer?.cancel();
     engine.dispose();
   }

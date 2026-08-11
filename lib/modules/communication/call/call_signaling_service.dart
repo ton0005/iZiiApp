@@ -23,10 +23,15 @@ class CallSignalingService {
     _chatWsSubscription = ChatWebSocketService().eventStream.listen((event) {
       final evName = event.event;
       if (evName.startsWith('call_') || evName.startsWith('sdp_') || evName == 'ice_candidate') {
+        final data = event.data;
+        final senderId = data['sender_id'] ?? data['caller_id'];
+        if (senderId != null && senderId == clientId) {
+          return; // Ignore own echo sent over /chat WebSocket
+        }
         if (!_eventController.isClosed) {
           _eventController.add({
             'event': evName,
-            'data': event.data,
+            'data': data,
           });
         }
       }

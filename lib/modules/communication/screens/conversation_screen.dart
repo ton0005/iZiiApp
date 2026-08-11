@@ -168,6 +168,16 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Future<void> _startCall(BuildContext context, String callType, User companion) async {
     final chatBloc = context.read<ChatBloc>();
     final currentUserId = chatBloc.currentUserId ?? 'user_1';
+
+    if (companion.id == currentUserId) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Không thể tự gọi cho chính mình.')),
+        );
+      }
+      return;
+    }
+
     final currentUserName = 'Me';
     final callId = 'call_${DateTime.now().millisecondsSinceEpoch}';
 

@@ -36,15 +36,27 @@ class ChatRepository {
   Future<User?> getCompanion(
       String conversationId, String currentUserId) async {
     final participants = await getParticipants(conversationId);
-    if (participants.isEmpty) return null;
+    final otherParticipants = participants.where((p) => p.userId != currentUserId).toList();
 
-    final companionParticipant = participants.firstWhere(
-      (p) => p.userId != currentUserId,
-      orElse: () => participants.first,
-    );
+    String? companionUserId;
+    if (otherParticipants.isNotEmpty) {
+      companionUserId = otherParticipants.first.userId;
+    } else if (conversationId.startsWith('direct_')) {
+      final parts = conversationId.replaceFirst('direct_', '').split('_');
+      for (final p in parts) {
+        if (p != currentUserId) {
+          companionUserId = p;
+          break;
+        }
+      }
+    }
+
+    if (companionUserId == null || companionUserId == currentUserId) {
+      return null;
+    }
 
     final query = _db.select(_db.users)
-      ..where((u) => u.id.equals(companionParticipant.userId));
+      ..where((u) => u.id.equals(companionUserId!));
     return query.getSingleOrNull();
   }
 
