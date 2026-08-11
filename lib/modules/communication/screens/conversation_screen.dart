@@ -165,14 +165,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
   }
 
-  void _startCall(BuildContext context, String callType, User companion) {
+  Future<void> _startCall(BuildContext context, String callType, User companion) async {
     final chatBloc = context.read<ChatBloc>();
     final currentUserId = chatBloc.currentUserId ?? 'user_1';
     final currentUserName = 'Me';
     final callId = 'call_${DateTime.now().millisecondsSinceEpoch}';
 
     final callBloc = CallBloc();
-    callBloc.initSignaling(currentUserId);
+    await callBloc.initSignaling(currentUserId);
     callBloc.add(StartCallEvent(
       callId: callId,
       callerId: currentUserId,
@@ -181,6 +181,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
       calleeName: companion.name,
       callType: callType,
     ));
+
+    if (!context.mounted) return;
 
     Navigator.of(context).push(
       MaterialPageRoute(

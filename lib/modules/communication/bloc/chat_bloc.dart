@@ -608,6 +608,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         }
         break;
 
+      case 'call_invite':
+        print('[ChatWS] Real-time call_invite received via WebSocket: $data');
+        try {
+          final domainEvent = AppDomainEvent(
+            eventId: 'call_invite_${DateTime.now().millisecondsSinceEpoch}',
+            eventType: 'communication.call_invite',
+            originTable: 'calls',
+            data: data,
+            timestamp: DateTime.now().toIso8601String(),
+          );
+          AppEventBus().emit(domainEvent);
+        } catch (e) {
+          print('[ChatWS] Error handling call_invite: $e');
+        }
+        break;
+
       case 'message_received':
         final msgId = data['message_id'] as String;
         final convoId = data['conversation_id'] as String;

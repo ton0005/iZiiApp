@@ -5,8 +5,12 @@ import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:izii_app/core/settings/settings_service.dart';
 
+import '../services/chat_websocket_service.dart';
+import '../models/chat_models.dart';
+
 class CallSignalingService {
   WebSocketChannel? _channel;
+  StreamSubscription? _chatWsSubscription;
   final StreamController<Map<String, dynamic>> _eventController =
       StreamController<Map<String, dynamic>>.broadcast();
 
@@ -14,6 +18,20 @@ class CallSignalingService {
   bool isConnected = false;
 
   Future<void> connect(String clientId) async {
+    // Listen to ChatWebSocketService fallback events
+    _chatWsSubscription?.cancel();
+    _chatWsSubscription = ChatWebSocketService().eventStream.listen((event) {
+      final evName = event.event;
+      if (evName.startsWith('call_') || evName.startsWith('sdp_') || evName == 'ice_candidate') {
+        if (!_eventController.isClosed) {
+          _eventController.add({
+            'event': evName,
+            'data': event.data,
+          });
+        }
+      }
+    });
+
     if (isConnected) return;
 
     final settings = SettingsService();
@@ -29,13 +47,16 @@ class CallSignalingService {
 
     try {
       _channel = WebSocketChannel.connect(uri);
+      await _channel!.ready;
       isConnected = true;
 
       _channel!.stream.listen(
         (message) {
           try {
             final Map<String, dynamic> data = jsonDecode(message as String);
-            _eventController.add(data);
+            if (!_eventController.isClosed) {
+              _eventController.add(data);
+            }
           } catch (_) {}
         },
         onError: (err) {
@@ -51,14 +72,30 @@ class CallSignalingService {
   }
 
   void sendEvent(String event, {String? targetId, Map<String, dynamic>? data}) {
+    final payloadData = data ?? {};
+    final payloadMap = {
+      'event': event,
+      if (targetId != null) 'target_id': targetId,
+      'data': payloadData,
+    };
+    final payload = jsonEncode(payloadMap);
+
     if (_channel != null && isConnected) {
-      final payload = jsonEncode({
-        'event': event,
-        if (targetId != null) 'target_id': targetId,
-        'data': data ?? {},
-      });
-      _channel!.sink.add(payload);
+      try {
+        _channel!.sink.add(payload);
+      } catch (_) {}
     }
+
+    // Always fallback relay via main /chat WebSocket channel for maximum reliability
+    try {
+      ChatWebSocketService().sendEvent(ChatWebSocketEvent(
+        event: event,
+        data: {
+          if (targetId != null) 'target_id': targetId,
+          ...payloadData,
+        },
+      ));
+    } catch (_) {}
   }
 
   void sendCallInvite({

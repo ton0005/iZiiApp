@@ -89,10 +89,16 @@ async def call_signaling_ws(websocket: WebSocket, client_id: str):
 
                 if target_id and target_id in connected_clients:
                     await connected_clients[target_id].send_text(payload)
-                elif not target_id:
-                    # Broadcast to all except sender (for room/group calls)
+                else:
+                    # Fallback relay via main /chat WebSocket manager if target is not on /call/ws
+                    ws_state = getattr(getattr(websocket, "app", None), "state", None)
+                    ws_manager = getattr(ws_state, "ws_manager", None)
+                    if ws_manager:
+                        await ws_manager.broadcast(payload, exclude=websocket)
+
+                    # Also relay to any other /call/ws clients
                     for c_id, ws in list(connected_clients.items()):
-                        if c_id != client_id:
+                        if c_id != client_id and (not target_id or c_id != target_id):
                             try:
                                 await ws.send_text(payload)
                             except Exception:
