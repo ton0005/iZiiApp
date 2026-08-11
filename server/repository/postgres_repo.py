@@ -371,10 +371,16 @@ class PostgresMessageRepository(IMessageRepository):
         self.conn.commit()
         return created_ids
 
-    def get_pending(self, device_id: str) -> List[Dict[str, Any]]:
+    MAX_FAILED_ATTEMPTS = 5
+
+    def get_pending(self, device_id: str, limit: int = 50) -> List[Dict[str, Any]]:
+        # Xem chú thích ở sqlite_repo.get_pending — LIMIT là bắt buộc.
         rows = self.conn.execute(
-            "SELECT * FROM message_queue WHERE recipient_device_id = %s AND delivered_at IS NULL",
-            (device_id,),
+            "SELECT * FROM message_queue "
+            "WHERE recipient_device_id = %s AND delivered_at IS NULL "
+            "  AND dead_lettered_at IS NULL "
+            "ORDER BY sent_at ASC LIMIT %s",
+            (device_id, max(1, min(limit, 200))),
         ).fetchall()
         return [{
             "id": r["id"],
@@ -388,6 +394,15 @@ class PostgresMessageRepository(IMessageRepository):
             "delivered_at": r["delivered_at"],
         } for r in rows]
 
+    def count_pending(self, device_id: str) -> int:
+        row = self.conn.execute(
+            "SELECT COUNT(*) AS c FROM message_queue "
+            "WHERE recipient_device_id = %s AND delivered_at IS NULL "
+            "  AND dead_lettered_at IS NULL",
+            (device_id,),
+        ).fetchone()
+        return int(row["c"]) if row else 0
+
     def acknowledge(self, message_ids: List[str], timestamp: str) -> int:
         if not message_ids:
             return 0
@@ -399,6 +414,27 @@ class PostgresMessageRepository(IMessageRepository):
         acked = cur.rowcount
         self.conn.commit()
         return acked
+
+    def mark_failed(self, message_ids: List[str], timestamp: str,
+                    reason: str = "") -> int:
+        if not message_ids:
+            return 0
+        ids = list(message_ids)
+        self.conn.execute(
+            "UPDATE message_queue "
+            "SET failed_attempts = failed_attempts + 1, last_error = %s "
+            "WHERE id = ANY(%s) AND delivered_at IS NULL AND dead_lettered_at IS NULL",
+            (reason[:300], ids),
+        )
+        cur = self.conn.execute(
+            "UPDATE message_queue SET dead_lettered_at = %s "
+            "WHERE id = ANY(%s) AND dead_lettered_at IS NULL "
+            "  AND failed_attempts >= %s",
+            (timestamp, ids, self.MAX_FAILED_ATTEMPTS),
+        )
+        dead = cur.rowcount
+        self.conn.commit()
+        return dead
 
 
 class PostgresNotificationRepository(INotificationRepository):

@@ -21,21 +21,14 @@ if os.path.exists(LOG_FILE_PATH):
     except Exception:
         pass
 
-# Force UTF-8 encoding for standard output and error on Windows to prevent UnicodeEncodeError
-if sys.platform.startswith('win'):
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
-
-try:
-    log_file = open(LOG_FILE_PATH, "a", encoding="utf-8", errors="replace")
-except Exception as e:
-    print(f"⚠️ [LOG] Error opening log file: {e}")
-    log_file = None
-
 class DualLogger:
     def __init__(self, original_stream, log_file):
         self.original_stream = original_stream
         self.log_file = log_file
+
+    @property
+    def buffer(self):
+        return getattr(self.original_stream, 'buffer', None)
 
     def write(self, message):
         try:
@@ -79,9 +72,30 @@ class DualLogger:
         except Exception:
             return 'strict'
 
+# Force UTF-8 encoding for standard output and error on Windows to prevent UnicodeEncodeError
+if sys.platform.startswith('win'):
+    if hasattr(sys.stdout, 'buffer') and not isinstance(sys.stdout, DualLogger):
+        try:
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+    if hasattr(sys.stderr, 'buffer') and not isinstance(sys.stderr, DualLogger):
+        try:
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+
+try:
+    log_file = open(LOG_FILE_PATH, "a", encoding="utf-8", errors="replace")
+except Exception as e:
+    print(f"⚠️ [LOG] Error opening log file: {e}")
+    log_file = None
+
 if log_file:
-    sys.stdout = DualLogger(sys.stdout, log_file)
-    sys.stderr = DualLogger(sys.stderr, log_file)
+    if not isinstance(sys.stdout, DualLogger):
+        sys.stdout = DualLogger(sys.stdout, log_file)
+    if not isinstance(sys.stderr, DualLogger):
+        sys.stderr = DualLogger(sys.stderr, log_file)
     print(f"📖 [LOG] Server log file initialized at: {LOG_FILE_PATH}")
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
@@ -96,7 +110,7 @@ from contextlib import asynccontextmanager
 import asyncio
 import httpx
 
-from db_init import init_db, prune_old_mutations
+from db_init import init_db, prune_old_mutations, prune_message_queue
 from server_config import CONFIG
 from server_discovery import ServerDiscovery
 from dependencies import open_connection, make_sync_repo
@@ -246,6 +260,10 @@ async def lifespan(app: FastAPI):
     # Startup
     init_db()
     prune_old_mutations(days=30)
+    # Dọn hàng đợi tin nhắn: xoá tin đã giao cũ, dead-letter tin kẹt quá lâu.
+    # Chỉ chạy trên SQLite — bản PostgreSQL dùng job riêng.
+    if CONFIG.db_backend != "postgres":
+        prune_message_queue()
     print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
     print(f"✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB")
     print(f"🌐 Server identity: server_id={CONFIG.server_id} zone={CONFIG.zone}")
@@ -302,6 +320,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+import re
+from fastapi import Request
+
+@app.middleware("http")
+async def normalize_double_slashes(request: Request, call_next):
+    if "//" in request.scope.get("path", ""):
+        request.scope["path"] = re.sub(r"/+", "/", request.scope["path"])
+    return await call_next(request)
 
 # ── Register Routers (Architecture Plan Section 6 — Modular Endpoints) ──────
 app.include_router(sync.router)

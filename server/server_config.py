@@ -39,7 +39,23 @@ def _load_env_file():
         os.path.join(os.getcwd(), ".env"),
     ]
     if getattr(sys, 'frozen', False):
-        candidate_paths.insert(0, os.path.join(os.path.dirname(sys.executable), ".env"))
+        # Bản đóng gói PyInstaller: __file__ trỏ vào thư mục giải nén tạm
+        # (_MEIxxxx) chứ không phải chỗ đặt .exe, nên hai đường dẫn trên đều
+        # trượt. Đây là nguyên nhân bản Release chạy mà KHÔNG đọc được .env:
+        # IZIIAPP_WS_SECRET rỗng → WebSocket /chat từ chối mọi kết nối (log
+        # 11/08 có 1713 lần trả 403), chat vẫn chạy nhờ HTTP polling nên lỗi
+        # rất khó nhận ra.
+        exe_dir = os.path.dirname(sys.executable)
+        candidate_paths[0:0] = [
+            os.path.join(exe_dir, ".env"),
+            os.path.join(exe_dir, "_internal", ".env"),
+            os.path.join(exe_dir, "data", ".env"),
+            # Bản one-folder có cấu trúc dist/izii_server/ — .env hay bị để ở
+            # thư mục cha khi copy tay.
+            os.path.join(os.path.dirname(exe_dir), ".env"),
+        ]
+
+    loaded_from = None
     for env_path in candidate_paths:
         if os.path.exists(env_path):
             try:
@@ -53,9 +69,22 @@ def _load_env_file():
                         v = v.strip().strip("'").strip('"')
                         if k and k not in os.environ:
                             os.environ[k] = v
+                loaded_from = env_path
                 break
             except Exception as e:
                 print(f"⚠️  [CONFIG] Could not parse .env file at {env_path}: {e}")
+
+    # Nói rõ đã đọc file nào — hoặc không đọc được file nào. Im lặng ở đây
+    # nghĩa là người vận hành phải suy ra từ triệu chứng ở tận tầng WebSocket.
+    if loaded_from:
+        print(f"⚙️  [CONFIG] Đã nạp cấu hình từ {loaded_from}")
+    else:
+        print(
+            "⚠️  [CONFIG] KHÔNG tìm thấy file .env. Đã tìm ở:\n"
+            + "\n".join(f"      • {p}" for p in candidate_paths)
+            + "\n      Server sẽ chạy bằng biến môi trường của hệ điều hành. "
+            "Nếu chưa set gì thì WebSocket /chat sẽ từ chối mọi kết nối."
+        )
 
 
 # Load .env file automatically on module import

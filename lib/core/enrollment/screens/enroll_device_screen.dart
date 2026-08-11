@@ -81,6 +81,12 @@ class _EnrollDeviceScreenState extends State<EnrollDeviceScreen> {
         _handled = true;
         _enroll(ticket);
         return;
+      } else {
+        if (mounted && _error == null) {
+          setState(() {
+            _error = 'Mã QR không đúng định dạng đăng ký. Hãy xin quản lý cấp lại mã mới.';
+          });
+        }
       }
     }
   }

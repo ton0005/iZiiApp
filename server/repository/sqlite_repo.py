@@ -421,11 +421,24 @@ class SQLiteMessageRepository(IMessageRepository):
         self.conn.commit()
         return created_ids
     
-    def get_pending(self, device_id: str) -> List[Dict[str, Any]]:
+    # Quá số lần này thì coi như không bao giờ giải mã được — chuyển sang
+    # dead-letter để hàng đợi thoát ra, thay vì gửi lại mãi mãi.
+    MAX_FAILED_ATTEMPTS = 5
+
+    def get_pending(self, device_id: str, limit: int = 50) -> List[Dict[str, Any]]:
         cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM message_queue WHERE recipient_device_id = ? AND delivered_at IS NULL", (device_id,))
+        # LIMIT là bắt buộc: trước đây trả về TOÀN BỘ hàng đợi, có lúc 1173 tin,
+        # và máy nhận gọi một request lấy khoá cho từng tin — 1173 round-trip
+        # mỗi 5 giây. Lấy theo lô nhỏ, cũ trước.
+        cursor.execute(
+            "SELECT * FROM message_queue "
+            "WHERE recipient_device_id = ? AND delivered_at IS NULL "
+            "  AND dead_lettered_at IS NULL "
+            "ORDER BY sent_at ASC LIMIT ?",
+            (device_id, max(1, min(limit, 200))),
+        )
         rows = cursor.fetchall()
-        
+
         return [{
             "id": r["id"],
             "conversation_id": r["conversation_id"],
@@ -437,16 +450,57 @@ class SQLiteMessageRepository(IMessageRepository):
             "sent_at": r["sent_at"],
             "delivered_at": r["delivered_at"]
         } for r in rows]
-    
+
+    def count_pending(self, device_id: str) -> int:
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT COUNT(*) AS c FROM message_queue "
+            "WHERE recipient_device_id = ? AND delivered_at IS NULL "
+            "  AND dead_lettered_at IS NULL",
+            (device_id,),
+        )
+        row = cursor.fetchone()
+        return int(row["c"]) if row else 0
+
     def acknowledge(self, message_ids: List[str], timestamp: str) -> int:
         cursor = self.conn.cursor()
         acked_count = 0
         for msg_id in message_ids:
-            cursor.execute("UPDATE message_queue SET delivered_at = ? WHERE id = ? AND delivered_at IS NULL", 
+            cursor.execute("UPDATE message_queue SET delivered_at = ? WHERE id = ? AND delivered_at IS NULL",
                          (timestamp, msg_id))
             acked_count += cursor.rowcount
         self.conn.commit()
         return acked_count
+
+    def mark_failed(self, message_ids: List[str], timestamp: str,
+                    reason: str = "") -> int:
+        """
+        Ghi nhận máy nhận đã thử giải mã mà không được.
+
+        Quá MAX_FAILED_ATTEMPTS thì đánh dấu dead-letter: tin vẫn nằm trong
+        database để điều tra, nhưng không được trả về cho máy nhận nữa. Nếu
+        không có bước này, một tin hỏng đủ để làm hàng đợi không bao giờ rỗng.
+        """
+        if not message_ids:
+            return 0
+        cursor = self.conn.cursor()
+        dead = 0
+        for msg_id in message_ids:
+            cursor.execute(
+                "UPDATE message_queue "
+                "SET failed_attempts = failed_attempts + 1, last_error = ? "
+                "WHERE id = ? AND delivered_at IS NULL AND dead_lettered_at IS NULL",
+                (reason[:300], msg_id),
+            )
+            cursor.execute(
+                "UPDATE message_queue SET dead_lettered_at = ? "
+                "WHERE id = ? AND dead_lettered_at IS NULL "
+                "  AND failed_attempts >= ?",
+                (timestamp, msg_id, self.MAX_FAILED_ATTEMPTS),
+            )
+            dead += cursor.rowcount
+        self.conn.commit()
+        return dead
 
 
 class SQLiteNotificationRepository(INotificationRepository):

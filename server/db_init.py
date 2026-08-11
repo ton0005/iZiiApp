@@ -147,8 +147,33 @@ def init_db():
         nonce TEXT,
         signature TEXT,
         sent_at TEXT,
-        delivered_at TEXT
+        delivered_at TEXT,
+        -- Số lần máy nhận đã thử giải mã mà thất bại. Không có cột này thì
+        -- một tin hỏng sẽ kẹt trong hàng đợi vĩnh viễn: máy nhận không giải mã
+        -- được nên không ack, server không xoá nên lần sau lại gửi tiếp — vòng
+        -- lặp vô tận đã gặp trong log ngày 11/08 (1173 tin kẹt, 9286 request).
+        failed_attempts INTEGER NOT NULL DEFAULT 0,
+        last_error TEXT,
+        dead_lettered_at TEXT
     )""")
+
+    # Migration cho database đã tồn tại trước khi có ba cột trên.
+    cursor.execute("PRAGMA table_info(message_queue)")
+    _mq_cols = {row[1] for row in cursor.fetchall()}
+    for _col, _ddl in (
+        ("failed_attempts", "INTEGER NOT NULL DEFAULT 0"),
+        ("last_error", "TEXT"),
+        ("dead_lettered_at", "TEXT"),
+    ):
+        if _col not in _mq_cols:
+            cursor.execute(f"ALTER TABLE message_queue ADD COLUMN {_col} {_ddl}")
+
+    # Hàng đợi luôn được truy vấn theo (người nhận, chưa giao) — thiếu index này
+    # thì mỗi lần poll là một lần quét toàn bảng, 5 giây một lần, mỗi thiết bị.
+    cursor.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mq_recipient_undelivered "
+        "ON message_queue (recipient_device_id, delivered_at, sent_at)"
+    )
     
     # 5. In-App Notifications
     cursor.execute("""
@@ -459,6 +484,58 @@ def prune_old_mutations(days: int = 30) -> int:
             except Exception:
                 print(f"[DB] Pruned {deleted_count} mutations older than {days} days.")
         return deleted_count
+    finally:
+        conn.close()
+
+
+def prune_message_queue(delivered_days: int = 7, stuck_days: int = 3) -> int:
+    """
+    Dọn hàng đợi tin nhắn E2EE.
+
+    Hai việc:
+      1. Xoá tin đã giao quá [delivered_days] ngày — server chỉ là trạm trung
+         chuyển, bản chính nằm ở máy nhận.
+      2. Dead-letter tin CHƯA giao quá [stuck_days] ngày. Đây là lưới an toàn:
+         nếu vì lý do nào đó máy nhận không báo lỗi được, tin vẫn phải ngừng
+         được gửi lại. Lần test 11/08 có 1173 tin kẹt vì thiếu đúng cơ chế này.
+
+    Tin dead-letter KHÔNG bị xoá — vẫn nằm trong bảng để điều tra.
+    """
+    from datetime import datetime, timezone, timedelta
+
+    now = datetime.now(timezone.utc)
+    delivered_cutoff = (now - timedelta(days=delivered_days)).isoformat()
+    stuck_cutoff = (now - timedelta(days=stuck_days)).isoformat()
+
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM message_queue "
+            "WHERE delivered_at IS NOT NULL AND delivered_at < ?",
+            (delivered_cutoff,),
+        )
+        deleted = cursor.rowcount
+
+        cursor.execute(
+            "UPDATE message_queue SET dead_lettered_at = ?, "
+            "       last_error = COALESCE(last_error, 'stuck_too_long') "
+            "WHERE delivered_at IS NULL AND dead_lettered_at IS NULL "
+            "  AND sent_at < ?",
+            (now.isoformat(), stuck_cutoff),
+        )
+        dead = cursor.rowcount
+        conn.commit()
+
+        if deleted or dead:
+            print(
+                f"🧹 [MSG-QUEUE] Xoá {deleted} tin đã giao cũ, "
+                f"dead-letter {dead} tin kẹt quá {stuck_days} ngày."
+            )
+        return deleted + dead
+    except Exception as e:
+        print(f"⚠️  [MSG-QUEUE] Không dọn được hàng đợi: {e}")
+        return 0
     finally:
         conn.close()
 

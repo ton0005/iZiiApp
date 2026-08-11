@@ -230,6 +230,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   StreamSubscription? _wsConnSubscription;
   StreamSubscription? _bleMessageSubscription;
   Timer? _pullTimer;
+
+  /// Đang có một vòng kéo tin chạy dở. Xem chú thích trong
+  /// [_onPullEncryptedMessages] — không có cờ này thì các vòng poll chồng lên
+  /// nhau và cùng xử lý một hàng đợi.
+  bool _isPullingMessages = false;
   String? _currentUserId;
 
   String? get currentUserId => _currentUserId;
@@ -952,6 +957,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     PullEncryptedMessagesEvent event,
     Emitter<ChatState> emit,
   ) async {
+    // Chống chồng lấn: mỗi lô có thể mất vài giây để giải mã, trong khi timer
+    // vẫn bắn 5 giây một lần. Không có chốt này thì các vòng poll đè lên nhau,
+    // cùng lấy một hàng đợi, cùng ack — log cho thấy "Acknowledged 0/126" vì
+    // vòng trước đã ack hết rồi.
+    if (_isPullingMessages) return;
+    _isPullingMessages = true;
+
     try {
       final identityService = DeviceIdentityService();
       final discoveryService = DeviceDiscoveryService();
@@ -963,6 +975,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       if (pendingMessages.isEmpty) return;
 
       final messageIdsToAck = <String>[];
+      // Tin giải mã KHÔNG được cũng phải báo về server. Trước đây chỉ `continue`
+      // im lặng nên server tưởng chưa giao và gửi lại mãi mãi.
+      final messageIdsFailed = <String>[];
+      String? firstFailureReason;
 
       for (final msgMap in pendingMessages) {
         try {
@@ -978,7 +994,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           final senderDevice =
               await discoveryService.getDeviceInfo(senderDeviceId);
           if (senderDevice == null) {
-            print('[E2EE] Unknown sender device: $senderDeviceId, skipping');
+            print('[E2EE] Unknown sender device: $senderDeviceId');
+            messageIdsFailed.add(msgId);
+            firstFailureReason ??= 'unknown_sender_device';
             continue;
           }
 
@@ -1026,17 +1044,39 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               '[E2EE] Decrypted message from $senderDeviceId: ${plaintext.length} chars');
         } catch (e) {
           print('[E2EE] Error decrypting message: $e');
+          // Báo lỗi thay vì nuốt im. Server đếm số lần thất bại và sau 5 lần
+          // sẽ chuyển tin sang dead-letter, nhờ vậy một tin hỏng không làm kẹt
+          // cả hàng đợi.
+          final failedId = msgMap['id'];
+          if (failedId is String) {
+            messageIdsFailed.add(failedId);
+            firstFailureReason ??= e.toString();
+          }
         }
       }
 
-      // Acknowledge delivery
-      if (messageIdsToAck.isNotEmpty) {
-        await discoveryService.acknowledgeMessages(messageIdsToAck);
-        add(LoadConversationsEvent());
-        print('[E2EE] Acknowledged ${messageIdsToAck.length} messages');
+      // Báo kết quả cho server — CẢ tin thành công lẫn tin lỗi.
+      if (messageIdsToAck.isNotEmpty || messageIdsFailed.isNotEmpty) {
+        await discoveryService.acknowledgeMessages(
+          messageIdsToAck,
+          failedIds: messageIdsFailed,
+          failedReason: firstFailureReason,
+        );
+        if (messageIdsToAck.isNotEmpty) add(LoadConversationsEvent());
+        print('[E2EE] Ack ${messageIdsToAck.length} tin'
+            '${messageIdsFailed.isEmpty ? '' : ', lỗi ${messageIdsFailed.length} tin'}');
+      }
+
+      // Còn tồn đọng thì kéo lô tiếp NGAY, không đợi hết chu kỳ 5 giây.
+      // Chốt _isPullingMessages được nhả trong finally trước khi sự kiện mới
+      // được xử lý, nên không tạo đệ quy.
+      if (discoveryService.lastPullHasMore) {
+        add(PullEncryptedMessagesEvent());
       }
     } catch (e) {
       print('[E2EE] Error pulling encrypted messages: $e');
+    } finally {
+      _isPullingMessages = false;
     }
   }
 

@@ -228,6 +228,10 @@ ALTER_STATEMENTS = [
     'ALTER TABLE device_tokens ADD COLUMN IF NOT EXISTS owner_user_id TEXT',
     'ALTER TABLE device_tokens ADD COLUMN IF NOT EXISTS owner_user_name TEXT',
     'ALTER TABLE device_tokens ADD COLUMN IF NOT EXISTS session_max_hours INT',
+    # Hàng đợi tin nhắn: chống kẹt vô hạn khi máy nhận không giải mã được.
+    'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS failed_attempts INT NOT NULL DEFAULT 0',
+    'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS last_error TEXT',
+    'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS dead_lettered_at TIMESTAMPTZ',
     "ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS profile TEXT DEFAULT 'shared'",
     'ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS owner_user_id TEXT',
     'ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS owner_user_name TEXT',

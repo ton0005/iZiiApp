@@ -39,11 +39,14 @@ class SettingsService {
     if (!serverConfig.hasSelectedServer) {
       await serverConfig.init();
     }
+    String url;
     if (serverConfig.hasSelectedServer && serverConfig.currentServer != null) {
-      return serverConfig.currentServer!.baseUrl;
+      url = serverConfig.currentServer!.baseUrl;
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      url = prefs.getString(_syncServerUrl) ?? 'http://10.146.147.160:8080';
     }
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_syncServerUrl) ?? 'http://10.146.147.160:8080';
+    return url.trim().replaceAll(RegExp(r'/+$'), '');
   }
 
   Future<void> saveSyncToken(String token) async {

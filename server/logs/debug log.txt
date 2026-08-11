@@ -1,0 +1,519 @@
+PS C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\server> python app.py
+INFO:     Will watch for changes in these directories: ['C:\\Users\\CHANH\\OneDrive\\Documents\\Downloads\\Compressed\\izii_app\\server']
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+WARNING:  --reload-include and --reload-exclude have no effect unless watchfiles is installed.
+INFO:     Started reloader process [7564] using StatReload
+INFO:     Started server process [11112]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+📖 [LOG] Server log file initialized at: C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\server\data\logs\server.log
+⚙️  [CONFIG] Đã nạp cấu hình từ C:\Users\CHANH\OneDrive\Documents\Downloads\Compressed\izii_app\server\.env
+⚠️  [CONFIG] Chưa set IZIIAPP_ADMIN_SECRET — tạm dùng chung IZIIAPP_SERVER_SECRET cho /admin/*. Nghĩa là THIẾT BỊ NÀO biết token đồng bộ cũng gọi được /admin/reset và /admin/config. Hãy đặt một secret RIÊNG cho admin.
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A18%3A31.539412 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A18%3A46.557479 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A19%3A00.952721 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A19%3A01.840628 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A19%3A36.534738 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A19%3A56.548204 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/register HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "WebSocket /call/ws/izii-d-dd43cd39" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A01.728958 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A06.733869 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A11.690365 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A14.810984 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A16.966314 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A44.256213 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A49.444196 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/register HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A54.764342 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A51.592041 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A57.404113 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A20%3A59.340323 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A04.416656 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A09.625854 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/register HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A26.548458 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A29.272796 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A31.674981 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A34.376508 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A36.645495 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A39.414671 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A44.385652 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A21%3A56.519451 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A02.275314 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A01.661262 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A04.722227 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A06.684751 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A09.375486 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A11.710987 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A14.679676 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A19.404632 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/register HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A16.693865 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/register HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "WebSocket /call/ws/user_an_nguyen" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A32.619452 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A31.558388 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A36.628062 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/register HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A36.703034 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A37.280456 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A49.164656 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A54.442195 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/register HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A56.138825 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A56.526228 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A57.200657 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A22%3A59.403899 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A01.692697 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A02.394969 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A04.408393 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A06.720204 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A07.323983 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A12.648399 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /heath HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A24.256271 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A26.553731 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A29.391655 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A31.725888 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A32.203387 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A36.653384 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A37.355682 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A41.737954 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A42.478593 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A46.701498 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A47.341599 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A52.334350 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A23%3A57.321537 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/register HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A06.591918 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A11.936617 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A14.175 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/register HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A16.649718 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A17.251748 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /sessions/current HTTP/1.1" 401 Unauthorized
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A19.724308 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A21.696948 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A22.298522 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A27.322809 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "WebSocket /call/ws/305629" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A32.303930 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A37.306783 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A39.268222 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A41.570826 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A44.396382 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A46.934724 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A49.432939 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A51.915043 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A54.399966 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A24%3A59.399479 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A25%3A04.425248 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A25%3A09.459535 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A25%3A14.407268 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A25%3A19.444225 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A25%3A24.404741 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A25%3A29.818767 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //api/v1/devices/heartbeat HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //sync/pull?since=2026-08-12T00%3A25%3A34.458053 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET //api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "POST //sync/push HTTP/1.1" 404 Not Found
+INFO:     120.20.33.77:0 - "GET //api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 404 Not Found

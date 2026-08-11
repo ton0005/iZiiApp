@@ -34,15 +34,46 @@ class EnrollmentTicket {
   /// máy Android ghi thẻ dạng URL thay vì custom scheme.
   static EnrollmentTicket? tryParse(String raw) {
     try {
-      final uri = Uri.parse(raw.trim());
-      final token = uri.queryParameters['t'];
-      final serverUrl = uri.queryParameters['u'];
-      if (token == null || token.isEmpty) return null;
-      if (serverUrl == null || serverUrl.isEmpty) return null;
+      final s = raw.trim();
+      if (s.isEmpty) return null;
+
+      Uri? uri;
+      try {
+        uri = Uri.parse(s);
+      } catch (_) {
+        return null;
+      }
+
+      String? token = uri.queryParameters['t'];
+      String? serverUrl = uri.queryParameters['u'];
+      String? zone = uri.queryParameters['z'];
+
+      // Thử phân tích thủ công query string nếu parser mặc định trả rỗng
+      if (token == null || token.isEmpty || serverUrl == null || serverUrl.isEmpty) {
+        final qPos = s.indexOf('?');
+        if (qPos != -1) {
+          final qStr = s.substring(qPos + 1);
+          final params = Uri.splitQueryString(qStr);
+          token ??= params['t'];
+          serverUrl ??= params['u'];
+          zone ??= params['z'];
+        }
+      }
+
+      if (token == null || token.trim().isEmpty) return null;
+      if (serverUrl == null || serverUrl.trim().isEmpty) return null;
+
+      String cleanUrl = serverUrl.trim();
+      if (cleanUrl.contains('%')) {
+        try {
+          cleanUrl = Uri.decodeComponent(cleanUrl);
+        } catch (_) {}
+      }
+
       return EnrollmentTicket(
-        token: token,
-        serverUrl: Uri.decodeComponent(serverUrl),
-        zone: uri.queryParameters['z'] ?? '',
+        token: token.trim(),
+        serverUrl: cleanUrl.trim().replaceAll(RegExp(r'/+$'), ''),
+        zone: (zone ?? '').trim(),
       );
     } catch (_) {
       return null;

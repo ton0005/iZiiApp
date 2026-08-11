@@ -31,7 +31,12 @@ class MessageSendPayload(BaseModel):
 
 
 class MessageAckPayload(BaseModel):
-    message_ids: List[str]
+    message_ids: List[str] = []
+    # Tin máy nhận KHÔNG giải mã được. Trước đây client im lặng bỏ qua, nên
+    # server tưởng chưa giao và gửi lại mãi — nguyên nhân của 1173 tin kẹt
+    # trong log ngày 11/08.
+    failed_ids: List[str] = []
+    failed_reason: Optional[str] = None
 
 
 @router.post("/send")
@@ -83,24 +88,59 @@ async def message_send(body: MessageSendPayload,
 
 @router.get("/pending")
 async def messages_pending(device_id: str,
+                            limit: int = 50,
                             repo: IMessageRepository = Depends(get_message_repo)):
-    pending = repo.get_pending(device_id)
-    
+    """
+    Lấy MỘT LÔ tin chưa giao, cũ trước.
+
+    Có [limit] vì máy nhận phải gọi một request lấy khoá công khai cho mỗi
+    người gửi lạ. Trả về cả hàng đợi nghìn tin đồng nghĩa với hàng nghìn
+    round-trip trong một vòng poll 5 giây, và vòng poll sau lại chồng lên vòng
+    trước — đúng vòng lặp đã quan sát được.
+    """
+    pending = repo.get_pending(device_id, limit=limit)
+    remaining = repo.count_pending(device_id)
+
     if pending:
-        print(f"\n📬 [PENDING] {len(pending)} message(s) waiting for device {device_id[:16]}...")
-    
-    return {"messages": pending}
+        print(
+            f"\n📬 [PENDING] Giao {len(pending)} tin cho {device_id[:16]}… "
+            f"(còn lại {max(0, remaining - len(pending))})"
+        )
+
+    return {
+        "messages": pending,
+        # Client dùng cờ này để poll tiếp NGAY thay vì đợi hết 5 giây, nên hàng
+        # đợi tồn đọng vẫn thoát nhanh dù mỗi lô nhỏ.
+        "has_more": remaining > len(pending),
+        "remaining": remaining,
+    }
 
 
 @router.post("/ack")
 async def message_ack(body: MessageAckPayload,
                        repo: IMessageRepository = Depends(get_message_repo)):
     now = datetime.now().isoformat()
-    
+
     try:
-        acked_count = repo.acknowledge(body.message_ids, now)
+        acked_count = repo.acknowledge(body.message_ids, now) if body.message_ids else 0
+        dead_count = 0
+        if body.failed_ids:
+            dead_count = repo.mark_failed(
+                body.failed_ids, now, body.failed_reason or "decrypt_failed"
+            )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-    print(f"\n✅ [ACK] Acknowledged {acked_count}/{len(body.message_ids)} message(s)")
-    return {"status": "success", "message": f"Acknowledged {acked_count} message(s)", "acknowledged": acked_count}
+
+    if body.message_ids:
+        print(f"\n✅ [ACK] Đã giao {acked_count}/{len(body.message_ids)} tin.")
+    if body.failed_ids:
+        print(
+            f"⚠️  [ACK] {len(body.failed_ids)} tin giải mã lỗi"
+            + (f", {dead_count} tin bị chuyển dead-letter." if dead_count else ".")
+        )
+
+    return {
+        "status": "success",
+        "acknowledged": acked_count,
+        "dead_lettered": dead_count,
+    }

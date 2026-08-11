@@ -162,17 +162,36 @@ class IMessageRepository(ABC):
         pass
     
     @abstractmethod
-    def get_pending(self, device_id: str) -> List[Dict[str, Any]]:
+    def get_pending(self, device_id: str, limit: int = 50) -> List[Dict[str, Any]]:
         """
-        Get undelivered messages for a specific device.
+        Get undelivered messages for a specific device, oldest first.
+
+        [limit] là bắt buộc chứ không phải tuỳ chọn: trả về cả hàng đợi khiến
+        máy nhận phải xử lý hàng ngàn tin trong một vòng poll 5 giây.
         """
         pass
-    
+
+    @abstractmethod
+    def count_pending(self, device_id: str) -> int:
+        """Tổng số tin còn chờ — để client biết có cần poll tiếp ngay không."""
+        pass
+
     @abstractmethod
     def acknowledge(self, message_ids: List[str], timestamp: str) -> int:
         """
         Mark messages as delivered.
         Returns the count of messages actually acknowledged.
+        """
+        pass
+
+    @abstractmethod
+    def mark_failed(self, message_ids: List[str], timestamp: str,
+                    reason: str = "") -> int:
+        """
+        Đánh dấu máy nhận đã thử giải mã mà thất bại.
+
+        Vượt ngưỡng thì chuyển sang dead-letter để hàng đợi thoát ra.
+        Trả về số tin vừa bị dead-letter.
         """
         pass
 

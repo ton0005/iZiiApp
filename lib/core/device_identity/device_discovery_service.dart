@@ -87,6 +87,17 @@ class DeviceDiscoveryService {
         },
       );
     } on DioException catch (e) {
+      // 404 = "Device not found in registry". Máy có danh tính nhưng server
+      // không biết nó — thường do database server bị reset. Trước đây client
+      // cứ nhịp tim đều đặn và nhận 404 mãi (64 lần trong một phiên test),
+      // nên /devices/online luôn trống và danh bạ hiện sai trạng thái.
+      if (e.response?.statusCode == 404) {
+        _log('ℹ️ Server chưa biết thiết bị này — đăng ký lại rồi thử lại.');
+        try {
+          await registerDevice();
+        } catch (_) {}
+        return;
+      }
       _log('⚠️ Heartbeat failed: ${_dioErrorMessage(e)}');
     } catch (e) {
       _log('⚠️ Heartbeat error: $e');
@@ -148,10 +159,33 @@ class DeviceDiscoveryService {
     }
   }
 
+  /// Bộ nhớ đệm khoá công khai theo device_id.
+  ///
+  /// Khoá của một thiết bị KHÔNG đổi trong suốt vòng đời của nó (đổi khoá =
+  /// đăng ký lại = device_id mới). Không đệm thì mỗi tin nhắn nhận về là một
+  /// request riêng: log ngày 11/08 ghi nhận 9.286 lần gọi `/key` cho đúng một
+  /// thiết bị, tất cả đều trả 200 với cùng một nội dung.
+  final Map<String, RemoteDevice> _deviceKeyCache = {};
+
+  /// Xoá đệm khi thiết bị đăng ký lại hoặc bị thu hồi.
+  void invalidateDeviceCache([String? deviceId]) {
+    if (deviceId == null) {
+      _deviceKeyCache.clear();
+    } else {
+      _deviceKeyCache.remove(deviceId);
+    }
+  }
+
   /// Fetch a specific device's public keys and metadata.
   ///
   /// Endpoint: `GET /api/v1/devices/{deviceId}/key`
-  Future<RemoteDevice?> getDeviceInfo(String deviceId) async {
+  Future<RemoteDevice?> getDeviceInfo(String deviceId,
+      {bool forceRefresh = false}) async {
+    if (!forceRefresh) {
+      final cached = _deviceKeyCache[deviceId];
+      if (cached != null) return cached;
+    }
+
     try {
       final baseUrl = await _settingsService.getSyncServerUrl();
 
@@ -160,8 +194,10 @@ class DeviceDiscoveryService {
       );
 
       if (response.statusCode == 200 && response.data != null) {
-        return RemoteDevice.fromMap(
+        final device = RemoteDevice.fromMap(
             Map<String, dynamic>.from(response.data as Map));
+        _deviceKeyCache[deviceId] = device;
+        return device;
       }
       return null;
     } on DioException catch (e) {
@@ -232,36 +268,51 @@ class DeviceDiscoveryService {
   /// Pull pending encrypted messages addressed to this device.
   ///
   /// Endpoint: `GET /api/v1/messages/pending?device_id=xxx`
-  Future<List<Map<String, dynamic>>> getPendingMessages() async {
+  /// Server còn tin chưa giao sau lô vừa lấy hay không.
+  ///
+  /// Dùng để poll tiếp ngay thay vì đợi hết chu kỳ 5 giây — hàng đợi tồn đọng
+  /// vẫn thoát nhanh dù mỗi lô nhỏ.
+  bool lastPullHasMore = false;
+
+  Future<List<Map<String, dynamic>>> getPendingMessages({int limit = 50}) async {
     try {
       final identity = await _identityService.getOrCreateIdentity();
       final baseUrl = await _settingsService.getSyncServerUrl();
 
       final response = await _dio.get(
         '$baseUrl/api/v1/messages/pending',
-        queryParameters: {'device_id': identity.deviceId},
+        queryParameters: {'device_id': identity.deviceId, 'limit': limit},
       );
 
       if (response.statusCode == 200 && response.data != null) {
         final list = response.data['messages'] as List<dynamic>? ?? [];
+        lastPullHasMore = response.data['has_more'] == true;
         return list.map((m) => Map<String, dynamic>.from(m as Map)).toList();
       }
+      lastPullHasMore = false;
       return [];
     } on DioException catch (e) {
+      lastPullHasMore = false;
       _log('❌ Failed to pull pending messages: ${_dioErrorMessage(e)}');
       return [];
     } catch (e) {
+      lastPullHasMore = false;
       _log('❌ Error pulling messages: $e');
       return [];
     }
   }
 
-  /// Acknowledge that the given [messageIds] have been received and
-  /// decrypted successfully.
+  /// Báo cho server biết kết quả xử lý một lô tin.
   ///
-  /// Endpoint: `POST /api/v1/messages/ack`
-  Future<void> acknowledgeMessages(List<String> messageIds) async {
-    if (messageIds.isEmpty) return;
+  /// [messageIds] đã giải mã xong. [failedIds] thử mà không được — PHẢI báo,
+  /// nếu không server tưởng chưa giao và gửi lại vô hạn. Đây chính là cơ chế
+  /// đã làm hàng đợi kẹt 1173 tin trong lần test iPad ↔ Laptop.
+  Future<void> acknowledgeMessages(
+    List<String> messageIds, {
+    List<String> failedIds = const [],
+    String? failedReason,
+  }) async {
+    if (messageIds.isEmpty && failedIds.isEmpty) return;
 
     try {
       final identity = await _identityService.getOrCreateIdentity();
@@ -272,10 +323,13 @@ class DeviceDiscoveryService {
         data: {
           'device_id': identity.deviceId,
           'message_ids': messageIds,
+          if (failedIds.isNotEmpty) 'failed_ids': failedIds,
+          if (failedReason != null) 'failed_reason': failedReason,
         },
       );
 
-      _log('✅ Acknowledged ${messageIds.length} message(s)');
+      _log('✅ Ack ${messageIds.length} tin'
+          '${failedIds.isEmpty ? '' : ', báo lỗi ${failedIds.length} tin'}');
     } on DioException catch (e) {
       _log('⚠️ Ack failed: ${_dioErrorMessage(e)}');
     } catch (e) {

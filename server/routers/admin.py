@@ -448,7 +448,9 @@ async def create_enrollment_token(
     # CỐ Ý KHÔNG nhét profile vào URI: vé đã ghi sẵn chế độ trong database, máy
     # nhận sẽ biết khi đổi vé. Nhét thêm vào URI vừa tốn dung lượng thẻ NTAG213
     # vừa cho phép sửa chuỗi để tự nâng máy mình thành 'personal'.
+    from urllib.parse import quote
     base = str(request.base_url).rstrip("/")
+    base_encoded = quote(base, safe='')
     return {
         "token": token,
         "expires_at": expires_at,
@@ -460,7 +462,7 @@ async def create_enrollment_token(
         "owner_user_id": payload.owner_user_id,
         "owner_user_name": payload.owner_user_name,
         "session_max_hours": max_hours,
-        "payload_uri": f"izii://enroll?t={token}&u={base}&z={CONFIG.zone}",
+        "payload_uri": f"izii://enroll?t={token}&u={base_encoded}&z={CONFIG.zone}",
     }
 
 

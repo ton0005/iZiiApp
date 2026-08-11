@@ -1,0 +1,484 @@
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /admin/devices HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /admin/devices HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /admin/enrollment-token HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+🔁 [PEER-SYNC] server-m1 pulled 0 mutations (after_seq=None, since=None, has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"305629","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+🔁 [PEER-SYNC] server-m1 pulled 0 mutations (after_seq=None, since=None, has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"305629","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 0 records (has_more=False)
+🎟️  [ENROLL] Đã cấp vé mời (shared), hết hạn 2026-08-11T15:29:59.286604+00:00
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /peer-sync/pull?requester_server_id=server-m1 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.33.77:0 - "GET /sync/pull?after_seq=14 HTTP/1.1" 200 OK
