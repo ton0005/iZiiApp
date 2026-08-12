@@ -1,8 +1,11 @@
 // lib/modules/communication/call/call_bloc.dart
 
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../../../core/settings/settings_service.dart';
 import 'webrtc_call_engine.dart';
 import 'call_signaling_service.dart';
 
@@ -179,6 +182,47 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     on<_CallTickEvent>(_onCallTick);
   }
 
+  /// Xin quyền micro (và camera nếu gọi video) NGAY TRƯỚC khi mở thiết bị.
+  ///
+  /// Khai trong AndroidManifest là chưa đủ từ Android 6 trở đi — phải hỏi lúc
+  /// chạy. Trước đây app gọi thẳng `getUserMedia`: trên máy đã từng từ chối
+  /// quyền, hệ thống không hỏi lại mà ném lỗi ngay, và lỗi đó bị nuốt nên
+  /// người dùng chỉ thấy cuộc gọi "không kết nối được" mà không biết vì sao.
+  ///
+  /// Trả về null nếu đủ quyền, hoặc chuỗi mô tả lỗi để hiển thị.
+  Future<String?> _ensureMediaPermissions({required bool video}) async {
+    try {
+      final needed = <Permission>[
+        Permission.microphone,
+        if (video) Permission.camera,
+      ];
+
+      final missing = <String>[];
+      for (final p in needed) {
+        var status = await p.status;
+        if (!status.isGranted) status = await p.request();
+
+        if (status.isPermanentlyDenied) {
+          return 'Quyền ${p == Permission.microphone ? 'micro' : 'camera'} đã bị '
+              'chặn vĩnh viễn. Vào Cài đặt → Ứng dụng → iZiiApp → Quyền để bật lại.';
+        }
+        if (!status.isGranted) {
+          missing.add(p == Permission.microphone ? 'micro' : 'camera');
+        }
+      }
+
+      if (missing.isNotEmpty) {
+        return 'Cần quyền ${missing.join(' và ')} để thực hiện cuộc gọi.';
+      }
+      return null;
+    } catch (e) {
+      // permission_handler không chạy trên desktop — bỏ qua, để getUserMedia
+      // tự báo lỗi nếu thật sự không mở được thiết bị.
+      print('[Call] Bỏ qua kiểm tra quyền trên nền tảng này: $e');
+      return null;
+    }
+  }
+
   Future<void> initSignaling(String clientId) async {
     myClientId = clientId;
     await signaling.connect(clientId);
@@ -253,14 +297,112 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     });
   }
 
+  /// Chọn danh sách STUN/TURN phù hợp với môi trường mạng hiện tại.
+  ///
+  /// Nếu địa chỉ server là IP nội bộ (RFC1918 / link-local / localhost) thì cả
+  /// hệ thống đang chạy trong một LAN kín — điển hình là điện thoại phát Wi-Fi
+  /// cho laptop chạy server và iPad. Khi đó:
+  ///
+  ///   • Host candidate là đủ để hai máy nối thẳng.
+  ///   • STUN công cộng KHÔNG tới được (LAN không có Internet), request sẽ treo
+  ///     tới lúc hết giờ và kéo dài quá trình thu thập ICE một cách vô ích.
+  ///
+  /// Vì vậy trả về danh sách RỖNG cho LAN. Ra Internet thì mới hỏi server.
+  Future<List<Map<String, dynamic>>> _resolveIceServers() async {
+    String host = '';
+    try {
+      final url = await SettingsService().getSyncServerUrl();
+      host = Uri.tryParse(url.trim())?.host ?? '';
+    } catch (_) {}
+
+    if (_isPrivateHost(host)) {
+      print('[Call] Server ở địa chỉ nội bộ ($host) → gọi trong LAN, bỏ STUN.');
+      return const [];
+    }
+
+    // Ra ngoài Internet: lấy cấu hình từ server để còn thay TURN mà không phải
+    // build lại app.
+    try {
+      final url = (await SettingsService().getSyncServerUrl())
+          .replaceAll(RegExp(r'/+$'), '');
+      final resp = await Dio(BaseOptions(
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 5),
+      )).get('$url/call/stun-turn-config');
+      final list = (resp.data['iceServers'] as List?) ?? const [];
+      return list.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    } catch (e) {
+      print('[Call] Không lấy được cấu hình ICE từ server ($e) — dùng STUN mặc định.');
+      return [
+        {
+          'urls': ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302']
+        }
+      ];
+    }
+  }
+
+  /// Địa chỉ có nằm trong mạng nội bộ không (RFC1918, loopback, link-local).
+  static bool _isPrivateHost(String host) {
+    if (host.isEmpty) return false;
+    if (host == 'localhost') return true;
+    final parts = host.split('.');
+    if (parts.length != 4) return false;
+    final o = parts.map(int.tryParse).toList();
+    if (o.any((v) => v == null)) return false;
+    final a = o[0]!, b = o[1]!;
+    if (a == 10) return true;                        // 10.0.0.0/8
+    if (a == 127) return true;                       // loopback
+    if (a == 192 && b == 168) return true;           // 192.168.0.0/16
+    if (a == 172 && b >= 16 && b <= 31) return true; // 172.16.0.0/12
+    if (a == 169 && b == 254) return true;           // link-local
+    return false;
+  }
+
+  /// Theo dõi trạng thái ICE/peer và biến thất bại thành thông báo đọc được.
+  ///
+  /// Không có phần này thì "WebRTC không kết nối được" là tất cả những gì
+  /// người dùng và cả lập trình viên nhìn thấy — trong khi log server thì
+  /// KHÔNG BAO GIỜ giải thích được, vì media đi thẳng giữa hai máy, server chỉ
+  /// trung chuyển tín hiệu.
+  void _watchConnectionState() {
+    engine.onConnectionStateChange = (state) {
+      print('[Call] PeerConnection → $state');
+      switch (state) {
+        case RTCPeerConnectionState.RTCPeerConnectionStateFailed:
+          add(_PeerTerminatedEvent(
+              'Không thiết lập được kết nối trực tiếp giữa hai máy. '
+              'Kiểm tra hai máy có cùng mạng Wi-Fi không, và Wi-Fi có bật '
+              '"cách ly thiết bị" (AP isolation) hay không.'));
+          break;
+        case RTCPeerConnectionState.RTCPeerConnectionStateDisconnected:
+          print('[Call] Mất kết nối tạm thời — chờ ICE tự khôi phục.');
+          break;
+        default:
+          break;
+      }
+    };
+  }
+
   Future<void> _onStartCall(StartCallEvent event, Emitter<CallState> emit) async {
     activeCallId = event.callId;
     currentPeerId = event.calleeId;
     currentPeerName = event.calleeName;
     currentCallType = event.callType;
 
-    await engine.initialize();
-    await engine.openUserMedia(video: event.callType == 'video');
+    final permError =
+        await _ensureMediaPermissions(video: event.callType == 'video');
+    if (permError != null) {
+      add(_PeerTerminatedEvent(permError));
+      return;
+    }
+
+    try {
+      await engine.initialize();
+      await engine.openUserMedia(video: event.callType == 'video');
+    } catch (e) {
+      add(_PeerTerminatedEvent('Không mở được micro/camera: $e'));
+      return;
+    }
 
     signaling.sendCallInvite(
       callId: event.callId,
@@ -298,13 +440,24 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     final peerId = currentPeerId;
     if (callId == null || peerId == null) return;
 
+    final isVideo = currentCallType == 'video';
+    final permError = await _ensureMediaPermissions(video: isVideo);
+    if (permError != null) {
+      // Từ chối cuộc gọi cho đàng hoàng thay vì im lặng — đầu kia đang đổ chuông.
+      signaling.sendCallReject(
+          callId: callId, calleeId: myClientId ?? '', targetId: peerId);
+      add(_PeerTerminatedEvent(permError));
+      return;
+    }
+
     try {
       await engine.initialize();
-      await engine.openUserMedia(video: currentCallType == 'video');
+      await engine.openUserMedia(video: isVideo);
       // Dựng peer connection TRƯỚC khi báo đã nghe máy: đầu kia sẽ gửi SDP
       // offer ngay khi nhận call_accept, và nếu lúc đó chưa có peer connection
       // thì offer rơi mất — máy báo "đã kết nối" mà không có tiếng.
-      await engine.setupPeerConnection([]);
+      await engine.setupPeerConnection(await _resolveIceServers());
+      _watchConnectionState();
     } catch (e) {
       add(_PeerTerminatedEvent('Không mở được micro/camera: $e'));
       return;
@@ -351,7 +504,8 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     if (callId == null || peerId == null) return;
 
     try {
-      await engine.setupPeerConnection([]);
+      await engine.setupPeerConnection(await _resolveIceServers());
+      _watchConnectionState();
 
       engine.onIceCandidate = (candidate) {
         final c = candidate.candidate;

@@ -94,15 +94,25 @@ class WebRTCCallEngine {
     localRenderer.srcObject = _localStream;
   }
 
+  /// Đếm ICE candidate theo loại — công cụ chẩn đoán quan trọng nhất khi cuộc
+  /// gọi không nối được. `host` = 0 nghĩa là máy không thấy giao diện mạng nào
+  /// của chính nó, và không có STUN/TURN nào cứu được.
+  final Map<String, int> candidateStats = {};
+
+  /// [iceServers] rỗng nghĩa là **không dùng STUN/TURN**, chỉ host candidate.
+  ///
+  /// Trước đây rỗng lại bị thay bằng STUN của Google. Trong mạng LAN kín (máy
+  /// tính chạy server nối vào điểm phát của điện thoại, không có Internet),
+  /// yêu cầu STUN sẽ treo tới lúc hết giờ và làm chậm hoặc hỏng cả quá trình
+  /// thu thập ICE — trong khi host candidate đã thừa đủ để hai máy cùng LAN
+  /// nối thẳng với nhau.
   Future<void> setupPeerConnection(List<Map<String, dynamic>> iceServers) async {
+    candidateStats.clear();
     final Map<String, dynamic> configuration = {
-      'iceServers': iceServers.isNotEmpty
-          ? iceServers
-          : [
-              {'urls': ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302']},
-            ],
+      'iceServers': iceServers,
       'sdpSemantics': 'unified-plan',
     };
+    print('[Call] ICE servers: ${iceServers.isEmpty ? "(không dùng — LAN thuần)" : iceServers}');
 
     final Map<String, dynamic> offerSdpConstraints = {
       'mandatory': {
@@ -122,7 +132,34 @@ class WebRTCCallEngine {
     }
 
     _peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
+      final raw = candidate.candidate;
+      if (raw != null) {
+        // Chuỗi candidate có dạng "... typ host ..." / "typ srflx" / "typ relay".
+        final m = RegExp(r'\btyp (\w+)').firstMatch(raw);
+        final type = m?.group(1) ?? 'unknown';
+        candidateStats[type] = (candidateStats[type] ?? 0) + 1;
+        if (candidateStats[type] == 1) {
+          print('[Call] ICE candidate đầu tiên loại "$type": $raw');
+        }
+      }
       onIceCandidate?.call(candidate);
+    };
+
+    _peerConnection?.onIceGatheringState = (state) {
+      print('[Call] ICE gathering → $state | đã thu: $candidateStats');
+      if (state == RTCIceGatheringState.RTCIceGatheringStateComplete &&
+          (candidateStats['host'] ?? 0) == 0) {
+        print(
+          '[Call] ⛔ KHÔNG thu được host candidate nào. Máy không liệt kê được '
+          'giao diện mạng của chính nó — thường gặp khi thiết bị đang PHÁT '
+          'Wi-Fi (tethering): libwebrtc không nhận diện giao diện ap0/swlan0. '
+          'Kiểm tra quyền ACCESS_NETWORK_STATE và thử đổi sang một router thật.',
+        );
+      }
+    };
+
+    _peerConnection?.onIceConnectionState = (state) {
+      print('[Call] ICE connection → $state');
     };
 
     _peerConnection?.onTrack = (RTCTrackEvent event) {

@@ -15,6 +15,10 @@ router = APIRouter(prefix="/call", tags=["WebRTC Call Engine"])
 # Active WebSockets map: client_id -> WebSocket
 connected_clients: Dict[str, WebSocket] = {}
 
+# Đếm ICE candidate mỗi client đã gửi, chỉ để ghi log thưa. ICE candidate có
+# hàng chục gói mỗi cuộc gọi — in hết thì log không đọc được nữa.
+_ice_counts: Dict[str, int] = {}
+
 class CallInviteModel(BaseModel):
     call_id: str
     caller_id: str
@@ -94,6 +98,22 @@ async def call_signaling_ws(websocket: WebSocket, client_id: str):
                     "timestamp": datetime.now().isoformat()
                 })
 
+                # Ghi lại tiến độ thương lượng. Không có dòng này thì log server
+                # hoàn toàn im lặng về SDP/ICE và không thể biết cuộc gọi hỏng ở
+                # bước nào — mời, nghe máy, trao đổi SDP, hay thu thập ICE.
+                if event_type in ("call_invite", "call_accept", "call_reject",
+                                  "call_end", "sdp_offer", "sdp_answer"):
+                    print(
+                        f"📞 [SIGNAL] {client_id} → {target_id or '(broadcast)'} : {event_type}"
+                    )
+                elif event_type == "ice_candidate":
+                    _ice_counts[client_id] = _ice_counts.get(client_id, 0) + 1
+                    if _ice_counts[client_id] in (1, 5, 10, 25, 50):
+                        print(
+                            f"🧊 [SIGNAL] {client_id} đã gửi {_ice_counts[client_id]} "
+                            f"ICE candidate tới {target_id or '(broadcast)'}"
+                        )
+
                 if target_id and target_id in connected_clients:
                     await connected_clients[target_id].send_text(payload)
                     continue
@@ -123,3 +143,4 @@ async def call_signaling_ws(websocket: WebSocket, client_id: str):
         print(f"📞 [CALL-WS] Client '{client_id}' disconnected.")
     finally:
         connected_clients.pop(client_id, None)
+        _ice_counts.pop(client_id, None)
