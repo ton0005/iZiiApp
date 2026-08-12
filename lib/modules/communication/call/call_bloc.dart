@@ -50,6 +50,24 @@ class ToggleSpeakerEvent extends CallEvent {}
 
 class TogglePIPEvent extends CallEvent {}
 
+// ── Sự kiện NỘI BỘ, phát từ kênh tín hiệu và từ timer ─────────────────────
+//
+// VÌ SAO CẦN: flutter_bloc 9 NÉM StateError nếu `emit` được gọi sau khi handler
+// đã kết thúc. Trước đây bloc emit thẳng từ trong `signaling.onEvent.listen`
+// và từ callback của Timer đếm giờ — cả hai đều nằm ngoài handler. Hậu quả:
+// vừa bắt máy xong là máy trạng thái vỡ, màn hình rơi về nhánh mặc định
+// (nền #0F172A + vòng xoay xanh) — đúng triệu chứng "màn hình đen có icon xanh
+// xoay". Mọi thứ đến từ bên ngoài giờ phải đi qua `add()`.
+
+class _PeerAcceptedEvent extends CallEvent {}
+
+class _PeerTerminatedEvent extends CallEvent {
+  final String reason;
+  _PeerTerminatedEvent(this.reason);
+}
+
+class _CallTickEvent extends CallEvent {}
+
 // === STATES ===
 abstract class CallState {
   final bool isPIP;
@@ -156,6 +174,9 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     on<SwitchCamEvent>(_onSwitchCam);
     on<ToggleSpeakerEvent>(_onToggleSpeaker);
     on<TogglePIPEvent>(_onTogglePIP);
+    on<_PeerAcceptedEvent>(_onPeerAccepted);
+    on<_PeerTerminatedEvent>(_onPeerTerminated);
+    on<_CallTickEvent>(_onCallTick);
   }
 
   Future<void> initSignaling(String clientId) async {
@@ -180,29 +201,53 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         add(IncomingCallReceivedEvent(data));
       } else if (event == 'call_accept') {
         if (state is CallRingingOutgoingState) {
-          await _connectMediaAsCaller();
+          add(_PeerAcceptedEvent());
         }
       } else if (event == 'call_reject' || event == 'call_end') {
-        _cleanupCall();
-        emit(CallEndedState(event == 'call_reject' ? 'Call rejected' : 'Call ended'));
+        add(_PeerTerminatedEvent(
+            event == 'call_reject' ? 'Đầu kia từ chối' : 'Cuộc gọi đã kết thúc'));
       } else if (event == 'sdp_offer') {
         final sdp = data['sdp'];
-        if (sdp != null) {
-          await engine.setRemoteDescription(sdp, 'offer');
-          final answer = await engine.createAnswer();
-          signaling.sendSdpAnswer(callId: activeCallId!, targetId: currentPeerId!, sdp: answer.sdp!);
+        final callId = activeCallId;
+        final peerId = currentPeerId;
+        // Không còn `!`: offer về muộn sau khi đã cúp máy là chuyện bình
+        // thường, ép kiểu ở đây sẽ ném lỗi và giết luôn subscription tín hiệu
+        // — mọi cuộc gọi sau đó im lặng.
+        if (sdp != null && callId != null && peerId != null) {
+          try {
+            await engine.setRemoteDescription(sdp, 'offer');
+            final answer = await engine.createAnswer();
+            signaling.sendSdpAnswer(
+                callId: callId, targetId: peerId, sdp: answer.sdp!);
+          } catch (e) {
+            print('[Call] Lỗi xử lý sdp_offer: $e');
+          }
         }
       } else if (event == 'sdp_answer') {
         final sdp = data['sdp'];
         if (sdp != null) {
-          await engine.setRemoteDescription(sdp, 'answer');
+          try {
+            await engine.setRemoteDescription(sdp, 'answer');
+          } catch (e) {
+            print('[Call] Lỗi xử lý sdp_answer: $e');
+          }
         }
       } else if (event == 'ice_candidate') {
         final candidate = data['candidate'];
         final sdpMid = data['sdpMid'];
         final sdpMLineIndex = data['sdpMLineIndex'];
-        if (candidate != null && sdpMid != null && sdpMLineIndex != null) {
-          await engine.addCandidate(candidate, sdpMid, sdpMLineIndex);
+        if (candidate != null) {
+          try {
+            await engine.addCandidate(
+              candidate.toString(),
+              sdpMid?.toString() ?? '',
+              sdpMLineIndex is int
+                  ? sdpMLineIndex
+                  : int.tryParse('${sdpMLineIndex ?? 0}') ?? 0,
+            );
+          } catch (e) {
+            print('[Call] Lỗi thêm ICE candidate: $e');
+          }
         }
       }
     });
@@ -249,34 +294,46 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   }
 
   Future<void> _onAcceptCall(AcceptCallEvent event, Emitter<CallState> emit) async {
-    if (activeCallId == null || currentPeerId == null) return;
+    final callId = activeCallId;
+    final peerId = currentPeerId;
+    if (callId == null || peerId == null) return;
 
-    await engine.initialize();
-    await engine.openUserMedia(video: currentCallType == 'video');
-    await engine.setupPeerConnection([]);
+    try {
+      await engine.initialize();
+      await engine.openUserMedia(video: currentCallType == 'video');
+      // Dựng peer connection TRƯỚC khi báo đã nghe máy: đầu kia sẽ gửi SDP
+      // offer ngay khi nhận call_accept, và nếu lúc đó chưa có peer connection
+      // thì offer rơi mất — máy báo "đã kết nối" mà không có tiếng.
+      await engine.setupPeerConnection([]);
+    } catch (e) {
+      add(_PeerTerminatedEvent('Không mở được micro/camera: $e'));
+      return;
+    }
 
     engine.onIceCandidate = (candidate) {
+      final c = candidate.candidate;
+      if (c == null) return;
       signaling.sendIceCandidate(
-        callId: activeCallId!,
-        targetId: currentPeerId!,
-        candidate: candidate.candidate!,
-        sdpMid: candidate.sdpMid!,
-        sdpMLineIndex: candidate.sdpMLineIndex!,
+        callId: callId,
+        targetId: peerId,
+        candidate: c,
+        sdpMid: candidate.sdpMid ?? '',
+        sdpMLineIndex: candidate.sdpMLineIndex ?? 0,
       );
     };
 
     signaling.sendCallAccept(
-      callId: activeCallId!,
+      callId: callId,
       calleeId: myClientId ?? '',
-      targetId: currentPeerId!,
+      targetId: peerId,
     );
 
     _startDurationTimer();
 
     emit(CallConnectedState(
-      callId: activeCallId!,
+      callId: callId,
       peerName: currentPeerName ?? 'User',
-      callType: currentCallType!,
+      callType: currentCallType ?? 'audio',
       isMuted: false,
       isCamDisabled: false,
       isSpeakerOn: true,
@@ -284,32 +341,43 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     ));
   }
 
-  Future<void> _connectMediaAsCaller() async {
-    await engine.setupPeerConnection([]);
+  /// Đầu kia đã bấm nghe — dựng peer connection và gửi SDP offer.
+  ///
+  /// Chạy trong handler thật nên `emit` hợp lệ.
+  Future<void> _onPeerAccepted(
+      _PeerAcceptedEvent event, Emitter<CallState> emit) async {
+    final callId = activeCallId;
+    final peerId = currentPeerId;
+    if (callId == null || peerId == null) return;
 
-    engine.onIceCandidate = (candidate) {
-      signaling.sendIceCandidate(
-        callId: activeCallId!,
-        targetId: currentPeerId!,
-        candidate: candidate.candidate!,
-        sdpMid: candidate.sdpMid!,
-        sdpMLineIndex: candidate.sdpMLineIndex!,
-      );
-    };
+    try {
+      await engine.setupPeerConnection([]);
 
-    final offer = await engine.createOffer();
-    signaling.sendSdpOffer(
-      callId: activeCallId!,
-      targetId: currentPeerId!,
-      sdp: offer.sdp!,
-    );
+      engine.onIceCandidate = (candidate) {
+        final c = candidate.candidate;
+        if (c == null) return; // ứng viên kết thúc — không gửi
+        signaling.sendIceCandidate(
+          callId: callId,
+          targetId: peerId,
+          candidate: c,
+          sdpMid: candidate.sdpMid ?? '',
+          sdpMLineIndex: candidate.sdpMLineIndex ?? 0,
+        );
+      };
+
+      final offer = await engine.createOffer();
+      signaling.sendSdpOffer(callId: callId, targetId: peerId, sdp: offer.sdp!);
+    } catch (e) {
+      add(_PeerTerminatedEvent('Không thiết lập được kết nối: $e'));
+      return;
+    }
 
     _startDurationTimer();
 
     emit(CallConnectedState(
-      callId: activeCallId!,
+      callId: callId,
       peerName: currentPeerName ?? 'User',
-      callType: currentCallType!,
+      callType: currentCallType ?? 'audio',
       isMuted: false,
       isCamDisabled: false,
       isSpeakerOn: true,
@@ -317,24 +385,39 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     ));
   }
 
-  void _onRejectCall(RejectCallEvent event, Emitter<CallState> emit) {
+  Future<void> _onPeerTerminated(
+      _PeerTerminatedEvent event, Emitter<CallState> emit) async {
+    if (state is CallEndedState || state is CallInitialState) return;
+    await _cleanupCall();
+    emit(CallEndedState(event.reason));
+  }
+
+  void _onCallTick(_CallTickEvent event, Emitter<CallState> emit) {
+    final s = state;
+    if (s is CallConnectedState) {
+      emit(s.copyWith(durationSeconds: s.durationSeconds + 1));
+    }
+  }
+
+  Future<void> _onRejectCall(RejectCallEvent event, Emitter<CallState> emit) async {
     final cId = activeCallId;
     final pId = currentPeerId;
-    _cleanupCall();
+    // Báo cho đầu kia TRƯỚC khi dọn, vì _cleanupCall xoá sạch id.
     if (cId != null && pId != null) {
       signaling.sendCallReject(callId: cId, calleeId: myClientId ?? '', targetId: pId);
     }
-    emit(CallEndedState('Call rejected'));
+    await _cleanupCall();
+    emit(CallEndedState('Đã từ chối cuộc gọi'));
   }
 
-  void _onEndCall(EndCallEvent event, Emitter<CallState> emit) {
+  Future<void> _onEndCall(EndCallEvent event, Emitter<CallState> emit) async {
     final cId = activeCallId;
     final pId = currentPeerId;
-    _cleanupCall();
     if (cId != null && pId != null) {
       signaling.sendCallEnd(callId: cId, targetId: pId);
     }
-    emit(CallEndedState('Call ended'));
+    await _cleanupCall();
+    emit(CallEndedState('Cuộc gọi đã kết thúc'));
   }
 
   void _onToggleMic(ToggleMicEvent event, Emitter<CallState> emit) {
@@ -374,25 +457,32 @@ class CallBloc extends Bloc<CallEvent, CallState> {
 
   void _startDurationTimer() {
     _callDurationTimer?.cancel();
-    _callDurationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (state is CallConnectedState) {
-        final curr = state as CallConnectedState;
-        emit(curr.copyWith(durationSeconds: curr.durationSeconds + 1));
-      }
+    // Timer chạy ngoài handler nên KHÔNG được emit trực tiếp — đẩy sự kiện vào.
+    _callDurationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!isClosed) add(_CallTickEvent());
     });
   }
 
-  void _cleanupCall() {
+  /// Dọn dẹp sau MỘT cuộc gọi — engine vẫn dùng được cho cuộc tiếp theo.
+  Future<void> _cleanupCall() async {
     activeCallId = null;
     currentPeerId = null;
+    currentPeerName = null;
+    currentCallType = null;
     _callDurationTimer?.cancel();
-    engine.dispose();
+    _callDurationTimer = null;
+    // stopCall chứ KHÔNG phải dispose: dispose sẽ huỷ renderer và cuộc gọi thứ
+    // hai chỉ còn màn hình đen.
+    await engine.stopCall();
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     _signalingSubscription?.cancel();
-    _cleanupCall();
+    _callDurationTimer?.cancel();
+    activeCallId = null;
+    currentPeerId = null;
+    await engine.dispose();
     signaling.disconnect();
     return super.close();
   }

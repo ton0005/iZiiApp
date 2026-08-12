@@ -23,9 +23,55 @@ class WebRTCCallEngine {
   bool isCameraDisabled = false;
   bool isSpeakerOn = true;
 
+  /// Renderer đã khởi tạo chưa. `RTCVideoRenderer` KHÔNG dùng lại được sau khi
+  /// dispose, và initialize() hai lần cũng hỏng — nên phải theo dõi trạng thái.
+  bool _renderersReady = false;
+
   Future<void> initialize() async {
+    if (_renderersReady) return;
     await localRenderer.initialize();
     await remoteRenderer.initialize();
+    _renderersReady = true;
+  }
+
+  /// Kết thúc MỘT cuộc gọi nhưng giữ engine dùng được cho cuộc sau.
+  ///
+  /// Trước đây kết thúc cuộc gọi gọi thẳng [dispose], tức là huỷ luôn hai
+  /// renderer. Với CallBloc dùng chung toàn app, cuộc gọi thứ hai sẽ dựng lại
+  /// trên renderer đã chết → màn hình đen kèm vòng xoay, đúng triệu chứng
+  /// "lần 2, 3 bắt máy không được".
+  Future<void> stopCall() async {
+    try {
+      final pc = _peerConnection;
+      _peerConnection = null;
+      await pc?.close();
+    } catch (_) {}
+
+    try {
+      // Tắt mic/camera. Không tắt thì đèn camera vẫn sáng sau khi cúp máy.
+      for (final t in _localStream?.getTracks() ?? const []) {
+        try {
+          await t.stop();
+        } catch (_) {}
+      }
+      await _localStream?.dispose();
+    } catch (_) {}
+    _localStream = null;
+    _remoteStream = null;
+    _remoteDescriptionSet = false;
+    _pendingCandidates.clear();
+
+    // Giữ renderer sống, chỉ gỡ nguồn hình.
+    try {
+      localRenderer.srcObject = null;
+      remoteRenderer.srcObject = null;
+    } catch (_) {}
+
+    onIceCandidate = null;
+    onRemoteStream = null;
+    onConnectionStateChange = null;
+    isMicrophoneMuted = false;
+    isCameraDisabled = false;
   }
 
   Future<void> openUserMedia({bool video = true}) async {
@@ -112,14 +158,39 @@ class WebRTCCallEngine {
     return answer;
   }
 
+  /// Đã nhận SDP của đầu kia chưa.
+  ///
+  /// ICE candidate thường về TRƯỚC SDP answer — mạng LAN nhanh hơn vòng
+  /// signaling qua server. Gọi `addCandidate` lúc chưa có remote description
+  /// thì WebRTC ném lỗi và candidate mất luôn. Thiếu candidate đúng lúc là
+  /// nguyên nhân kinh điển của "máy báo đã kết nối nhưng không nghe thấy gì".
+  bool _remoteDescriptionSet = false;
+  final List<RTCIceCandidate> _pendingCandidates = [];
+
   Future<void> setRemoteDescription(String sdp, String type) async {
     final description = RTCSessionDescription(sdp, type);
     await _peerConnection?.setRemoteDescription(description);
+    _remoteDescriptionSet = true;
+
+    // Nhả hàng đợi candidate đã nhận sớm.
+    final queued = List<RTCIceCandidate>.from(_pendingCandidates);
+    _pendingCandidates.clear();
+    for (final c in queued) {
+      try {
+        await _peerConnection?.addCandidate(c);
+      } catch (_) {}
+    }
   }
 
   Future<void> addCandidate(String candidate, String sdpMid, int sdpMLineIndex) async {
     final iceCandidate = RTCIceCandidate(candidate, sdpMid, sdpMLineIndex);
-    await _peerConnection?.addCandidate(iceCandidate);
+    if (!_remoteDescriptionSet || _peerConnection == null) {
+      _pendingCandidates.add(iceCandidate);
+      return;
+    }
+    try {
+      await _peerConnection!.addCandidate(iceCandidate);
+    } catch (_) {}
   }
 
   void toggleMicrophone() {
@@ -150,15 +221,16 @@ class WebRTCCallEngine {
     }
   }
 
+  /// Huỷ hẳn engine. CHỈ gọi khi thoát app hoặc đóng bloc — sau lệnh này
+  /// engine không dùng lại được. Kết thúc một cuộc gọi thì dùng [stopCall].
   Future<void> dispose() async {
+    await stopCall();
     try {
-      localRenderer.srcObject = null;
-      remoteRenderer.srcObject = null;
-      await localRenderer.dispose();
-      await remoteRenderer.dispose();
-      await _localStream?.dispose();
-      await _remoteStream?.dispose();
-      await _peerConnection?.close();
+      if (_renderersReady) {
+        await localRenderer.dispose();
+        await remoteRenderer.dispose();
+        _renderersReady = false;
+      }
     } catch (_) {}
   }
 }
