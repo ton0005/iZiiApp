@@ -118,6 +118,17 @@ async def call_signaling_ws(websocket: WebSocket, client_id: str):
                     await connected_clients[target_id].send_text(payload)
                     continue
 
+                # Định tuyến trực tiếp trượt. Nếu CÓ client đang kết nối mà
+                # target_id lại không khớp id nào, gần như chắc chắn hai bên
+                # đang dùng hai hệ danh tính khác nhau (device_id vs user_id) —
+                # lỗi im lặng vì đường quảng bá vẫn hoạt động, chỉ chậm và rò.
+                if target_id and connected_clients:
+                    print(
+                        f"⚠️  [SIGNAL] '{target_id}' KHÔNG có trên /call/ws. "
+                        f"Đang kết nối: {sorted(connected_clients)}. "
+                        f"Nếu hai danh sách khác hệ định danh thì đó là lỗi cấu hình client."
+                    )
+
                 # Người nhận chưa mở /call/ws — phát dự phòng qua kênh /chat.
                 # Máy nào cũng nhận được gói này nhưng chỉ máy đúng target_id
                 # mới xử lý.

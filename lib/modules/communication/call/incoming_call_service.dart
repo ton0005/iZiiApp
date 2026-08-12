@@ -58,9 +58,14 @@ class IncomingCallService {
   }
 
   /// Đổi người dùng: đóng kênh cũ rồi mở kênh mới.
+  ///
+  /// Bắt buộc phải ngắt trước. Nếu chỉ xoá cờ rồi gọi lại [ensureConnected],
+  /// `CallSignalingService.connect` sẽ thấy socket còn sống và thoát sớm —
+  /// socket vẫn nằm dưới id CŨ trong khi mọi gói tín hiệu đã mang id MỚI.
   Future<void> switchUser(String userId) async {
     if (_connectedUserId == userId) return;
     _connectedUserId = null;
+    _bloc?.signaling.disconnect();
     await ensureConnected(userId);
   }
 

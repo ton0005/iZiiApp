@@ -11,6 +11,17 @@ import '../models/chat_models.dart';
 class CallSignalingService {
   WebSocketChannel? _channel;
   StreamSubscription? _chatWsSubscription;
+
+  /// Id đang dùng để đăng ký trên `/call/ws/{id}`.
+  ///
+  /// PHẢI theo dõi riêng: trước đây `connect()` thoát sớm khi đã có kết nối,
+  /// nên khi ứng dụng đổi danh tính (lúc khởi động là device_id, sau khi nạp
+  /// xong hồ sơ mới thành user_id) thì socket vẫn nằm nguyên dưới id CŨ.
+  /// Server đăng ký `/call/ws/izii-d-1093d407` trong khi gói tín hiệu lại ghi
+  /// `target_id: user_an_nguyen` — không bao giờ khớp, mọi gói phải đi đường
+  /// quảng bá dự phòng.
+  String? _clientId;
+  String? get clientId => _clientId;
   final StreamController<Map<String, dynamic>> _eventController =
       StreamController<Map<String, dynamic>>.broadcast();
 
@@ -33,6 +44,13 @@ class CallSignalingService {
   }
 
   Future<void> connect(String clientId) async {
+    // Đổi danh tính thì phải mở lại socket dưới id mới, không được giữ cái cũ.
+    if (isConnected && _clientId != null && _clientId != clientId) {
+      print('[Call] Đổi danh tính tín hiệu: $_clientId → $clientId, nối lại.');
+      disconnect();
+    }
+    _clientId = clientId;
+
     // Listen to ChatWebSocketService fallback events
     _chatWsSubscription?.cancel();
     _chatWsSubscription = ChatWebSocketService().eventStream.listen((event) {
@@ -191,6 +209,7 @@ class CallSignalingService {
     try {
       _channel?.sink.close();
     } catch (_) {}
+    _channel = null;
     isConnected = false;
   }
 }
