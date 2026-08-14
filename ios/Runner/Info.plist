@@ -67,22 +67,22 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Ứng dụng cần truy cập micro để sử dụng tính năng Chat bằng giọng nói.</string>
+	<string>The application needs access to the microphone to make calls and send voice messages.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Ứng dụng cần sử dụng Bluetooth để nhắn tin và đồng bộ dữ liệu P2P ngoại tuyến.</string>
+	<string>The application needs access to Bluetooth to send and receive messages via P2P networking.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Ứng dụng cần sử dụng Bluetooth để quảng bá dịch vụ nhắn tin P2P ngoại tuyến.</string>
+	<string>The application needs access to Bluetooth to broadcast its presence and facilitate P2P messaging.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>bluetooth-central</string>
 		<string>bluetooth-peripheral</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>Ứng dụng cần truy cập Máy ảnh để quét mã QR đăng ký thiết bị và chụp ảnh đính kèm trong tin nhắn.</string>
+	<string>The application needs access to the camera to make video calls, scan QR codes for device registration, and take photos to attach.</string>
 	<key>NFCReaderUsageDescription</key>
-	<string>Ứng dụng cần đọc thẻ NFC để đăng ký thiết bị này với máy chủ iZii.</string>
+	<string>The application needs to read NFC tags to register this device with the iZii server.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Ứng dụng cần truy cập Thư viện ảnh để chọn và gửi ảnh đính kèm trong tin nhắn.</string>
+	<string>The application needs access to the photo library to select and send attached images in messages.</string>
 </dict>
 </plist>
 

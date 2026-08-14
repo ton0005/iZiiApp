@@ -198,6 +198,67 @@ def get_active_session(conn, device_id: str) -> Optional[Dict[str, Any]]:
     }
 
 
+def get_active_session_for_person(conn, identifier: str) -> Optional[Dict[str, Any]]:
+    """
+    Phiên đang mở của MỘT NGƯỜI, trên bất kỳ thiết bị nào.
+
+    VÌ SAO CẦN, tách khỏi [get_active_session]: hai câu hỏi khác nhau.
+
+      • get_active_session(device_id)      → "ai đang cầm máy này?"
+      • get_active_session_for_person(...) → "người này có đang trong ca không?"
+
+    Ràng buộc Alone Worker cần câu thứ hai. Quản lý ngồi laptop tạo công việc
+    và phân công cho công nhân đã điểm danh trên iPad — người làm việc một mình
+    là CÔNG NHÂN, không phải quản lý. Kiểm phiên của máy tạo công việc là kiểm
+    nhầm người, và đó chính là lỗi đã gặp: điểm danh xong trên iPad, laptop vẫn
+    báo "chưa điểm danh".
+
+    [identifier] chấp nhận cả mã nhân viên lẫn tên, vì trường `assignee` của
+    công việc lưu TÊN chứ không lưu mã. So khớp tên không phân biệt hoa thường
+    và bỏ khoảng trắng thừa.
+    """
+    ident = (identifier or "").strip()
+    if not ident:
+        return None
+
+    rows = conn.execute(
+        sql(
+            "SELECT id, device_id, user_id, user_name, department, zone, method, started_at "
+            "FROM work_sessions WHERE ended_at IS NULL "
+            "ORDER BY started_at DESC"
+        )
+    ).fetchall()
+
+    needle = ident.casefold()
+    for row in rows:
+        uid = (row["user_id"] or "").strip()
+        uname = (row["user_name"] or "").strip()
+        if uid.casefold() != needle and uname.casefold() != needle:
+            continue
+
+        # Phiên quá giờ coi như không tồn tại, kể cả khi tác vụ dọn chưa chạy.
+        max_hours = _device_max_hours(conn, row["device_id"])
+        if max_hours is not None:
+            try:
+                started = datetime.fromisoformat(row["started_at"])
+                if datetime.now(timezone.utc) - started > timedelta(hours=max_hours):
+                    continue
+            except Exception:
+                pass
+
+        return {
+            "id": row["id"],
+            "device_id": row["device_id"],
+            "user_id": row["user_id"],
+            "user_name": row["user_name"],
+            "department": row["department"],
+            "zone": row["zone"],
+            "method": row["method"],
+            "started_at": row["started_at"],
+        }
+    return None
+
+
 # ── Mô hình dữ liệu ─────────────────────────────────────────────────────────
 
 class StartSessionPayload(BaseModel):

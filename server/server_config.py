@@ -38,6 +38,15 @@ def _load_env_file():
         os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"),
         os.path.join(os.getcwd(), ".env"),
     ]
+
+    # Thư mục dữ liệu ổn định (ngoài thư mục cài đặt) được ưu tiên CAO NHẤT.
+    # Nhờ vậy secret và cấu hình sống sót qua mỗi bản release, thay vì phải
+    # chép tay .env sang thư mục mới mỗi lần build.
+    try:
+        from database import get_stable_data_dir
+        candidate_paths.insert(0, os.path.join(get_stable_data_dir(), ".env"))
+    except Exception:
+        pass
     if getattr(sys, 'frozen', False):
         # Bản đóng gói PyInstaller: __file__ trỏ vào thư mục giải nén tạm
         # (_MEIxxxx) chứ không phải chỗ đặt .exe, nên hai đường dẫn trên đều

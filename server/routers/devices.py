@@ -13,7 +13,8 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-from dependencies import get_device_repo
+from database import sql
+from dependencies import get_device_repo, open_connection
 from repository.interface import IDeviceRepository
 
 router = APIRouter(prefix="/api/v1/devices", tags=["Device Identity"])
@@ -63,6 +64,48 @@ async def device_heartbeat(body: DeviceHeartbeat,
         raise HTTPException(status_code=404, detail="Device not found in registry")
     
     return {"status": "success", "message": "Heartbeat received"}
+
+
+class DisplayNamePayload(BaseModel):
+    device_id: str
+    display_name: str
+
+
+@router.post("/display-name")
+async def set_display_name(body: DisplayNamePayload,
+                            repo: IDeviceRepository = Depends(get_device_repo)):
+    """
+    Đổi TÊN HIỂN THỊ của một thiết bị — dùng khi có người đăng nhập.
+
+    CỐ Ý chỉ đổi tên, không đụng tới device_id. device_id là khoá định tuyến
+    của Chat/Call (`/call/ws/{id}`, `target_id`, khoá device token); đổi nó
+    giữa chừng làm lệch toàn hệ thống.
+
+    Nhờ vậy danh bạ trên các máy khác hiện "Trần Thị Bích · iPad phòng M1"
+    thay vì mã máy, mà mọi thứ vẫn định tuyến bằng device_id ổn định.
+    """
+    name = (body.display_name or "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="display_name không được rỗng.")
+
+    try:
+        with open_connection() as conn:
+            cur = conn.execute(
+                sql("UPDATE devices SET device_name = ? WHERE device_id = ?"),
+                (name[:120], body.device_id),
+            )
+            conn.commit()
+            if cur.rowcount == 0:
+                raise HTTPException(
+                    status_code=404, detail="Device not found in registry"
+                )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    print(f"👤 [DEVICE] {body.device_id[:16]}… đổi tên hiển thị → '{name}'")
+    return {"status": "success", "display_name": name}
 
 
 @router.get("/online")

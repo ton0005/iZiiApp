@@ -29,11 +29,59 @@ class SettingsService {
     return prefs.getString(_geminiApiKey);
   }
 
+  /// Lưu địa chỉ server do người dùng nhập ở Settings → Sync Server.
+  ///
+  /// ⚠️ LỖI CŨ — đọc kỹ trước khi sửa lại chỗ này:
+  ///
+  /// App có HAI nơi lưu "server đang dùng":
+  ///   1. `sync_server_url`          — ô nhập trong Settings (hàm này)
+  ///   2. `iziiapp_selected_server`  — [ServerConfigService], ghi bởi màn hình
+  ///                                    chọn server và bởi mDNS discovery
+  ///
+  /// [getSyncServerUrl] đọc (2) TRƯỚC, chỉ rơi về (1) khi chưa từng chọn
+  /// server nào. Hậu quả: người dùng gõ địa chỉ mới vào Settings, app vẫn gọi
+  /// địa chỉ CŨ mãi mãi. Ô nhập trở thành vô nghĩa mà không báo lỗi gì.
+  ///
+  /// Đúng triệu chứng đã gặp: trình duyệt trên điện thoại vào
+  /// `http://<ip>:8080/sync/status` ra JSON bình thường, nhưng app thì không
+  /// đăng ký được thiết bị, không đồng bộ, không gọi được — vì nó đang gõ cửa
+  /// một địa chỉ khác. Chat vẫn chạy do đi qua BLE, không cần server.
+  ///
+  /// Nên hàm này phải cập nhật CẢ HAI nơi.
   Future<void> saveSyncServerUrl(String url) async {
+    final clean = url.trim().replaceAll(RegExp(r'/+$'), '');
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_syncServerUrl, url);
+    await prefs.setString(_syncServerUrl, clean);
+
+    final uri = Uri.tryParse(clean);
+    if (uri == null || uri.host.isEmpty) return;
+
+    final scheme = uri.scheme.isEmpty ? 'http' : uri.scheme;
+    final port = uri.hasPort ? uri.port : (scheme == 'https' ? 443 : 8080);
+
+    final cfg = ServerConfigService.instance;
+    await cfg.init();
+    final current = cfg.currentServer;
+
+    // Chưa chọn server nào → nhánh dự phòng trong getSyncServerUrl đã đọc
+    // đúng giá trị vừa lưu, không cần làm gì thêm.
+    if (current == null) return;
+
+    if (current.host == uri.host &&
+        current.port == port &&
+        current.scheme == scheme) {
+      return;
+    }
+
+    await cfg.setCurrentServer(
+      current.copyWith(host: uri.host, port: port, scheme: scheme),
+    );
   }
 
+  /// Địa chỉ server mà MỌI request của app dùng.
+  ///
+  /// Thứ tự ưu tiên giữ nguyên như cũ (server đã chọn thắng), nhưng giờ an
+  /// toàn vì [saveSyncServerUrl] đã đồng bộ hai nơi.
   Future<String> getSyncServerUrl() async {
     final serverConfig = ServerConfigService.instance;
     if (!serverConfig.hasSelectedServer) {
@@ -46,7 +94,39 @@ class SettingsService {
       final prefs = await SharedPreferences.getInstance();
       url = prefs.getString(_syncServerUrl) ?? 'http://10.146.147.160:8080';
     }
-    return url.trim().replaceAll(RegExp(r'/+$'), '');
+    url = url.trim().replaceAll(RegExp(r'/+$'), '');
+
+    // In một lần mỗi khi địa chỉ đổi. Không có dòng này thì "app không kết nối
+    // được nhưng trình duyệt thì được" là một câu đố không có manh mối nào.
+    if (url != _lastResolvedUrl) {
+      _lastResolvedUrl = url;
+      final src = serverConfig.hasSelectedServer ? 'server đã chọn' : 'ô Settings';
+      // ignore: avoid_print
+      print('[Settings] App đang gọi server: $url  (nguồn: $src)');
+    }
+    return url;
+  }
+
+  static String? _lastResolvedUrl;
+
+  static const _loggedInDisplayName = 'izii_logged_in_display_name';
+
+  /// Tên nhân viên đang đăng nhập trên máy này.
+  ///
+  /// CHỈ dùng để hiển thị. Khoá định danh của Chat/Call vẫn luôn là device_id —
+  /// xem [DeviceUserService.applyLoggedInName] để biết vì sao không được đổi.
+  Future<void> saveLoggedInDisplayName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (name.trim().isEmpty) {
+      await prefs.remove(_loggedInDisplayName);
+    } else {
+      await prefs.setString(_loggedInDisplayName, name.trim());
+    }
+  }
+
+  Future<String> getLoggedInDisplayName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_loggedInDisplayName) ?? '';
   }
 
   Future<void> saveSyncToken(String token) async {

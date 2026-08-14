@@ -1991,6 +1991,10 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                     if (jobType == 'alone_worker') {
                       final ok = await ensureCheckedIn(
                         context,
+                        // Người cần đang trong ca là NGƯỜI ĐƯỢC GIAO VIỆC, chứ
+                        // không phải người đang bấm nút. Truyền assignee vào
+                        // để không chặn nhầm quản lý đang ngồi laptop.
+                        assignee: assignee,
                         reason: 'Công việc "Làm việc một mình" cần biết chính xác ai '
                             'đang trong phòng để cảnh báo an toàn có ý nghĩa. '
                             'Vui lòng điểm danh trước.',

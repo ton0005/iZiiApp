@@ -179,6 +179,39 @@ class _ConversationScreenState extends State<ConversationScreen> {
       return;
     }
 
+    // Yêu cầu hệ thống kích hoạt hộp thoại xin quyền Micro & Camera
+    final micStatus = await Permission.microphone.request();
+    if (callType == 'video') {
+      await Permission.camera.request();
+    }
+
+    if (micStatus.isPermanentlyDenied) {
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Cần cấp quyền Micro'),
+            content: const Text(
+                'Ứng dụng cần quyền Micro để thực hiện cuộc gọi. Bạn hãy bấm "Mở Cài đặt" để cho phép iZiiApp sử dụng Micro.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Hủy'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  openAppSettings();
+                },
+                child: const Text('Mở Cài đặt'),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+
     final currentUserName = 'Me';
     final callId = 'call_${DateTime.now().millisecondsSinceEpoch}';
 

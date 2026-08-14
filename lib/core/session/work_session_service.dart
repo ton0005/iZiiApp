@@ -198,6 +198,32 @@ class WorkSessionService {
     }
   }
 
+  /// Người này có đang trong ca không — trên BẤT KỲ thiết bị nào.
+  ///
+  /// Khác với [getCurrent] (hỏi "ai đang cầm máy NÀY"). Dùng khi giao việc cho
+  /// người khác: quản lý ngồi laptop cần biết công nhân đã điểm danh trên iPad
+  /// hay chưa.
+  ///
+  /// [identifier] nhận cả mã nhân viên lẫn tên, vì công việc lưu TÊN người
+  /// được phân công chứ không lưu mã.
+  ///
+  /// Mất mạng thì trả `true` — không chặn sản xuất vì Wi-Fi chập chờn. Server
+  /// vẫn kiểm độc lập ở `/sync/push`, đó mới là ràng buộc thật.
+  Future<bool> isPersonOnShift(String identifier) async {
+    final needle = identifier.trim().toLowerCase();
+    if (needle.isEmpty) return false;
+    try {
+      final sessions = await listActive();
+      return sessions.any((s) {
+        final id = (s['user_id'] ?? '').toString().trim().toLowerCase();
+        final name = (s['user_name'] ?? '').toString().trim().toLowerCase();
+        return id == needle || name == needle;
+      });
+    } catch (_) {
+      return true;
+    }
+  }
+
   /// Nhân viên nào đã được đặt PIN — để màn hình biết có hiện ô nhập PIN không.
   Future<Set<String>> usersWithPin() async {
     try {

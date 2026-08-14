@@ -58,14 +58,95 @@ class DeviceUserService {
           );
 
       await _settings.saveActiveUserId(deviceId);
+
+      // Đã có người đăng nhập từ phiên trước → khôi phục tên của họ.
+      final saved = await _settings.getLoggedInDisplayName();
+      if (saved.isNotEmpty) {
+        await applyLoggedInName(saved);
+      }
       return deviceId;
     } catch (e) {
-      // Không chặn khởi động app chỉ vì tạo User thất bại — Chat sẽ rơi về
-      // danh bạ demo như cũ.
       // ignore: avoid_print
       print('[DeviceUser] Không tạo được User từ thiết bị: $e');
       return null;
     }
+  }
+
+  /// Gắn tên người đang đăng nhập vào danh tính của máy này.
+  ///
+  /// ⚠️ CHỈ ĐỔI TÊN, TUYỆT ĐỐI KHÔNG ĐỔI `User.id`.
+  ///
+  /// `User.id` = `device_id` là khoá định tuyến của cả hệ thống:
+  ///   • `/call/ws/{id}` — socket tín hiệu WebRTC
+  ///   • `target_id` trong mọi gói call_invite / sdp / ice
+  ///   • khoá lưu device token (`getDeviceToken(serverUrl)`)
+  ///   • `actor_device_id` mà server lấy TỪ TOKEN khi ghi audit
+  ///
+  /// Đổi id giữa chừng làm lệch toàn bộ những thứ trên. Đó chính là lỗi đã
+  /// gặp: đăng nhập xong, socket vẫn nằm dưới `izii-d-1093d407` trong khi gói
+  /// tín hiệu mang `user_quill_phan` — không bao giờ khớp, mọi cuộc gọi im
+  /// lặng mà không báo lỗi gì.
+  ///
+  /// Tên hiển thị dạng "Trần Thị Bích · iPad phòng M1" để người nhận biết cả
+  /// người lẫn máy — quan trọng khi một người dùng nhiều máy.
+  Future<void> applyLoggedInName(String employeeName) async {
+    final name = employeeName.trim();
+    if (name.isEmpty) return;
+    try {
+      final identity = await DeviceIdentityService().getOrCreateIdentity();
+      final deviceLabel = identity.deviceName.trim();
+      final display =
+          deviceLabel.isEmpty || deviceLabel == identity.deviceId
+              ? name
+              : '$name · $deviceLabel';
+
+      await (_db.update(_db.users)..where((u) => u.id.equals(identity.deviceId)))
+          .write(UsersCompanion(name: Value(display)));
+
+      await _settings.saveLoggedInDisplayName(name);
+
+      // Đẩy tên mới lên server để các máy khác thấy trong danh bạ.
+      await _pushDisplayName(identity.deviceId, display);
+
+      // ignore: avoid_print
+      print('[DeviceUser] Danh tính giữ nguyên ${identity.deviceId}, '
+          'tên hiển thị → "$display"');
+    } catch (e) {
+      // ignore: avoid_print
+      print('[DeviceUser] Không đặt được tên hiển thị: $e');
+    }
+  }
+
+  /// Xoá tên người đăng nhập, quay về tên máy. Gọi khi đăng xuất / kết ca.
+  Future<void> clearLoggedInName() async {
+    try {
+      final identity = await DeviceIdentityService().getOrCreateIdentity();
+      final fallback = identity.deviceName.isNotEmpty
+          ? identity.deviceName
+          : identity.deviceId;
+      await (_db.update(_db.users)..where((u) => u.id.equals(identity.deviceId)))
+          .write(UsersCompanion(name: Value(fallback)));
+      await _settings.saveLoggedInDisplayName('');
+      await _pushDisplayName(identity.deviceId, fallback);
+    } catch (_) {}
+  }
+
+  /// Báo tên hiển thị mới cho server. Thất bại không sao — tên local vẫn đúng,
+  /// lần đăng ký lại hoặc heartbeat sau sẽ đồng bộ.
+  Future<void> _pushDisplayName(String deviceId, String displayName) async {
+    try {
+      final url =
+          (await _settings.getSyncServerUrl()).replaceAll(RegExp(r'/+$'), '');
+      if (url.isEmpty) return;
+      final token = await _settings.getDeviceToken(url);
+      await _dio.post(
+        '$url/api/v1/devices/display-name',
+        data: {'device_id': deviceId, 'display_name': displayName},
+        options: Options(headers: {
+          if (token != null && token.isNotEmpty) 'X-iZii-Device-Token': token,
+        }),
+      );
+    } catch (_) {}
   }
 
   /// Kéo danh bạ thiết bị từ server và ghi vào bảng `users` local.

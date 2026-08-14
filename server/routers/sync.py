@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Tuple
 from datetime import datetime, timezone
 
-from dependencies import get_sync_repo
+from dependencies import get_sync_repo, open_connection
 from repository.interface import ISyncRepository
 from security_auth import DeviceIdentity, optional_device
 from server_config import CONFIG
@@ -144,23 +144,43 @@ def _assert_room_numbers_unique(repo: ISyncRepository, mutations: List[MutationM
         index[key] = record_id
 
 
+def _job_assignee(data: dict) -> str:
+    """Tên/mã người được phân công. Chấp nhận vài cách đặt tên trường."""
+    for key in ("assignee", "assigned_to", "assignee_id", "employee_id", "user_id"):
+        val = data.get(key)
+        if val is not None and str(val).strip():
+            return str(val).strip()
+    return ""
+
+
 def _assert_alone_worker_has_session(
+    conn,
     mutations: List[MutationModel],
     device: Optional[DeviceIdentity],
 ) -> None:
     """
-    Công việc Alone Worker BẮT BUỘC phải có phiên làm việc đang mở (G1).
+    Alone Worker BẮT BUỘC xác định được NGƯỜI SẼ LÀM VIỆC MỘT MÌNH (G1).
 
     Đây là ràng buộc quan trọng nhất của toàn bộ tính năng điểm danh. Alone
     Worker là cơ chế an toàn lao động: khi công nhân quá giờ trong phòng kín,
     hệ thống phải báo được ĐÍCH DANH ai để đi tìm.
 
-    Nếu chấp nhận tạo công việc mà không biết ai đang làm, cảnh báo sẽ chỉ nói
-    được "máy nào" — vô dụng trong tình huống cần cứu người, và không có giá trị
-    trong điều tra tai nạn.
+    ⚠️ SỬA LỖI — ai mới là người cần kiểm:
 
-    Chỉ ràng buộc đúng loại công việc này. Các công việc khác (tưới, phun thuốc)
-    vẫn tạo được bình thường để không cản trở sản xuất.
+    Bản cũ kiểm phiên của THIẾT BỊ GỬI YÊU CẦU. Sai, vì người tạo công việc và
+    người thực hiện thường là hai người khác nhau: quản lý ngồi laptop phân
+    công cho công nhân đã điểm danh trên iPad. Người ở trong phòng kín là công
+    nhân, không phải quản lý. Kiểm phiên của laptop là kiểm nhầm người — và
+    triệu chứng đúng như đã gặp: điểm danh xong, banner hiện xanh trên iPad,
+    nhưng laptop vẫn báo "người này chưa điểm danh".
+
+    Quy tắc đúng:
+      1. Có phân công cho ai → NGƯỜI ĐÓ phải đang trong ca (trên máy bất kỳ).
+      2. Không phân công cho ai → quay về kiểm danh tính của thiết bị gửi,
+         tức là người đang cầm máy tự nhận việc.
+
+    Chỉ ràng buộc đúng loại công việc này. Các công việc khác (tưới, phun
+    thuốc) vẫn tạo được bình thường để không cản trở sản xuất.
     """
     alone_jobs = [
         m for m in mutations
@@ -171,23 +191,61 @@ def _assert_alone_worker_has_session(
     if not alone_jobs:
         return
 
-    # Điều kiện đúng là "có xác định được ĐÍCH DANH ai không", chứ không phải
-    # "có phiên hay không". Máy cá nhân của Manager/Supervisor đã biết chủ máy
-    # từ lúc cấp nên thoả điều kiện mà không cần điểm danh — bắt họ điểm danh
-    # trên iPhone riêng là thủ tục vô nghĩa, không tăng thêm chút an toàn nào.
-    if device is None or not device.identity_is_known:
-        print("⛔ [SESSION] Từ chối tạo Alone Worker: không xác định được người thực hiện.")
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "error": "no_active_work_session",
-                "message": (
-                    "Chưa điểm danh đầu ca nên không tạo được công việc Làm việc một mình. "
-                    "Cảnh báo an toàn cần biết ĐÍCH DANH ai đang trong phòng."
-                ),
-                "action": "check_in_required",
-            },
-        )
+    from routers.sessions import get_active_session_for_person
+
+    for job in alone_jobs:
+        assignee = _job_assignee(job.data)
+
+        if assignee:
+            session = None
+            try:
+                session = get_active_session_for_person(conn, assignee)
+            except Exception as e:
+                # Không chặn sản xuất vì lỗi hạ tầng — nhưng phải ghi log to.
+                print(f"⚠️  [SESSION] Không tra được phiên của '{assignee}': {e}")
+                continue
+
+            if session is None:
+                print(
+                    f"⛔ [SESSION] Từ chối Alone Worker: '{assignee}' chưa điểm danh "
+                    f"(hoặc phiên đã hết hạn)."
+                )
+                raise HTTPException(
+                    status_code=409,
+                    detail={
+                        "error": "assignee_not_checked_in",
+                        "assignee": assignee,
+                        "message": (
+                            f"'{assignee}' chưa điểm danh đầu ca nên không giao được "
+                            f"công việc Làm việc một mình. Cảnh báo an toàn cần biết "
+                            f"ĐÍCH DANH ai đang trong phòng."
+                        ),
+                        "action": "assignee_check_in_required",
+                    },
+                )
+
+            print(
+                f"✅ [SESSION] '{session['user_name'] or session['user_id']}' đang "
+                f"trong ca từ {session['started_at']} — cho phép giao Alone Worker."
+            )
+            continue
+
+        # Không phân công cho ai → người cầm máy tự nhận việc. Máy cá nhân của
+        # Manager/Supervisor đã biết chủ máy từ lúc cấp nên thoả điều kiện mà
+        # không cần điểm danh.
+        if device is None or not device.identity_is_known:
+            print("⛔ [SESSION] Từ chối Alone Worker: không xác định được người thực hiện.")
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "error": "no_active_work_session",
+                    "message": (
+                        "Chưa điểm danh đầu ca nên không tạo được công việc Làm việc "
+                        "một mình. Cảnh báo an toàn cần biết ĐÍCH DANH ai đang trong phòng."
+                    ),
+                    "action": "check_in_required",
+                },
+            )
 
 
 @router.post("/push")
@@ -207,7 +265,10 @@ async def sync_push(
     # nguyên vẹn, nên đặt ngoài khối try/except bên dưới (khối đó bọc mọi lỗi
     # thành 500).
     _assert_room_numbers_unique(repo, payload.mutations)
-    _assert_alone_worker_has_session(payload.mutations, device)
+    # Cần connection riêng để tra phiên của NGƯỜI ĐƯỢC PHÂN CÔNG (có thể đang
+    # điểm danh trên một máy khác hoàn toàn).
+    with open_connection() as _session_conn:
+        _assert_alone_worker_has_session(_session_conn, payload.mutations, device)
 
     try:
         mutations_dicts = []

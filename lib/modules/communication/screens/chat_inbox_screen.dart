@@ -700,25 +700,21 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
           Expanded(
             child: BlocBuilder<ChatBloc, ChatState>(
               builder: (context, state) {
+                // Tên hiển thị lấy từ danh bạ (đã đồng bộ từ server). Không
+                // còn ánh xạ cứng theo id demo — id giờ luôn là device_id, và
+                // tên đi theo người đang đăng nhập trên máy đó.
                 final currentUserId = state.currentUserId;
-                String currentName = 'Tôi (Demo User)';
-                for (var user in state.contacts) {
-                  if (user.id == currentUserId) {
-                    currentName = user.name;
-                    break;
+                String currentName = state.myDisplayName;
+                if (currentName.isEmpty) {
+                  for (var user in state.contacts) {
+                    if (user.id == currentUserId) {
+                      currentName = user.name;
+                      break;
+                    }
                   }
                 }
-                if (currentUserId == 'user_an_nguyen') {
-                  currentName = 'Nguyễn Văn An';
-                }
-                if (currentUserId == 'user_huong_vo') {
-                  currentName = 'Võ Thị Hương';
-                }
-                if (currentUserId == 'user_bich_tran') {
-                  currentName = 'Trần Thị Bích';
-                }
-                if (currentUserId == 'user_quill_phan') {
-                  currentName = 'Quill Phan';
+                if (currentName.isEmpty) {
+                  currentName = currentUserId ?? 'Máy này';
                 }
 
                 return Text(

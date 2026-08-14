@@ -88,8 +88,18 @@ class SendTypingStateEvent extends ChatEvent {
 class SwitchUserEvent extends ChatEvent {
   final String userId;
   const SwitchUserEvent(this.userId);
+
   @override
   List<Object?> get props => [userId];
+}
+
+/// Tên hiển thị của máy vừa đổi (đăng nhập / đăng xuất / điểm danh).
+///
+/// KHÔNG đổi khoá định danh — chỉ nạp lại danh bạ để giao diện hiện tên mới.
+class RefreshIdentityEvent extends ChatEvent {
+  const RefreshIdentityEvent();
+  @override
+  List<Object?> get props => const [];
 }
 
 /// Track 3: Send an E2EE-encrypted message to all recipient devices
@@ -149,7 +159,14 @@ class ChatState extends Equatable {
   final List<User> contacts;
   final List<ChatMessage> activeMessages;
   final String? activeConversationId;
+  /// Khoá định danh của máy này — LUÔN là `device_id`, không đổi khi đăng nhập.
   final String? currentUserId;
+
+  /// Tên hiển thị của máy này: tên người đang đăng nhập nếu có, không thì tên
+  /// máy. Tách khỏi [currentUserId] vì tên thay đổi còn khoá định tuyến thì
+  /// không được phép đổi.
+  final String myDisplayName;
+
   final Map<String, ChatPresenceState> userPresenceMap;
   final Map<String, List<String>>
       typingUsersMap; // Map<ConversationId, List<UserId>>
@@ -165,6 +182,7 @@ class ChatState extends Equatable {
     this.activeMessages = const [],
     this.activeConversationId,
     this.currentUserId,
+    this.myDisplayName = '',
     this.userPresenceMap = const {},
     this.typingUsersMap = const {},
     this.isLoading = false,
@@ -180,6 +198,7 @@ class ChatState extends Equatable {
     List<ChatMessage>? activeMessages,
     String? activeConversationId,
     String? currentUserId,
+    String? myDisplayName,
     Map<String, ChatPresenceState>? userPresenceMap,
     Map<String, List<String>>? typingUsersMap,
     bool? isLoading,
@@ -194,6 +213,7 @@ class ChatState extends Equatable {
       activeMessages: activeMessages ?? this.activeMessages,
       activeConversationId: activeConversationId ?? this.activeConversationId,
       currentUserId: currentUserId ?? this.currentUserId,
+      myDisplayName: myDisplayName ?? this.myDisplayName,
       userPresenceMap: userPresenceMap ?? this.userPresenceMap,
       typingUsersMap: typingUsersMap ?? this.typingUsersMap,
       isLoading: isLoading ?? this.isLoading,
@@ -211,6 +231,7 @@ class ChatState extends Equatable {
         activeMessages,
         activeConversationId,
         currentUserId,
+        myDisplayName,
         userPresenceMap,
         typingUsersMap,
         isLoading,
@@ -256,6 +277,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<ReceivedWsEvent>(_onReceivedWs);
     on<SendTypingStateEvent>(_onSendTypingState);
     on<SwitchUserEvent>(_onSwitchUser);
+    on<RefreshIdentityEvent>(_onRefreshIdentity);
     on<SendEncryptedMessageEvent>(_onSendEncryptedMessage);
     on<PullEncryptedMessagesEvent>(_onPullEncryptedMessages);
     on<RefreshPresenceEvent>(_onRefreshPresence);
@@ -269,68 +291,28 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   Future<void> _init() async {
     try {
-      const defaultUserId = 'default_user';
-      await _db.into(_db.users).insert(
-            User(
-              id: defaultUserId,
-              name: 'Tôi (Demo User)',
-              type: 'both',
-              kycStatus: 'verified',
-              createdAt: DateTime.now(),
-            ),
-            mode: InsertMode.insertOrIgnore,
-          );
+      // Dọn tài khoản demo TRƯỚC khi làm bất cứ việc gì khác. Chúng dùng chung
+      // không gian định danh với nhân viên thật nên gây lẫn danh bạ, và từng
+      // bị dùng làm khoá định tuyến Chat/Call gây lệch với device_id.
+      await _chatRepository.purgeDemoAccounts();
 
-      final mockContacts = [
-        User(
-          id: 'user_an_nguyen',
-          name: 'Nguyễn Văn An',
-          email: 'an.nguyen@izii.net',
-          phone: '0901234567',
-          type: 'provider',
-          kycStatus: 'verified',
-          createdAt: DateTime.now(),
-        ),
-        User(
-          id: 'user_huong_vo',
-          name: 'Võ Thị Hương',
-          email: 'huong.vo@izii.net',
-          phone: '0907654321',
-          type: 'provider',
-          kycStatus: 'verified',
-          createdAt: DateTime.now(),
-        ),
-        User(
-          id: 'user_bich_tran',
-          name: 'Trần Thị Bích',
-          email: 'bich.tran@izii.net',
-          phone: '0988888888',
-          type: 'provider',
-          kycStatus: 'verified',
-          createdAt: DateTime.now(),
-        ),
-        User(
-          id: 'user_quill_phan',
-          name: 'Quill Phan',
-          email: 'Quill.Phan@iziiapp.com',
-          phone: '0488951392',
-          type: 'provider',
-          kycStatus: 'verified',
-          createdAt: DateTime.now(),
-        ),
-      ];
-      for (var mock in mockContacts) {
-        await _db.into(_db.users).insert(mock, mode: InsertMode.insertOrIgnore);
-      }
-
-      // Danh tính của máy này = device_id (mô hình "một thiết bị = một User").
-      // ensureLocalUser() tạo User tương ứng và đặt luôn làm user hoạt động,
-      // nên Chat gửi đi dưới đúng danh tính mà server xác thực được qua token.
-      // Thất bại (chưa có danh tính thiết bị) thì rơi về user demo như cũ.
+      // Danh tính của máy này = device_id, và KHÔNG BAO GIỜ đổi.
+      //
+      // Đây là khoá định tuyến của cả Chat lẫn Call: `/call/ws/{id}`,
+      // `target_id` trong gói tín hiệu, và khoá lưu device token đều dùng giá
+      // trị này. Đăng nhập chỉ đổi TÊN HIỂN THỊ, không đổi id — đổi id giữa
+      // chừng là nguyên nhân của lỗi "gọi được đi nhưng không ai nhận được".
       final deviceUserId = await DeviceUserService().ensureLocalUser();
-      final activeUserId = deviceUserId ?? await SettingsService().getActiveUserId();
-      add(SwitchUserEvent(activeUserId));
-    } catch (_) {}
+      if (deviceUserId != null) {
+        add(SwitchUserEvent(deviceUserId));
+      } else {
+        // Chưa lấy được danh tính thiết bị (hiếm — chỉ khi secure storage lỗi).
+        // Không bịa user demo: để trống còn hơn gửi tin dưới danh tính giả.
+        print('[Chat] Chưa có danh tính thiết bị — Chat/Call tạm thời chưa sẵn sàng.');
+      }
+    } catch (e) {
+      print('[Chat] Lỗi khởi tạo danh tính: $e');
+    }
 
     // Listen to connection state
     _wsConnSubscription = _wsService.connectionStateStream.listen((connected) {
@@ -794,6 +776,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         'is_typing': event.isTyping,
       },
     ));
+  }
+
+  /// Tên hiển thị đổi — nạp lại danh bạ, KHÔNG đụng tới khoá định danh.
+  Future<void> _onRefreshIdentity(
+    RefreshIdentityEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final name = await SettingsService().getLoggedInDisplayName();
+    emit(state.copyWith(myDisplayName: name));
+    add(LoadContactsEvent());
+    add(LoadConversationsEvent());
   }
 
   Future<void> _onSwitchUser(

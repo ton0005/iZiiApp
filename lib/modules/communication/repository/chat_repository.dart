@@ -223,84 +223,83 @@ class ChatRepository {
     await _db.into(_db.outboxMutations).insert(mutation);
   }
 
-  // Fetch all users that are shared with or inside the trust network
-  Future<List<User>> getReachableContacts(String currentUserId) async {
-    // ── Ưu tiên danh bạ THIẾT BỊ THẬT ───────────────────────────────────────
-    //
-    // Mô hình "một thiết bị = một User": mỗi máy đã đăng ký (qua QR/NFC) là một
-    // danh tính thật, `User.id` chính là `device_id` mà server xác thực được
-    // qua token. Khác hẳn User demo — vốn ai cũng có thể tự nhận là bất kỳ ai.
-    //
-    // Chỉ nạp danh bạ demo khi CHƯA có thiết bị nào đăng ký, để môi trường thử
-    // nghiệm vẫn có người để chat.
+  /// Mã của các tài khoản demo từng được seed cứng trong code.
+  ///
+  /// Giữ lại danh sách này CHỈ để dọn dẹp — không bao giờ tạo mới nữa. Xem
+  /// [purgeDemoAccounts].
+  static const demoUserIds = <String>[
+    'user_an_nguyen',
+    'user_huong_vo',
+    'user_bich_tran',
+    'user_quill_phan',
+    'default_user',
+  ];
+
+  /// Xoá sạch tài khoản demo và mọi dấu vết của chúng khỏi máy này.
+  ///
+  /// VÌ SAO PHẢI XOÁ CHỨ KHÔNG CHỈ NGỪNG TẠO: bốn tài khoản demo dùng chung
+  /// không gian định danh với nhân viên thật (`user_quill_phan` vs `EMP007`),
+  /// nên danh bạ lẫn lộn thật/giả và tin nhắn gửi nhầm người. Nguy hiểm hơn,
+  /// chúng từng bị dùng làm khoá định tuyến cho Chat/Call, gây lệch namespace
+  /// với `device_id` — lỗi đã tốn nhiều ngày để lần ra.
+  ///
+  /// Chạy một lần lúc khởi động, idempotent.
+  Future<int> purgeDemoAccounts() async {
+    var removed = 0;
     try {
-      final synced = await DeviceUserService().syncDirectory();
-      if (synced > 0) {
-        final real = _db.select(_db.users)
-          ..where((u) => u.id.equals(currentUserId).not());
-        return real.get();
+      // Xoá tin nhắn và hội thoại dính tới tài khoản demo trước, để không còn
+      // bản ghi mồ côi trỏ vào user đã biến mất.
+      final demoParticipants = await (_db.select(_db.chatParticipants)
+            ..where((p) => p.userId.isIn(demoUserIds)))
+          .get();
+
+      final convoIds = demoParticipants.map((p) => p.conversationId).toSet();
+
+      for (final convoId in convoIds) {
+        await (_db.delete(_db.chatMessages)
+              ..where((m) => m.conversationId.equals(convoId)))
+            .go();
+        await (_db.delete(_db.chatParticipants)
+              ..where((p) => p.conversationId.equals(convoId)))
+            .go();
+        await (_db.delete(_db.chatConversations)
+              ..where((c) => c.id.equals(convoId)))
+            .go();
       }
-    } catch (_) {
-      // Mất mạng hoặc server bản cũ chưa có /devices/directory → rơi xuống
-      // danh bạ demo bên dưới.
+
+      await (_db.delete(_db.chatMessages)
+            ..where((m) => m.senderId.isIn(demoUserIds)))
+          .go();
+
+      removed = await (_db.delete(_db.users)
+            ..where((u) => u.id.isIn(demoUserIds)))
+          .go();
+
+      if (removed > 0) {
+        print('[Chat] Đã xoá $removed tài khoản demo và dữ liệu liên quan.');
+      }
+    } catch (e) {
+      print('[Chat] Lỗi khi dọn dẹp tài khoản demo: $e');
     }
+    return removed;
+  }
 
-    // ── Fallback: danh bạ demo ──────────────────────────────────────────────
-    await _db.into(_db.users).insert(
-          User(
-            id: 'default_user',
-            name: 'Tôi (Demo User)',
-            type: 'both',
-            kycStatus: 'verified',
-            createdAt: DateTime.now(),
-          ),
-          mode: InsertMode.insertOrIgnore,
-        );
-
-    final mockContacts = [
-      User(
-        id: 'user_an_nguyen',
-        name: 'Nguyễn Văn An',
-        email: 'an.nguyen@izii.net',
-        phone: '0901234567',
-        type: 'provider',
-        kycStatus: 'verified',
-        createdAt: DateTime.now(),
-      ),
-      User(
-        id: 'user_huong_vo',
-        name: 'Võ Thị Hương',
-        email: 'huong.vo@izii.net',
-        phone: '0907654321',
-        type: 'provider',
-        kycStatus: 'verified',
-        createdAt: DateTime.now(),
-      ),
-      User(
-        id: 'user_bich_tran',
-        name: 'Trần Thị Bích',
-        email: 'bich.tran@izii.net',
-        phone: '0988888888',
-        type: 'provider',
-        kycStatus: 'verified',
-        createdAt: DateTime.now(),
-      ),
-      User(
-        id: 'user_quill_phan',
-        name: 'Quill Phan',
-        email: 'Quill.Phan@iziiapp.com',
-        phone: '0488951392',
-        type: 'provider',
-        kycStatus: 'verified',
-        createdAt: DateTime.now(),
-      ),
-    ];
-    for (var mock in mockContacts) {
-      await _db.into(_db.users).insert(mock, mode: InsertMode.insertOrIgnore);
+  /// Danh bạ: CHỈ các thiết bị thật đã đăng ký với server.
+  ///
+  /// Không còn nhánh dự phòng bằng tài khoản demo. Danh bạ rỗng là trạng thái
+  /// hợp lệ và có ý nghĩa — nó nói đúng sự thật: chưa có máy nào khác đăng ký.
+  /// Bịa ra vài cái tên để màn hình đỡ trống chỉ khiến người dùng nhắn cho
+  /// người không tồn tại.
+  Future<List<User>> getReachableContacts(String currentUserId) async {
+    try {
+      await DeviceUserService().syncDirectory();
+    } catch (_) {
+      // Mất mạng → dùng bản danh bạ đã đồng bộ lần trước, còn hơn là bịa.
     }
 
     final query = _db.select(_db.users)
-      ..where((u) => u.id.equals(currentUserId).not());
+      ..where((u) => u.id.equals(currentUserId).not())
+      ..where((u) => u.id.isIn(demoUserIds).not());
     return query.get();
   }
 

@@ -254,6 +254,50 @@ async def _peer_sync_loop() -> None:
 #  Application Lifespan (replaces deprecated @app.on_event)
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _print_reachable_urls(port: int = 8080) -> None:
+    """
+    In ra địa chỉ mà ĐIỆN THOẠI cần nhập vào Settings → Sync Server.
+
+    VÌ SAO CẦN: máy chạy server đổi IP mỗi lần vào mạng khác (log 13/08 cho
+    thấy client tới từ 10.107.156.x rồi 10.177.11.x ở các phiên khác nhau).
+    Điện thoại giữ URL cũ thì im lặng không kết nối được, và triệu chứng duy
+    nhất là "server không thấy thiết bị nào" — rất khó lần ra.
+    """
+    import socket
+
+    addrs = set()
+    try:
+        hostname = socket.gethostname()
+        for info in socket.getaddrinfo(hostname, None, socket.AF_INET):
+            ip = info[4][0]
+            if not ip.startswith("127."):
+                addrs.add(ip)
+    except Exception:
+        pass
+
+    # Cách chắc ăn hơn khi máy có nhiều card mạng: hỏi hệ điều hành xem nó
+    # dùng địa chỉ nào để đi ra ngoài.
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        addrs.add(s.getsockname()[0])
+        s.close()
+    except Exception:
+        pass
+
+    if not addrs:
+        print("⚠️  [MẠNG] Không xác định được địa chỉ LAN của máy này.")
+        return
+
+    print("📱 [MẠNG] Địa chỉ để nhập vào Settings → Sync Server trên điện thoại:")
+    for ip in sorted(addrs):
+        print(f"      http://{ip}:{port}")
+    print("      Kiểm tra nhanh: mở địa chỉ đó + /sync/status trên trình duyệt")
+    print("      của điện thoại. Không ra JSON nghĩa là điện thoại KHÔNG tới")
+    print("      được server — kiểm tra tường lửa Windows và xem hai máy có")
+    print("      cùng một mạng không.")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global discovery
@@ -270,6 +314,7 @@ async def lifespan(app: FastAPI):
     print(f"🗄️  Database backend: {CONFIG.db_backend}")
     print(describe_tls())
     print(describe_scopes())
+    _print_reachable_urls()
 
     discovery = ServerDiscovery(port=8080)
     try:

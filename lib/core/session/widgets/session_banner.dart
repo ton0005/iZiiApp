@@ -211,8 +211,44 @@ class _SessionBannerState extends State<SessionBanner> {
 Future<bool> ensureCheckedIn(
   BuildContext context, {
   String? reason,
+  String? assignee,
 }) async {
   final service = WorkSessionService();
+
+  // Có phân công cho người khác thì NGƯỜI ĐÓ mới là người cần đang trong ca,
+  // không phải người đang cầm máy. Quản lý ngồi laptop giao việc cho công nhân
+  // đã điểm danh trên iPad — bắt quản lý điểm danh ở đây là chặn nhầm người.
+  //
+  // Kiểm bằng danh sách "ai đang trong ca" lấy từ server, vì người được phân
+  // công có thể đang ở một thiết bị hoàn toàn khác.
+  if (assignee != null && assignee.trim().isNotEmpty) {
+    final ok = await service.isPersonOnShift(assignee.trim());
+    if (ok) return true;
+    if (!context.mounted) return false;
+
+    // Không tự mở màn hình điểm danh: người cần điểm danh không ngồi ở đây.
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Người được giao chưa điểm danh'),
+        content: Text(
+          '"$assignee" chưa điểm danh đầu ca.\n\n'
+          'Công việc Làm việc một mình cần biết đích danh ai đang trong phòng, '
+          'nên chỉ giao được cho người đã vào ca. Hãy nhờ họ điểm danh trên '
+          'máy của mình rồi thử lại.',
+          style: const TextStyle(fontSize: 13, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Đã hiểu'),
+          ),
+        ],
+      ),
+    );
+    return false;
+  }
+
   final current = await service.getCurrent(force: true);
   if (current != null) return true;
 

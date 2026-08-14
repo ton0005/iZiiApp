@@ -1,18 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
     <!-- WebRTC (gọi thoại/video).
-
          MODIFY_AUDIO_SETTINGS: flutter_webrtc cần quyền này để chuyển âm thanh
          giữa loa ngoài, loa nghe và tai nghe Bluetooth. Thiếu nó thì cuộc gọi
-         nối được nhưng không nghe thấy gì.
-
-         ACCESS_NETWORK_STATE + ACCESS_WIFI_STATE: NetworkMonitor của libwebrtc
-         dùng hai quyền này để liệt kê giao diện mạng khi thu thập ICE candidate.
-         Thiếu là ICE không tìm được đường và báo "không kết nối được" — đúng
-         triệu chứng trên máy Samsung. Đây là quyền normal, hệ thống tự cấp khi
-         cài, KHÔNG cần hỏi người dùng. -->
+         nối được nhưng không nghe thấy gì. -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>

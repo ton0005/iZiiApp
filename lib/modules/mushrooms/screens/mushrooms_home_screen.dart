@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/theme/izii_colors.dart';
 import '../../../core/enrollment/widgets/device_quick_actions_fab.dart';
+import '../../../core/enrollment/device_user_service.dart';
 import '../../../core/session/widgets/session_banner.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
@@ -51,13 +52,37 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           _isAuthenticated = true;
           _currentEmployeeId = empId;
         });
-        try {
-          context.read<ChatBloc>().add(SwitchUserEvent(empId));
-        } catch (_) {}
+        // Đăng nhập đổi TÊN HIỂN THỊ, KHÔNG đổi khoá định danh.
+        //
+        // Trước đây chỗ này gọi SwitchUserEvent(empId) — biến danh tính Chat
+        // từ device_id thành mã nhân viên. Hậu quả: `/call/ws/{device_id}` đã
+        // mở từ trước vẫn nằm dưới id cũ, còn gói tín hiệu thì mang id mới,
+        // hai bên không bao giờ khớp và mọi cuộc gọi im lặng. Xem
+        // DeviceUserService.applyLoggedInName để biết vì sao id phải cố định.
+        _applyEmployeeDisplayName(empId);
         context.read<MushroomsBloc>().add(LoadRoomsEvent());
         _loadMushroomData();
       }
     }
+  }
+
+  /// Gắn tên nhân viên đang đăng nhập vào danh tính thiết bị.
+  Future<void> _applyEmployeeDisplayName(String empId) async {
+    try {
+      final employees = await MushroomsRepository().getEmployees();
+      final emp = employees.firstWhere(
+        (e) => (e['id'] ?? '').toString() == empId,
+        orElse: () => <String, dynamic>{},
+      );
+      final name = (emp['name'] ?? '').toString();
+      if (name.isEmpty) return;
+      await DeviceUserService().applyLoggedInName(name);
+      if (mounted) {
+        try {
+          context.read<ChatBloc>().add(RefreshIdentityEvent());
+        } catch (_) {}
+      }
+    } catch (_) {}
   }
 
   Future<void> _handleLogout() async {
@@ -405,9 +430,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             _isAuthenticated = true;
             _currentEmployeeId = empId;
           });
-          try {
-            context.read<ChatBloc>().add(SwitchUserEvent(empId));
-          } catch (_) {}
+          // Xem chú thích ở _checkAuth: chỉ đổi tên hiển thị, giữ nguyên id.
+          _applyEmployeeDisplayName(empId);
           context.read<MushroomsBloc>().add(LoadRoomsEvent());
           _loadMushroomData();
         },
