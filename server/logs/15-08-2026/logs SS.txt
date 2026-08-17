@@ -1,0 +1,952 @@
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [BleDiscovery] BlePeripheral initialized successfully.
+I/flutter (14675): [BleDiscovery] Waiting for Bluetooth adapter to be powered on...
+I/flutter (14675): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (14675): [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (14675): [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: null
+I/flutter (14675): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -54
+I/flutter (14675): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter (14675): [BleDiscovery] BLE Scan stopped.
+I/flutter (14675): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter (14675): [BleDiscovery] Advertising status update: advertising=true, error=null
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [DeviceDiscovery] ❌ Registration failed: Receive timeout
+I/flutter (14675): [DeviceDiscovery] Heartbeat stopped
+I/flutter (14675): [DeviceDiscovery] Starting heartbeat (every 30s)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [BleDiscovery] Connection or authentication failed: FlutterBluePlusException | requestMtu | fbp-code: 1 | Timed out after 15s
+I/flutter (14675): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (14675): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -54
+I/flutter (14675): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter (14675): [BleDiscovery] BLE Scan stopped.
+I/flutter (14675): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Receive timeout
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [BleDiscovery] Connection or authentication failed: FlutterBluePlusException | requestMtu | fbp-code: 1 | Timed out after 15s
+I/flutter (14675): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Đang gửi 1 thay đổi lên server...
+I/flutter (14675): [SyncService]    📦 chat_messages → insert
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [SyncService] ✅ PUSH thành công! Server đã nhận 1 thay đổi.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService]    🔄 chat_messages → insert: id=733027f4-9b13-4402-85d3-29dfb6da4665
+I/flutter (14675): [SyncService] 📥 Trang 1: nhận 1 cập nhật
+I/flutter (14675): [SyncService] ✅ Đã ghi 1 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [BleDiscovery] GATT Server client disconnected: 68:3E:C0:82:B6:3B. Cleaned up cache.
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [BleDiscovery] BLE Scan stopped.
+I/flutter (14675): [BleDiscovery] Stopped BLE Advertising.
+I/flutter (14675): [BleDiscovery] Advertising status update: advertising=false, error=null
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: WebSocketException: Connection to 'https://h1p2lzvf-8080.aue.devtunnels.ms:0/chat?token=iZiiServerSecretKey2026#' was not upgraded to websocket
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [ChatWS] Connected successfully.
+I/flutter (14675): [ChatWS] Sent event: presence_update
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Received event: typing_state
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Received event: typing_state
+I/flutter (14675): [ChatWS] Received event: send_message
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Receive timeout
+I/flutter (14675): [ChatWS] Sent event: typing_state
+I/flutter (14675): [ChatWS] Sent event: typing_state
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Sent event: typing_state
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [ChatWS] Sent event: typing_state
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Sent event: send_message
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [DeviceUser] Token cũ không còn hợp lệ (server đã dựng lại?) — đã xoá. Máy cần quét mã đăng ký mới.
+I/flutter (14675): [DeviceUser] Danh tính giữ nguyên izii-d-dd43cd39, tên hiển thị → "Vinh Phan · iZii-android-mrrx5uiz"
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Settings] Đã chuyển device token từ "http://10.107.156.38:8080" sang "https://h1p2lzvf-8080.aue.devtunnels.ms".
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Receive timeout
+I/flutter (14675): [ChatWS] Connection closed.
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: DioException [unknown]: null
+I/flutter (14675): Error: HttpException: Software caused connection abort, uri = https://h1p2lzvf-8080.aue.devtunnels.ms/api/v1/devices/online?exclude_device_id=izii-d-dd43cd39
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Connection error – is the server running?
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Connected successfully.
+I/flutter (14675): [ChatWS] Sent event: presence_update
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  555555 → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced, 555555=onlineSynced
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 2 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [DeviceUser] Danh tính giữ nguyên izii-d-dd43cd39, tên hiển thị → "Vinh Phan · iZii-android-mrrx5uiz"
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Receive timeout
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  555555 → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced, 555555=onlineSynced
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 2 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> insert
+I/flutter (14675): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter (14675): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: grow_rooms -> update
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (14675): [SyncService]    📦 tasks → insert
+I/flutter (14675): [SyncService]    📦 mushroom_jobs → insert
+I/flutter (14675): [SyncService]    📦 grow_rooms → update
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] ❌ Lỗi kết nối tới server (https://h1p2lzvf-8080.aue.devtunnels.ms):
+I/flutter (14675): [SyncService]    → The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Đang gửi 3 thay đổi lên server...
+I/flutter (14675): [SyncService]    📦 tasks → insert
+I/flutter (14675): [SyncService]    📦 mushroom_jobs → insert
+I/flutter (14675): [SyncService]    📦 grow_rooms → update
+I/flutter (14675): [ChatWS] Received event: event_reaction
+I/flutter (14675): [ChatWS] Received event: event_reaction
+I/flutter (14675): [ChatWS] Real-time event reaction received: {id: 165d2b6e-416a-485d-8c3a-f90909fb65ba, project_id: 87639459-fe26-4070-b58d-d4dabea6ed1a, title: FILLING (Room 29), description: V, status: todo, priority: medium, due_date: 2026-08-15T07:00:00.000, created_at: 2026-08-15T15:55:52.182778}
+I/flutter (14675): [ChatWS] Real-time event reaction received: {id: 66aaf03b-9d80-4b04-83b8-5e2dee073148, room_id: room_29, job_type: filling, name: FILLING, status: in_progress, assignee: , priority: normal, scheduled_at: 2026-08-15T07:00:00.000, plan_details: null, prochloraz_rate: null, linked_task_id: 165d2b6e-416a-485d-8c3a-f90909fb65ba, started_at: 2026-08-15T15:55:52.199897, created_at: 2026-08-15T15:55:52.199906}
+I/flutter (14675): [ChatWS] Received event: event_reaction
+I/flutter (14675): [ChatWS] Received event: sync_trigger
+I/flutter (14675): [ChatWS] Real-time event reaction received: {id: room_29, status: active, current_stage: filling, updated_at: 2026-08-15T15:55:52.224999}
+I/flutter (14675): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (14675): [SyncService] ✅ PUSH thành công! Server đã nhận 3 thay đổi.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService]    🔄 tasks → insert: id=165d2b6e-416a-485d-8c3a-f90909fb65ba
+I/flutter (14675): [SyncService]    🔄 mushroom_jobs → insert: id=66aaf03b-9d80-4b04-83b8-5e2dee073148
+I/flutter (14675): [SyncService]    🔄 grow_rooms → update: id=room_29
+I/flutter (14675): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter (14675): [SyncService] ✅ Đã ghi 3 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  555555 → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=offline, 555555=onlineSynced
+I/flutter (14675): [ChatWS] Received event: event_reaction
+I/flutter (14675): [ChatWS] Real-time event reaction received: {id: 83f42205-c387-4bfb-a54e-69f46f03c658, project_id: 7ab9b49a-24b6-4cd1-b7c3-61d253d9771b, title: WATERING (Room 31), description: , status: todo, priority: medium, due_date: 2026-08-15T15:56:14.921404, created_at: 2026-08-15T15:56:14.936326}
+I/flutter (14675): [ChatWS] Received event: event_reaction
+I/flutter (14675): [ChatWS] Received event: event_reaction
+I/flutter (14675): [ChatWS] Real-time event reaction received: {id: 17ba70af-fbb6-47e9-bede-a308df2a500a, room_id: room_31, job_type: watering, name: WATERING, status: in_progress, assignee: Vinh Phan, priority: normal, scheduled_at: 2026-08-15T15:56:14.921404, plan_details: 2 Side 2.0 L/m², prochloraz_rate: , linked_task_id: 83f42205-c387-4bfb-a54e-69f46f03c658, started_at: 2026-08-15T15:56:14.945307, created_at: 2026-08-15T15:56:14.945307}
+I/flutter (14675): [ChatWS] Real-time event reaction received: {id: room_31, status: active, current_stage: watering, updated_at: 2026-08-15T15:56:14.956294}
+I/flutter (14675): [ChatWS] Received event: sync_trigger
+I/flutter (14675): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService]    🔄 tasks → insert: id=83f42205-c387-4bfb-a54e-69f46f03c658
+I/flutter (14675): [SyncService]    🔄 mushroom_jobs → insert: id=17ba70af-fbb6-47e9-bede-a308df2a500a
+I/flutter (14675): [SyncService]    🔄 grow_rooms → update: id=room_31
+I/flutter (14675): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter (14675): [SyncService] ✅ Đã ghi 3 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Receive timeout
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  555555 → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced, 555555=onlineSynced
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 2 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [ChatWS] Connection closed.
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: null
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Connection error – is the server running?
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService]    🔄 tasks → insert: id=a6cfd6b9-8279-441c-9287-e62421f4ee91
+I/flutter (14675): [SyncService]    🔄 mushroom_job_safety_configs → insert: id=26114e8c-2ace-452c-be90-5981b2d1395d
+I/flutter (14675): [SyncService]    🔄 mushroom_safety_checkin_logs → insert: id=02614e3c-bc54-4cae-8f04-59167857958e
+I/flutter (14675): [SyncService]    🔄 grow_rooms → update: id=room_32
+I/flutter (14675): [SyncService] 📥 Trang 1: nhận 4 cập nhật
+I/flutter (14675): [SyncService] ✅ Đã ghi 4 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Connected successfully.
+I/flutter (14675): [ChatWS] Sent event: presence_update
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  555555 → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced, 555555=onlineSynced
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 2 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  555555 → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced, 555555=onlineSynced
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 2 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (14675): [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (14675): [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: null
+I/flutter (14675): [BleDiscovery] Advertising status update: advertising=true, error=null
+I/flutter (14675): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (14675): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter (14675): [BleDiscovery] BLE Scan stopped.
+I/flutter (14675): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [DeviceDiscovery] ❌ Registration failed: Receive timeout
+I/flutter (14675): [DeviceDiscovery] Heartbeat stopped
+I/flutter (14675): [DeviceDiscovery] Starting heartbeat (every 30s)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [BleDiscovery] Connection or authentication failed: FlutterBluePlusException | requestMtu | fbp-code: 1 | Timed out after 15s
+I/flutter (14675): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (14675): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -46
+I/flutter (14675): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter (14675): [BleDiscovery] BLE Scan stopped.
+I/flutter (14675): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Receive timeout
+I/flutter (14675): [ChatWS] Sent event: send_message
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  555555 → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced, 555555=onlineSynced
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 2 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [BleDiscovery] Connection or authentication failed: FlutterBluePlusException | requestMtu | fbp-code: 1 | Timed out after 15s
+I/flutter (14675): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Sent event: heartbeat
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [BleDiscovery] GATT Server client disconnected: 68:3E:C0:82:B6:3B. Cleaned up cache.
+
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+
+
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Receive timeout
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The request took longer than 0:00:10.000000 to receive data. It was aborted. To get rid of this exception, try raising the RequestOptions.receiveTimeout above the duration of 0:00:10.000000 or improve the response time of the server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 1 mục · tô xanh 1 mục
+I/flutter (14675): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=onlineSynced, 555555=offline
+I/flutter (14675): [ChatWS] Received event: heartbeat
+I/flutter (14675): [Presence] heartbeat  555555 → onlineSynced
+I/flutter (14675): [Presence] bản đồ hiện tại: izii-d-c4a94f0f=onlineSynced, 555555=onlineSynced
+I/flutter (14675): [ChatWS] Connection closed.
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: DioException [unknown]: null
+I/flutter (14675): Error: HttpException: Software caused connection abort, uri = https://h1p2lzvf-8080.aue.devtunnels.ms/api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 2 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [DeviceDiscovery] ! Heartbeat failed: Connection error – is the server running?
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...
+I/flutter (14675): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (14675): [SyncService] Đang kết nối tới server: https://h1p2lzvf-8080.aue.devtunnels.ms ...
+I/flutter (14675): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (14675): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (14675): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (14675): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (14675): [Presence] bản đồ sau khi làm mới: izii-d-c4a94f0f=offline, 555555=offline
+I/flutter (14675): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'h1p2lzvf-8080.aue.devtunnels.ms' This indicates an error which most likely cannot be solved by the library.
+I/flutter (14675): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (14675): [ChatWS] Retrying connection...
+I/flutter (14675): [ChatWS] Connecting to wss://h1p2lzvf-8080.aue.devtunnels.ms/chat?token=iZiiServerSecretKey2026 ...

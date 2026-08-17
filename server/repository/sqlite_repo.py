@@ -336,8 +336,8 @@ class SQLiteDeviceRepository(IDeviceRepository):
                    exclude_device_id: Optional[str] = None) -> List[Dict[str, Any]]:
         cursor = self.conn.cursor()
         now = datetime.now()
-        online_threshold = timedelta(seconds=45)
-        idle_threshold = timedelta(minutes=2)
+        online_threshold = timedelta(seconds=90)
+        idle_threshold = timedelta(minutes=5)
         
         if user_id:
             cursor.execute("SELECT * FROM devices WHERE user_id = ?", (user_id,))

@@ -205,12 +205,78 @@ class DeviceUserService {
     return all.where((u) => u.id != myId).toList();
   }
 
-  /// Máy này đã đăng ký với server đang chọn chưa.
-  Future<bool> isEnrolled() async {
+  /// Máy này đã đăng ký với server đang chọn chưa — HỎI SERVER, không chỉ đoán.
+  ///
+  /// ⚠️ LỖI CŨ: hàm này chỉ kiểm "trong máy có chuỗi token không". Nếu database
+  /// server bị dựng lại — từng xảy ra nhiều lần khi database còn nằm trong thư
+  /// mục release — thì token cũ vẫn nằm trên máy nhưng server không còn biết nó.
+  ///
+  /// Kết quả là hai màn hình nói hai điều trái ngược:
+  ///   • Đăng ký thiết bị → "máy đã đăng ký rồi"   (thấy token trong máy)
+  ///   • Điểm danh đầu ca → "máy chưa đăng ký"     (server trả 401)
+  ///
+  /// Cả hai đều đúng với dữ liệu chúng nhìn thấy; chỉ là chúng nhìn hai chỗ
+  /// khác nhau. Nguồn sự thật duy nhất phải là server.
+  ///
+  /// [verifyWithServer] = false khi chỉ cần biết nhanh, chấp nhận kém chính xác.
+  ///
+  /// Mất mạng thì trả về theo token cục bộ — không kết luận "chưa đăng ký" chỉ
+  /// vì Wi-Fi chập chờn, vì như thế sẽ giục người dùng quét lại mã một cách
+  /// vô ích.
+  Future<bool> isEnrolled({bool verifyWithServer = true}) async {
     final url = (await _settings.getSyncServerUrl()).replaceAll(RegExp(r'/+$'), '');
     if (url.isEmpty) return false;
-    final t = await _settings.getDeviceToken(url);
-    return t != null && t.isNotEmpty;
+
+    final token = await _settings.getDeviceToken(url);
+    final hasLocal = token != null && token.isNotEmpty;
+    if (!hasLocal || !verifyWithServer) return hasLocal;
+
+    try {
+      final resp = await _dio.get(
+        '$url/devices/me',
+        options: Options(
+          headers: {'X-iZii-Device-Token': token},
+          validateStatus: (c) => c != null && c < 500,
+        ),
+      );
+
+      if (resp.statusCode == 200) return true;
+
+      if (resp.statusCode == 401) {
+        // Token mồ côi: còn trên máy nhưng server không nhận. Xoá đi để app
+        // ngừng khẳng định sai và người dùng thấy đúng trạng thái thật.
+        await _settings.clearDeviceToken(url);
+        // ignore: avoid_print
+        print('[DeviceUser] Token cũ không còn hợp lệ (server đã dựng lại?) — '
+            'đã xoá. Máy cần quét mã đăng ký mới.');
+        return false;
+      }
+
+      // 4xx khác (vd server bản cũ chưa có /devices/me) → không kết luận được,
+      // tin vào token cục bộ.
+      return true;
+    } catch (_) {
+      // Mất mạng — giữ nguyên trạng thái đã biết.
+      return true;
+    }
+  }
+
+  /// Lý do máy chưa dùng được, để hiển thị cho người dùng.
+  ///
+  /// Phân biệt rõ ba tình huống mà trước đây gộp chung thành "chưa đăng ký".
+  Future<String?> enrollmentProblem() async {
+    final url = (await _settings.getSyncServerUrl()).replaceAll(RegExp(r'/+$'), '');
+    if (url.isEmpty) return 'Chưa chọn máy chủ. Vào Settings → Sync Server.';
+
+    final token = await _settings.getDeviceToken(url);
+    if (token == null || token.isEmpty) {
+      return 'Máy chưa đăng ký. Xin quản lý cấp mã QR rồi quét để đăng ký.';
+    }
+    if (!await isEnrolled()) {
+      return 'Máy từng đăng ký nhưng máy chủ không còn nhận token này '
+          '(thường do máy chủ được cài lại). Cần quét mã đăng ký mới.';
+    }
+    return null;
   }
 
   /// Đổi tên hiển thị của máy này trong danh bạ.

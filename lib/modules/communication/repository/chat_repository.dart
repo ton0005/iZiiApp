@@ -167,6 +167,33 @@ class ChatRepository {
   }
 
   Future<void> saveMessage(ChatMessage message) async {
+    // Đảm bảo hội thoại và người tham gia tồn tại trong SQLite local nếu đây là tin nhắn mới
+    if (message.conversationId.startsWith('direct_')) {
+      final parts = message.conversationId.replaceFirst('direct_', '').split('_');
+      if (parts.length >= 2) {
+        final now = message.sentAt;
+        await _db.into(_db.chatConversations).insertOnConflictUpdate(
+              ChatConversation(
+                id: message.conversationId,
+                type: 'direct',
+                createdBy: message.senderId,
+                createdAt: now,
+                lastMessageAt: now,
+              ),
+            );
+        for (final uid in parts) {
+          await _db.into(_db.chatParticipants).insertOnConflictUpdate(
+                ChatParticipant(
+                  conversationId: message.conversationId,
+                  userId: uid,
+                  joinedAt: now,
+                  muted: false,
+                ),
+              );
+        }
+      }
+    }
+
     await _db
         .into(_db.chatMessages)
         .insert(message, mode: InsertMode.insertOrReplace);

@@ -169,15 +169,21 @@ class _CheckInScreenState extends State<CheckInScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return PopScope(
-      // Bắt buộc thì không cho thoát bằng nút Back — nếu không công nhân sẽ
-      // bấm Back rồi thắc mắc vì sao vẫn không tạo được công việc.
-      canPop: !widget.mandatory,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Điểm danh đầu ca'),
-          automaticallyImplyLeading: !widget.mandatory,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Điểm danh đầu ca'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Quay lại',
+          onPressed: () => Navigator.of(context).pop(null),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(null),
+            child: const Text('Huỷ'),
+          ),
+        ],
+      ),
         body: Column(
           children: [
             if (widget.mandatory)
@@ -326,7 +332,6 @@ class _CheckInScreenState extends State<CheckInScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

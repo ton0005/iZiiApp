@@ -1,0 +1,1013 @@
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=57965 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=57965 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+📖 [LOG] Server log file initialized at: C:\Users\CHANH\AppData\Local\iZiiApp\server\logs\server.log
+SQLite Database initialized successfully at: C:\Users\CHANH\AppData\Local\iZiiApp\server\iziiapp.db
+✅ Database auto-initialized successfully at: C:\Users\CHANH\AppData\Local\iZiiApp\server\iziiapp.db
+✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB
+🌐 Server identity: server_id=server-m1 zone=M1
+🗄️  Database backend: sqlite
+🔓 [TLS] Tắt — server chạy HTTP thuần (chấp nhận được trong LAN cô lập).
+🔑 [AUTH] Phạm vi bí mật — server=có · admin=DÙNG CHUNG server (nên tách) · device=tuỳ chọn
+📱 [MẠNG] Địa chỉ để nhập vào Settings → Sync Server trên điện thoại:
+      http://10.193.19.216:8080
+      http://172.25.16.1:8080
+      Kiểm tra nhanh: mở địa chỉ đó + /sync/status trên trình duyệt
+      của điện thoại. Không ra JSON nghĩa là điện thoại KHÔNG tới
+      được server — kiểm tra tường lửa Windows và xem hai máy có
+      cùng một mạng không.
+🔁 [PEER-SYNC] Bắt đầu vòng lặp đồng bộ (mỗi 45s). Peer tĩnh (.env): ['https://1kn998b9-8080.aue.devtunnels.ms']. Peer qua mDNS sẽ được cộng dồn động khi phát hiện.
+⚠️  [PEER-SYNC] Không kết nối được peer https://1kn998b9-8080.aue.devtunnels.ms:  (có thể đang offline)
+⚠️  [PEER-SYNC] Không kết nối được peer https://1kn998b9-8080.aue.devtunnels.ms:  (có thể đang offline)
+⚠️  [PEER-SYNC] Không kết nối được peer https://1kn998b9-8080.aue.devtunnels.ms:  (có thể đang offline)
+⚠️  [PEER-SYNC] Không kết nối được peer https://1kn998b9-8080.aue.devtunnels.ms:  (có thể đang offline)
+👤 [DEVICE] izii-d-dd43cd39… đổi tên hiển thị → 'Vinh Phan · iZii-android-mrrx5uiz'
+👤 [DEVICE] izii-d-dd43cd39… đổi tên hiển thị → 'Vinh Phan · iZii-android-mrrx5uiz'
+
+🔐 [DEVICE] Registered: iZii-android-mrrx5uiz (android) DID: izii-d-dd43cd39...
+   👤 User: izii-d-dd43cd39
+📞 [CALL-WS] Client 'izii-d-dd43cd39' connected to Call Signaling. Total call clients: 1
+
+🔌 [WS] Client connected. Active clients: 1
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14
+   📦 Sending 1000 records (has_more=True)
+💬 [WS] Broadcast message: {"event":"presence_update","data":{"user_id":"izii-d-dd43cd39","presence":"online_synced"}}...
+
+📡 [ONLINE] Queried online devices → 0 active
+
+📡 [ONLINE] Queried online devices → 0 active
+
+📡 [ONLINE] Queried online devices → 0 active
+⚠️  [PEER-SYNC] Không kết nối được peer https://1kn998b9-8080.aue.devtunnels.ms:  (có thể đang offline)
+
+📡 [ONLINE] Queried online devices → 0 active
+
+📡 [ONLINE] Queried online devices → 0 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-dd43cd39","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 0 active
+
+==================================================
+📥 [PUSH] Received 1 changes at 2026-08-14T14:10:47.270926+00:00
+==================================================
+   [1] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:40:40.890049
+📡 [WS] Broadcasted sync_trigger for tables: ['grow_rooms']
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_9564b2e15e64) to connected WebSocket clients.
+
+📡 [ONLINE] Queried online devices → 0 active
+
+📡 [ONLINE] Queried online devices → 0 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 1014
+   📦 Sending 1000 records (has_more=True)
+
+==================================================
+📥 [PUSH] Received 3 changes at 2026-08-14T14:11:03.863368+00:00
+==================================================
+   [1] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-13T13:16:04.002966
+   [2] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-13T13:16:04.010004
+   [3] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-13T13:16:04.022998
+📡 [WS] Broadcasted sync_trigger for tables: ['grow_rooms']
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_9521ad1c89b7) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_6a2b7ce4ec3c) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_d656664dface) to connected WebSocket clients.
+
+📡 [ONLINE] Queried online devices → 0 active
+
+📡 [ONLINE] Queried online devices → 0 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-dd43cd39","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 0 active
+
+📡 [ONLINE] Queried online devices → 0 active
+⚠️  [PEER-SYNC] Không kết nối được peer https://1kn998b9-8080.aue.devtunnels.ms:  (có thể đang offline)
+
+📡 [ONLINE] Queried online devices → 0 active
+👤 [DEVICE] izii-d-c4a94f0f… đổi tên hiển thị → 'System Admin · iZii-windows-mscof6e8'
+👤 [DEVICE] izii-d-c4a94f0f… đổi tên hiển thị → 'System Admin · iZii-windows-mscof6e8'
+
+🔐 [DEVICE] Registered: iZii-windows-mscof6e8 (windows) DID: izii-d-c4a94f0f...
+   👤 User: izii-d-c4a94f0f
+📞 [CALL-WS] Client 'izii-d-c4a94f0f' connected to Call Signaling. Total call clients: 2
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 57954
+   📦 Sending 4 records (has_more=False)
+
+🔌 [WS] Client connected. Active clients: 2
+💬 [WS] Broadcast message: {"event":"presence_update","data":{"user_id":"izii-d-c4a94f0f","presence":"online_synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 57964
+   📦 Sending 0 records (has_more=False)
+
+==================================================
+📥 [PUSH] Received 1 changes at 2026-08-14T14:11:36.954943+00:00
+==================================================
+   [1] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:10.873792
+📡 [WS] Broadcasted sync_trigger for tables: ['grow_rooms']
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_862b9501079f) to connected WebSocket clients.
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 2014
+   📦 Sending 1000 records (has_more=True)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 57964
+   📦 Sending 1 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 57965
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-dd43cd39","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 57965
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 57965
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+
+📡 [ONLINE] Queried online devices → 1 active
+
+==================================================
+📥 [PUSH] Received 33 changes at 2026-08-14T14:12:03.257501+00:00
+==================================================
+   [1] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:48.999641
+   [2] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:49.006624
+   [3] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:49.018646
+   [4] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:49.999940
+   [5] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:50.007910
+   [6] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:50.019918
+   [7] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:51.000373
+   [8] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:51.007384
+   [9] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:51.020400
+   [10] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:52.000374
+   [11] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:52.007364
+   [12] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:52.018323
+   [13] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:53.000289
+   [14] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:53.006277
+   [15] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:53.019302
+   [16] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:53.999707
+   [17] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:54.006767
+   [18] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:54.018710
+   [19] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:55.000043
+   [20] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:55.007012
+   [21] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:55.021009
+   [22] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:56.000104
+   [23] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:56.006065
+   [24] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:56.018088
+   [25] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:57.000719
+   [26] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:57.007718
+   [27] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:57.024719
+   [28] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:57.571763
+   [29] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:57.584740
+   [30] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:57.591707
+   [31] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:58.000741
+   [32] 🔹 Table: grow_rooms | Operation: update
+       - id: room_35
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:58.007725
+   [33] 🔹 Table: grow_rooms | Operation: update
+       - id: room_36
+       - status: active
+       - current_stage: alone_timeout
+       - updated_at: 2026-08-14T23:41:58.018720
+📡 [WS] Broadcasted sync_trigger for tables: ['grow_rooms']
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_3a2f2fef5c4d) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_0609de6d9cbb) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_2637b58f2716) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_bc0c744fe9e9) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_ed63aaaddfe1) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_52c7f39e406f) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_8b8afc0ef553) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_9314a81e9fb9) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_5e0e8467d28b) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_aa8f78d5e8e5) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_4fe7f54e82b8) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_2b690a4041b9) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_7b5a6f9f65e6) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_de7e8355d136) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_2a53b32cc9d8) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_5617b23a826f) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_c4302a95e185) to connected WebSocket clients.
+INFO:     120.20.46.165:0 - "POST /sync/push HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=3014 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=57965 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=4020 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=5020 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /sync/push HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=57998 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=6855 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=7908 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=9662 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_7d32ee21c0b6) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_41c27aecc9b3) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_2bf0bd39615f) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_4a80b9a6b513) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_423464dee96a) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_dd2c537c2779) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_c47425a67df7) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_3a86beda4c29) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_19a0ca4d4acb) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_776c6661c3f0) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_38ba50f3a501) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_bbf199617357) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_34fba732535c) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_0550c8706e07) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_c29f394d8bf7) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_903154b7093c) to connected WebSocket clients.
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 3014
+   📦 Sending 1000 records (has_more=True)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-dd43cd39","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 57965
+   📦 Sending 33 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 4020
+   📦 Sending 1000 records (has_more=True)
+
+📡 [ONLINE] Queried online devices → 1 active
+⚠️  [PEER-SYNC] Không kết nối được peer https://1kn998b9-8080.aue.devtunnels.ms:  (có thể đang offline)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 5020
+   📦 Sending 1000 records (has_more=True)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-dd43cd39","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+==================================================
+📥 [PUSH] Received 6 changes at 2026-08-14T14:12:43.330666+00:00
+==================================================
+   [1] 🔹 Table: mushroom_jobs | Operation: update
+       - id: f18a5f61-5688-4f0a-86d2-ae97654692bd
+       - status: completed
+       - completed_at: 2026-08-14T23:42:20.007572
+       - alarm_triggered: False
+   [2] 🔹 Table: tasks | Operation: update
+       - id: 786be66a-38d1-4f00-a1ac-f049c6f487cf
+       - status: done
+   [3] 🔹 Table: grow_rooms | Operation: update
+       - id: room_10
+       - status: idle
+       - current_stage: idle
+       - updated_at: 2026-08-14T23:42:20.034275
+   [4] 🔹 Table: mushroom_jobs | Operation: update
+       - id: f83ec370-e0f3-467a-a0c2-cf90bd5f3c24
+       - status: completed
+       - completed_at: 2026-08-14T23:42:31.021779
+       - alarm_triggered: False
+   [5] 🔹 Table: tasks | Operation: update
+       - id: 47ceba36-de94-4b33-84bf-4cf295e4f0f4
+       - status: done
+   [6] 🔹 Table: grow_rooms | Operation: update
+       - id: room_1
+       - status: idle
+       - current_stage: idle
+       - updated_at: 2026-08-14T23:42:31.051750
+📡 [WS] Broadcasted sync_trigger for tables: ['mushroom_jobs', 'tasks', 'grow_rooms']
+📡 [EVENT-ENGINE] Broadcasted mushroom.job_updated (evt_0303e1de1673) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted tasks.update (evt_adb7260eb73a) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_50497ffbf7b7) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted mushroom.job_updated (evt_882fee91c4fe) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted tasks.update (evt_82bad68c2029) to connected WebSocket clients.
+📡 [EVENT-ENGINE] Broadcasted grow_rooms.update (evt_8242a481dffd) to connected WebSocket clients.
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 57998
+   📦 Sending 6 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 6855
+   📦 Sending 1000 records (has_more=True)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 7908
+   📦 Sending 1000 records (has_more=True)
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-dd43cd39","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+⚠️  [PEER-SYNC] Không kết nối được peer https://1kn998b9-8080.aue.devtunnels.ms:  (có thể đang offline)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 9662
+   📦 Sending 1000 records (has_more=True)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 11070
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=11070 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/display-name HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/register HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "WebSocket /chat?token=iZiiServerSecretKey2026" [accepted]
+INFO:     connection open
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=14019 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/register HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=25464 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=29224 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=33129 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=35460 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/register HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sessions/current HTTP/1.1" 401 Unauthorized
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/display-name HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=37950 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+   📦 Sending 1000 records (has_more=True)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-dd43cd39","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+👤 [DEVICE] izii-d-c4a94f0f… đổi tên hiển thị → 'System Admin · iZii-windows-mscof6e8'
+
+📡 [ONLINE] Queried online devices → 1 active
+
+🔐 [DEVICE] Registered: iZii-windows-mscof6e8 (windows) DID: izii-d-c4a94f0f...
+   👤 User: izii-d-c4a94f0f
+
+🔌 [WS] Client connected. Active clients: 3
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+💬 [WS] Broadcast message: {"event":"presence_update","data":{"user_id":"izii-d-c4a94f0f","presence":"online_synced"}}...
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 14019
+   📦 Sending 1000 records (has_more=True)
+
+🔐 [DEVICE] Registered: iZii-windows-mscof6e8 (windows) DID: izii-d-c4a94f0f...
+   👤 User: izii-d-c4a94f0f
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 25464
+   📦 Sending 1000 records (has_more=True)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+💬 [WS] Broadcast message: {"event":"typing_state","data":{"conversation_id":"direct_izii-d-c4a94f0f_izii-d-dd43cd39","user_id":"izii-d-c4a94f0f","...
+💬 [WS] Broadcast message: {"event":"typing_state","data":{"conversation_id":"direct_izii-d-c4a94f0f_izii-d-dd43cd39","user_id":"izii-d-c4a94f0f","...
+💬 [WS] Broadcast message: {"event":"send_message","data":{"message_id":"74ae3a3a-d424-47c5-a79d-de24c89c9798","conversation_id":"direct_izii-d-c4a...
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-dd43cd39","sync_status":"synced"}}...
+⚠️  [PEER-SYNC] Không kết nối được peer https://1kn998b9-8080.aue.devtunnels.ms:  (có thể đang offline)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 29224
+   📦 Sending 1000 records (has_more=True)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 33129
+   📦 Sending 1000 records (has_more=True)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 35460
+   📦 Sending 1000 records (has_more=True)
+
+🔐 [DEVICE] Registered: iZii-windows-mscof6e8 (windows) DID: izii-d-c4a94f0f...
+   👤 User: izii-d-c4a94f0f
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-dd43cd39","sync_status":"synced"}}...
+👤 [DEVICE] izii-d-c4a94f0f… đổi tên hiển thị → 'System Admin · iZii-windows-mscof6e8'
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 37950
+   📦 Sending 1000 records (has_more=True)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+💬 [WS] Broadcast message: {"event":"heartbeat","data":{"user_id":"izii-d-c4a94f0f","sync_status":"synced"}}...
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+   📦 Sending 0 records (has_more=False)
+
+📡 [ONLINE] Queried online devices → 1 active
+
+📤 [PULL] The device is downloading new updates...
+   🔢 Filtered after_seq: 58004
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=40470 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /admin/enrollment-token HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=41802 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/display-name HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /devices/directory HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sessions/current HTTP/1.1" 401 Unauthorized
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=43049 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-dd43cd39&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-dd43cd39 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /sync/pull?after_seq=58004 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "POST /api/v1/devices/heartbeat HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/messages/pending?device_id=izii-d-c4a94f0f&limit=50 HTTP/1.1" 200 OK
+INFO:     120.20.46.165:0 - "GET /api/v1/devices/online?exclude_device_id=izii-d-c4a94f0f HTTP/1.1" 200 OK

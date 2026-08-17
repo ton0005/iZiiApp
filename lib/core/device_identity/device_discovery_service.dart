@@ -19,8 +19,11 @@ class DeviceDiscoveryService {
   final SettingsService _settingsService = SettingsService();
 
   final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
+    // Nới cho đường qua tunnel — xem chú thích ở SyncService. Nhịp tim và
+    // truy vấn thiết bị trực tuyến gọi rất thường xuyên, hết giờ liên tục sẽ
+    // làm danh sách trực tuyến nhấp nháy và chỉ báo xanh tắt bật thất thường.
+    connectTimeout: const Duration(seconds: 20),
+    receiveTimeout: const Duration(seconds: 25),
   ));
 
   Timer? _heartbeatTimer;

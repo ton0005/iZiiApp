@@ -18,6 +18,28 @@ class SyncEvent {
   SyncEvent(this.updatedTables);
 }
 
+/// Một thay đổi bị server từ chối vĩnh viễn (HTTP 409).
+class SyncRejection {
+  /// Mã lỗi nghiệp vụ từ server, vd `assignee_not_checked_in`.
+  final String errorCode;
+
+  /// Thông điệp đã viết sẵn cho người dùng cuối.
+  final String message;
+
+  /// Đối tượng liên quan, vd tên nhân viên chưa điểm danh.
+  final String? subject;
+
+  /// Số thay đổi đã bị đưa ra khỏi hàng đợi.
+  final int removedCount;
+
+  const SyncRejection({
+    required this.errorCode,
+    required this.message,
+    this.subject,
+    this.removedCount = 0,
+  });
+}
+
 class SyncService {
   static final SyncService _instance = SyncService._internal();
   factory SyncService() => _instance;
@@ -28,8 +50,16 @@ class SyncService {
   final Connectivity _connectivity = Connectivity();
   AppDatabase get _db => AppDatabase();
   final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
+    // Thời gian chờ tính cho đường đi XẤU NHẤT, không phải LAN.
+    //
+    // Khi server phơi qua tunnel (devtunnels/ngrok), mỗi request đi từ điện
+    // thoại → Internet → hạ tầng tunnel ở nước ngoài → laptop rồi vòng ngược
+    // lại. Log máy Samsung ngày 15/08 ghi nhận 17 lần `/sync/pull` vượt mốc
+    // 10 giây trong khi server chỉ trả về 0–4 bản ghi — nghĩa là chậm vì
+    // đường truyền, không phải vì khối lượng dữ liệu.
+    connectTimeout: const Duration(seconds: 20),
+    receiveTimeout: const Duration(seconds: 30),
+    sendTimeout: const Duration(seconds: 30),
   ));
 
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
@@ -186,24 +216,34 @@ class SyncService {
               'actor_user_id': userId,
               if (actorDeviceId != null) 'actor_device_id': actorDeviceId,
             },
-            options: Options(headers: {
-              if (token.isNotEmpty) 'Authorization': 'Bearer $token',
-              // Token RIÊNG của máy này, cấp qua luồng enrollment QR/NFC.
-              // Server dùng nó để xác thực danh tính thay vì tin vào
-              // actor_device_id do client tự khai.
-              ...await _deviceTokenHeader(url),
-              'Content-Type': 'application/json',
-            }),
+            options: Options(
+              headers: {
+                if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+                // Token RIÊNG của máy này, cấp qua luồng enrollment QR/NFC.
+                // Server dùng nó để xác thực danh tính thay vì tin vào
+                // actor_device_id do client tự khai.
+                ...await _deviceTokenHeader(url),
+                'Content-Type': 'application/json',
+              },
+              // 4xx là "server từ chối vĩnh viễn", KHÔNG phải lỗi mạng. Phải
+              // nhận về để xử lý; nếu để Dio ném ngoại lệ thì mọi 4xx đều rơi
+              // vào nhánh "lỗi kết nối" và bị thử lại vô hạn.
+              validateStatus: (code) => code != null && code < 500,
+            ),
           );
 
-          if (response.statusCode == 200 || response.statusCode == 201) {
+          final code = response.statusCode ?? 0;
+          if (code == 200 || code == 201) {
             _log('✅ PUSH thành công! Server đã nhận ${filteredMutations.length} thay đổi.');
             for (var mutation in filteredMutations) {
               await _outbox.markAsSynced(mutation['id']);
             }
             await _outbox.clearSynced();
+          } else if (code == 409) {
+            await _quarantineRejected(filteredMutations, response.data);
+            return false;
           } else {
-            _log('❌ Server phản hồi lỗi: HTTP ${response.statusCode}');
+            _log('❌ Server phản hồi lỗi: HTTP $code');
             return false;
           }
         }
@@ -953,7 +993,128 @@ class SyncService {
   Timer? _debounceSyncTimer;
 
   /// Queue a local mutation to be synchronized later
+  /// Vân tay của lần ghi gần nhất theo từng (bảng, id).
+  ///
+  /// Dùng để bỏ qua mutation TRÙNG LẶP HOÀN TOÀN phát ra liên tiếp — thứ chỉ
+  /// tốn băng thông và làm phình log đồng bộ mà không đổi dữ liệu.
+  final Map<String, String> _lastMutationFingerprint = {};
+
+  /// Bỏ qua bao nhiêu mutation trùng — hiện trong log để biết còn chỗ nào lặp.
+  int _dedupedCount = 0;
+
+  /// Thay đổi bị server từ chối gần nhất — để giao diện báo cho người dùng.
+  final _rejectionController = StreamController<SyncRejection>.broadcast();
+  Stream<SyncRejection> get onRejection => _rejectionController.stream;
+  SyncRejection? lastRejection;
+
+  /// Đưa các thay đổi bị server từ chối (409) ra khỏi hàng đợi.
+  ///
+  /// 409 nghĩa là server sẽ KHÔNG BAO GIỜ chấp nhận thay đổi này — gửi lại
+  /// không giúp gì. Nếu cứ để nguyên trạng thái `pending`, nó nằm mãi ở đầu
+  /// hàng đợi và chặn TOÀN BỘ thay đổi phía sau: người dùng thấy như mất kết
+  /// nối trong khi mọi request khác vẫn 200.
+  ///
+  /// Chỉ loại ĐÚNG bản ghi bị từ chối. Các thay đổi khác trong cùng lô vẫn giữ
+  /// `pending` để lần gửi sau đi tiếp bình thường.
+  Future<void> _quarantineRejected(
+    List<Map<String, dynamic>> batch,
+    dynamic body,
+  ) async {
+    String errorCode = 'rejected';
+    String message = 'Server từ chối thay đổi này.';
+    String? subject;
+
+    try {
+      final detail = (body is Map) ? body['detail'] : null;
+      if (detail is Map) {
+        errorCode = (detail['error'] ?? errorCode).toString();
+        message = (detail['message'] ?? message).toString();
+        subject = detail['assignee']?.toString();
+      } else if (detail != null) {
+        message = detail.toString();
+      }
+    } catch (_) {}
+
+    // Xác định thủ phạm theo mã lỗi. Không đoán mò được thì loại cả lô — thà
+    // mất một lô còn hơn kẹt vĩnh viễn.
+    bool isCulprit(Map<String, dynamic> m) {
+      final data = m['data'];
+      final table = (m['table'] ?? '').toString();
+      switch (errorCode) {
+        case 'assignee_not_checked_in':
+        case 'no_active_work_session':
+          return (table == 'mushroom_jobs' || table == 'jobs') &&
+              data is Map &&
+              data['job_type'].toString().toLowerCase() == 'alone_worker';
+        case 'duplicate_room_number':
+          return table == 'grow_rooms';
+        default:
+          return true;
+      }
+    }
+
+    var removed = 0;
+    for (final m in batch) {
+      if (!isCulprit(m)) continue;
+      await _outbox.markAsRejected(m['id'].toString());
+      removed++;
+    }
+
+    if (removed == 0) {
+      // Không khớp được thủ phạm nào — loại cả lô để hàng đợi thoát ra.
+      for (final m in batch) {
+        await _outbox.markAsRejected(m['id'].toString());
+        removed++;
+      }
+    }
+
+    final rejection = SyncRejection(
+      errorCode: errorCode,
+      message: message,
+      subject: subject,
+      removedCount: removed,
+    );
+    lastRejection = rejection;
+    if (!_rejectionController.isClosed) _rejectionController.add(rejection);
+
+    _log('⛔ Server từ chối ($errorCode): $message');
+    _log('   → Đã đưa $removed thay đổi ra khỏi hàng đợi để không chặn phần còn lại.');
+  }
+
   Future<void> queueMutation(String table, String operation, Map<String, dynamic> data) async {
+    // ── Lưới an toàn chống sinh bản ghi vô hạn ──────────────────────────────
+    //
+    // Một bộ đếm giờ gọi queueMutation với payload y hệt nhau mỗi 30 giây sẽ
+    // sinh 120 bản ghi/giờ, mỗi bản một UUID mới nên server không gộp được.
+    // Đã từng đẩy `grow_rooms` lên 15.272 bản ghi.
+    //
+    // Chỗ gọi vẫn nên tự kiểm trước khi ghi — đây chỉ là lưới đỡ cuối, không
+    // phải chỗ để dựa vào.
+    final recordId = (data['id'] ?? '').toString();
+    if (recordId.isNotEmpty) {
+      // Bỏ dấu thời gian ra khỏi vân tay: `updated_at` đổi mỗi lần gọi nên nếu
+      // tính vào thì không bao giờ phát hiện được trùng.
+      final significant = Map<String, dynamic>.from(data)
+        ..remove('updated_at')
+        ..remove('updatedAt');
+      final key = '$table::$recordId::$operation';
+      final fingerprint = jsonEncode(
+        Map.fromEntries(
+          significant.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
+        ),
+      );
+
+      if (_lastMutationFingerprint[key] == fingerprint) {
+        _dedupedCount++;
+        if (_dedupedCount <= 3 || _dedupedCount % 50 == 0) {
+          _log('⏭️  Bỏ qua mutation trùng #$_dedupedCount: $table/$recordId '
+              '($operation) — dữ liệu không đổi.');
+        }
+        return;
+      }
+      _lastMutationFingerprint[key] = fingerprint;
+    }
+
     await _outbox.addMutation(table, operation, data);
     _log('📝 Đã lưu ngoại tuyến thay đổi: $table -> $operation');
 

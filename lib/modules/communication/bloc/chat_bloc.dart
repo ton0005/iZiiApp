@@ -257,6 +257,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   /// nhau và cùng xử lý một hàng đợi.
   bool _isPullingMessages = false;
   String? _currentUserId;
+  final Map<String, DateTime> _presenceLastSeen = {};
 
   String? get currentUserId => _currentUserId;
   ChatRepository get chatRepository => _chatRepository;
@@ -511,6 +512,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         data: {
           'message_id': messageId,
           'conversation_id': event.conversationId,
+          'sender_id': _currentUserId,
           'type': event.type.name,
           'content': contentMap,
           'sent_at': now.toIso8601String(),
@@ -617,13 +619,25 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         }
         break;
 
+      case 'send_message':
       case 'message_received':
-        final msgId = data['message_id'] as String;
-        final convoId = data['conversation_id'] as String;
-        final senderId = data['sender_id'] as String;
-        final type = data['type'] as String;
-        final content = data['content'] as Map<String, dynamic>;
-        final sentAt = DateTime.parse(data['sent_at'] as String);
+        final msgId = (data['message_id'] ?? '').toString();
+        final convoId = (data['conversation_id'] ?? '').toString();
+        final senderId = (data['sender_id'] ?? '').toString();
+        final type = (data['type'] ?? 'text').toString();
+        final content = data['content'] is Map<String, dynamic>
+            ? data['content'] as Map<String, dynamic>
+            : (data['content'] is Map
+                ? Map<String, dynamic>.from(data['content'] as Map)
+                : {'text': data['content']?.toString() ?? ''});
+        final sentAt = data['sent_at'] != null
+            ? DateTime.tryParse(data['sent_at'].toString()) ?? DateTime.now()
+            : DateTime.now();
+
+        // Bỏ qua tin nhắn do chính máy này gửi phát lại qua broadcast
+        if (senderId.isNotEmpty && senderId == _currentUserId) {
+          break;
+        }
 
         final chatMsg = ChatMessage(
           id: msgId,
@@ -693,9 +707,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         final presenceStr = data['presence'] as String;
         final presence = ChatPresenceStateExtension.fromString(presenceStr);
 
+        if (presence == ChatPresenceState.onlineSynced) {
+          _presenceLastSeen[userId] = DateTime.now();
+        }
         final updatedPresenceMap =
             Map<String, ChatPresenceState>.from(state.userPresenceMap)
               ..[userId] = presence;
+        _logPresence('presence_update', userId, presence, updatedPresenceMap);
         emit(state.copyWith(userPresenceMap: updatedPresenceMap));
         break;
 
@@ -729,10 +747,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         // Treat heartbeats from other users as presence online
         final hbUserId = data['user_id'] as String?;
         if (hbUserId != null && hbUserId != _currentUserId) {
+          _presenceLastSeen[hbUserId] = DateTime.now();
           final updatedMap =
               Map<String, ChatPresenceState>.from(state.userPresenceMap)
                 ..[hbUserId] = ChatPresenceState.onlineSynced;
+          _logPresence('heartbeat', hbUserId,
+              ChatPresenceState.onlineSynced, updatedMap);
           emit(state.copyWith(userPresenceMap: updatedMap));
+        } else if (kLogPresence && hbUserId == _currentUserId) {
+          // Nhịp tim của CHÍNH MÌNH vọng về — bình thường, nhưng nếu chỉ thấy
+          // loại này thì nghĩa là máy kia chưa gửi được nhịp tim nào.
+          print('[Presence] ↩︎ nhịp tim của chính mình ($hbUserId) — bỏ qua.');
         }
         break;
     }
@@ -1073,6 +1098,33 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
   }
 
+  // ══ LOG TẠM ĐỂ CHẨN ĐOÁN CHỈ BÁO XANH ═════════════════════════════════════
+  //
+  // Đặt `kLogPresence = false` là tắt sạch, không phải đi tìm từng dòng print.
+  // Xoá hẳn khối này sau khi đã xác định được vì sao người dùng không hiện
+  // xanh.
+  //
+  // Cách đọc log:
+  //   [Presence] heartbeat  izii-d-xxx → onlineSynced   ← nhịp tim máy kia TỚI
+  //   [Presence] ↩︎ nhịp tim của chính mình             ← chỉ thấy loại này
+  //                                                       = máy kia không gửi
+  //   [Presence] 🔄 làm mới: ... xoá N mục               ← bị quét sạch định kỳ
+  //   [Presence] bản đồ hiện tại: {…}                    ← trạng thái sau mỗi lần đổi
+  static const bool kLogPresence = true;
+
+  void _logPresence(
+    String source,
+    String userId,
+    ChatPresenceState presence,
+    Map<String, ChatPresenceState> map,
+  ) {
+    if (!kLogPresence) return;
+    final short = userId.length > 20 ? '${userId.substring(0, 20)}…' : userId;
+    print('[Presence] $source  $short → ${presence.name}');
+    print('[Presence] bản đồ hiện tại: '
+        '${map.entries.map((e) => "${e.key}=${e.value.name}").join(", ")}');
+  }
+
   Future<void> _onRefreshPresence(
     RefreshPresenceEvent event,
     Emitter<ChatState> emit,
@@ -1080,23 +1132,50 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       final onlineDevices = await DeviceDiscoveryService().getOnlineDevices();
       final updatedMap = Map<String, ChatPresenceState>.from(state.userPresenceMap);
-      
-      // Clear older onlineSynced entries (to reflect current status)
-      for (var userId in updatedMap.keys.toList()) {
-        if (updatedMap[userId] == ChatPresenceState.onlineSynced) {
-          updatedMap[userId] = ChatPresenceState.offline;
-        }
-      }
-      
-      // Mark all currently online users
+      final now = DateTime.now();
+
+      var marked = 0;
       for (var dev in onlineDevices) {
-        if (dev.userId != _currentUserId) {
+        if (dev.deviceId.isNotEmpty && dev.deviceId != _currentUserId) {
+          _presenceLastSeen[dev.deviceId] = now;
+          updatedMap[dev.deviceId] = ChatPresenceState.onlineSynced;
+          marked++;
+        }
+        if (dev.userId.isNotEmpty &&
+            dev.userId != _currentUserId &&
+            dev.userId != dev.deviceId) {
+          _presenceLastSeen[dev.userId] = now;
           updatedMap[dev.userId] = ChatPresenceState.onlineSynced;
         }
       }
-      
+
+      // Chỉ đánh dấu offline nếu đã quá 90 giây không nhận được tín hiệu (tránh chớp tắt khi mạng lag / HTTP trễ)
+      var cleared = 0;
+      for (var key in updatedMap.keys.toList()) {
+        final lastSeen = _presenceLastSeen[key];
+        if (lastSeen == null || now.difference(lastSeen) > const Duration(seconds: 90)) {
+          if (updatedMap[key] == ChatPresenceState.onlineSynced) {
+            updatedMap[key] = ChatPresenceState.offline;
+            cleared++;
+          }
+        }
+      }
+
+      if (kLogPresence) {
+        print('[Presence] 🔄 làm mới: server báo ${onlineDevices.length} máy '
+            'trực tuyến · xoá $cleared mục · tô xanh $marked mục');
+        for (final d in onlineDevices) {
+          print('[Presence]    · device_id=${d.deviceId} user_id=${d.userId}'
+              '${d.deviceId == d.userId ? "" : "  ⚠️ HAI KHOÁ KHÁC NHAU"}');
+        }
+        print('[Presence] bản đồ sau khi làm mới: '
+            '${updatedMap.entries.map((e) => "${e.key}=${e.value.name}").join(", ")}');
+      }
+
       emit(state.copyWith(userPresenceMap: updatedMap));
-    } catch (_) {}
+    } catch (e) {
+      if (kLogPresence) print('[Presence] ❌ làm mới thất bại: $e');
+    }
   }
 
   void _onPickAttachments(
@@ -1266,6 +1345,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         data: {
           'message_id': updatedMsg.id,
           'conversation_id': updatedMsg.conversationId,
+          'sender_id': _currentUserId,
           'type': updatedMsg.type,
           'content': finalContent.toMap(),
           'sent_at': updatedMsg.sentAt.toIso8601String(),

@@ -190,9 +190,43 @@ class SettingsService {
     await prefs.setString(_deviceTokenKeyFor(serverUrl), token);
   }
 
+  /// Token của máy này với [serverUrl].
+  ///
+  /// ⚠️ Token được lưu theo KHOÁ LÀ ĐỊA CHỈ SERVER. Đổi địa chỉ — ví dụ chuyển
+  /// từ `http://192.168.x.x:8080` sang một tunnel HTTPS — là khoá đổi theo và
+  /// token coi như biến mất, dù máy vẫn đăng ký hợp lệ.
+  ///
+  /// Triệu chứng đã gặp: sau khi chuyển sang devtunnel, `/devices/directory`
+  /// vẫn 200 (endpoint đó không bắt buộc token) nhưng `/sessions/current` trả
+  /// **401 "Thiếu X-iZii-Device-Token"** — điểm danh không dùng được.
+  ///
+  /// Nên khi không tìm thấy token đúng khoá, ta nhận token đã lưu cho địa chỉ
+  /// khác và GẮN LẠI cho địa chỉ hiện tại. Cùng một máy, cùng một server, chỉ
+  /// khác đường vào — server xác thực bằng hash token chứ không quan tâm client
+  /// gọi qua URL nào.
   Future<String?> getDeviceToken(String serverUrl) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_deviceTokenKeyFor(serverUrl));
+    final exact = prefs.getString(_deviceTokenKeyFor(serverUrl));
+    if (exact != null && exact.isNotEmpty) return exact;
+
+    const prefix = 'device_token::';
+    final others = prefs
+        .getKeys()
+        .where((k) => k.startsWith(prefix))
+        .toList(growable: false);
+    if (others.isEmpty) return null;
+
+    // Nhiều token cũ thì lấy cái gần nhất — thực tế gần như luôn chỉ có một.
+    for (final key in others.reversed) {
+      final token = prefs.getString(key);
+      if (token == null || token.isEmpty) continue;
+      await prefs.setString(_deviceTokenKeyFor(serverUrl), token);
+      // ignore: avoid_print
+      print('[Settings] Đã chuyển device token từ "${key.substring(prefix.length)}" '
+          'sang "$serverUrl".');
+      return token;
+    }
+    return null;
   }
 
   Future<void> clearDeviceToken(String serverUrl) async {

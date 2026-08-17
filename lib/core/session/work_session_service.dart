@@ -247,7 +247,12 @@ class WorkSessionService {
     final code = e.response?.statusCode;
     final detail = e.response?.data is Map ? e.response?.data['detail'] : null;
     if (code == 401) {
-      return 'Máy này chưa đăng ký với hệ thống. Quét mã QR đăng ký trước khi điểm danh.';
+      // Phân biệt "chưa từng đăng ký" với "đã đăng ký nhưng token chết".
+      // Gộp chung thành một câu khiến người dùng quét lại mã, thấy báo "máy đã
+      // đăng ký rồi", rồi quay lại đây vẫn bị chặn — vòng luẩn quẩn đã gặp.
+      return 'Máy chủ không nhận token của máy này.\n\n'
+          'Nếu máy đã từng đăng ký, nhiều khả năng máy chủ vừa được cài lại nên '
+          'token cũ không còn giá trị. Xin quản lý cấp mã QR MỚI rồi quét lại.';
     }
     if (code == 403) return detail?.toString() ?? 'Mã PIN không đúng.';
     if (code == 400) return detail?.toString() ?? 'Thông tin điểm danh không hợp lệ.';

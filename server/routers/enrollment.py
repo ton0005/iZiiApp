@@ -20,7 +20,7 @@ import time
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Header, HTTPException, Request
 from pydantic import BaseModel
 
 from database import sql
@@ -228,10 +228,54 @@ async def enroll_device(payload: EnrollPayload, request: Request):
     }
 
 
+@router.get("/me")
+async def device_me(
+    x_izii_device_token: Optional[str] = Header(None, alias="X-iZii-Device-Token"),
+):
+    """
+    Máy gọi vào để hỏi: "token của tôi còn dùng được không?"
+
+    VÌ SAO CẦN: app đang kết luận "máy đã đăng ký" chỉ bằng cách xem trong bộ
+    nhớ máy CÓ CHUỖI TOKEN hay không, mà không hỏi server. Nếu database server
+    bị dựng lại — chuyện đã xảy ra nhiều lần vì database từng nằm trong thư mục
+    release — thì token cũ vẫn còn trên máy nhưng server không còn biết nó.
+
+    Hậu quả đúng như báo cáo: màn hình đăng ký nói "máy đã đăng ký rồi", còn
+    điểm danh lại nói "máy chưa đăng ký". Cả hai đều đúng với dữ liệu mà chúng
+    nhìn thấy — chỉ là chúng nhìn hai chỗ khác nhau.
+
+    Endpoint này là nguồn sự thật duy nhất. 401 nghĩa là phải đăng ký lại.
+    """
+    if not x_izii_device_token:
+        raise HTTPException(401, "Thiếu X-iZii-Device-Token.")
+
+    from security_auth import lookup_device_by_token
+
+    with open_connection() as conn:
+        identity = lookup_device_by_token(conn, x_izii_device_token)
+
+    if identity is None:
+        raise HTTPException(
+            401,
+            "Token không còn hợp lệ. Máy cần quét mã đăng ký mới.",
+        )
+
+    return {
+        "device_id": identity.device_id,
+        "device_name": identity.device_name,
+        "profile": identity.profile,
+        "owner_user_id": identity.user_id if identity.is_personal else None,
+        "requires_check_in": not identity.is_personal,
+        "server_id": CONFIG.server_id,
+        "zone": CONFIG.zone,
+    }
+
+
 @router.get("/directory")
 async def device_directory(request: Request):
     """
     Danh bạ các thiết bị đã đăng ký — nguồn danh sách liên hệ cho Chat.
+
 
     MÔ HÌNH "MỘT THIẾT BỊ = MỘT USER": mỗi thiết bị đã enroll trở thành một
     danh tính trong app, thay cho các User demo (Quill Phan, Trần Thị Bích...).

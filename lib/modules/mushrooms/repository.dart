@@ -1307,24 +1307,48 @@ class MushroomsRepository {
         final startTime = job.startedAt ?? job.scheduledAt ?? job.createdAt;
         final limitMins = job.timeLimitMinutes ?? 45;
         final elapsed = now.difference(startTime).inMinutes;
-        if (elapsed >= limitMins) {
-          if (job.alarmTriggered != true) {
-            await triggerSafetyAlarm(job.id);
-          }
-          // Automatically update the room stage in database to 'alone_timeout' for Red Alarm
-          await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
-            const GrowRoomsCompanion(
-              status: Value('active'),
-              currentStage: Value('alone_timeout'),
-            ),
-          );
-          await SyncService().queueMutation('grow_rooms', 'update', {
-            'id': job.roomId,
-            'status': 'active',
-            'current_stage': 'alone_timeout',
-            'updated_at': DateTime.now().toIso8601String(),
-          });
+        if (elapsed < limitMins) continue;
+
+        if (job.alarmTriggered != true) {
+          await triggerSafetyAlarm(job.id);
         }
+
+        // ⚠️ SỬA LỖI SINH BẢN GHI VÔ HẠN
+        //
+        // Hàm này chạy mỗi 30 GIÂY (mushrooms_bloc.dart: _alarmCheckTimer).
+        // Bản cũ ghi grow_rooms và đẩy mutation MỖI LẦN CHẠY, không kiểm phòng
+        // đã ở trạng thái đó chưa — chỉ có `triggerSafetyAlarm` là được chặn
+        // bằng cờ `alarmTriggered`, còn phần dưới thì không.
+        //
+        // Hậu quả: một công việc Alone Worker quá giờ mà không ai đóng sẽ sinh
+        // 120 mutation mỗi giờ, tất cả nội dung y hệt nhau nhưng mỗi cái một
+        // UUID mới nên server không gộp được. Đó là nguồn gốc của 15.272 bản
+        // ghi `grow_rooms` trong /sync/status — tương đương khoảng 5 ngày với
+        // một công việc kẹt.
+        //
+        // Chỉ ghi khi trạng thái THỰC SỰ đổi.
+        final room = await (_db.select(_db.growRooms)
+              ..where((tbl) => tbl.id.equals(job.roomId)))
+            .getSingleOrNull();
+        if (room == null) continue;
+        if (room.currentStage == 'alone_timeout' && room.status == 'active') {
+          continue; // đã báo động rồi, không ghi lại
+        }
+
+        await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId)))
+            .write(
+          GrowRoomsCompanion(
+            status: const Value('active'),
+            currentStage: const Value('alone_timeout'),
+            updatedAt: Value(now),
+          ),
+        );
+        await SyncService().queueMutation('grow_rooms', 'update', {
+          'id': job.roomId,
+          'status': 'active',
+          'current_stage': 'alone_timeout',
+          'updated_at': now.toIso8601String(),
+        });
       }
     } catch (_) {}
   }
