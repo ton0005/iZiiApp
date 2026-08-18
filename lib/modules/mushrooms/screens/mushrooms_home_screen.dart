@@ -75,11 +75,13 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
         orElse: () => <String, dynamic>{},
       );
       final name = (emp['name'] ?? '').toString();
-      if (name.isEmpty) return;
-      await DeviceUserService().applyLoggedInName(name);
+      final displayLabel = name.isNotEmpty
+          ? (name.contains(empId) ? name : '$name ($empId)')
+          : 'Employee $empId';
+      await DeviceUserService().applyLoggedInName(displayLabel);
       if (mounted) {
         try {
-          context.read<ChatBloc>().add(RefreshIdentityEvent());
+          context.read<ChatBloc>().add(const RefreshIdentityEvent());
         } catch (_) {}
       }
     } catch (_) {}

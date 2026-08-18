@@ -818,10 +818,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     SwitchUserEvent event,
     Emitter<ChatState> emit,
   ) async {
-    await SettingsService().saveActiveUserId(event.userId);
-    _currentUserId = event.userId;
-    
-    // Re-register device and start heartbeat with the new active user ID
+    final identity = await DeviceIdentityService().getOrCreateIdentity();
+    final effectiveUserId =
+        identity.deviceId.isNotEmpty ? identity.deviceId : event.userId;
+
+    await SettingsService().saveActiveUserId(effectiveUserId);
+    _currentUserId = effectiveUserId;
+
+    // Re-register device and start heartbeat with the device ID
     try {
       final discoveryService = DeviceDiscoveryService();
       await discoveryService.registerDevice();
@@ -829,15 +833,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     } catch (_) {}
 
     _wsService.disconnect();
-    _wsService.setUserId(event.userId);
+    _wsService.setUserId(effectiveUserId);
     _wsService.connect();
 
-    // Mở kênh tín hiệu cuộc gọi ngay khi biết mình là ai — KHÔNG đợi tới lúc
-    // người dùng bấm gọi. Máy phải có mặt trên /call/ws thì người khác mới gọi
-    // tới được.
-    IncomingCallService().switchUser(event.userId);
+    // Mở kênh tín hiệu cuộc gọi ngay khi biết mình là ai
+    IncomingCallService().switchUser(effectiveUserId);
 
-    emit(state.copyWith(currentUserId: event.userId));
+    final name = await SettingsService().getLoggedInDisplayName();
+    emit(state.copyWith(
+      currentUserId: effectiveUserId,
+      myDisplayName: name,
+    ));
 
     // Trigger reload
     add(LoadConversationsEvent());

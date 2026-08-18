@@ -1,0 +1,987 @@
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Sent event: typing_state
+I/flutter ( 4252): [ChatWS] Retrying connection...
+I/flutter ( 4252): [ChatWS] Sent event: typing_state
+I/flutter ( 4252): [ChatWS] Sent event: send_message
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [ChatWS] Received event: msg_delivered
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Stopped BLE Advertising.
+I/flutter ( 4252): [BleDiscovery] Advertising status update: advertising=false, error=null
+I/flutter ( 4252): [ChatWS] Received event: heartbeat
+I/flutter ( 4252): [Presence] heartbeat  izii-d-5fdcc2f1 → onlineSynced
+I/flutter ( 4252): [Presence] bản đồ hiện tại: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [ChatWS] Received event: heartbeat
+I/flutter ( 4252): [Presence] heartbeat  izii-d-5fdcc2f1 → onlineSynced
+I/flutter ( 4252): [Presence] bản đồ hiện tại: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: FlutterBluePlusException | setNotifyValue | fbp-code: 1 | Timed out after 15s
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -57
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: presence_update
+I/flutter ( 4252): [Presence] presence_update  izii-d-5fdcc2f1 → onlineSynced
+I/flutter ( 4252): [Presence] bản đồ hiện tại: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Sent event: heartbeat
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -53
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -53
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -54
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -54
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -54
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [FBP] disconnect: enforcing 2000ms disconnect gap, delaying 31ms
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -54
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [ChatWS] Received event: heartbeat
+I/flutter ( 4252): [Presence] heartbeat  izii-d-5fdcc2f1 → onlineSynced
+I/flutter ( 4252): [Presence] bản đồ hiện tại: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [FBP] disconnect: enforcing 2000ms disconnect gap, delaying 68ms
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Connection closed.
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [ChatWS] Retrying connection...
+I/flutter ( 4252): [ChatWS] Connecting to ws://10.185.217.93:8080/chat?token=iZiiServerSecretKey2026 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] GATT Server configured with service: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Started BLE Advertising. Service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c, localName: null
+I/flutter ( 4252): [BleDiscovery] Advertising status update: advertising=true, error=null
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [DeviceDiscovery] ✅ Device registered: izii-d-dd43cd39
+I/flutter ( 4252): [DeviceDiscovery] Heartbeat stopped
+I/flutter ( 4252): [DeviceDiscovery] Starting heartbeat (every 30s)
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Đang gửi 1 thay đổi lên server...
+I/flutter ( 4252): [SyncService]    📦 chat_messages → insert
+I/flutter ( 4252): [SyncService] ✅ PUSH thành công! Server đã nhận 1 thay đổi.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService]    🔄 chat_messages → insert: id=4f556925-3224-4f8a-93cd-0968b53faa98
+I/flutter ( 4252): [SyncService] 📥 Trang 1: nhận 1 cập nhật
+I/flutter ( 4252): [SyncService] ✅ Đã ghi 1 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection timed out (OS Error: Connection timed out, errno = 110), address = 10.185.217.93, port = 45800
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: FlutterBluePlusException | setNotifyValue | fbp-code: 1 | Timed out after 15s
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Retrying connection...
+I/flutter ( 4252): [ChatWS] Connecting to ws://10.185.217.93:8080/chat?token=iZiiServerSecretKey2026 ...
+I/flutter ( 4252): [ChatWS] Connected successfully.
+I/flutter ( 4252): [ChatWS] Sent event: presence_update
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: send_message
+I/flutter ( 4252): [ChatWS] Sent event: msg_delivered
+I/flutter ( 4252): [ChatWS] Sent event: msg_read
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [FBP] disconnect: enforcing 2000ms disconnect gap, delaying 154ms
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -47
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [FBP] disconnect: enforcing 2000ms disconnect gap, delaying 108ms
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -49
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [FBP] disconnect: enforcing 2000ms disconnect gap, delaying 127ms
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [BleDiscovery] Discovered peer: iZii-ios-mqpaxasx (izii-d-ble-683ec082b63b) RSSI: -49
+I/flutter ( 4252): [BleDiscovery] Discovered known authenticated peer izii-d-ble-683ec082b63b. Auto-connecting...
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Connecting to BLE device: 68:3E:C0:82:B6:3B (ID: izii-d-ble-683ec082b63b)...
+I/flutter ( 4252): [ChatWS] Sent event: typing_state
+I/flutter ( 4252): [BleDiscovery] Requesting MTU 256 for Android...
+I/flutter ( 4252): [BleDiscovery] Connected. Discovering services...
+I/flutter ( 4252): [BleDiscovery] iZii BLE P2P Characteristic not found. Clearing GATT cache and retrying...
+I/flutter ( 4252): [ChatWS] Sent event: typing_state
+I/flutter ( 4252): [ChatWS] Sent event: send_message
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [BleDiscovery] Connection or authentication failed: Exception: iZii BLE P2P Characteristic not found on target device.
+I/flutter ( 4252): [BleDiscovery] Starting BLE Scan for service UUID: f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c
+I/flutter ( 4252): [ChatWS] Received event: msg_delivered
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: msg_read
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: typing_state
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: typing_state
+I/flutter ( 4252): [ChatWS] Received event: send_message
+I/flutter ( 4252): [ChatWS] Sent event: msg_delivered
+I/flutter ( 4252): [ChatWS] Sent event: msg_read
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: heartbeat
+I/flutter ( 4252): [Presence] heartbeat  izii-d-5fdcc2f1 → onlineSynced
+I/flutter ( 4252): [Presence] bản đồ hiện tại: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Sent event: heartbeat
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [BleDiscovery] BLE Scan stopped.
+I/flutter ( 4252): [BleDiscovery] Stopped BLE Advertising.
+I/flutter ( 4252): [BleDiscovery] Advertising status update: advertising=false, error=null
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [DeviceUser] Token cũ không còn hợp lệ (server đã dựng lại?) — đã xoá. Máy cần quét mã đăng ký mới.
+I/flutter ( 4252): [DeviceUser] Danh tính giữ nguyên izii-d-dd43cd39, tên hiển thị → "Vinh Phan (305629) · iZii-android-mrrx5uiz"
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [Settings] Đã chuyển device token từ "http://10.107.156.38:8080" sang "http://10.185.217.93:8080".
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: heartbeat
+I/flutter ( 4252): [Presence] heartbeat  izii-d-5fdcc2f1 → onlineSynced
+I/flutter ( 4252): [Presence] bản đồ hiện tại: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Sent event: heartbeat
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> insert
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_job_safety_configs -> insert
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_safety_checkin_logs -> insert
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: grow_rooms -> update
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Đang gửi 5 thay đổi lên server...
+I/flutter ( 4252): [SyncService]    📦 tasks → insert
+I/flutter ( 4252): [SyncService]    📦 mushroom_jobs → insert
+I/flutter ( 4252): [SyncService]    📦 mushroom_job_safety_configs → insert
+I/flutter ( 4252): [SyncService]    📦 mushroom_safety_checkin_logs → insert
+I/flutter ( 4252): [SyncService]    📦 grow_rooms → update
+I/flutter ( 4252): [SyncService] ⛔ Server từ chối (assignee_not_checked_in): 'V' chưa điểm danh đầu ca nên không giao được công việc Làm việc một mình. Cảnh báo an toàn cần biết ĐÍCH DANH ai đang trong phòng.
+I/flutter ( 4252): [SyncService]    → Đã đưa 1 thay đổi ra khỏi hàng đợi để không chặn phần còn lại.
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Đang gửi 4 thay đổi lên server...
+I/flutter ( 4252): [SyncService]    📦 tasks → insert
+I/flutter ( 4252): [SyncService]    📦 mushroom_job_safety_configs → insert
+I/flutter ( 4252): [SyncService]    📦 mushroom_safety_checkin_logs → insert
+I/flutter ( 4252): [SyncService]    📦 grow_rooms → update
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: d3da9409-1923-4e5d-97ab-7471376785f0, project_id: f93ff9e7-be6a-4b0d-a796-fba17aeb523a, title: Alone Worker (Solo) (Room 12), description: Alone Worker (Solo) at Grow Room. Limit: 45 mins. Operator: V. CO: 0.0 ppm, CO2: 0.0 ppm, status: in_progress, priority: high, created_at: 2026-08-18T01:04:32.664824}
+I/flutter ( 4252): [SyncService] ✅ PUSH thành công! Server đã nhận 4 thay đổi.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: 9be5c496-8914-4301-80c5-0141dd532b46, job_id: 4082bff5-cd58-49aa-b28f-a44fa595949d, check_in_interval_minutes: 45, grace_period_minutes: 5, escalation_target: supervisor, auto_start_on_job_begin: true, alarm_type: push_inapp, created_at: 2026-08-18T01:04:32.711024}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: 9164e513-9587-423b-91f7-8422e5834f42, job_id: 4082bff5-cd58-49aa-b28f-a44fa595949d, worker_id: V, event_type: start, notes: Alone Worker job started. Limit: 45 mins. CO: 0.0 ppm, CO2: 0.0 ppm, timestamp: 2026-08-18T01:04:32.732250}
+I/flutter ( 4252): [ChatWS] Received event: sync_trigger
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: room_12, status: active, current_stage: alone_worker, updated_at: 2026-08-18T01:04:32.756109}I/flutter ( 4252): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 4252): [SyncService]    🔄 tasks → insert: id=d3da9409-1923-4e5d-97ab-7471376785f0
+I/flutter ( 4252): [SyncService]    🔄 mushroom_job_safety_configs → insert: id=9be5c496-8914-4301-80c5-0141dd532b46
+I/flutter ( 4252): [SyncService]    🔄 mushroom_safety_checkin_logs → insert: id=9164e513-9587-423b-91f7-8422e5834f42
+I/flutter ( 4252): [SyncService]    🔄 grow_rooms → update: id=room_12
+I/flutter ( 4252): [SyncService] 📥 Trang 1: nhận 4 cập nhật
+I/flutter ( 4252): [SyncService] ✅ Đã ghi 4 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: heartbeat
+I/flutter ( 4252): [Presence] heartbeat  izii-d-5fdcc2f1 → onlineSynced
+I/flutter ( 4252): [Presence] bản đồ hiện tại: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: 08deff12-62a6-4414-9a58-6bdaf7def501, status: review, completed_at: null, alarm_triggered: false}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Received event: sync_trigger
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: ae3ea505-041c-4f41-b8b6-abace78dd04c, status: review}
+I/flutter ( 4252): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService]    🔄 mushroom_jobs → update: id=08deff12-62a6-4414-9a58-6bdaf7def501
+I/flutter ( 4252): [SyncService]    🔄 tasks → update: id=ae3ea505-041c-4f41-b8b6-abace78dd04c
+I/flutter ( 4252): [SyncService] 📥 Trang 1: nhận 2 cập nhật
+I/flutter ( 4252): [SyncService] ✅ Đã ghi 2 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Sent event: heartbeat
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: 08deff12-62a6-4414-9a58-6bdaf7def501, status: completed, completed_at: 2026-08-18T01:04:59.614249, alarm_triggered: false}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: ae3ea505-041c-4f41-b8b6-abace78dd04c, status: done}
+I/flutter ( 4252): [ChatWS] Received event: sync_trigger
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: room_12, status: idle, current_stage: idle, updated_at: 2026-08-18T01:04:59.651319}
+I/flutter ( 4252): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService]    🔄 mushroom_jobs → update: id=08deff12-62a6-4414-9a58-6bdaf7def501
+I/flutter ( 4252): [SyncService]    🔄 tasks → update: id=ae3ea505-041c-4f41-b8b6-abace78dd04c
+I/flutter ( 4252): [SyncService]    🔄 grow_rooms → update: id=room_12
+I/flutter ( 4252): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter ( 4252): [SyncService] ✅ Đã ghi 3 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Connection closed.
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [ChatWS] Retrying connection...
+I/flutter ( 4252): [ChatWS] Connecting to ws://10.185.217.93:8080/chat?token=iZiiServerSecretKey2026 ...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [ChatWS] Connected successfully.
+I/flutter ( 4252): [ChatWS] Sent event: presence_update
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: 01e3983e-1fcd-4d1c-b952-435adb4ac36c, status: completed, completed_at: 2026-08-18T01:05:18.045981, alarm_triggered: false}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: 5339acef-d168-445e-b426-7afc0277375f, status: done}
+I/flutter ( 4252): [ChatWS] Received event: sync_trigger
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: room_10, status: idle, current_stage: idle, updated_at: 2026-08-18T01:05:18.112107}
+I/flutter ( 4252): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService]    🔄 mushroom_jobs → update: id=01e3983e-1fcd-4d1c-b952-435adb4ac36c
+I/flutter ( 4252): [SyncService]    🔄 tasks → update: id=5339acef-d168-445e-b426-7afc0277375f
+I/flutter ( 4252): [SyncService]    🔄 grow_rooms → update: id=room_10
+I/flutter ( 4252): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter ( 4252): [SyncService] ✅ Đã ghi 3 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: heartbeat
+I/flutter ( 4252): [Presence] heartbeat  izii-d-5fdcc2f1 → onlineSynced
+I/flutter ( 4252): [Presence] bản đồ hiện tại: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: grow_rooms -> update
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter ( 4252): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Đang gửi 9 thay đổi lên server...
+I/flutter ( 4252): [SyncService]    📦 grow_rooms → update
+I/flutter ( 4252): [SyncService]    📦 mushroom_jobs → update
+I/flutter ( 4252): [SyncService]    📦 tasks → update
+I/flutter ( 4252): [SyncService]    📦 mushroom_jobs → update
+I/flutter ( 4252): [SyncService]    📦 tasks → update
+I/flutter ( 4252): [SyncService]    📦 mushroom_jobs → update
+I/flutter ( 4252): [SyncService]    📦 tasks → update
+I/flutter ( 4252): [SyncService]    📦 mushroom_jobs → update
+I/flutter ( 4252): [SyncService]    📦 tasks → update
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: room_1, status: idle, current_stage: idle, day_in_cycle: 1, updated_at: 2026-08-18T01:05:25.890277}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: f83ec370-e0f3-467a-a0c2-cf90bd5f3c24, status: completed, completed_at: 2026-08-18T01:05:25.907383, alarm_triggered: false}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: 47ceba36-de94-4b33-84bf-4cf295e4f0f4, status: done}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: a43dafce-7134-4bc6-b013-a0e570fc6841, status: completed, completed_at: 2026-08-18T01:05:25.926895, alarm_triggered: false}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: 034b3c4a-3225-4f9d-a712-34be1447854d, status: done}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: ba3be345-34fe-4998-a557-3a86dd47de0f, status: completed, completed_at: 2026-08-18T01:05:25.942947, alarm_triggered: false}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: f2fe195e-20fd-45f4-b40f-73596c434642, status: done}
+I/flutter ( 4252): [ChatWS] Received event: event_reaction
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: 649d22b6-fdc5-47b8-adb3-92e8927325af, status: completed, completed_at: 2026-08-18T01:05:25.959613, alarm_triggered: false}
+I/flutter ( 4252): [ChatWS] Received event: sync_trigger
+I/flutter ( 4252): [ChatWS] Real-time event reaction received: {id: da113143-6350-4e83-aff1-38ac06074033, status: done}
+I/flutter ( 4252): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter ( 4252): [SyncService] ✅ PUSH thành công! Server đã nhận 9 thay đổi.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService]    🔄 grow_rooms → update: id=room_1
+I/flutter ( 4252): [SyncService]    🔄 mushroom_jobs → update: id=f83ec370-e0f3-467a-a0c2-cf90bd5f3c24
+I/flutter ( 4252): [SyncService]    🔄 tasks → update: id=47ceba36-de94-4b33-84bf-4cf295e4f0f4
+I/flutter ( 4252): [SyncService]    🔄 mushroom_jobs → update: id=a43dafce-7134-4bc6-b013-a0e570fc6841
+I/flutter ( 4252): [SyncService]    🔄 tasks → update: id=034b3c4a-3225-4f9d-a712-34be1447854d
+I/flutter ( 4252): [SyncService]    🔄 mushroom_jobs → update: id=ba3be345-34fe-4998-a557-3a86dd47de0f
+I/flutter ( 4252): [SyncService]    🔄 tasks → update: id=f2fe195e-20fd-45f4-b40f-73596c434642
+I/flutter ( 4252): [SyncService]    🔄 mushroom_jobs → update: id=649d22b6-fdc5-47b8-adb3-92e8927325af
+I/flutter ( 4252): [SyncService]    🔄 tasks → update: id=da113143-6350-4e83-aff1-38ac06074033
+I/flutter ( 4252): [SyncService] 📥 Trang 1: nhận 9 cập nhật
+I/flutter ( 4252): [SyncService] ✅ Đã ghi 9 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Sent event: heartbeat
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Received event: heartbeat
+I/flutter ( 4252): [Presence] heartbeat  izii-d-5fdcc2f1 → onlineSynced
+I/flutter ( 4252): [Presence] bản đồ hiện tại: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Connection closed.
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [ChatWS] Retrying connection...
+I/flutter ( 4252): [ChatWS] Connecting to ws://10.185.217.93:8080/chat?token=iZiiServerSecretKey2026 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 1 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Connection timed out (OS Error: Connection timed out, errno = 110), address = 10.185.217.93, port = 42200
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [ChatWS] Retrying connection...
+I/flutter ( 4252): [ChatWS] Connecting to ws://10.185.217.93:8080/chat?token=iZiiServerSecretKey2026 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [SyncService] ! Không thể kéo dữ liệu từ Server: The request connection took longer than 0:00:20.000000 and it was aborted. To get rid of this exception, try raising the RequestOptions.connectTimeout above the duration of 0:00:20.000000 or improve the response time of the server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [DeviceDiscovery] ! Heartbeat failed: Connection timeout
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection timeout
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=offline
+I/flutter ( 4252): [ChatWS] Connected successfully.
+I/flutter ( 4252): [ChatWS] Sent event: presence_update
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService]    🔄 mushroom_departments → insert: id=DEP004
+I/flutter ( 4252): [SyncService]    🔄 mushroom_employees → insert: id=000000
+I/flutter ( 4252): [SyncService] 📥 Trang 1: nhận 2 cập nhật
+I/flutter ( 4252): [SyncService] ✅ Đã ghi 2 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [Presence] 🔄 làm mới: server báo 1 máy trực tuyến · xoá 0 mục · tô xanh 1 mục
+I/flutter ( 4252): [Presence]    · device_id=izii-d-5fdcc2f1 user_id=izii-d-5fdcc2f1
+I/flutter ( 4252): [Presence] bản đồ sau khi làm mới: izii-d-5fdcc2f1=onlineSynced
+I/flutter ( 4252): [SyncService] Không có cập nhật mới từ Server.
+I/flutter ( 4252): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter ( 4252): [ChatWS] Connection closed.
+I/flutter ( 4252): [SyncService] Đang kết nối tới server: http://10.185.217.93:8080 ...
+I/flutter ( 4252): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection timeout
+I/flutter ( 4252): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter ( 4252): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter ( 4252): [ChatWS] Retrying connection...
+I/flutter ( 4252): [ChatWS] Connecting to ws://10.185.217.93:8080/chat?token=iZiiServerSecretKey2026 ...
