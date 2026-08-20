@@ -637,6 +637,8 @@ IconData _iconForModule(String moduleId) {
       return Icons.account_balance_rounded;
     case 'izii.mushrooms':
       return Icons.agriculture_rounded;
+    case 'izii.clinic_pharma':
+      return Icons.local_hospital_rounded;
     default:
       return Icons.extension_rounded;
   }
@@ -658,6 +660,8 @@ Color _colorForModule(String moduleId) {
       return const Color(0xFF06B6D4);
     case 'izii.mushrooms':
       return const Color(0xFF10B981);
+    case 'izii.clinic_pharma':
+      return const Color(0xFF0EA5E9);
     default:
       return IZiiColors.primary;
   }
@@ -679,6 +683,8 @@ String _routeForModule(String moduleId) {
       return '/accountant';
     case 'izii.mushrooms':
       return '/mushrooms';
+    case 'izii.clinic_pharma':
+      return '/clinic';
     default:
       return '/';
   }

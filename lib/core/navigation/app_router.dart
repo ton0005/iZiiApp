@@ -40,6 +40,16 @@ import '../../features/sharing/shared_with_me_screen.dart';
 import '../../features/sharing/community_feed_screen.dart';
 import '../../modules/communication/screens/chat_inbox_screen.dart';
 import '../../modules/communication/screens/conversation_screen.dart';
+import '../../modules/clinic_pharma/clinic_pharma_module.dart';
+import '../../modules/clinic_pharma/screens/patients_list_screen.dart';
+import '../../modules/clinic_pharma/screens/patient_form_screen.dart';
+import '../../modules/clinic_pharma/screens/doctors_list_screen.dart';
+import '../../modules/clinic_pharma/screens/doctor_form_screen.dart';
+import '../../modules/clinic_pharma/screens/appointments_list_screen.dart';
+import '../../modules/clinic_pharma/screens/appointment_form_screen.dart';
+import '../../modules/clinic_pharma/screens/medical_visit_screen.dart';
+import '../../modules/clinic_pharma/screens/medicines_screen.dart';
+import '../../modules/clinic_pharma/screens/medicine_form_screen.dart';
 
 AgentToolRegistry _buildToolRegistry() {
   final registry = AgentToolRegistry();
@@ -59,6 +69,9 @@ AgentToolRegistry _buildToolRegistry() {
     registry.registerTool(t);
   }
   for (final t in MushroomsModule().agentTools) {
+    registry.registerTool(t);
+  }
+  for (final t in ClinicPharmaModule().agentTools) {
     registry.registerTool(t);
   }
   return registry;
@@ -462,6 +475,141 @@ final appRouter = GoRouter(
         final id = state.pathParameters['id'] ?? '';
         return ConversationScreen(conversationId: id);
       },
+    ),
+    // Clinic & Pharma module routes
+    GoRoute(
+      path: '/clinic',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const ModuleDashboardScreen(moduleId: 'izii.clinic_pharma');
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/patients',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const PatientsListScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/patients/form',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const PatientFormScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/doctors',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const DoctorsListScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/doctors/form',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const DoctorFormScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/appointments',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const AppointmentsListScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/appointments/form',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const AppointmentFormScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/visits/form',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          final extra = state.extra as Map<String, dynamic>?;
+          return MedicalVisitScreen(
+            patient: extra?['patient'] as Map<String, dynamic>?,
+            appointment: extra?['appointment'] as Map<String, dynamic>?,
+          );
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/medicines',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const MedicinesScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/medicines/form',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const MedicineFormScreen();
+        },
+      ),
     ),
   ],
 );

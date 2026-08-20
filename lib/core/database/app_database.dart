@@ -14,6 +14,7 @@ import '../../modules/accountant/database/tables.dart';
 import '../community/database/tables.dart';
 import '../../modules/mushrooms/database/tables.dart';
 import '../../modules/communication/database/tables.dart';
+import '../../modules/clinic_pharma/database/tables.dart';
 
 import 'core_tables.dart';
 
@@ -85,7 +86,14 @@ part 'app_database.g.dart';
   DeviceTrustLedger,
   LocalBlePeers,
   InAppNotifications,
-  NotificationSettingsTable
+  NotificationSettingsTable,
+  // Clinic & Pharma Management
+  Doctors,
+  Patients,
+  Appointments,
+  MedicalVisits,
+  Prescriptions,
+  PrescriptionItems,
 ])
 class AppDatabase extends _$AppDatabase {
   static AppDatabase _instance = AppDatabase._internal();
@@ -100,7 +108,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 26;
+  int get schemaVersion => 27;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -438,6 +446,26 @@ class AppDatabase extends _$AppDatabase {
             } catch (_) {}
             try {
               await m.createTable(mushroomPayrollCalculations);
+            } catch (_) {}
+          }
+          if (from < 27) {
+            try {
+              await m.createTable(doctors);
+            } catch (_) {}
+            try {
+              await m.createTable(patients);
+            } catch (_) {}
+            try {
+              await m.createTable(appointments);
+            } catch (_) {}
+            try {
+              await m.createTable(medicalVisits);
+            } catch (_) {}
+            try {
+              await m.createTable(prescriptions);
+            } catch (_) {}
+            try {
+              await m.createTable(prescriptionItems);
             } catch (_) {}
           }
         },

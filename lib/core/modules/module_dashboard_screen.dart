@@ -418,6 +418,35 @@ class ModuleDashboardScreen extends StatelessWidget {
       ];
     }
 
+    if (moduleId == 'izii.clinic_pharma') {
+      return [
+        _ModuleAction(
+          label: context.tr('clinic_action_patients'),
+          subtitle: context.tr('clinic_action_patients_sub'),
+          path: '/clinic/patients',
+          icon: Icons.people_alt_rounded,
+        ),
+        _ModuleAction(
+          label: context.tr('clinic_action_doctors'),
+          subtitle: context.tr('clinic_action_doctors_sub'),
+          path: '/clinic/doctors',
+          icon: Icons.medical_services_rounded,
+        ),
+        _ModuleAction(
+          label: context.tr('clinic_action_appointments'),
+          subtitle: context.tr('clinic_action_appointments_sub'),
+          path: '/clinic/appointments',
+          icon: Icons.event_available_rounded,
+        ),
+        _ModuleAction(
+          label: context.tr('clinic_action_medicines'),
+          subtitle: context.tr('clinic_action_medicines_sub'),
+          path: '/clinic/medicines',
+          icon: Icons.medication_rounded,
+        ),
+      ];
+    }
+
     return [];
   }
 }
