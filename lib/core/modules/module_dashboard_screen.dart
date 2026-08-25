@@ -439,6 +439,12 @@ class ModuleDashboardScreen extends StatelessWidget {
           icon: Icons.event_available_rounded,
         ),
         _ModuleAction(
+          label: context.tr('clinic_action_visits'),
+          subtitle: context.tr('clinic_action_visits_sub'),
+          path: '/clinic/visits/form',
+          icon: Icons.description_rounded,
+        ),
+        _ModuleAction(
           label: context.tr('clinic_action_medicines'),
           subtitle: context.tr('clinic_action_medicines_sub'),
           path: '/clinic/medicines',

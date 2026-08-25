@@ -44,6 +44,8 @@ dependencies:
   file_picker: ^11.0.2
   path_provider: ^2.1.5
   path: ^1.9.1
+  pdf: ^3.11.3
+  printing: ^5.14.3
 
   # Auth & Security
   flutter_secure_storage: ^10.3.0
@@ -102,3 +104,11 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/lottie/
+    - assets/fonts/
+
+  fonts:
+    - family: NotoSans
+      fonts:
+        - asset: assets/fonts/NotoSans-Regular.ttf
+        - asset: assets/fonts/NotoSans-Bold.ttf
+          weight: 700

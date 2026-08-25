@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import '../../core/modules/module_interface.dart';
 import '../../core/modules/module_manifest.dart';
@@ -200,6 +201,14 @@ class ClinicPharmaModule implements IZiiModule {
       'clinic_add_medicine_line': 'Thêm thuốc',
       'clinic_dosage_instructions': 'Liều dùng',
       'clinic_dispense_prescription': 'Xuất thuốc',
+      'clinic_print_prescription_title': 'In đơn thuốc',
+      'clinic_facility_authority': 'Sở Y tế',
+      'clinic_facility_name': 'Tên cơ sở khám bệnh',
+      'clinic_facility_phone': 'Điện thoại',
+      'clinic_patient_weight': 'Cân nặng',
+      'clinic_prescription_advice': 'Lời dặn',
+      'clinic_guardian_name': 'Tên bố/mẹ (nếu là trẻ em)',
+      'clinic_refresh_preview': 'Cập nhật xem trước',
       'clinic_medicines_title': 'Kho thuốc',
       'clinic_no_medicines': 'Chưa có thuốc nào trong kho',
       'clinic_medicine_form_title': 'Thêm thuốc',
@@ -214,6 +223,8 @@ class ClinicPharmaModule implements IZiiModule {
       'clinic_action_doctors_sub': 'Danh sách bác sĩ',
       'clinic_action_appointments': 'Lịch hẹn',
       'clinic_action_appointments_sub': 'Đặt và theo dõi lịch khám',
+      'clinic_action_visits': 'Phiếu khám',
+      'clinic_action_visits_sub': 'Khám bệnh và kê đơn thuốc',
       'clinic_action_medicines': 'Kho thuốc',
       'clinic_action_medicines_sub': 'Tồn kho và hạn dùng',
     });
@@ -262,6 +273,14 @@ class ClinicPharmaModule implements IZiiModule {
       'clinic_add_medicine_line': 'Add medicine',
       'clinic_dosage_instructions': 'Dosage instructions',
       'clinic_dispense_prescription': 'Dispense',
+      'clinic_print_prescription_title': 'Print Prescription',
+      'clinic_facility_authority': 'Health authority',
+      'clinic_facility_name': 'Facility name',
+      'clinic_facility_phone': 'Phone',
+      'clinic_patient_weight': 'Weight',
+      'clinic_prescription_advice': 'Advice',
+      'clinic_guardian_name': 'Guardian name (if child)',
+      'clinic_refresh_preview': 'Refresh preview',
       'clinic_medicines_title': 'Pharmacy Inventory',
       'clinic_no_medicines': 'No medicines in stock yet',
       'clinic_medicine_form_title': 'Add Medicine',
@@ -276,6 +295,8 @@ class ClinicPharmaModule implements IZiiModule {
       'clinic_action_doctors_sub': 'Doctor directory',
       'clinic_action_appointments': 'Appointments',
       'clinic_action_appointments_sub': 'Book and track visits',
+      'clinic_action_visits': 'Medical Visit',
+      'clinic_action_visits_sub': 'Examine and prescribe',
       'clinic_action_medicines': 'Pharmacy Inventory',
       'clinic_action_medicines_sub': 'Stock and expiry tracking',
     });
@@ -302,6 +323,7 @@ class _ClinicPharmaDashboardWidgetState
   int _totalPatients = 0;
   int _lowStockMedicines = 0;
   bool _loading = true;
+  bool _seeding = false;
 
   @override
   void initState() {
@@ -329,6 +351,25 @@ class _ClinicPharmaDashboardWidgetState
         _lowStockMedicines = lowStock;
         _loading = false;
       });
+    }
+  }
+
+  Future<void> _seedSampleData() async {
+    setState(() => _seeding = true);
+    try {
+      final repo = ClinicPharmaRepository();
+      final hadData = (await repo.getPatients()).isNotEmpty;
+      await repo.seedSampleData();
+      await _loadStats();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(hadData
+              ? 'Đã có dữ liệu, bỏ qua tạo mẫu.'
+              : 'Đã tạo dữ liệu mẫu: bác sĩ, bệnh nhân, thuốc, lịch hẹn.'),
+        ));
+      }
+    } finally {
+      if (mounted) setState(() => _seeding = false);
     }
   }
 
@@ -360,6 +401,23 @@ class _ClinicPharmaDashboardWidgetState
                   'clinic_low_stock_medicines', Icons.medication_outlined),
             ],
           ),
+          if (kDebugMode) ...[
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: _seeding ? null : _seedSampleData,
+                icon: _seeding
+                    ? const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.science_outlined, size: 16),
+                label: const Text('Nạp dữ liệu mẫu',
+                    style: TextStyle(fontSize: 12)),
+              ),
+            ),
+          ],
         ],
       ),
     );

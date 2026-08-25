@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../repository.dart';
@@ -169,6 +170,21 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
         if (_dispenseImmediately) {
           await repo.dispensePrescription(prescriptionId);
         }
+      }
+
+      if (!mounted) return;
+
+      if (prescriptionId != null) {
+        final visit = await repo.getVisitById(visitId);
+        final prescriptions = await repo.getPrescriptionsForVisit(visitId);
+        final prescription = prescriptions.firstWhere((p) => p['id'] == prescriptionId);
+        if (!mounted) return;
+        await context.push('/clinic/prescriptions/print', extra: {
+          'patient': _selectedPatient,
+          'doctor': _selectedDoctor,
+          'visit': visit,
+          'prescription': prescription,
+        });
       }
 
       if (mounted) Navigator.of(context).pop(true);

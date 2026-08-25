@@ -50,6 +50,7 @@ import '../../modules/clinic_pharma/screens/appointment_form_screen.dart';
 import '../../modules/clinic_pharma/screens/medical_visit_screen.dart';
 import '../../modules/clinic_pharma/screens/medicines_screen.dart';
 import '../../modules/clinic_pharma/screens/medicine_form_screen.dart';
+import '../../modules/clinic_pharma/screens/prescription_print_screen.dart';
 
 AgentToolRegistry _buildToolRegistry() {
   final registry = AgentToolRegistry();
@@ -581,6 +582,25 @@ final appRouter = GoRouter(
           return MedicalVisitScreen(
             patient: extra?['patient'] as Map<String, dynamic>?,
             appointment: extra?['appointment'] as Map<String, dynamic>?,
+          );
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/prescriptions/print',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          final extra = state.extra as Map<String, dynamic>;
+          return PrescriptionPrintScreen(
+            patient: extra['patient'] as Map<String, dynamic>,
+            doctor: extra['doctor'] as Map<String, dynamic>?,
+            visit: extra['visit'] as Map<String, dynamic>,
+            prescription: extra['prescription'] as Map<String, dynamic>,
           );
         },
       ),

@@ -530,4 +530,127 @@ class ClinicPharmaRepository {
     );
     return id;
   }
+
+  // === SAMPLE DATA (for testing) ===
+
+  /// Populates the clinic with a handful of doctors, patients, pharmacy
+  /// stock and an appointment so the visit/prescription flow can be tried
+  /// out end-to-end. No-ops if patients already exist, so it's safe to call
+  /// repeatedly.
+  Future<void> seedSampleData() async {
+    if ((await getPatients()).isNotEmpty) return;
+
+    final doctorId1 = await addDoctor({
+      'name': 'Nguyễn Thị Hồng',
+      'specialty': 'Nội tổng quát',
+      'phone': '0909111222',
+      'email': 'bs.hong@example.com',
+    });
+    final doctorId2 = await addDoctor({
+      'name': 'Phạm Văn Đức',
+      'specialty': 'Nhi khoa',
+      'phone': '0909333444',
+      'email': 'bs.duc@example.com',
+    });
+
+    final patientId1 = await addPatient({
+      'full_name': 'Nguyễn Văn An',
+      'dob': DateTime(1985, 3, 12).toIso8601String(),
+      'gender': 'male',
+      'phone': '0901234567',
+      'address': '12 Trần Hưng Đạo, TP. Long Xuyên, An Giang',
+      'id_number': 'DN4090185001234',
+    });
+    await addPatient({
+      'full_name': 'Trần Thị Bình',
+      'dob': DateTime(1992, 7, 20).toIso8601String(),
+      'gender': 'female',
+      'phone': '0912345678',
+      'address': '45 Nguyễn Huệ, TP. Long Xuyên, An Giang',
+      'id_number': 'DN4092192005678',
+    });
+    final now = DateTime.now();
+    final childPatientId = await addPatient({
+      'full_name': 'Lê Minh Khôi',
+      'dob': DateTime(now.year - 4, 6, 1).toIso8601String(),
+      'gender': 'male',
+      'phone': '0987654321',
+      'address': '78 Lý Thường Kiệt, TP. Long Xuyên, An Giang',
+      'id_number': null,
+    });
+
+    await addMedicine(
+      name: 'Paracetamol 500mg',
+      price: 1000,
+      cost: 600,
+      stock: 500,
+      batchNumber: 'PC24001',
+      expiryDate: DateTime(now.year + 2, 1, 1).toIso8601String(),
+      dosageUnit: 'viên',
+    );
+    await addMedicine(
+      name: 'Amoxicillin 500mg',
+      price: 2500,
+      cost: 1500,
+      stock: 300,
+      batchNumber: 'AMX24007',
+      expiryDate: DateTime(now.year + 1, 6, 1).toIso8601String(),
+      requiresPrescription: true,
+      dosageUnit: 'viên',
+    );
+    await addMedicine(
+      name: 'Vitamin C 500mg',
+      price: 800,
+      cost: 400,
+      stock: 400,
+      batchNumber: 'VTC24003',
+      expiryDate: DateTime(now.year + 2, 3, 1).toIso8601String(),
+      dosageUnit: 'viên',
+    );
+    await addMedicine(
+      name: 'Oresol (bù nước điện giải)',
+      price: 3000,
+      cost: 1800,
+      stock: 200,
+      batchNumber: 'ORS24011',
+      expiryDate: DateTime(now.year + 2, 8, 1).toIso8601String(),
+      dosageUnit: 'gói',
+    );
+    await addMedicine(
+      name: 'Cefixim 200mg',
+      price: 4500,
+      cost: 3000,
+      stock: 150,
+      batchNumber: 'CFX24002',
+      expiryDate: DateTime(now.year + 1, 9, 1).toIso8601String(),
+      requiresPrescription: true,
+      dosageUnit: 'viên',
+    );
+    await addMedicine(
+      name: 'Siro ho Prospan',
+      price: 45000,
+      cost: 30000,
+      stock: 60,
+      batchNumber: 'PSP24005',
+      expiryDate: DateTime(now.year + 1, 12, 1).toIso8601String(),
+      dosageUnit: 'chai',
+    );
+
+    await addAppointment({
+      'patient_id': patientId1,
+      'doctor_id': doctorId1,
+      'scheduled_at':
+          DateTime(now.year, now.month, now.day, 9, 0).add(const Duration(days: 1)).toIso8601String(),
+      'reason': 'Khám tổng quát định kỳ',
+      'status': 'scheduled',
+    });
+    await addAppointment({
+      'patient_id': childPatientId,
+      'doctor_id': doctorId2,
+      'scheduled_at':
+          DateTime(now.year, now.month, now.day, 14, 30).toIso8601String(),
+      'reason': 'Sốt, ho, sổ mũi 2 ngày',
+      'status': 'scheduled',
+    });
+  }
 }
