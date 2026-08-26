@@ -67,20 +67,20 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
 
   String _fmtDuration(int? minutes) {
     if (minutes == null) return '—';
-    if (minutes < 60) return '$minutes phút';
-    return '${minutes ~/ 60} giờ ${minutes % 60} phút';
+    if (minutes < 60) return '$minutes min';
+    return '${minutes ~/ 60}h ${minutes % 60}m';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ai đang trong ca'),
+        title: const Text('Who is on Shift'),
         actions: [
           IconButton(
             onPressed: _load,
             icon: const Icon(Icons.refresh_rounded),
-            tooltip: 'Làm mới',
+            tooltip: 'Refresh',
           ),
         ],
       ),
@@ -101,7 +101,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                               color: Color(0xFF0F766E))),
                       const SizedBox(width: 14),
                       const Expanded(
-                        child: Text('người đang làm việc\nTự cập nhật mỗi 30 giây',
+                        child: Text('people currently on shift\nAuto-refreshes every 30s',
                             style: TextStyle(fontSize: 13, height: 1.4)),
                       ),
                     ],
@@ -121,9 +121,9 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                           child: Padding(
                             padding: EdgeInsets.all(32),
                             child: Text(
-                              'Hiện không có ai điểm danh.\n\n'
-                              'Nếu có người đang làm việc mà không hiện ở đây,\n'
-                              'nghĩa là họ chưa điểm danh đầu ca.',
+                              'No active shift check-ins found.\n\n'
+                              'If someone is working and not listed here,\n'
+                              'they have not checked in for their shift yet.',
                               textAlign: TextAlign.center,
                               style: TextStyle(height: 1.6),
                             ),
@@ -156,7 +156,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                   Text(
-                                    'Máy: ${s['device_name']} · điểm danh bằng '
+                                    'Device: ${s['device_name']} · Checked in via '
                                     '${_methodLabel(s['method']?.toString())}',
                                     style: const TextStyle(fontSize: 11),
                                   ),
@@ -172,7 +172,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                                           fontSize: 13,
                                           color: color)),
                                   if (minutes != null && minutes > 8 * 60)
-                                    const Text('ca dài',
+                                    const Text('long shift',
                                         style: TextStyle(fontSize: 10, color: Colors.orange)),
                                 ],
                               ),
@@ -188,13 +188,13 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
   String _methodLabel(String? m) {
     switch (m) {
       case 'nfc_badge':
-        return 'thẻ NFC';
+        return 'NFC Badge';
       case 'pin':
-        return 'mã PIN';
+        return 'PIN Code';
       case 'auto':
-        return 'tự động';
+        return 'Automatic';
       default:
-        return 'chọn tên';
+        return 'Name Selection';
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/izii_colors.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../../../core/localization/app_localizations.dart';
+import 'mushboom_monarto_screen.dart';
 
 class MushroomsDashboardScreen extends StatefulWidget {
   const MushroomsDashboardScreen({super.key});
@@ -55,6 +56,21 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
             ),
           ),
           actions: [
+            IconButton(
+              icon: const Icon(Icons.desktop_windows_rounded),
+              tooltip: 'Desktop View (Monarto)',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider.value(
+                      value: _bloc,
+                      child: const MushboomMonartoScreen(),
+                    ),
+                  ),
+                ).then((_) => _bloc.add(LoadRoomsEvent()));
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.refresh_rounded),
               onPressed: () => _bloc.add(LoadRoomsEvent()),

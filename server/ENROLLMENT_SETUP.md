@@ -1,4 +1,11 @@
+# Device Enrollment via QR / NFC — Installation & Setup Guide
 # Đăng ký thiết bị bằng QR / NFC — Hướng dẫn cài đặt
+
+> **Language / Ngôn ngữ:** [Tiếng Việt](#tiếng-việt) | [English](#english)
+
+---
+
+# Tiếng Việt
 
 > Dành cho **IT / quản trị hệ thống**.
 > Tài liệu cho nhân viên sử dụng: [`HUONG_DAN_NHAN_VIEN.md`](HUONG_DAN_NHAN_VIEN.md)
@@ -342,3 +349,319 @@ Lần gọi thứ hai **phải** trả lỗi 403. Nếu thành công thì cơ ch
 | `POST /admin/devices/{id}/revoke` | Admin | Thu hồi |
 
 \* Chỉ bắt buộc khi `IZIIAPP_REQUIRE_DEVICE_TOKEN=true`.
+
+---
+---
+
+# English
+
+> For **IT Administrators and System Engineers**.
+> Staff User Guide: [`HUONG_DAN_NHAN_VIEN.md`](HUONG_DAN_NHAN_VIEN.md)
+
+---
+
+## 1. What Problem This Feature Solves
+
+Previously, all devices shared a **single master secret string** (`IZIIAPP_SERVER_SECRET`).
+This secret allowed calling sensitive administrative routes such as `/admin/reset` (wiping the database entirely) and `/admin/config` (overwriting `.env` and rotating secrets). A single phone dropped or lost in a growing room could compromise the entire farm system. Furthermore, because the secret was shared, **individual revocation was impossible** — blocking a single compromised device required changing the secret across the entire mesh network and reconfiguring every remaining tablet and mobile phone manually.
+
+After implementing Device Enrollment:
+
+| | Before | After |
+|---|---|---|
+| Each device has | Identical shared secret | **Unique** device token, individually revocable |
+| Lost device | Rotate secret across whole system | Revoke in 1 click, takes 5 seconds |
+| Audit trail | Untraceable actor | Server-verified `actor_device_id` |
+| New device onboarding | Dictate secret over radio / write on paper | Scan QR code or tap NFC tag |
+
+Three separate secret security scopes are now enforced:
+
+```
+IZIIAPP_SERVER_SECRET → /peer-sync/*   server ↔ server communication
+IZIIAPP_ADMIN_SECRET  → /admin/*       administration (DO NOT distribute to worker devices)
+device token          → /sync/*        individually provisioned per device via QR/NFC
+```
+
+---
+
+## 2. Prerequisites & Preparation
+
+### 2.1 Hardware (NFC Only)
+
+| Tag Type | Memory Capacity | Assessment |
+|---|---|---|
+| **NTAG213** | 144 bytes | Sufficient, lowest cost — **Recommended** |
+| NTAG215 | 504 bytes | Ample space if additional payload is needed |
+
+You can purchase blank NFC stickers or plastic cards.
+
+> NFC tags are optional — the **QR code** enrollment path works independently without requiring any additional hardware.
+
+### 2.2 Server Update
+
+```powershell
+cd C:\...\izii_app\server
+python -c "import app"      # verify there are no import errors
+```
+
+Restart the server. The logs should include a new security scope line:
+
+```
+🔑 [AUTH] Secret scopes — server=present · admin=SHARED with server (should separate) · device=optional
+```
+
+The warning `admin=SHARED with server` indicates that admin secret separation is needed — see step 3.1.
+
+### 2.3 App Update
+
+```powershell
+cd C:\...\izii_app
+flutter pub get
+flutter analyze
+flutter build apk --release        # or build windows
+```
+
+Required permissions are pre-configured in the source code:
+
+| Platform | Permission | Status |
+|---|---|---|
+| Android | `CAMERA` | ✅ Existing |
+| Android | `NFC` + `uses-feature required=false` | ✅ Added |
+| iOS | `NSCameraUsageDescription` | ✅ Existing |
+| iOS | `NFCReaderUsageDescription` | ✅ Added |
+
+> ⚠️ **Manual step for iOS:** In Xcode, open **Runner → Signing & Capabilities → + Capability → Near Field Communication Tag Reading**. Without this capability enabled in Xcode, NFC reading will fail silently on iOS (QR code scanning will continue to work normally).
+
+---
+
+## 3. Configuration
+
+### 3.1 Separate Admin Secret — Action Required Immediately
+
+Open `server\.env` and add a **new** secret key (completely distinct from `IZIIAPP_SERVER_SECRET`):
+
+```ini
+IZIIAPP_ADMIN_SECRET=<SEPARATE-UNIQUE-RANDOM-STRING>
+```
+
+Generate a secure random string:
+
+```powershell
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+Restart the server. The startup log should now display `admin=dedicated`.
+
+> If left blank, the server temporarily falls back to `SERVER_SECRET` for backwards compatibility. While existing builds will still connect, the security vulnerability remains unpatched until a dedicated secret is set.
+
+### 3.2 Additional Options
+
+```ini
+# Invitation ticket Time-To-Live in seconds. 600 = 10 minutes.
+# Increase when writing wall-mounted NFC tags (e.g., 3600 for 1 hour).
+IZIIAPP_ENROLLMENT_TOKEN_TTL=600
+
+# ⚠️ KEEP false UNTIL ALL factory devices have completed enrollment.
+IZIIAPP_REQUIRE_DEVICE_TOKEN=false
+```
+
+### 3.3 Transition & Rollout Strategy
+
+Setting `IZIIAPP_REQUIRE_DEVICE_TOKEN=false` allows **unenrolled devices to continue syncing**. This enables seamless zero-downtime adoption:
+
+1. Enable the enrollment service while keeping strict enforcement disabled.
+2. Enroll active tablets and phones shift by shift without interrupting farm operations.
+3. Once the Devices Management screen confirms **all active devices are enrolled**, switch `IZIIAPP_REQUIRE_DEVICE_TOKEN=true`.
+
+> 🔴 Enabling `true` prematurely will **disconnect all unenrolled devices immediately across the entire facility**.
+
+---
+
+## 4. Enrolling the First Device
+
+The first device enrolled must be an **Administrator / Manager device** to gain administrative authority to issue enrollment tickets to other worker devices.
+
+1. On the manager device: Navigate to **Settings → Sync Server**
+   - Server URL: `http://192.168.x.x:8080`
+   - Auth Token: Enter the exact `IZIIAPP_ADMIN_SECRET` value
+2. Go to **Settings → Devices & Enrollment → Issue Enrollment Code**
+3. The screen will render a QR code with a countdown timer.
+4. On that device (or a second device): Tap the circular action button at the bottom of the Home screen → **Scan QR Code to Enroll**.
+
+The circular button icon changes from **orange** (unregistered) to **green** (enrolled).
+
+---
+
+## 4b. Two Device Types: Shared vs. Personal
+
+On the **Issue Enrollment Code** screen, administrators must select the **Device Type**. Selecting the wrong type requires revoking the device and re-enrolling it, so choose carefully:
+
+| | **Shared Device** (Default) | **Personal Device** |
+|---|---|---|
+| Typical Hardware | Wall-mounted tablets in M1, M2, Cool Room | Manager / Supervisor iPhone or iPad |
+| Usage Pattern | Multiple workers across rotating shifts | Single assigned user, taken home |
+| Shift Check-in | **Mandatory** | **Exempt** |
+| Session Expiry | 12 hours | Options: 8 / 12 / 16 / 24 hours, or Unlimited |
+| Identity on Records | Active checked-in worker | Device owner assigned at enrollment |
+| Alone Worker Safety | Blocked if shift check-in is missing | Allowed immediately |
+
+**Rationale for Personal Device Exemption:** Shift check-in exists to answer *"who is currently operating this terminal?"*. For shared room tablets, the answer changes every shift and must be refreshed. For a manager's personal device, the identity is permanently established at provisioning time; requiring daily check-ins introduces friction without providing any additional safety benefit.
+
+### Provisioning a Personal Device
+
+1. Open **Issue Enrollment Code** → Select **Personal**.
+2. **Owner Employee ID** *(Required)*: This serves as the system identity in lieu of daily check-in. It must match a valid Employee ID in the database (e.g., `EMP007`).
+3. **Owner Name**: Displayed on the device status banner and in the administrative device registry.
+4. **Max Shift Duration**: Applicable only when the owner manually taps "Start Shift" to appear on the active on-site personnel roster. Set to **Unlimited** if time tracking is not required.
+
+> 🔒 The mode is encoded into the **invitation ticket on the server**, not within the QR/NFC payload. A client device scanning the code cannot forge its mode to bypass check-in — it strictly inherits the permissions established by the admin.
+
+On personal devices, the banner at the top of the Home screen is styled in **purple** displaying the owner's name and `"Personal Device · Daily check-in exempt"`, replacing the default orange warning strip.
+
+Under **Settings → Devices & Enrollment**, personal terminals are marked with a distinct `PERSONAL` badge alongside the owner ID for regulatory compliance and safety auditing.
+
+---
+
+## 5. Writing to NFC Tags
+
+1. Manager device: **Issue Enrollment Code** → Generate ticket.
+2. Scroll down and tap **Write Ticket to NFC Tag**.
+3. Hold the NFC tag against the back of the device for 2–3 seconds.
+4. The system confirms with `✅ Enrollment ticket written to tag`.
+
+The NFC tag is now valid for enrolling **one** device within the configured TTL window.
+
+**Batch Onboarding Best Practice:**
+- Set `IZIIAPP_ENROLLMENT_TOKEN_TTL=3600` (1 hour) and write the tag prior to shift startup.
+- Mount the tag at the changing room or briefing room entrance.
+- Workers tap their assigned handheld devices to the tag upon entering.
+
+> ⚠️ Enrollment tickets are **strictly single-use**. To enroll multiple devices, write a new ticket after each scan or prepare distinct tags. This prevents lost tags from being used for unauthorized batch onboarding.
+
+**Recommendation:** Lock tags to **Read-Only** after writing (e.g., using the *NFC Tools* utility) to prevent malicious overwriting with counterfeit server endpoints.
+
+---
+
+## 6. Operations & Maintenance
+
+### 6.1 Inspecting and Revoking Devices
+
+Navigate to **Settings → Devices & Enrollment → Enrolled Devices List**.
+
+| Column / Indicator | Description |
+|---|---|
+| Green Dot | Active & authorized |
+| Gray Dot | Revoked |
+| Last Active | Timestamp of most recent API synchronization |
+
+To revoke access: Tap the 🚫 icon on the right. Confirm the prompt.
+
+> Revocation takes effect **instantaneously** without requiring a server restart. Data synchronized by the device prior to revocation remains intact.
+
+### 6.2 Lost Device Protocol
+
+1. Navigate to **Settings → Devices List** → Locate the compromised terminal → Tap 🚫 **Revoke**.
+2. Revocation is complete in 5 seconds. No other hardware requires reconfiguration.
+
+### 6.3 Hardware Replacement
+
+Revoke the damaged device, then generate a new enrollment code for the replacement unit. The new device will receive a distinct `device_id` and register as an updated node in the mesh directory.
+
+---
+
+## 7. Impact on Chat, Services, and Operations
+
+Following enrollment, the application transitions from **Demo Profiles** to **Verified Device Identities**:
+
+```
+User.id   = device_id      (verified by server via bearer token)
+User.name = device_name    (assigned during enrollment)
+```
+
+The Chat Contacts Directory is populated dynamically from enrolled terminals via `GET /devices/directory`.
+
+**Automatic Fallback:** When zero devices are enrolled, the client preserves fallback demo profiles (Quill Phan, Tran Thi Bich...). As soon as the first real device is enrolled, the system switches automatically to live hardware nodes.
+
+> ⚠️ **Architecture Note for Shared Terminals:** The baseline device identity model links **one device = one node**. If a tablet is shared across multiple shifts without user check-in, all shifts will log under the same device identity.
+>
+> While manageable in messaging, this is critical for **Alone Worker safety** — an alert stating `"device-abc123 is alone in Room 10"` does not identify the specific worker requiring assistance.
+>
+> For shared wall tablets, ensure workers perform **Shift Check-in** to bind their individual worker profile to the active terminal. The underlying architecture isolates `actor_device_id` and `actor_user_id` as distinct audit fields in all mutation logs.
+
+---
+
+## 8. Troubleshooting
+
+| Symptom | Probable Cause | Resolution |
+|---|---|---|
+| "Admin privileges required" when generating code | Auth Token does not match `IZIIAPP_ADMIN_SECRET` | Correct the token under Settings → Sync Server |
+| "Server has not configured IZIIAPP_ADMIN_SECRET" | Admin secret not defined in `.env` | Refer to Section 3.1 |
+| "Invalid or expired enrollment code" | Ticket exceeded TTL or has already been redeemed | Generate a new enrollment code |
+| "Too many requests" | IP rate-limit triggered (10 attempts / 5 min / IP) | Wait 5 minutes before retrying |
+| NFC button disabled / dimmed | Device lacks NFC hardware or NFC is disabled in OS | Enable NFC in system settings or use QR scanning |
+| iPhone fails to read NFC tags | Missing NFC capability in Xcode build | Refer to Section 2.3 |
+| "Tag does not support NDEF" | Incompatible tag standard | Use standard NTAG213 or NTAG215 tags |
+| "Tag capacity too small" | Tag capacity below 144 bytes | Replace with NTAG213 or larger |
+| Chat directory remains on demo users | No real devices enrolled yet | Enroll at least one device, then tap **Sync Device Directory** |
+
+Monitor live server logs:
+
+```powershell
+Get-Content data\logs\server.log -Tail 100 -Wait
+```
+
+Expected log signatures:
+
+```
+🎟️  [ENROLL] Issued invitation ticket, expires at ...
+✅ [ENROLL] Device izii-d-xxxx (Tablet M1) registered from 192.168.1.55
+⛔ [ENROLL] Rejected invalid ticket from 192.168.1.99
+🚫 [ENROLL] Revoked token for device izii-d-xxxx
+```
+
+---
+
+## 9. Command-Line Verification
+
+```powershell
+$admin = @{ 'X-iZii-Admin-Token' = '<IZIIAPP_ADMIN_SECRET>' }
+
+# 1. Issue an enrollment ticket
+$ticket = Invoke-RestMethod -Uri http://localhost:8080/admin/enrollment-token `
+    -Method Post -Headers $admin -Body '{"note":"test"}' -ContentType 'application/json'
+$ticket.payload_uri
+
+# 2. Exchange ticket for device token (simulating client terminal)
+$body = @{ token = $ticket.token; device_id = 'test-device-01'; device_name = 'Test Unit' } | ConvertTo-Json
+Invoke-RestMethod -Uri http://localhost:8080/devices/enroll -Method Post `
+    -Body $body -ContentType 'application/json'
+
+# 3. Attempt replay of the same ticket -> MUST RETURN 403 (Single-use enforcement)
+Invoke-RestMethod -Uri http://localhost:8080/devices/enroll -Method Post `
+    -Body $body -ContentType 'application/json'
+
+# 4. List all registered devices
+Invoke-RestMethod -Uri http://localhost:8080/admin/devices -Headers $admin
+
+# 5. Revoke the test device
+Invoke-RestMethod -Uri http://localhost:8080/admin/devices/test-device-01/revoke `
+    -Method Post -Headers $admin
+```
+
+The second exchange call **must return HTTP 403 Forbidden**. If it succeeds, single-use ticket protection is compromised — halt deployment and inspect backend token validation logic.
+
+---
+
+## 10. API Endpoint Reference
+
+| Endpoint | Required Authorization | Description |
+|---|---|---|
+| `POST /admin/enrollment-token` | Admin Secret | Issue single-use enrollment ticket |
+| `POST /devices/enroll` | Valid Ticket | Exchange ticket for permanent device token |
+| `GET /devices/directory` | Device Token* | Retrieve live mesh device directory |
+| `GET /devices/enroll/status` | Public | Inspect server enrollment policy & state |
+| `GET /admin/devices` | Admin Secret | Query all enrolled terminals |
+| `POST /admin/devices/{id}/revoke` | Admin Secret | Revoke device access immediately |
+
+\* Enforced strictly when `IZIIAPP_REQUIRE_DEVICE_TOKEN=true`.
+

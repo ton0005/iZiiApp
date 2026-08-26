@@ -535,7 +535,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
-                      final isDesktop = constraints.maxWidth > 800;
+                      final isDesktop = constraints.maxWidth >= 700;
                       return Row(
                         children: [
                           if (isDesktop) _buildSidebar(isDark),
@@ -576,20 +576,32 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Text(
-                _getTabTitle(),
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              if (Navigator.canPop(context)) ...[
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  tooltip: 'Back to Mobile Portal',
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const SizedBox(width: 8),
+              ],
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _getTabTitle(),
+                    style:
+                        const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _getTabSubtitle(),
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  )
+                ],
               ),
-              const SizedBox(height: 2),
-              Text(
-                _getTabSubtitle(),
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              )
             ],
           ),
           Row(

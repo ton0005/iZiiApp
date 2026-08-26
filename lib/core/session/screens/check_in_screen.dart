@@ -81,7 +81,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
     setState(() {
       _busy = true;
       _error = null;
-      _status = 'Đang điểm danh...';
+      _status = 'Checking in...';
     });
     try {
       final session = await _service.checkIn(
@@ -106,7 +106,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
   Future<void> _checkInByBadge() async {
     setState(() {
       _error = null;
-      _status = 'Chạm thẻ nhân viên vào mặt sau máy...';
+      _status = 'Tap employee badge against back of device...';
     });
     try {
       final badge = await EmployeeBadgeService.read(
@@ -127,13 +127,13 @@ class _CheckInScreenState extends State<CheckInScreen> {
     }
   }
 
-  /// Nhân viên có PIN thì phải nhập trước khi vào ca.
+  /// Require PIN if configured for this employee.
   Future<void> _promptPin(Map<String, dynamic> emp) async {
     final controller = TextEditingController();
     final pin = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Mã PIN của ${emp['name']}'),
+        title: Text('PIN for ${emp['name']}'),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
@@ -141,16 +141,16 @@ class _CheckInScreenState extends State<CheckInScreen> {
           autofocus: true,
           maxLength: 6,
           decoration: const InputDecoration(
-            hintText: 'Nhập 4-6 chữ số',
+            hintText: 'Enter 4-6 digits',
             counterText: '',
           ),
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Huỷ')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text),
-            child: const Text('Vào ca'),
+            child: const Text('Start Shift'),
           ),
         ],
       ),
@@ -171,16 +171,16 @@ class _CheckInScreenState extends State<CheckInScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Điểm danh đầu ca'),
+        title: const Text('Shift Check-in'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Quay lại',
+          tooltip: 'Back',
           onPressed: () => Navigator.of(context).pop(null),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(null),
-            child: const Text('Huỷ'),
+            child: const Text('Cancel'),
           ),
         ],
       ),
@@ -200,8 +200,8 @@ class _CheckInScreenState extends State<CheckInScreen> {
                     Expanded(
                       child: Text(
                         widget.reason ??
-                            'Cần điểm danh trước khi tiếp tục. Hệ thống phải biết '
-                                'đích danh ai đang làm việc để cảnh báo an toàn có ý nghĩa.',
+                            'Check-in required before continuing. The system needs to verify '
+                                'who is on site for safety monitoring.',
                         style: const TextStyle(fontSize: 13, height: 1.45),
                       ),
                     ),
@@ -209,7 +209,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
                 ),
               ),
 
-            // ── Chạm thẻ nhân viên ───────────────────────────────────────
+            // ── Tap Employee Badge ───────────────────────────────────────
             if (_nfcAvailable)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -219,7 +219,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
                   child: FilledButton.icon(
                     onPressed: _busy ? null : _checkInByBadge,
                     icon: const Icon(Icons.nfc_rounded, size: 26),
-                    label: const Text('Chạm thẻ nhân viên',
+                    label: const Text('Tap Employee Badge',
                         style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
                     style: FilledButton.styleFrom(
                       backgroundColor: const Color(0xFF8B5CF6),
@@ -234,18 +234,18 @@ class _CheckInScreenState extends State<CheckInScreen> {
                 child: Row(children: [
                   Expanded(child: Divider()),
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('hoặc chọn tên', style: TextStyle(fontSize: 12))),
+                      child: Text('or select name', style: TextStyle(fontSize: 12))),
                   Expanded(child: Divider()),
                 ]),
               ),
 
-            // ── Tìm kiếm ─────────────────────────────────────────────────
+            // ── Search Field ─────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
               child: TextField(
                 controller: _searchController,
                 decoration: const InputDecoration(
-                  hintText: 'Tìm theo tên hoặc mã nhân viên',
+                  hintText: 'Search by name or employee ID',
                   prefixIcon: Icon(Icons.search_rounded),
                   isDense: true,
                   border: OutlineInputBorder(),
@@ -283,7 +283,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
               child: _filtered.isEmpty
                   ? const Center(child: Padding(
                       padding: EdgeInsets.all(28),
-                      child: Text('Không tìm thấy nhân viên nào.',
+                      child: Text('No employees found.',
                           textAlign: TextAlign.center)))
                   : ListView.separated(
                       itemCount: _filtered.length,

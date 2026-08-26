@@ -68,18 +68,18 @@ class _SessionBannerState extends State<SessionBanner> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Kết thúc ca?'),
+        title: const Text('End shift?'),
         content: Text(
-          '${_session?.displayName ?? ''} đã làm ${_session?.elapsedText ?? ''}.\n\n'
-          'Sau khi kết thúc, máy này sẽ không tạo được công việc Làm việc một mình '
-          'cho tới khi có người điểm danh lại.',
+          '${_session?.displayName ?? ''} has been on shift for ${_session?.elapsedText ?? ''}.\n\n'
+          'After ending, this device will not be able to create Alone Worker tasks '
+          'until someone checks in again.',
           style: const TextStyle(fontSize: 13, height: 1.5),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Huỷ')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Kết thúc ca'),
+            child: const Text('End shift'),
           ),
         ],
       ),
@@ -98,14 +98,7 @@ class _SessionBannerState extends State<SessionBanner> {
     final s = _session;
     final hasSession = s != null;
 
-    // ── Máy CÁ NHÂN (iPhone/iPad của Manager, Supervisor) ──────────────────
-    //
-    // Không hiện dải cam "chưa điểm danh" — máy dùng riêng, mang về nhà, danh
-    // tính đã xác định từ lúc cấp máy. Hiện cảnh báo mỗi lần mở app chỉ gây
-    // khó chịu mà không thêm chút an toàn nào.
-    //
-    // Vẫn cho bấm "Bắt đầu ca" để xuất hiện trong danh sách ai đang có mặt tại
-    // nhà máy — hữu ích khi Manager xuống hiện trường, nhưng không bắt buộc.
+    // ── Personal Device (iPhone/iPad of Manager, Supervisor) ───────────────
     if (_service.isPersonal && !hasSession) {
       return Material(
         color: const Color(0xFF6366F1).withValues(alpha: widget.isDark ? .16 : .10),
@@ -125,23 +118,23 @@ class _SessionBannerState extends State<SessionBanner> {
                       Text(
                         _service.ownerName.isNotEmpty
                             ? _service.ownerName
-                            : 'Máy cá nhân',
+                            : 'Personal Device',
                         style: const TextStyle(
                             fontSize: 13.5, fontWeight: FontWeight.w700),
                       ),
-                      const Text('Máy riêng · không cần điểm danh hằng ngày',
+                      const Text('Personal device · Daily check-in exempt',
                           style: TextStyle(fontSize: 11)),
                     ],
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Ai đang trong ca',
+                  tooltip: 'Who is on shift',
                   icon: const Icon(Icons.groups_rounded, size: 20),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const ActiveSessionsScreen()),
                   ),
                 ),
-                const Text('Bắt đầu ca',
+                const Text('Start shift',
                     style: TextStyle(fontSize: 11.5, color: Color(0xFF6366F1))),
                 const Icon(Icons.chevron_right_rounded,
                     size: 18, color: Color(0xFF6366F1)),
@@ -175,17 +168,17 @@ class _SessionBannerState extends State<SessionBanner> {
                           Text(s.displayName,
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w700)),
-                          Text('Đang trong ca · ${s.elapsedText}',
+                          Text('On shift · ${s.elapsedText}',
                               style: const TextStyle(fontSize: 11.5)),
                         ],
                       )
                     : const Text(
-                        'Chưa điểm danh — chạm để vào ca',
+                        'Shift Check-in — tap to start shift',
                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                       ),
               ),
               IconButton(
-                tooltip: 'Ai đang trong ca',
+                tooltip: 'Who is on shift',
                 icon: const Icon(Icons.groups_rounded, size: 20),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const ActiveSessionsScreen()),
@@ -201,13 +194,7 @@ class _SessionBannerState extends State<SessionBanner> {
   }
 }
 
-/// Đảm bảo có phiên trước khi làm một việc bắt buộc điểm danh.
-///
-/// Trả true nếu đã có phiên (hoặc vừa điểm danh xong), false nếu người dùng huỷ.
-///
-/// Dùng cho Alone Worker: chặn ở client cho trải nghiệm tốt (mở luôn màn hình
-/// điểm danh thay vì báo lỗi), nhưng **server vẫn kiểm độc lập** — client là
-/// tiện lợi, server mới là ràng buộc thật.
+/// Ensure a shift session exists before performing a task that requires check-in.
 Future<bool> ensureCheckedIn(
   BuildContext context, {
   String? reason,
@@ -215,33 +202,26 @@ Future<bool> ensureCheckedIn(
 }) async {
   final service = WorkSessionService();
 
-  // Có phân công cho người khác thì NGƯỜI ĐÓ mới là người cần đang trong ca,
-  // không phải người đang cầm máy. Quản lý ngồi laptop giao việc cho công nhân
-  // đã điểm danh trên iPad — bắt quản lý điểm danh ở đây là chặn nhầm người.
-  //
-  // Kiểm bằng danh sách "ai đang trong ca" lấy từ server, vì người được phân
-  // công có thể đang ở một thiết bị hoàn toàn khác.
   if (assignee != null && assignee.trim().isNotEmpty) {
     final ok = await service.isPersonOnShift(assignee.trim());
     if (ok) return true;
     if (!context.mounted) return false;
 
-    // Không tự mở màn hình điểm danh: người cần điểm danh không ngồi ở đây.
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Người được giao chưa điểm danh'),
+        title: const Text('Assignee not checked in'),
         content: Text(
-          '"$assignee" chưa điểm danh đầu ca.\n\n'
-          'Công việc Làm việc một mình cần biết đích danh ai đang trong phòng, '
-          'nên chỉ giao được cho người đã vào ca. Hãy nhờ họ điểm danh trên '
-          'máy của mình rồi thử lại.',
+          '"$assignee" is not checked in for this shift.\n\n'
+          'Alone Worker tasks require knowing the exact person in the room '
+          'and can only be assigned to workers on shift. Please ask them to '
+          'check in on their device and try again.',
           style: const TextStyle(fontSize: 13, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Đã hiểu'),
+            child: const Text('Understood'),
           ),
         ],
       ),

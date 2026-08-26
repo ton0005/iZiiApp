@@ -265,6 +265,19 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
   // ══════════════════════════════════════════════════════════════════════════
   //  Navigation Actions
   // ══════════════════════════════════════════════════════════════════════════
+  void _navigateToDesktop(BuildContext context) {
+    final bloc = context.read<MushroomsBloc>();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BlocProvider.value(
+          value: bloc,
+          child: const MushboomMonartoScreen(),
+        ),
+      ),
+    ).then((_) => bloc.add(LoadRoomsEvent()));
+  }
+
   void _navigateToDashboard(BuildContext context) {
     final bloc = context.read<MushroomsBloc>();
     Navigator.push(
@@ -454,6 +467,11 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
         foregroundColor: isDark ? Colors.white : Colors.black87,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.desktop_windows_rounded),
+            tooltip: 'Desktop View (Monarto)',
+            onPressed: () => _navigateToDesktop(context),
+          ),
           IconButton(
             icon: const Icon(Icons.account_circle_outlined),
             tooltip: 'Profile & Change Password',
@@ -654,6 +672,15 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 color: const Color(0xFFC97A3D),
                 isDark: isDark,
                 onTap: () => _navigateToHarvestAttendance(context),
+              ),
+              QuickAccessCard(
+                title: 'Desktop View (Monarto)',
+                subtitle:
+                    'Full multi-tab workstation dashboard for iPad & large displays',
+                icon: Icons.desktop_windows_rounded,
+                color: const Color(0xFF0284C7),
+                isDark: isDark,
+                onTap: () => _navigateToDesktop(context),
               ),
             ]),
           )
