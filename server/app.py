@@ -250,6 +250,17 @@ async def _peer_sync_loop() -> None:
             await asyncio.sleep(CONFIG.sync_interval_seconds)
 
 
+async def _maintenance_loop() -> None:
+    """Vòng lặp bảo trì chạy mỗi 24h: dọn mutation cũ và dead-letter tin nhắn kẹt."""
+    while True:
+        await asyncio.sleep(24 * 3600)
+        try:
+            prune_old_mutations(days=30)
+            prune_message_queue()
+        except Exception as e:
+            print(f"⚠️  [MAINT] Lỗi job dọn dẹp định kỳ: {e}")
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 #  Application Lifespan (replaces deprecated @app.on_event)
 # ══════════════════════════════════════════════════════════════════════════════
@@ -304,10 +315,7 @@ async def lifespan(app: FastAPI):
     # Startup
     init_db()
     prune_old_mutations(days=30)
-    # Dọn hàng đợi tin nhắn: xoá tin đã giao cũ, dead-letter tin kẹt quá lâu.
-    # Chỉ chạy trên SQLite — bản PostgreSQL dùng job riêng.
-    if CONFIG.db_backend != "postgres":
-        prune_message_queue()
+    prune_message_queue()
     print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
     print(f"✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB")
     print(f"🌐 Server identity: server_id={CONFIG.server_id} zone={CONFIG.zone}")
@@ -328,10 +336,12 @@ async def lifespan(app: FastAPI):
               f"Vẫn dùng peer tĩnh khai báo trong IZIIAPP_PEERS.")
 
     peer_sync_task = asyncio.create_task(_peer_sync_loop())
+    maintenance_task = asyncio.create_task(_maintenance_loop())
 
     yield
     # Shutdown
     peer_sync_task.cancel()
+    maintenance_task.cancel()
     if discovery:
         await discovery.close()
     # Đóng httpx.AsyncClient dùng chung của event engine (webhook dispatch)

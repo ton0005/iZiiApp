@@ -231,7 +231,31 @@ ALTER_STATEMENTS = [
     # Hàng đợi tin nhắn: chống kẹt vô hạn khi máy nhận không giải mã được.
     'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS failed_attempts INT NOT NULL DEFAULT 0',
     'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS last_error TEXT',
-    'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS dead_lettered_at TIMESTAMPTZ',
+    'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS dead_lettered_at TEXT',
+    # Sửa các database PostgreSQL đã lỡ tạo cột này ở kiểu TIMESTAMPTZ.
+    #
+    # VÌ SAO BỌC TRONG KHỐI DO THAY VÌ ALTER TRỰC TIẾP: init_db_postgres() chạy ở
+    # MỖI LẦN server khởi động. `ALTER TABLE ... ALTER COLUMN ... TYPE` luôn lấy
+    # khoá ACCESS EXCLUSIVE trên bảng — chặn mọi đọc/ghi trong lúc thực thi — kể
+    # cả khi kiểu đã đúng và không cần rewrite. Với message_queue lớn thì đó là
+    # một khoảng đứng hình ở mỗi lần start, hoàn toàn không cần thiết.
+    # Kiểm tra information_schema trước để lần thứ hai trở đi là no-op thật sự.
+    """
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 FROM information_schema.columns
+            WHERE table_schema = 'public'
+              AND table_name   = 'message_queue'
+              AND column_name  = 'dead_lettered_at'
+              AND data_type   <> 'text'
+        ) THEN
+            ALTER TABLE message_queue
+                ALTER COLUMN dead_lettered_at TYPE TEXT USING dead_lettered_at::text;
+            RAISE NOTICE 'Da doi message_queue.dead_lettered_at sang TEXT.';
+        END IF;
+    END $$;
+    """,
     "ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS profile TEXT DEFAULT 'shared'",
     'ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS owner_user_id TEXT',
     'ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS owner_user_name TEXT',
@@ -264,3 +288,35 @@ def prune_old_mutations_postgres(days: int = 30) -> int:
     if deleted > 0:
         print(f"🧹 [PG] Đã dọn {deleted} mutation cũ hơn {days} ngày.")
     return deleted
+
+
+def prune_message_queue_postgres(delivered_days: int = 7, stuck_days: int = 3) -> int:
+    """Bản PostgreSQL của prune_message_queue — xem db_init.py:491 để biết lý do."""
+    from datetime import datetime, timezone, timedelta
+
+    now = datetime.now(timezone.utc)
+    delivered_cutoff = (now - timedelta(days=delivered_days)).isoformat()
+    stuck_cutoff = (now - timedelta(days=stuck_days)).isoformat()
+
+    with pg_connection() as conn:
+        cur = conn.execute(
+            "DELETE FROM message_queue "
+            "WHERE delivered_at IS NOT NULL AND delivered_at < %s",
+            (delivered_cutoff,),
+        )
+        deleted = cur.rowcount
+
+        cur = conn.execute(
+            "UPDATE message_queue SET dead_lettered_at = %s, "
+            "       last_error = COALESCE(last_error, 'stuck_too_long') "
+            "WHERE delivered_at IS NULL AND dead_lettered_at IS NULL "
+            "  AND sent_at < %s",
+            (now.isoformat(), stuck_cutoff),
+        )
+        dead = cur.rowcount
+        conn.commit()
+
+    if deleted or dead:
+        print(f"🧹 [PG][MSG-QUEUE] Xoá {deleted} tin đã giao cũ, dead-letter {dead} tin kẹt.")
+    return deleted + dead
+

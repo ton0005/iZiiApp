@@ -67,20 +67,16 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
     super.dispose();
   }
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  Sign In Handler
-  // ══════════════════════════════════════════════════════════════════════════
-
-  Future<void> _handleSignIn() async {
+  // ═══════════════════════════════════════════════════════════�  Future<void> _handleSignIn() async {
     final empId = _signInIdController.text.trim();
     final pass = _signInPasswordController.text;
 
     if (empId.isEmpty) {
-      setState(() => _errorMessage = 'Vui lòng nhập Mã nhân viên.');
+      setState(() => _errorMessage = 'Please enter Employee ID.');
       return;
     }
     if (pass.isEmpty) {
-      setState(() => _errorMessage = 'Vui lòng nhập Mật khẩu.');
+      setState(() => _errorMessage = 'Please enter Password.');
       return;
     }
 
@@ -95,10 +91,10 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
       if (success) {
         widget.onAuthSuccess(empId);
       } else {
-        setState(() => _errorMessage = 'Mã nhân viên hoặc mật khẩu không chính xác.');
+        setState(() => _errorMessage = 'Incorrect Employee ID or password.');
       }
     } catch (e) {
-      setState(() => _errorMessage = 'Lỗi đăng nhập: $e');
+      setState(() => _errorMessage = 'Login error: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -115,15 +111,15 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
     final confirm = _signUpConfirmPasswordController.text;
 
     if (empId.isEmpty || name.isEmpty || pass.isEmpty || confirm.isEmpty) {
-      setState(() => _errorMessage = 'Vui lòng điền đầy đủ các trường.');
+      setState(() => _errorMessage = 'Please fill in all fields.');
       return;
     }
     if (pass.length < 6) {
-      setState(() => _errorMessage = 'Mật khẩu phải có tối thiểu 6 ký tự.');
+      setState(() => _errorMessage = 'Password must be at least 6 characters.');
       return;
     }
     if (pass != confirm) {
-      setState(() => _errorMessage = 'Mật khẩu xác nhận không khớp.');
+      setState(() => _errorMessage = 'Confirm password does not match.');
       return;
     }
 
@@ -145,10 +141,10 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
       if (success) {
         widget.onAuthSuccess(empId);
       } else {
-        setState(() => _errorMessage = 'Mã nhân viên "$empId" đã tồn tại. Vui lòng chọn ID khác.');
+        setState(() => _errorMessage = 'Employee ID "$empId" already exists. Please choose a different ID.');
       }
     } catch (e) {
-      setState(() => _errorMessage = 'Lỗi đăng ký: $e');
+      setState(() => _errorMessage = 'Registration error: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -211,7 +207,7 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
                 ).animate().fade(delay: 100.ms),
                 const SizedBox(height: 4),
                 Text(
-                  _isSignUp ? 'Tạo tài khoản nhân viên mới' : 'Đăng nhập vào hệ thống',
+                  _isSignUp ? 'Create a new employee account' : 'Sign in to your account',
                   style: TextStyle(fontSize: 13, color: subTextColor),
                 ).animate().fade(delay: 150.ms),
 
@@ -333,9 +329,9 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
                                   width: 22,
                                   height: 22,
                                   child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
-                                )
+                                ),
                               : Text(
-                                  _isSignUp ? 'Đăng Ký Tài Khoản' : 'Đăng Nhập',
+                                  _isSignUp ? 'Register Account' : 'Sign In',
                                   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, letterSpacing: 0.3),
                                 ),
                         ),
@@ -357,9 +353,9 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
                             text: TextSpan(
                               style: TextStyle(fontSize: 13, color: subTextColor),
                               children: [
-                                TextSpan(text: _isSignUp ? 'Đã có tài khoản? ' : 'Chưa có tài khoản? '),
+                                TextSpan(text: _isSignUp ? 'Already have an account? ' : "Don't have an account? "),
                                 TextSpan(
-                                  text: _isSignUp ? 'Đăng Nhập' : 'Đăng Ký',
+                                  text: _isSignUp ? 'Sign In' : 'Sign Up',
                                   style: const TextStyle(
                                     color: primaryColor,
                                     fontWeight: FontWeight.bold,
@@ -426,11 +422,11 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
       key: const ValueKey('sign_in'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLabel('Mã Nhân Viên (Employee ID)', subTextColor),
+        _buildLabel('Employee ID', subTextColor),
         const SizedBox(height: 6),
         _buildInputField(
           controller: _signInIdController,
-          hint: 'VD: 555555 hoặc EMP001',
+          hint: 'e.g. 555555 or EMP001',
           icon: Icons.badge_rounded,
           isDark: isDark,
           textColor: textColor,
@@ -438,11 +434,11 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
           primaryColor: primaryColor,
         ),
         const SizedBox(height: 16),
-        _buildLabel('Mật Khẩu', subTextColor),
+        _buildLabel('Password', subTextColor),
         const SizedBox(height: 6),
         _buildInputField(
           controller: _signInPasswordController,
-          hint: 'Nhập mật khẩu',
+          hint: 'Enter password',
           icon: Icons.lock_rounded,
           isDark: isDark,
           textColor: textColor,
@@ -472,11 +468,11 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
       key: const ValueKey('sign_up'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLabel('Mã Nhân Viên (Employee ID)', subTextColor),
+        _buildLabel('Employee ID', subTextColor),
         const SizedBox(height: 6),
         _buildInputField(
           controller: _signUpIdController,
-          hint: 'VD: 100001',
+          hint: 'e.g. 100001',
           icon: Icons.badge_rounded,
           isDark: isDark,
           textColor: textColor,
@@ -485,11 +481,11 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
         ),
         const SizedBox(height: 14),
 
-        _buildLabel('Họ và Tên', subTextColor),
+        _buildLabel('Full Name', subTextColor),
         const SizedBox(height: 6),
         _buildInputField(
           controller: _signUpNameController,
-          hint: 'VD: Nguyễn Văn A',
+          hint: 'e.g. John Doe',
           icon: Icons.person_rounded,
           isDark: isDark,
           textColor: textColor,
@@ -505,7 +501,7 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildLabel('Vai Trò', subTextColor),
+                  _buildLabel('Role', subTextColor),
                   const SizedBox(height: 6),
                   _buildDropdown<String>(
                     value: _selectedRole,
@@ -516,6 +512,76 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
                     onChanged: (v) => setState(() => _selectedRole = v!),
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLabel('Department', subTextColor),
+                  const SizedBox(height: 6),
+                  _buildDropdown<String>(
+                    value: _selectedDepartment,
+                    items: _departments,
+                    isDark: isDark,
+                    textColor: textColor,
+                    primaryColor: primaryColor,
+                    onChanged: (v) => setState(() => _selectedDepartment = v!),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+
+        _buildLabel('Password', subTextColor),
+        const SizedBox(height: 6),
+        _buildInputField(
+          controller: _signUpPasswordController,
+          hint: 'Minimum 6 characters',
+          icon: Icons.lock_rounded,
+          isDark: isDark,
+          textColor: textColor,
+          subTextColor: subTextColor,
+          primaryColor: primaryColor,
+          obscure: _obscureSignUp,
+          suffixIcon: IconButton(
+            icon: Icon(
+              _obscureSignUp ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+              size: 20,
+              color: subTextColor,
+            ),
+            onPressed: () => setState(() => _obscureSignUp = !_obscureSignUp),
+          ),
+        ),
+        const SizedBox(height: 14),
+
+        _buildLabel('Confirm Password', subTextColor),
+        const SizedBox(height: 6),
+        _buildInputField(
+          controller: _signUpConfirmPasswordController,
+          hint: 'Re-enter password',
+          icon: Icons.lock_outline_rounded,
+          isDark: isDark,
+          textColor: textColor,
+          subTextColor: subTextColor,
+          primaryColor: primaryColor,
+          obscure: _obscureSignUpConfirm,
+          suffixIcon: IconButton(
+            icon: Icon(
+              _obscureSignUpConfirm ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+              size: 20,
+              color: subTextColor,
+            ),
+            onPressed: () => setState(() => _obscureSignUpConfirm = !_obscureSignUpConfirm),
+          ),
+          onSubmitted: (_) => _handleSignUp(),
+        ),
+      ],
+    );
+  }            ],
               ),
             ),
             const SizedBox(width: 12),

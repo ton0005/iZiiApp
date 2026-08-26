@@ -501,6 +501,11 @@ def prune_message_queue(delivered_days: int = 7, stuck_days: int = 3) -> int:
 
     Tin dead-letter KHÔNG bị xoá — vẫn nằm trong bảng để điều tra.
     """
+    from server_config import CONFIG
+    if CONFIG.db_backend == "postgres":
+        from db_init_postgres import prune_message_queue_postgres
+        return prune_message_queue_postgres(delivered_days, stuck_days)
+
     from datetime import datetime, timezone, timedelta
 
     now = datetime.now(timezone.utc)

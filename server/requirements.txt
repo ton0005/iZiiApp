@@ -18,7 +18,7 @@ python-multipart>=0.0.9
 
 # ── Tuỳ chọn: PostgreSQL backend (IZIIAPP_DB_BACKEND=postgres) ──────────────
 # Bỏ qua nếu chỉ chạy SQLite.
-# psycopg[binary,pool]>=3.1
+psycopg[binary,pool]>=3.1
 
 # ── Tuỳ chọn: đóng gói thành .exe ───────────────────────────────────────────
 # pyinstaller>=6.3

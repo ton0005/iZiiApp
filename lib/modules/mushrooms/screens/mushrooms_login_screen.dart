@@ -69,7 +69,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
 
     if (empId.isEmpty) {
       setState(() {
-        _errorMessage = 'Vui lòng nhập Mã nhân viên';
+        _errorMessage = 'Please enter Employee ID';
       });
       return;
     }
@@ -86,7 +86,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
         widget.onLoginSuccess(empId);
       } else {
         setState(() {
-          _errorMessage = 'Mã nhân viên hoặc mật khẩu không chính xác.';
+          _errorMessage = 'Incorrect Employee ID or password.';
         });
       }
     } catch (e, stackTrace) {
@@ -94,7 +94,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
       print(e);
       print(stackTrace);
       setState(() {
-        _errorMessage = 'Đã xảy ra lỗi: $e';
+        _errorMessage = 'An error occurred: $e';
       });
     } finally {
       if (mounted) {
@@ -108,7 +108,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
   Future<void> _handleVisualPasskeyLogin() async {
     if (_visualImageBytes == null || _identiconMatrix == null) {
       setState(() {
-        _errorMessage = 'Vui lòng chọn hoặc tạo Visual Secret Key.';
+        _errorMessage = 'Please select or generate a Visual Secret Key.';
       });
       return;
     }
@@ -133,7 +133,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
         widget.onLoginSuccess(_visualUserId);
       } else {
         setState(() {
-          _errorMessage = 'Mã nhân viên hoặc mật khẩu không chính xác cho ID: $_visualUserId';
+          _errorMessage = 'Incorrect Employee ID or password for ID: $_visualUserId';
         });
       }
     } catch (e) {
@@ -147,7 +147,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
       } catch (_) {}
       
       setState(() {
-        _errorMessage = 'Lỗi xác thực: $e';
+        _errorMessage = 'Authentication error: $e';
       });
     } finally {
       if (mounted) {
@@ -259,7 +259,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
                         tabs: const [
                           Tab(
                             icon: Icon(Icons.badge_rounded, size: 18),
-                            text: 'Mật Khẩu Standard',
+                            text: 'Standard Password',
                           ),
                           Tab(
                             icon: Icon(Icons.vpn_key_rounded, size: 18),
@@ -312,7 +312,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
             controller: _employeeIdController,
             style: TextStyle(color: textColor),
             decoration: InputDecoration(
-              labelText: 'Mã nhân viên (Employee ID)',
+              labelText: 'Employee ID',
               labelStyle: TextStyle(color: subTextColor),
               prefixIcon: Icon(Icons.person_pin_rounded, color: primaryColor),
               focusedBorder: OutlineInputBorder(
@@ -328,7 +328,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Vui lòng nhập Mã nhân viên';
+                return 'Please enter Employee ID';
               }
               return null;
             },
@@ -340,7 +340,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
             obscureText: _obscurePassword,
             style: TextStyle(color: textColor),
             decoration: InputDecoration(
-              labelText: 'Mật khẩu',
+              labelText: 'Password',
               labelStyle: TextStyle(color: subTextColor),
               prefixIcon: Icon(Icons.lock_rounded, color: primaryColor),
               suffixIcon: IconButton(
@@ -369,7 +369,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Vui lòng nhập Mật khẩu';
+                return 'Please enter Password';
               }
               return null;
             },
@@ -409,14 +409,14 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
                     ),
                   )
                 : const Text(
-                    'Đăng Nhập Standard',
+                    'Sign In with Password',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
           ),
           const SizedBox(height: 14),
 
           Text(
-            'Tài khoản mẫu thử nghiệm:',
+            'Sample Test Accounts:',
             style: TextStyle(fontSize: 11, color: subTextColor, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
@@ -466,7 +466,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
                   await _kdfEngine.resetSecureVault();
                   if (mounted) {
                     setState(() {
-                      _errorMessage = '✅ Secure Vault reset. Chìa khóa mã hóa mới đã được tạo lại.';
+                      _errorMessage = '✅ Secure Vault reset. New cryptographic keys generated.';
                     });
                   }
                 },
@@ -492,7 +492,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Xác thực Visual Zero-Knowledge',
+              'Visual Zero-Knowledge Auth',
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: textColor),
             ),
             DropdownButton<String>(
@@ -593,7 +593,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
 
         ElevatedButton.icon(
           icon: const Icon(Icons.refresh_rounded, size: 18),
-          label: const Text('Sinh lại Visual Secret Key'),
+          label: const Text('Regenerate Visual Secret Key'),
           style: ElevatedButton.styleFrom(
             backgroundColor: isDark ? Colors.white10 : Colors.grey.shade300,
             foregroundColor: textColor,
@@ -632,7 +632,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
                   ),
                 )
               : const Text(
-                  'Đăng Nhập bằng Visual Passkey',
+                  'Sign In with Visual Passkey',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
         ),
