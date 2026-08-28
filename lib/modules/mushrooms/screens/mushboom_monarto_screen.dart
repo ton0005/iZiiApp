@@ -480,6 +480,15 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
             });
             _loadMushroomData();
           }
+
+          if (state.error != null && state.error!.isNotEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error!),
+                backgroundColor: Colors.red.shade700,
+              ),
+            );
+          }
         },
         builder: (context, state) {
           if (state.isLoading && _localRooms.isEmpty) {
@@ -1267,45 +1276,56 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     DateTime? checkInTime,
     DateTime? checkOutTime,
   }) {
-    final room = _localRooms[roomName];
-    if (room != null) {
-      if (jobType == 'alone_worker') {
-        _bloc.add(AddSoloJobEvent(
-          roomId: room['id'],
-          title: 'Alone Worker (Solo)',
-          assignee: assignee,
-          timeLimit: timeLimit ?? 45,
-          coLevel: coLevel,
-          co2Level: co2Level,
-          checkInTime: checkInTime,
-          checkOutTime: checkOutTime,
-        ));
-        return;
-      }
-      String planDetails = '';
-      if (jobType == 'watering') {
-        planDetails = wateringPlan == '2side'
-            ? '2 Side $wateringVol L/m²'
-            : '1 Side $wateringVol L/m²';
-      }
-      String prochlorazRate = '';
-      if (jobType == 'prochloraz') {
-        prochlorazRate = '${rate}g/m²';
-      }
-
-      _bloc.add(CreateCustomJobEvent(
-        roomId: room['id'],
-        name: jobType.toUpperCase(),
-        jobType: jobType,
-        assignee: assignee,
-        priority: 'normal',
-        scheduledAt: DateTime.now(),
-        planDetails: planDetails,
-        prochlorazRate: prochlorazRate,
-        notes: notes,
-        projectName: 'Costa M2 Operations',
-      ));
+    var room = _localRooms[roomName];
+    if (room == null) {
+      room = _localRooms.values.firstWhere(
+        (r) =>
+            r['name'] == roomName ||
+            r['id'] == roomName ||
+            r['name'] == roomName.replaceAll('Grow Room', 'Room').trim() ||
+            'Grow Room ${r['name'].replaceAll('Room', '').trim()}' == roomName,
+        orElse: () => <String, dynamic>{},
+      );
     }
+    final roomId = (room.isNotEmpty ? room['id'] : null) ??
+        roomName.toLowerCase().replaceAll(' ', '_');
+
+    if (jobType == 'alone_worker') {
+      _bloc.add(AddSoloJobEvent(
+        roomId: roomId,
+        title: 'Alone Worker (Solo)',
+        assignee: assignee,
+        timeLimit: timeLimit ?? 45,
+        coLevel: coLevel,
+        co2Level: co2Level,
+        checkInTime: checkInTime,
+        checkOutTime: checkOutTime,
+      ));
+      return;
+    }
+    String planDetails = '';
+    if (jobType == 'watering') {
+      planDetails = wateringPlan == '2side'
+          ? '2 Side $wateringVol L/m²'
+          : '1 Side $wateringVol L/m²';
+    }
+    String prochlorazRate = '';
+    if (jobType == 'prochloraz') {
+      prochlorazRate = '${rate}g/m²';
+    }
+
+    _bloc.add(CreateCustomJobEvent(
+      roomId: roomId,
+      name: jobType.toUpperCase(),
+      jobType: jobType,
+      assignee: assignee,
+      priority: 'normal',
+      scheduledAt: DateTime.now(),
+      planDetails: planDetails,
+      prochlorazRate: prochlorazRate,
+      notes: notes,
+      projectName: 'Costa M2 Operations',
+    ));
   }
 
   void _onJobStatusChanged(String roomName, dynamic jobId, bool done) {

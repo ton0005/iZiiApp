@@ -1148,7 +1148,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   }
 
   Color _getStageColor(String stage) {
-    switch (stage.toLowerCase()) {
+    final s = stage.trim().toLowerCase().replaceAll(' ', '_');
+    switch (s) {
       case 'filling':
         return const Color(0xFFF59E0B); // Amber
       case 'airing':
@@ -1157,9 +1158,18 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
         return const Color(0xFF3B82F6); // Blue
       case 'prochloraz':
         return const Color(0xFF8B5CF6); // Purple
-      case 'clean room':
+      case 'clean_room':
+      case 'cleanroom':
+      case 'clean_bed':
+      case 'cleanbed':
       case 'clean':
         return const Color(0xFF10B981); // Emerald Green
+      case 'packup_tree':
+      case 'packuptree':
+        return Colors.teal;
+      case 'floor_wet':
+      case 'floorwet':
+        return Colors.indigo;
       case 'picking':
       case 'harvesting':
       case 'harvest':
@@ -1168,9 +1178,17 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
         return Colors.orange;
       case 'alone_timeout':
         return Colors.red;
+      case 'spawn':
+      case 'casing':
+        return Colors.brown;
+      case 'growing':
+      case 'pinning':
+        return Colors.green;
       case 'idle':
+      case '':
+        return const Color(0xFF6B7280); // Grey (Idle)
       default:
-        return const Color(0xFF6B7280); // Grey
+        return const Color(0xFF0EA5E9); // Sky Blue (Fallback: Active job in progress, NOT idle grey)
     }
   }
 
@@ -1636,20 +1654,44 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     String? presetRoomName,
     String? presetJobType,
   }) {
+    final availableRooms = widget.localRooms.keys
+        .where((k) => widget.localRooms[k]!['plant'] == widget.activePlant)
+        .toList();
+    if (availableRooms.isEmpty && widget.localRooms.isNotEmpty) {
+      availableRooms.addAll(widget.localRooms.keys);
+    }
+
+    String roomSelected;
+    if (presetRoomName != null && availableRooms.contains(presetRoomName)) {
+      roomSelected = presetRoomName;
+    } else if (widget.selectedRoomName != null &&
+        availableRooms.contains(widget.selectedRoomName)) {
+      roomSelected = widget.selectedRoomName!;
+    } else if (availableRooms.isNotEmpty) {
+      roomSelected = availableRooms.first;
+    } else {
+      roomSelected = widget.localRooms.keys.isNotEmpty
+          ? widget.localRooms.keys.first
+          : 'Room 33';
+    }
+
     final growingEmployees = widget.employees
         .where((e) => e['department']?.toString().toLowerCase() == 'growing')
         .toList();
+    final allEmployees = growingEmployees.isNotEmpty ? growingEmployees : widget.employees;
+    
+    // Deduplicate employees by name to prevent Dropdown duplicates assertion
+    final uniqueEmployees = <String, Map<String, dynamic>>{};
+    for (final emp in allEmployees) {
+      final name = (emp['name'] ?? '').toString().trim();
+      if (name.isNotEmpty && !uniqueEmployees.containsKey(name)) {
+        uniqueEmployees[name] = emp;
+      }
+    }
+
     String jobType = presetJobType ?? 'filling';
-    String roomSelected = (presetRoomName != null &&
-            widget.localRooms.containsKey(presetRoomName))
-        ? presetRoomName
-        : (widget.selectedRoomName != null &&
-                widget.localRooms.containsKey(widget.selectedRoomName))
-            ? widget.selectedRoomName!
-            : widget.localRooms.keys.firstWhere(
-                (k) => widget.localRooms[k]!['plant'] == widget.activePlant);
-    String assignee = growingEmployees.isNotEmpty
-        ? (growingEmployees.first['name'] as String)
+    String assignee = uniqueEmployees.isNotEmpty
+        ? uniqueEmployees.keys.first
         : 'Minh T.';
     String notes = '';
 
@@ -1692,11 +1734,12 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       DropdownButtonFormField<String>(
                         decoration:
                             const InputDecoration(labelText: 'GrowRoom'),
-                        value: roomSelected,
-                        items: widget.localRooms.keys
-                            .where((k) =>
-                                widget.localRooms[k]!['plant'] ==
-                                widget.activePlant)
+                        value: availableRooms.contains(roomSelected)
+                            ? roomSelected
+                            : (availableRooms.isNotEmpty
+                                ? availableRooms.first
+                                : null),
+                        items: availableRooms
                             .map((r) => DropdownMenuItem(
                                 value: r,
                                 child: Text(r.replaceAll('Room', 'Grow Room'))))
@@ -1929,13 +1972,17 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       DropdownButtonFormField<String>(
                         decoration:
                             const InputDecoration(labelText: 'Assignee'),
-                        value: assignee,
-                        items: growingEmployees.isNotEmpty
-                            ? growingEmployees
+                        value: uniqueEmployees.containsKey(assignee)
+                            ? assignee
+                            : (uniqueEmployees.isNotEmpty
+                                ? uniqueEmployees.keys.first
+                                : 'Minh T.'),
+                        items: uniqueEmployees.isNotEmpty
+                            ? uniqueEmployees.values
                                 .map((e) => DropdownMenuItem<String>(
                                       value: e['name'] as String,
-                                      child:
-                                          Text('${e['name']} (${e['role']})'),
+                                      child: Text(
+                                          '${e['name']} (${e['role'] ?? 'Staff'})'),
                                     ))
                                 .toList()
                             : const [

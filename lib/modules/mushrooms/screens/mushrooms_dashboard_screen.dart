@@ -283,10 +283,21 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                 // Custom color coding based on stage
                                 Color statusColor = Colors.grey;
                                 if (isRoomActive) {
-                                  if (currentStage == 'alone_worker') {
-                                    statusColor = Colors.orange;
-                                  } else if (currentStage == 'alone_timeout') {
+                                  final s = currentStage.trim().toLowerCase().replaceAll(' ', '_');
+                                  if (s == 'alone_timeout') {
                                     statusColor = Colors.red;
+                                  } else if (s == 'alone_worker') {
+                                    statusColor = Colors.orange;
+                                  } else if (s == 'clean_room' || s == 'cleanroom' || s == 'clean_bed' || s == 'cleanbed') {
+                                    statusColor = const Color(0xFF10B981);
+                                  } else if (s == 'watering') {
+                                    statusColor = const Color(0xFF3B82F6);
+                                  } else if (s == 'prochloraz') {
+                                    statusColor = const Color(0xFF8B5CF6);
+                                  } else if (s == 'airing') {
+                                    statusColor = const Color(0xFF06B6D4);
+                                  } else if (s == 'filling') {
+                                    statusColor = const Color(0xFFF59E0B);
                                   } else {
                                     statusColor = Colors.green;
                                   }

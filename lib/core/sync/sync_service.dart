@@ -115,6 +115,30 @@ class SyncService {
 
     _periodicTimer = Timer.periodic(const Duration(minutes: 3), (_) => triggerSync(isManual: false));
     _log('Sync Service đã được khởi tạo.');
+
+    // Tự động dọn rác bản ghi stub hỏng (Untitled Task, job rỗng) khi khởi động
+    cleanupCorruptedStubRecords();
+  }
+
+  /// Dọn dẹp các bản ghi stub hỏng trong SQLite (sinh ra từ việc nhận UPDATE mà không có INSERT)
+  Future<void> cleanupCorruptedStubRecords() async {
+    try {
+      // 1. Dọn các task stub rỗng không có title hoặc title là "Untitled Task"
+      final deletedTasks = await (_db.delete(_db.tasks)
+        ..where((tbl) => tbl.title.equals('Untitled Task') | tbl.title.equals(''))
+      ).go();
+
+      // 2. Dọn các job rỗng không có job_type hoặc room_id
+      final deletedJobs = await (_db.delete(_db.mushroomJobs)
+        ..where((tbl) => tbl.jobType.equals('') | tbl.roomId.equals(''))
+      ).go();
+
+      if (deletedTasks > 0 || deletedJobs > 0) {
+        _log('🧹 Đã dọn dẹp $deletedTasks task rác và $deletedJobs job rỗng trong DB cục bộ.');
+      }
+    } catch (e) {
+      _log('⚠️ Lỗi khi dọn dẹp stub records: $e');
+    }
   }
 
   void dispose() {
@@ -835,6 +859,13 @@ class SyncService {
         ),
       );
     } else {
+      final rawTitle = data['title'] as String?;
+      // Bỏ qua nếu payload UPDATE thiếu title (chống sinh ra stub "Untitled Task")
+      if (rawTitle == null || rawTitle.trim().isEmpty || rawTitle.trim() == 'Untitled Task') {
+        _log('⚠️ Bỏ qua tạo Task stub rỗng cho id $id (thiếu title hợp lệ)');
+        return false;
+      }
+
       String customFields = '{}';
       if (data['custom_fields'] != null) {
         customFields = data['custom_fields'] is String
@@ -846,7 +877,7 @@ class SyncService {
         TasksCompanion.insert(
           id: id,
           projectId: data['project_id'] as String? ?? '',
-          title: data['title'] as String? ?? 'Untitled Task',
+          title: rawTitle,
           description: Value(data['description'] as String?),
           status: Value(data['status'] as String? ?? 'todo'),
           priority: Value(data['priority'] as String? ?? 'medium'),
@@ -1248,11 +1279,18 @@ class SyncService {
         ),
       );
     } else {
+      final rawJobType = (data['jobType'] ?? data['job_type']) as String?;
+      final rawRoomId = (data['roomId'] ?? data['room_id']) as String?;
+      if (rawJobType == null || rawJobType.trim().isEmpty || rawRoomId == null || rawRoomId.trim().isEmpty) {
+        _log('⚠️ Bỏ qua tạo MushroomJob stub rỗng cho id $id (thiếu job_type hoặc room_id)');
+        return false;
+      }
+
       await _db.into(_db.mushroomJobs).insert(
         MushroomJob(
           id: id,
-          roomId: (data['roomId'] ?? data['room_id']) as String? ?? '',
-          jobType: (data['jobType'] ?? data['job_type']) as String? ?? '',
+          roomId: rawRoomId,
+          jobType: rawJobType,
           name: data['name'] as String? ?? '',
           status: data['status'] as String? ?? 'pending',
           assignee: data['assignee'] as String?,

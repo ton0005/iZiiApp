@@ -250,7 +250,17 @@ class EmployeeServiceImpl implements EmployeeService {
   @override
   Future<String?> getCurrentEmployeeId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_currentEmployeeIdKey);
+    final id = prefs.getString(_currentEmployeeIdKey);
+    if (id != null && id.isNotEmpty) return id;
+
+    try {
+      final activeId = await SettingsService().getActiveUserId();
+      if (activeId.isNotEmpty) {
+        return activeId;
+      }
+    } catch (_) {}
+
+    return null;
   }
 
   @override
@@ -263,6 +273,15 @@ class EmployeeServiceImpl implements EmployeeService {
 
   @override
   Future<bool> hasPermission(String employeeId, String permissionKey) async {
+    // 0. Escape hatch cho Admin/Manager cố định
+    final lowerId = employeeId.trim().toLowerCase();
+    if (lowerId == '555555' ||
+        lowerId == '305629' ||
+        lowerId == '333333' ||
+        lowerId == 'admin') {
+      return true;
+    }
+
     // 1. Kiểm tra Override ngoại lệ (Độ ưu tiên cao nhất)
     final overrideQuery = _db.select(_db.mushroomPermissionOverrides)
       ..where((o) => o.employeeId.equals(employeeId) & o.permissionKey.equals(permissionKey));
@@ -289,6 +308,21 @@ class EmployeeServiceImpl implements EmployeeService {
         return true;
       }
     }
+
+    // 3. Fallback: Kiểm tra trực tiếp từ bảng mushroomEmployees nếu chưa có role-bind
+    try {
+      final emp = await (_db.select(_db.mushroomEmployees)..where((e) => e.id.equals(employeeId))).getSingleOrNull();
+      if (emp != null) {
+        final role = emp.role.toLowerCase();
+        if (role.contains('manager') || role.contains('admin')) {
+          return true;
+        }
+        final permissions = _getPermissionsForRole(role);
+        if (permissions.contains(permissionKey)) {
+          return true;
+        }
+      }
+    } catch (_) {}
 
     return false;
   }

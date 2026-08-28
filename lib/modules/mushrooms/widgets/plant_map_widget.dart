@@ -92,7 +92,8 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
   }
 
   Color _getStageColor(String stage) {
-    switch (stage.toLowerCase()) {
+    final s = stage.trim().toLowerCase().replaceAll(' ', '_');
+    switch (s) {
       case 'spawn':
       case 'casing':
         return Colors.brown;
@@ -102,19 +103,35 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
       case 'harvesting':
       case 'harvest':
         return FarmColors.maintenanceOrange;
+      case 'filling':
+        return const Color(0xFFF59E0B); // Amber
       case 'airing':
-        return Colors.purple;
+        return const Color(0xFF06B6D4); // Cyan
       case 'watering':
-        return Colors.cyan;
+        return const Color(0xFF3B82F6); // Blue
       case 'prochloraz':
-        return Colors.red;
-      case 'packuptree':
-        return Colors.orange;
+        return const Color(0xFF8B5CF6); // Purple
+      case 'clean_room':
       case 'cleanroom':
-        return Colors.green.shade700;
+      case 'clean_bed':
+      case 'cleanbed':
+      case 'clean':
+        return const Color(0xFF10B981); // Emerald Green
+      case 'packup_tree':
+      case 'packuptree':
+        return Colors.teal;
+      case 'floor_wet':
+      case 'floorwet':
+        return Colors.indigo;
+      case 'alone_worker':
+        return Colors.orange;
+      case 'alone_timeout':
+        return Colors.red;
       case 'idle':
-      default:
+      case '':
         return Colors.grey.shade400;
+      default:
+        return const Color(0xFF0EA5E9); // Fallback: Active job
     }
   }
 

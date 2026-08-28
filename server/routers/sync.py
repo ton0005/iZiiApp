@@ -153,99 +153,101 @@ def _job_assignee(data: dict) -> str:
     return ""
 
 
-def _assert_alone_worker_has_session(
+def _filter_valid_mutations(
     conn,
+    repo: ISyncRepository,
     mutations: List[MutationModel],
     device: Optional[DeviceIdentity],
-) -> None:
+) -> tuple[List[MutationModel], List[Dict[str, Any]]]:
     """
-    Alone Worker BẮT BUỘC xác định được NGƯỜI SẼ LÀM VIỆC MỘT MÌNH (G1).
-
-    Đây là ràng buộc quan trọng nhất của toàn bộ tính năng điểm danh. Alone
-    Worker là cơ chế an toàn lao động: khi công nhân quá giờ trong phòng kín,
-    hệ thống phải báo được ĐÍCH DANH ai để đi tìm.
-
-    ⚠️ SỬA LỖI — ai mới là người cần kiểm:
-
-    Bản cũ kiểm phiên của THIẾT BỊ GỬI YÊU CẦU. Sai, vì người tạo công việc và
-    người thực hiện thường là hai người khác nhau: quản lý ngồi laptop phân
-    công cho công nhân đã điểm danh trên iPad. Người ở trong phòng kín là công
-    nhân, không phải quản lý. Kiểm phiên của laptop là kiểm nhầm người — và
-    triệu chứng đúng như đã gặp: điểm danh xong, banner hiện xanh trên iPad,
-    nhưng laptop vẫn báo "người này chưa điểm danh".
-
-    Quy tắc đúng:
-      1. Có phân công cho ai → NGƯỜI ĐÓ phải đang trong ca (trên máy bất kỳ).
-      2. Không phân công cho ai → quay về kiểm danh tính của thiết bị gửi,
-         tức là người đang cầm máy tự nhận việc.
-
-    Chỉ ràng buộc đúng loại công việc này. Các công việc khác (tưới, phun
-    thuốc) vẫn tạo được bình thường để không cản trở sản xuất.
+    Xác thực từng mutation độc lập (Partial Commit):
+    - Các mutation hợp lệ được đưa vào danh sách `valid`.
+    - Các mutation vi phạm nghiệp vụ (như Alone Worker chưa điểm danh hoặc trùng số phòng)
+      được đưa vào danh sách `rejected` kèm lý do chi tiết.
+    - Nhờ vậy, một mutation lỗi sẽ KHÔNG làm hủy toàn bộ các thay đổi hợp lệ khác trong batch.
     """
-    alone_jobs = [
-        m for m in mutations
-        if m.table in ("mushroom_jobs", "jobs")
-        and str(m.data.get("job_type", "")).lower() == "alone_worker"
-        and str(m.operation).lower() in ("insert", "create")
-    ]
-    if not alone_jobs:
-        return
+    valid: List[MutationModel] = []
+    rejected: List[Dict[str, Any]] = []
+
+    # 1. Kiểm tra trùng số phòng
+    room_mutations = [m for m in mutations if m.table in ROOM_TABLES and str(m.operation).lower() in ("insert", "create")]
+    room_index: Dict[Tuple[str, str], str] = {}
+    if room_mutations:
+        for table in {m.table for m in room_mutations}:
+            for row in repo.get_mutations_by_table(table):
+                record = row.get("data") or {}
+                record_id = record.get("id")
+                key = _room_identity(record)
+                if key and record_id:
+                    room_index[key] = record_id
 
     from routers.sessions import get_active_session_for_person
 
-    for job in alone_jobs:
-        assignee = _job_assignee(job.data)
+    for m in mutations:
+        # A. Kiểm tra Room Number
+        if m.table in ROOM_TABLES and str(m.operation).lower() in ("insert", "create"):
+            key = _room_identity(m.data)
+            record_id = m.data.get("id")
+            if key and record_id:
+                holder = room_index.get(key)
+                if holder and holder != record_id:
+                    zone, room_key = key
+                    print(f"⛔ [ROOM] Từ chối: phòng '{room_key}' zone '{zone}' đã tồn tại id={holder}.")
+                    rejected.append({
+                        "id": record_id or m.data.get("id"),
+                        "table": m.table,
+                        "operation": m.operation,
+                        "error": "duplicate_room_number",
+                        "message": f"Phòng '{m.data.get('room_number') or m.data.get('name')}' đã tồn tại trong zone '{zone}'.",
+                    })
+                    continue
+                room_index[key] = record_id
 
-        if assignee:
-            session = None
-            try:
-                session = get_active_session_for_person(conn, assignee)
-            except Exception as e:
-                # Không chặn sản xuất vì lỗi hạ tầng — nhưng phải ghi log to.
-                print(f"⚠️  [SESSION] Không tra được phiên của '{assignee}': {e}")
-                continue
+        # B. Kiểm tra Alone Worker
+        if (
+            m.table in ("mushroom_jobs", "jobs")
+            and str(m.data.get("job_type", "")).lower() == "alone_worker"
+            and str(m.operation).lower() in ("insert", "create")
+        ):
+            assignee = _job_assignee(m.data)
+            if assignee:
+                session = None
+                try:
+                    session = get_active_session_for_person(conn, assignee)
+                except Exception as e:
+                    print(f"⚠️  [SESSION] Không tra được phiên của '{assignee}': {e}")
 
-            if session is None:
-                print(
-                    f"⛔ [SESSION] Từ chối Alone Worker: '{assignee}' chưa điểm danh "
-                    f"(hoặc phiên đã hết hạn)."
-                )
-                raise HTTPException(
-                    status_code=409,
-                    detail={
+                if session is None:
+                    print(f"⛔ [SESSION] Từ chối Alone Worker: '{assignee}' chưa điểm danh.")
+                    rejected.append({
+                        "id": m.data.get("id"),
+                        "table": m.table,
+                        "operation": m.operation,
                         "error": "assignee_not_checked_in",
                         "assignee": assignee,
-                        "message": (
-                            f"'{assignee}' chưa điểm danh đầu ca nên không giao được "
-                            f"công việc Làm việc một mình. Cảnh báo an toàn cần biết "
-                            f"ĐÍCH DANH ai đang trong phòng."
-                        ),
+                        "message": f"'{assignee}' chưa điểm danh đầu ca nên không giao được công việc Làm việc một mình.",
                         "action": "assignee_check_in_required",
-                    },
-                )
+                    })
+                    continue
+                else:
+                    print(f"✅ [SESSION] '{session['user_name'] or session['user_id']}' đang trong ca — hợp lệ.")
+            else:
+                if device is None or not device.identity_is_known:
+                    print("⛔ [SESSION] Từ chối Alone Worker: không xác định được người thực hiện.")
+                    rejected.append({
+                        "id": m.data.get("id"),
+                        "table": m.table,
+                        "operation": m.operation,
+                        "error": "no_active_work_session",
+                        "message": "Chưa điểm danh đầu ca nên không tạo được công việc Làm việc một mình.",
+                        "action": "check_in_required",
+                    })
+                    continue
 
-            print(
-                f"✅ [SESSION] '{session['user_name'] or session['user_id']}' đang "
-                f"trong ca từ {session['started_at']} — cho phép giao Alone Worker."
-            )
-            continue
+        # Mutation hợp lệ
+        valid.append(m)
 
-        # Không phân công cho ai → người cầm máy tự nhận việc. Máy cá nhân của
-        # Manager/Supervisor đã biết chủ máy từ lúc cấp nên thoả điều kiện mà
-        # không cần điểm danh.
-        if device is None or not device.identity_is_known:
-            print("⛔ [SESSION] Từ chối Alone Worker: không xác định được người thực hiện.")
-            raise HTTPException(
-                status_code=409,
-                detail={
-                    "error": "no_active_work_session",
-                    "message": (
-                        "Chưa điểm danh đầu ca nên không tạo được công việc Làm việc "
-                        "một mình. Cảnh báo an toàn cần biết ĐÍCH DANH ai đang trong phòng."
-                    ),
-                    "action": "check_in_required",
-                },
-            )
+    return valid, rejected
 
 
 @router.post("/push")
@@ -261,83 +263,91 @@ async def sync_push(
     print(f"📥 [PUSH] Received {len(payload.mutations)} changes at {now}")
     print(f"{'='*50}")
 
-    # Validate nghiệp vụ TRƯỚC khi ghi. HTTPException 409 phải thoát ra ngoài
-    # nguyên vẹn, nên đặt ngoài khối try/except bên dưới (khối đó bọc mọi lỗi
-    # thành 500).
-    _assert_room_numbers_unique(repo, payload.mutations)
-    # Cần connection riêng để tra phiên của NGƯỜI ĐƯỢC PHÂN CÔNG (có thể đang
-    # điểm danh trên một máy khác hoàn toàn).
+    # Partial commit: Lọc riêng các mutation hợp lệ và các mutation bị từ chối
     with open_connection() as _session_conn:
-        _assert_alone_worker_has_session(_session_conn, payload.mutations, device)
-
-    try:
-        mutations_dicts = []
-        for i, m in enumerate(payload.mutations):
-            print(f"   [{i+1}] 🔹 Table: {m.table} | Operation: {m.operation}")
-            for key, val in m.data.items():
-                val_str = str(val)[:80]
-                print(f"       - {key}: {val_str}")
-            mutations_dicts.append(m.model_dump())
-
-        # Danh tính LẤY TỪ TOKEN được ưu tiên hơn giá trị client tự khai:
-        # client có thể gửi actor_device_id tuỳ ý, còn token thì server xác
-        # thực được. Đây là điều làm audit trail đáng tin thay vì chỉ là ghi chú.
-        count = repo.push_mutations(
-            mutations_dicts,
-            now,
-            default_origin_server_id=CONFIG.server_id,
-            actor_user_id=(device.user_id if device and device.user_id else payload.actor_user_id),
-            actor_device_id=(device.device_id if device else payload.actor_device_id),
+        valid_mutations, rejected_mutations = _filter_valid_mutations(
+            _session_conn, repo, payload.mutations, device
         )
 
-        # Broadcast real-time domain events & Webhooks
-        ws_manager = getattr(request.app.state, "ws_manager", None)
-        engine = iZiiEventEngine()
+    # Nếu tất cả các item đều bị từ chối và không có item hợp lệ nào
+    if not valid_mutations and rejected_mutations:
+        first_err = rejected_mutations[0]
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error": first_err.get("error", "all_mutations_rejected"),
+                "message": first_err.get("message", "Tất cả các thay đổi đều bị từ chối."),
+                "rejected": rejected_mutations,
+            },
+        )
 
-        # Đọc danh sách webhook MỘT LẦN cho cả batch, khi connection của
-        # request vẫn còn sống. Tuyệt đối KHÔNG truyền connection vào task nền:
-        # dependencies.get_db() sẽ close() nó ngay khi response trả về, task
-        # chạy sau đó sẽ gặp "Cannot operate on a closed database".
-        webhook_rows = engine.fetch_webhook_rows(getattr(repo, "conn", None))
+    count = 0
+    try:
+        if valid_mutations:
+            mutations_dicts = []
+            for i, m in enumerate(valid_mutations):
+                print(f"   [{i+1}] 🔹 Table: {m.table} | Operation: {m.operation}")
+                for key, val in m.data.items():
+                    val_str = str(val)[:80]
+                    print(f"       - {key}: {val_str}")
+                mutations_dicts.append(m.model_dump())
 
-        for m in payload.mutations:
-            event_type = engine.map_mutation_to_domain_event(m.table, m.operation, m.data)
-            t = asyncio.create_task(
-                engine.dispatch_event(
-                    event_type=event_type,
-                    data=m.data,
-                    ws_manager=ws_manager,
-                    origin_table=m.table,
-                    webhook_rows=webhook_rows,
-                    schema_version=m.schema_version or 1,
-                    actor_user_id=m.actor_user_id or payload.actor_user_id,
-                    actor_device_id=m.actor_device_id or payload.actor_device_id,
-                )
+            count = repo.push_mutations(
+                mutations_dicts,
+                now,
+                default_origin_server_id=CONFIG.server_id,
+                actor_user_id=(device.user_id if device and device.user_id else payload.actor_user_id),
+                actor_device_id=(device.device_id if device else payload.actor_device_id),
             )
-            _background_tasks.add(t)
-            t.add_done_callback(_background_tasks.discard)
 
-        if ws_manager:
-            tables = list(set(m.table for m in payload.mutations))
-            event_data = {
-                "event": "sync_trigger",
-                "data": {
-                    "tables": tables,
-                    "timestamp": now
+            # Broadcast real-time domain events & Webhooks cho các mutation hợp lệ
+            ws_manager = getattr(request.app.state, "ws_manager", None)
+            engine = iZiiEventEngine()
+            webhook_rows = engine.fetch_webhook_rows(getattr(repo, "conn", None))
+
+            for m in valid_mutations:
+                event_type = engine.map_mutation_to_domain_event(m.table, m.operation, m.data)
+                t = asyncio.create_task(
+                    engine.dispatch_event(
+                        event_type=event_type,
+                        data=m.data,
+                        ws_manager=ws_manager,
+                        origin_table=m.table,
+                        webhook_rows=webhook_rows,
+                        schema_version=m.schema_version or 1,
+                        actor_user_id=m.actor_user_id or payload.actor_user_id,
+                        actor_device_id=m.actor_device_id or payload.actor_device_id,
+                    )
+                )
+                _background_tasks.add(t)
+                t.add_done_callback(_background_tasks.discard)
+
+            if ws_manager:
+                tables = list(set(m.table for m in valid_mutations))
+                event_data = {
+                    "event": "sync_trigger",
+                    "data": {
+                        "tables": tables,
+                        "timestamp": now
+                    }
                 }
-            }
-            # Broadcast asynchronously
-            t_ws = asyncio.create_task(ws_manager.broadcast(json.dumps(event_data), exclude=None))
-            _background_tasks.add(t_ws)
-            t_ws.add_done_callback(_background_tasks.discard)
-            print(f"📡 [WS] Broadcasted sync_trigger for tables: {tables}")
+                t_ws = asyncio.create_task(ws_manager.broadcast(json.dumps(event_data), exclude=None))
+                _background_tasks.add(t_ws)
+                t_ws.add_done_callback(_background_tasks.discard)
+                print(f"📡 [WS] Broadcasted sync_trigger for tables: {tables}")
 
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    return {"status": "success", "message": f"Processed {count} mutations"}
+    return {
+        "status": "success" if not rejected_mutations else "partial_success",
+        "message": f"Processed {count} mutations ({len(rejected_mutations)} rejected)",
+        "accepted_count": count,
+        "rejected_count": len(rejected_mutations),
+        "rejected": rejected_mutations,
+    }
 
 
 @router.get("/pull")

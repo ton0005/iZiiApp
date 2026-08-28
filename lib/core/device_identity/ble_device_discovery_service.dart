@@ -160,7 +160,7 @@ class BleDeviceDiscoveryService {
       BlePeripheral.setAdvertisingStatusUpdateCallback((advertising, error) {
         _isAdvertising = advertising;
         print(
-            '[BleDiscovery] Advertising status update: advertising=$advertising, error=$error');
+            '[BleDiscover1] Advertising status update: advertising=$advertising, error=$error');
       });
 
       print('[BleDiscovery] GATT Server configured with service: $serviceUuid');
