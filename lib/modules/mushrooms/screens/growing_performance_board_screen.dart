@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/growing_performance_models.dart';
+import '../services/growing_performance_service.dart';
 
 /// Growing Performance Board Screen
 /// Operational performance dashboard tracking daily Joblist, Break time, and Alone Worker safety.
@@ -14,13 +15,19 @@ class GrowingPerformanceBoardScreen extends StatefulWidget {
 
 class _GrowingPerformanceBoardScreenState
     extends State<GrowingPerformanceBoardScreen> {
-  // Raw simulated dataset
-  late List<PerformanceTaskRecord> _allTasks;
-  late List<PerformanceShiftRecord> _allShifts;
+  final GrowingPerformanceService _service = GrowingPerformanceService();
+
+  // Dataset loaded live from the SQLite database
+  List<PerformanceTaskRecord> _allTasks = [];
+  List<PerformanceShiftRecord> _allShifts = [];
+  List<PerformanceDept> _departments = [];
+  List<PerformanceEmployee> _employees = [];
+  bool _isLoading = true;
+  String? _loadError;
 
   // Filter state
   int _rangeDays = 7; // 1, 7, 30
-  String _selectedDept = 'all'; // all, growing, harvest, maintenance
+  String _selectedDept = 'all'; // all, or a department id
   String _selectedEmp = 'all';
   String _selectedJob = 'all';
 
@@ -32,9 +39,31 @@ class _GrowingPerformanceBoardScreenState
   @override
   void initState() {
     super.initState();
-    final dataset = GrowingPerformanceConstants.generateSimulatedDataset();
-    _allTasks = dataset.$1;
-    _allShifts = dataset.$2;
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
+    try {
+      final dataset = await _service.loadDataset(rangeDays: 30);
+      if (!mounted) return;
+      setState(() {
+        _departments = dataset.departments;
+        _employees = dataset.employees;
+        _allTasks = dataset.tasks;
+        _allShifts = dataset.shifts;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loadError = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
   // Filter data by range and criteria
@@ -99,7 +128,13 @@ class _GrowingPerformanceBoardScreenState
     final filteredTasks = _allTasks.where(_taskMatches).toList();
     final filteredShifts = _allShifts.where(_shiftMatches).toList();
 
-    final bodyContent = SingleChildScrollView(
+    final Widget bodyContent;
+    if (_isLoading) {
+      bodyContent = _buildLoadingState(ink2);
+    } else if (_loadError != null) {
+      bodyContent = _buildErrorState(ink, ink2, critical);
+    } else {
+      bodyContent = SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: widget.isEmbedded ? 16 : 24,
         vertical: widget.isEmbedded ? 12 : 24,
@@ -199,6 +234,7 @@ class _GrowingPerformanceBoardScreenState
         ),
       ),
     );
+    }
 
     if (widget.isEmbedded) {
       return Container(color: plane, child: bodyContent);
@@ -219,19 +255,56 @@ class _GrowingPerformanceBoardScreenState
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             tooltip: 'Refresh Data',
-            onPressed: () {
-              setState(() {
-                final dataset =
-                    GrowingPerformanceConstants.generateSimulatedDataset();
-                _allTasks = dataset.$1;
-                _allShifts = dataset.$2;
-              });
-            },
+            onPressed: _isLoading ? null : _loadData,
           ),
           const SizedBox(width: 8),
         ],
       ),
       body: bodyContent,
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  Loading & Error States
+  // ══════════════════════════════════════════════════════════════════════════
+  Widget _buildLoadingState(Color ink2) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text('Loading performance data from database…',
+                style: TextStyle(color: ink2, fontSize: 13)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Color ink, Color ink2, Color critical) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline_rounded, color: critical, size: 32),
+            const SizedBox(height: 12),
+            Text('Failed to load performance data',
+                style: TextStyle(
+                    color: ink, fontWeight: FontWeight.w700, fontSize: 14)),
+            const SizedBox(height: 6),
+            Text(_loadError ?? '',
+                style: TextStyle(color: ink2, fontSize: 12),
+                textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            OutlinedButton(onPressed: _loadData, child: const Text('Retry')),
+          ],
+        ),
+      ),
     );
   }
 
@@ -319,9 +392,8 @@ class _GrowingPerformanceBoardScreenState
   // ══════════════════════════════════════════════════════════════════════════
   Widget _buildFilters(Color surface, Color surface2, Color ink, Color ink2,
       Color muted, Color border, Color border2, Color s1) {
-    final availableEmployees =
-        GrowingPerformanceConstants.defaultEmployees.where((e) {
-      if (_selectedDept != 'all') return true;
+    final availableEmployees = _employees.where((e) {
+      if (_selectedDept == 'all') return true;
       return e.deptId == _selectedDept;
     }).toList();
 
@@ -381,7 +453,7 @@ class _GrowingPerformanceBoardScreenState
                 items: [
                   const DropdownMenuItem(
                       value: 'all', child: Text('All Departments')),
-                  ...GrowingPerformanceConstants.defaultDepartments.map(
+                  ..._departments.map(
                     (d) => DropdownMenuItem(value: d.id, child: Text(d.name)),
                   ),
                 ],
@@ -1002,7 +1074,7 @@ class _GrowingPerformanceBoardScreenState
       Color border,
       Color s1,
       Color warning) {
-    final emps = GrowingPerformanceConstants.defaultEmployees
+    final emps = _employees
         .where((e) {
           if (_selectedDept != 'all' && e.deptId != _selectedDept) return false;
           if (_selectedEmp != 'all' && e.id != _selectedEmp) return false;
@@ -1166,7 +1238,7 @@ class _GrowingPerformanceBoardScreenState
     Color warning,
     Color critical,
   ) {
-    final summaries = GrowingPerformanceConstants.defaultEmployees
+    final summaries = _employees
         .where((e) {
           if (_selectedDept != 'all' && e.deptId != _selectedDept) return false;
           if (_selectedEmp != 'all' && e.id != _selectedEmp) return false;
@@ -1207,9 +1279,9 @@ class _GrowingPerformanceBoardScreenState
           final soloAlarms = soloTasks.where((t) => t.soloInfo!.isAlarm).length;
 
           final dept =
-              GrowingPerformanceConstants.defaultDepartments.firstWhere(
+              _departments.firstWhere(
             (d) => d.id == e.deptId,
-            orElse: () => GrowingPerformanceConstants.defaultDepartments.first,
+            orElse: () => _departments.first,
           );
 
           return EmployeePerformanceSummary(
@@ -1524,10 +1596,10 @@ class _GrowingPerformanceBoardScreenState
                   children: displaySolo.map((r) {
                     final s = r.soloInfo!;
                     final emp =
-                        GrowingPerformanceConstants.defaultEmployees.firstWhere(
+                        _employees.firstWhere(
                       (e) => e.id == r.employeeId,
                       orElse: () =>
-                          GrowingPerformanceConstants.defaultEmployees.first,
+                          _employees.first,
                     );
                     final over = s.insideMinutes > s.limitMinutes;
                     final pct =
@@ -1745,10 +1817,11 @@ class _GrowingPerformanceBoardScreenState
           ),
           const SizedBox(height: 10),
           Text(
-            'The Growing Performance Board is directly mapped from the core database tables of iZiiApp:\n'
-            '• tasks / mushroom_jobs: Source data for job count, completion time (actual_minutes vs plan_minutes) and on-time rate.\n'
-            '• work_sessions: Source data for shift in/out times, break time used (taken), overtime breaks (extra) and overtime hours (OT).\n'
-            '• room_crew_checkins & safety_logs: Source data for mushroom room safety alerts (Alone Worker), gas levels (CO/CO₂) and check-out status.',
+            'The Growing Performance Board reads live from the local iZiiApp database (Drift/SQLite):\n'
+            '• mushroom_jobs: job count, actual duration and on-time rate (vs a fixed standard time per job type), room and Alone Worker gas levels/check-out status.\n'
+            '• mushroom_daily_timesheets: shift check-in/out, break time taken, extra break and overtime hours.\n'
+            '• mushroom_employees / mushroom_departments: the Department & Employee filters and the per-employee breakdown table.\n'
+            'The planned/standard minutes per job type are a fixed operational reference (not stored in the database) since mushroom_jobs only records actual timestamps.',
             style: TextStyle(fontSize: 12, color: ink2, height: 1.5),
           ),
         ],
