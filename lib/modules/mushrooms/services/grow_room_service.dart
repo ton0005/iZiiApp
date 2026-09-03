@@ -34,7 +34,8 @@ abstract class GrowRoomService {
   Future<void> resetRoom(String roomId);
 
   /// Bắt đầu chu kỳ nuôi trồng mới (8 bước pipeline)
-  Future<void> startNewCycle(String roomId, {String? wateringPlan, String? prochlorazRate});
+  Future<void> startNewCycle(String roomId,
+      {String? wateringPlan, String? prochlorazRate});
 }
 
 class GrowRoomServiceImpl implements GrowRoomService {
@@ -42,7 +43,10 @@ class GrowRoomServiceImpl implements GrowRoomService {
   final EmployeeService _employeeService;
   final MushroomsRepository _repository;
 
-  GrowRoomServiceImpl({AppDatabase? db, EmployeeService? employeeService, MushroomsRepository? repository})
+  GrowRoomServiceImpl(
+      {AppDatabase? db,
+      EmployeeService? employeeService,
+      MushroomsRepository? repository})
       : _db = db ?? AppDatabase(),
         _employeeService = employeeService ?? EmployeeServiceImpl(),
         _repository = repository ?? MushroomsRepository(db ?? AppDatabase());
@@ -64,7 +68,8 @@ class GrowRoomServiceImpl implements GrowRoomService {
 
   @override
   Stream<List<Map<String, dynamic>>> watchRooms() {
-    return (_db.select(_db.growRooms)..orderBy([(t) => OrderingTerm(expression: t.name)]))
+    return (_db.select(_db.growRooms)
+          ..orderBy([(t) => OrderingTerm(expression: t.name)]))
         .watch()
         .map((list) => list.map(_mapRoom).toList());
   }
@@ -101,48 +106,57 @@ class GrowRoomServiceImpl implements GrowRoomService {
 
   @override
   Future<List<Map<String, dynamic>>> getRooms() async {
-    final list = await (_db.select(_db.growRooms)..orderBy([(t) => OrderingTerm(expression: t.name)])).get();
+    final list = await (_db.select(_db.growRooms)
+          ..orderBy([(t) => OrderingTerm(expression: t.name)]))
+        .get();
     return list.map(_mapRoom).toList();
   }
 
   @override
   Future<Map<String, dynamic>?> getRoomById(String roomId) async {
-    final r = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
+    final r = await (_db.select(_db.growRooms)
+          ..where((tbl) => tbl.id.equals(roomId)))
+        .getSingleOrNull();
     return r != null ? _mapRoom(r) : null;
   }
 
   @override
-  Future<void> addRoom({required String name, required String plantName}) async {
-    final currentEmpId = await _employeeService.getCurrentEmployeeId() ?? '555555';
-    final hasPerm = await _employeeService.hasPermission(currentEmpId, 'addRoom');
+  Future<void> addRoom(
+      {required String name, required String plantName}) async {
+    final currentEmpId =
+        await _employeeService.getCurrentEmployeeId() ?? '555555';
+    final hasPerm =
+        await _employeeService.hasPermission(currentEmpId, 'addRoom');
     if (!hasPerm) {
-      throw Exception('Nhân viên không có quyền thêm phòng trồng.');
+      throw Exception('Can not add room: employee does not have permission.');
     }
 
     final deterministicId = name.toLowerCase().replaceAll(' ', '_');
-    
+
     // Check duplication by ID and name
     final existing = await getRoomById(deterministicId);
     if (existing != null) {
-      throw Exception('Phòng trồng đã tồn tại.');
+      throw Exception('Can not add room: room already exists.');
     }
 
     final allRooms = await getRooms();
-    final duplicateName = allRooms.any((r) => (r['name'] as String).trim().toLowerCase() == name.trim().toLowerCase());
+    final duplicateName = allRooms.any((r) =>
+        (r['name'] as String).trim().toLowerCase() ==
+        name.trim().toLowerCase());
     if (duplicateName) {
-      throw Exception('Phòng trồng với tên/số này đã tồn tại.');
+      throw Exception('Can not add room: room with this name already exists.');
     }
 
     await _db.into(_db.growRooms).insertOnConflictUpdate(GrowRoom(
-      id: deterministicId,
-      name: name,
-      status: 'idle',
-      currentStage: 'idle',
-      dayInCycle: 1,
-      targetYield: 0.0,
-      pickedYield: 0.0,
-      createdAt: DateTime.now(),
-    ));
+          id: deterministicId,
+          name: name,
+          status: 'idle',
+          currentStage: 'idle',
+          dayInCycle: 1,
+          targetYield: 0.0,
+          pickedYield: 0.0,
+          createdAt: DateTime.now(),
+        ));
 
     await SyncService().queueMutation('grow_rooms', 'insert', {
       'id': deterministicId,
@@ -158,7 +172,8 @@ class GrowRoomServiceImpl implements GrowRoomService {
 
   @override
   Future<void> updateRoomStage(String roomId, String stage) async {
-    await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+    await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId)))
+        .write(
       GrowRoomsCompanion(
         currentStage: Value(stage),
         updatedAt: Value(DateTime.now()),
@@ -174,8 +189,10 @@ class GrowRoomServiceImpl implements GrowRoomService {
 
   @override
   Future<void> resetRoom(String roomId) async {
-    final currentEmpId = await _employeeService.getCurrentEmployeeId() ?? '555555';
-    final hasPerm = await _employeeService.hasPermission(currentEmpId, 'addRoom');
+    final currentEmpId =
+        await _employeeService.getCurrentEmployeeId() ?? '555555';
+    final hasPerm =
+        await _employeeService.hasPermission(currentEmpId, 'addRoom');
     if (!hasPerm) {
       throw Exception('Nhân viên không có quyền reset phòng.');
     }
@@ -183,12 +200,17 @@ class GrowRoomServiceImpl implements GrowRoomService {
   }
 
   @override
-  Future<void> startNewCycle(String roomId, {String? wateringPlan, String? prochlorazRate}) async {
-    final currentEmpId = await _employeeService.getCurrentEmployeeId() ?? '555555';
-    final hasPerm = await _employeeService.hasPermission(currentEmpId, 'createJob');
+  Future<void> startNewCycle(String roomId,
+      {String? wateringPlan, String? prochlorazRate}) async {
+    final currentEmpId =
+        await _employeeService.getCurrentEmployeeId() ?? '555555';
+    final hasPerm =
+        await _employeeService.hasPermission(currentEmpId, 'createJob');
     if (!hasPerm) {
-      throw Exception('Nhân viên không có quyền khởi chạy chu kỳ nuôi trồng.');
+      throw Exception(
+          'Can not start new cycle: employee does not have permission.');
     }
-    await _repository.startNewCycle(roomId, wateringPlan: wateringPlan, prochlorazRate: prochlorazRate);
+    await _repository.startNewCycle(roomId,
+        wateringPlan: wateringPlan, prochlorazRate: prochlorazRate);
   }
 }

@@ -21,6 +21,7 @@ import 'quick_access_card.dart';
 import 'mushrooms_login_screen.dart';
 import 'mushrooms_profile_screen.dart';
 import 'harvest_attendance_screen.dart';
+import 'growing_performance_board_screen.dart';
 import '../../communication/bloc/chat_bloc.dart';
 
 class MushroomsHomeScreen extends StatefulWidget {
@@ -429,6 +430,15 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     });
   }
 
+  void _navigateToPerformanceBoard(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const GrowingPerformanceBoardScreen(),
+      ),
+    );
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   //  Build
   // ══════════════════════════════════════════════════════════════════════════
@@ -592,6 +602,15 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             isDark: isDark,
             onTap: () => _navigateToHarvestAttendance(context),
           ),
+          const SizedBox(height: 12),
+          QuickAccessCard(
+            title: 'Growing Performance Board',
+            subtitle: 'Job completion time, break duration & solo worker safety',
+            icon: Icons.analytics_rounded,
+            color: const Color(0xFF2A78D6),
+            isDark: isDark,
+            onTap: () => _navigateToPerformanceBoard(context),
+          ),
         ],
       ),
     );
@@ -672,6 +691,14 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 color: const Color(0xFFC97A3D),
                 isDark: isDark,
                 onTap: () => _navigateToHarvestAttendance(context),
+              ),
+              QuickAccessCard(
+                title: 'Growing Performance Board',
+                subtitle: 'Job completion time, break duration & solo worker safety',
+                icon: Icons.analytics_rounded,
+                color: const Color(0xFF2A78D6),
+                isDark: isDark,
+                onTap: () => _navigateToPerformanceBoard(context),
               ),
               QuickAccessCard(
                 title: 'Desktop View (Monarto)',

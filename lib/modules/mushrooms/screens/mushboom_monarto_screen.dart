@@ -18,6 +18,7 @@ import 'safety_tab_screen.dart';
 import 'employees_tab_screen.dart';
 import 'departments_tab_screen.dart';
 import 'settings_tab_screen.dart';
+import 'growing_performance_board_screen.dart';
 import 'mushrooms_profile_screen.dart';
 import '../services/employee_service.dart';
 import 'package:izii_app/core/database/app_database.dart';
@@ -690,6 +691,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'maintenance') {
       return _language == 'vi' ? 'Bảo trì (Maintenance)' : 'Maintenance Log';
     }
+    if (_activeTab == 'performance') {
+      return _language == 'vi'
+          ? 'Hiệu suất (Performance Board)'
+          : 'Growing Performance Board';
+    }
     if (_activeTab == 'tasks') {
       return _language == 'vi'
           ? 'Dự án & Công việc (Tasks)'
@@ -722,6 +728,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     }
     if (_activeTab == 'maintenance') {
       return 'Maintenance History & Technical Error Reports';
+    }
+    if (_activeTab == 'performance') {
+      return 'Joblist Completion, Break Time & Alone Worker Safety Board';
     }
     if (_activeTab == 'tasks') return 'Kanban Board & Gantt Chart Timeline';
     if (_activeTab == 'chat') return 'Offline BLE P2P Chat Simulator';
@@ -917,6 +926,14 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                       const SizedBox(height: 8),
                     _buildSidebarLabel(
                         _language == 'vi' ? 'HỆ THỐNG' : 'UTILITIES',
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'performance',
+                        Icons.analytics_rounded,
+                        _language == 'vi'
+                            ? 'Hiệu suất (Performance)'
+                            : 'Performance Board',
+                        const Color(0xFF2A78D6),
                         effectiveExpanded),
                     _buildSidebarItem(
                         'tasks',
@@ -1184,6 +1201,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         onCreateMaintenanceJob: _onCreateMaintenanceJob,
         onUpdateMaintStatus: _onUpdateMaintStatus,
       );
+    }
+    if (_activeTab == 'performance') {
+      return const GrowingPerformanceBoardScreen(isEmbedded: true);
     }
     if (_activeTab == 'tasks') {
       return TasksTabScreen(

@@ -63,7 +63,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
   final Map<String, TextEditingController> _envControllers = {};
 
   // ── Danh sách thiết bị nhúng trong tab ────────────────────────────────────
-  final GlobalKey<DeviceListViewState> _deviceListKey = GlobalKey<DeviceListViewState>();
+  final GlobalKey<DeviceListViewState> _deviceListKey =
+      GlobalKey<DeviceListViewState>();
 
   @override
   void initState() {
@@ -210,7 +211,9 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
       if (!mounted) return;
       setState(() => _tokenController.text = newSecret);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã cập nhật Auth Token trên máy này.')),
+        const SnackBar(
+            content: Text('Auth Token updated to new admin secret'),
+            backgroundColor: Color(0xFF10B981)),
       );
     }
   }
@@ -223,7 +226,7 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           children: [
             Icon(Icons.restart_alt_rounded, color: Color(0xFFF59E0B)),
             SizedBox(width: 10),
-            Expanded(child: Text('Cần khởi động lại server')),
+            Expanded(child: Text('Restart server')),
           ],
         ),
         content: Column(
@@ -232,19 +235,19 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           children: [
             Text(
               updatedKeys.isEmpty
-                  ? 'Không có thay đổi nào.'
-                  : 'Đã ghi ${updatedKeys.length} thiết đặt vào .env:',
+                  ? 'No settings were changed.'
+                  : 'Settings ${updatedKeys.length} updated in .env:',
             ),
             if (updatedKeys.isNotEmpty) ...[
               const SizedBox(height: 8),
               ...updatedKeys.map((k) => Text('  • $k',
-                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12))),
+                  style:
+                      const TextStyle(fontFamily: 'monospace', fontSize: 12))),
             ],
             const SizedBox(height: 14),
             const Text(
-              'Server đọc cấu hình đúng một lần lúc khởi động, nên các thay đổi '
-              'này CHƯA có hiệu lực. Hãy khởi động lại server rồi kiểm tra lại '
-              'phần Trạng thái đang chạy.',
+              'The server reads its configuration only once at startup, so these changes are NOT yet in effect. '
+              'Please restart the server and then check again.',
               style: TextStyle(fontSize: 13),
             ),
           ],
@@ -252,7 +255,7 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Đã hiểu'),
+            child: const Text('Understood'),
           ),
         ],
       ),
@@ -298,21 +301,27 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
+                const Icon(Icons.check_circle_rounded,
+                    color: Colors.white, size: 18),
                 const SizedBox(width: 8),
-                Expanded(child: Text('Backup created: ${p.basename(backupFile.path)}')),
+                Expanded(
+                    child:
+                        Text('Backup created: ${p.basename(backupFile.path)}')),
               ],
             ),
             backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup error: $e'), backgroundColor: Colors.redAccent),
+          SnackBar(
+              content: Text('Backup error: $e'),
+              backgroundColor: Colors.redAccent),
         );
       }
     }
@@ -338,7 +347,9 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Restore Now'),
           ),
@@ -352,7 +363,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('✅ Database restored successfully! Please restart iZiiApp.'),
+              content: Text(
+                  '✅ Database restored successfully! Please restart iZiiApp.'),
               backgroundColor: Color(0xFF10B981),
               duration: Duration(seconds: 4),
             ),
@@ -361,7 +373,9 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Restore failed: $e'), backgroundColor: Colors.redAccent),
+            SnackBar(
+                content: Text('Restore failed: $e'),
+                backgroundColor: Colors.redAccent),
           );
         }
       }
@@ -387,7 +401,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           ),
           backgroundColor: const Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -437,8 +452,9 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           // ── Section 3: Đăng ký & quản lý thiết bị ─────────────────
           _buildSectionHeader(
             icon: Icons.devices_rounded,
-            title: 'Thiết bị & Đăng ký',
-            subtitle: 'Cấp mã QR/NFC cho máy mới · thu hồi máy đã mất',
+            title: 'Device Enrollment & Management',
+            subtitle:
+                'Manage device tokens and enrollment for this iZiiApp instance',
             color: const Color(0xFF14B8A6),
             isDark: isDark,
           ),
@@ -449,8 +465,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           // ── Section 4: Server Configuration (.env từ xa) ──────────
           _buildSectionHeader(
             icon: Icons.admin_panel_settings_rounded,
-            title: 'Cấu hình Server (.env)',
-            subtitle: 'Database backend · TLS/mTLS · OAuth2 — chỉ dành cho Admin',
+            title: 'Server Configuration (.env)',
+            subtitle: 'Database backend · TLS/mTLS · OAuth2 — only for Admin',
             color: const Color(0xFFEF4444),
             isDark: isDark,
           ),
@@ -615,9 +631,10 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           _buildNotice(
             icon: Icons.shield_rounded,
             color: const Color(0xFF14B8A6),
-            text: 'Mỗi thiết bị nhận một token RIÊNG qua mã QR hoặc thẻ NFC — '
-                'không dùng chung secret hệ thống. Máy bị mất thì thu hồi đúng '
-                'máy đó, không phải đổi cấu hình cả nhà máy.',
+            text:
+                'Each device receives its OWN token via a QR code or an NFC tag  — '
+                'not sharing the system secret. If a device is lost, only that '
+                'device is revoked, not the entire factory configuration.',
             isDark: isDark,
           ),
           const SizedBox(height: 8),
@@ -630,7 +647,7 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           _buildConfigGroup(
             isDark: isDark,
             icon: Icons.list_alt_rounded,
-            title: 'Danh sách thiết bị đã đăng ký',
+            title: 'Device List',
             color: const Color(0xFF14B8A6),
             onExpansionChanged: (expanded) {
               if (expanded && _deviceListKey.currentState?.hasLoaded != true) {
@@ -651,9 +668,11 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           // Cấp mã cho máy khác
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.qr_code_2_rounded, color: Color(0xFF14B8A6)),
-            title: const Text('Cấp mã đăng ký'),
-            subtitle: const Text('Tạo QR hoặc ghi thẻ NFC cho máy mới'),
+            leading:
+                const Icon(Icons.qr_code_2_rounded, color: Color(0xFF14B8A6)),
+            title: const Text('Issue a registration code'),
+            subtitle:
+                const Text('Create a QR code or NFC tag for a new device'),
             trailing: const Icon(Icons.chevron_right_rounded),
             onTap: _openIssueEnrollment,
           ),
@@ -662,9 +681,11 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           // Máy mới tự đăng ký — BẮT BUỘC là màn hình riêng, xem ghi chú dưới.
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.qr_code_scanner_rounded, color: Color(0xFF6366F1)),
-            title: const Text('Đăng ký máy này'),
-            subtitle: const Text('Quét mã QR hoặc chạm thẻ NFC do quản lý cấp'),
+            leading: const Icon(Icons.qr_code_scanner_rounded,
+                color: Color(0xFF6366F1)),
+            title: const Text('Enroll this device'),
+            subtitle: const Text(
+                'Scan a QR code or tap an NFC tag provided by your administrator'),
             trailing: const Icon(Icons.chevron_right_rounded),
             onTap: () async {
               // Camera preview của mobile_scanner cần toàn màn hình và vòng đời
@@ -677,7 +698,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                 _deviceListKey.currentState?.reload();
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Thiết bị đã được đăng ký.')),
+                    const SnackBar(
+                        content: Text('Device enrolled successfully.')),
                   );
                 }
               }
@@ -688,8 +710,9 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           // Lối vào màn hình đầy đủ, hữu ích khi danh sách dài.
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.open_in_full_rounded, color: Color(0xFF94A3B8)),
-            title: const Text('Mở màn hình quản lý đầy đủ'),
+            leading: const Icon(Icons.open_in_full_rounded,
+                color: Color(0xFF94A3B8)),
+            title: const Text('Open Full Management Screen'),
             trailing: const Icon(Icons.chevron_right_rounded),
             onTap: () async {
               await Navigator.of(context).push(
@@ -728,7 +751,7 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
               Expanded(
                 child: Text(
                   cfg == null
-                      ? 'Chưa nạp cấu hình từ server.'
+                      ? 'Server configuration not loaded.'
                       : '${cfg.serverId}  ·  zone ${cfg.zone}',
                   style: TextStyle(
                     fontSize: 14,
@@ -741,10 +764,12 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                 onPressed: _isConfigLoading ? null : _loadServerConfig,
                 icon: _isConfigLoading
                     ? const SizedBox(
-                        width: 14, height: 14,
+                        width: 14,
+                        height: 14,
                         child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.refresh_rounded, size: 18),
-                label: Text(_isConfigLoading ? 'Đang nạp...' : 'Nạp cấu hình'),
+                label: Text(
+                    _isConfigLoading ? 'Loading...' : 'Load Configuration'),
               ),
             ],
           ),
@@ -764,8 +789,9 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
             _buildNotice(
               icon: Icons.info_outline_rounded,
               color: const Color(0xFF6366F1),
-              text: 'Nhấn "Nạp cấu hình" để đọc .env từ máy chủ. Cần Auth Token '
-                  'ở phần Sync Server khớp với IZIIAPP_SERVER_SECRET.',
+              text:
+                  'Press "Load Configuration" to read the .env file from the server. An Auth Token '
+                  'is required in the Sync Server section to match IZIIAPP_SERVER_SECRET.',
               isDark: isDark,
             ),
           ] else ...[
@@ -786,26 +812,31 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
             _buildConfigGroup(
               isDark: isDark,
               icon: Icons.hub_rounded,
-              title: 'Danh tính & Mesh',
+              title: 'Identity & Mesh',
               color: const Color(0xFF06B6D4),
               children: [
-                _envField('IZIIAPP_SERVER_ID', 'server-m1', Icons.badge_rounded, isDark,
-                    help: 'Phải KHÁC NHAU trên từng máy. Trùng nhau thì hai server '
-                        'sẽ bỏ qua nhau và mesh không đồng bộ.'),
+                _envField('IZIIAPP_SERVER_ID', 'server-m1', Icons.badge_rounded,
+                    isDark,
+                    help:
+                        'Must be UNIQUE on each machine. If identical, the two servers '
+                        'will ignore each other and the mesh will not synchronize.'),
                 _envField('IZIIAPP_ZONE', 'M1', Icons.map_rounded, isDark),
                 _envField('IZIIAPP_PEERS', 'https://192.168.1.11:8080,...',
                     Icons.lan_rounded, isDark,
-                    help: 'Khai báo tường minh, đừng chỉ trông vào mDNS — hotspot '
-                        'và VLAN doanh nghiệp thường chặn multicast.'),
-                _envField('IZIIAPP_SYNC_INTERVAL_SECONDS', '45', Icons.timer_rounded, isDark),
-                _envField('IZIIAPP_SERVER_SECRET', '', Icons.vpn_key_rounded, isDark,
+                    help:
+                        'Declare things explicitly, because enterprise firewalls, don’t rely solely on mDNS — especially in hotspot mode.'
+                        'and enterprise VLANs often block multicast.'),
+                _envField('IZIIAPP_SYNC_INTERVAL_SECONDS', '45',
+                    Icons.timer_rounded, isDark),
+                _envField(
+                    'IZIIAPP_SERVER_SECRET', '', Icons.vpn_key_rounded, isDark,
                     secret: true,
-                    help: 'Chỉ dùng cho /peer-sync/* giữa các server. '
-                        'Phải GIỐNG NHAU trên cả 3 máy.'),
+                    help: 'Only used for /peer-sync/* between servers. '
+                        'Must be IDENTICAL on all 3 machines.'),
                 _envField('IZIIAPP_WS_SECRET', '', Icons.cable_rounded, isDark,
                     secret: true,
-                    help: 'Token cho WebSocket /chat. Bỏ trống thì dùng chung '
-                        'IZIIAPP_SERVER_SECRET.'),
+                    help: 'Token for WebSocket /chat. Leave empty to use the '
+                        'shared IZIIAPP_SERVER_SECRET.')
               ],
             ),
 
@@ -813,33 +844,38 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
             _buildConfigGroup(
               isDark: isDark,
               icon: Icons.security_rounded,
-              title: 'Bảo mật & Phân quyền',
+              title: 'Security & Permissions',
               color: const Color(0xFFEF4444),
               children: [
                 _buildNotice(
                   icon: Icons.warning_amber_rounded,
                   color: const Color(0xFFEF4444),
-                  text: 'Đổi IZIIAPP_ADMIN_SECRET sẽ làm Auth Token hiện tại của '
-                      'máy này MẤT HIỆU LỰC sau khi server khởi động lại. '
-                      'App sẽ hỏi cập nhật lại giúp bạn sau khi lưu.',
+                  text:
+                      'Changing IZIIAPP_ADMIN_SECRET will invalidate the current Auth Token for '
+                      'this machine after the server restarts. '
+                      'The app will prompt you to update it after saving.',
                   isDark: isDark,
                 ),
                 const SizedBox(height: 12),
-                _envField('IZIIAPP_ADMIN_SECRET', '', Icons.admin_panel_settings_rounded,
-                    isDark,
+                _envField('IZIIAPP_ADMIN_SECRET', '',
+                    Icons.admin_panel_settings_rounded, isDark,
                     secret: true,
-                    help: 'Bí mật RIÊNG cho /admin/* — đừng đưa cho máy công nhân. '
-                        'Bỏ trống thì tạm dùng chung IZIIAPP_SERVER_SECRET, nghĩa là '
-                        'thiết bị nào biết token đồng bộ cũng xoá được database.'),
-                _buildBoolField('IZIIAPP_REQUIRE_DEVICE_TOKEN',
-                    'Bắt buộc thiết bị phải đăng ký mới đồng bộ được', isDark,
-                    help: '⚠️ CHỈ bật sau khi TẤT CẢ máy đã đăng ký xong. Bật sớm '
-                        'thì cả nhà máy mất kết nối cùng lúc. Server sẽ từ chối '
-                        'nếu chưa có máy nào đăng ký.'),
+                    help:
+                        'A DEDICATED secret for /admin/ do NOT give it to worker devices. '
+                        'Leave empty to use the shared IZIIAPP_SERVER_SECRET, meaning any device with the sync token can delete the database.'),
+                _buildBoolField(
+                    'IZIIAPP_REQUIRE_DEVICE_TOKEN',
+                    'The device must be registered before it is allowed to synchronize',
+                    isDark,
+                    help:
+                        '⚠️ Enable this ONLY after ALL devices have finished registering. If you enable it too early… '
+                        'the entire factory will lose connectivity at the same time. The server will reject'
+                        'if no device has registered yet.'),
                 _envField('IZIIAPP_ENROLLMENT_TOKEN_TTL', '600',
                     Icons.hourglass_bottom_rounded, isDark,
-                    help: 'Vé mời sống bao lâu (giây). 600 = 10 phút. Tăng lên nếu '
-                        'ghi thẻ NFC dán tường, ví dụ 3600 cho một ca.'),
+                    help:
+                        'How long the enrollment token is valid (in seconds). 600 = 10 minutes. Increase if '
+                        'you are using NFC tags attached to walls, for example 3600 for a shift.'),
               ],
             ),
 
@@ -852,16 +888,24 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
               children: [
                 _buildBackendSelector(isDark),
                 const SizedBox(height: 12),
-                _envField('IZIIAPP_PG_DSN',
+                _envField(
+                    'IZIIAPP_PG_DSN',
                     'postgresql://izii:matkhau@192.168.1.50:5432/iziiapp',
-                    Icons.link_rounded, isDark,
+                    Icons.link_rounded,
+                    isDark,
                     secret: true,
-                    help: 'Bắt buộc khi chọn postgres. Chạy migrate_to_postgres.py '
-                        'TRƯỚC khi đổi backend, nếu không sẽ khởi động với DB rỗng.'),
-                _envField('IZIIAPP_PG_POOL_MIN', '1', Icons.remove_rounded, isDark),
-                _envField('IZIIAPP_PG_POOL_MAX', '10', Icons.add_rounded, isDark),
-                _envField('IZIIAPP_SERVER_DB_PATH', '(mặc định: server/data/iziiapp.db)',
-                    Icons.folder_rounded, isDark),
+                    help:
+                        'Required when selecting postgres. Run migrate_to_postgres.py '
+                        'BEFORE changing the backend, otherwise it will start with an empty DB.'),
+                _envField(
+                    'IZIIAPP_PG_POOL_MIN', '1', Icons.remove_rounded, isDark),
+                _envField(
+                    'IZIIAPP_PG_POOL_MAX', '10', Icons.add_rounded, isDark),
+                _envField(
+                    'IZIIAPP_SERVER_DB_PATH',
+                    '(default: server/data/iziiapp.db)',
+                    Icons.folder_rounded,
+                    isDark),
               ],
             ),
 
@@ -875,10 +919,10 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                 _buildNotice(
                   icon: Icons.terminal_rounded,
                   color: const Color(0xFF8B5CF6),
-                  text: 'Sinh chứng chỉ trên máy chủ trước:\n'
+                  text: 'Generate the certificate on the server first:\n'
                       'cd server  →  .\\gen_dev_certs.ps1\n'
-                      'Sau đó điền đường dẫn bên dưới và BẬT ĐỒNG LOẠT trên cả 3 máy. '
-                      'Ghép http với https sẽ làm peer-sync hỏng ở bước bắt tay.',
+                      'Then fill in the path below and ENABLE it simultaneously on all three machines. '
+                      'Mixing http with https will break peer‑sync at the handshake stage.',
                   isDark: isDark,
                   mono: true,
                 ),
@@ -895,10 +939,13 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                     'Bắt buộc chứng chỉ client (mTLS thực thụ)', isDark,
                     help: 'Bật thì việc chặn diễn ra ở tầng TLS, trước cả khi '
                         'request tới ứng dụng.'),
-                _envField('IZIIAPP_TLS_ALLOWED_PEER_CNS',
+                _envField(
+                    'IZIIAPP_TLS_ALLOWED_PEER_CNS',
                     'server-m1,server-m2,server-cr',
-                    Icons.checklist_rounded, isDark,
-                    help: 'Để trống = chấp nhận mọi chứng chỉ do CA của mình ký.'),
+                    Icons.checklist_rounded,
+                    isDark,
+                    help:
+                        'Leaving this field empty = accept any certificate signed by your own CA.'),
               ],
             ),
 
@@ -912,18 +959,22 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                 _buildNotice(
                   icon: Icons.info_outline_rounded,
                   color: const Color(0xFFF59E0B),
-                  text: 'Khác với mTLS ở trên vốn bảo vệ chiều VÀO. Phần này dùng khi '
+                  text:
+                      'Khác với mTLS ở trên vốn bảo vệ chiều VÀO. Phần này dùng khi '
                       'iZii GỌI RA SAP Event Mesh hoặc OData. Bỏ trống nếu chưa nối ERP.',
                   isDark: isDark,
                 ),
                 const SizedBox(height: 12),
-                _envField('IZIIAPP_OAUTH_TOKEN_URL',
+                _envField(
+                    'IZIIAPP_OAUTH_TOKEN_URL',
                     'https://<tenant>.authentication.<region>.hana.ondemand.com/oauth/token',
-                    Icons.link_rounded, isDark),
+                    Icons.link_rounded,
+                    isDark),
                 _envField('IZIIAPP_OAUTH_CLIENT_ID', 'sb-xxxxxxxx',
                     Icons.person_rounded, isDark),
                 _envField('IZIIAPP_OAUTH_CLIENT_SECRET', '',
-                    Icons.password_rounded, isDark, secret: true),
+                    Icons.password_rounded, isDark,
+                    secret: true),
                 _envField('IZIIAPP_OAUTH_SCOPE', '(để trống nếu không yêu cầu)',
                     Icons.tune_rounded, isDark),
               ],
@@ -944,15 +995,17 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                 onPressed: _isConfigSaving ? null : _saveServerConfig,
                 icon: _isConfigSaving
                     ? const SizedBox(
-                        width: 16, height: 16,
+                        width: 16,
+                        height: 16,
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.save_rounded, size: 18),
-                label: Text(_isConfigSaving ? 'Đang ghi...' : 'Ghi vào .env'),
+                label: Text(_isConfigSaving ? 'Writing...' : 'Write .env'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFEF4444),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -980,11 +1033,16 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(ok ? Icons.check_circle_rounded : Icons.remove_circle_outline_rounded,
-                size: 14, color: color),
+            Icon(
+                ok
+                    ? Icons.check_circle_rounded
+                    : Icons.remove_circle_outline_rounded,
+                size: 14,
+                color: color),
             const SizedBox(width: 6),
             Text('$label: ${ok ? (okText ?? 'bật') : (offText ?? 'tắt')}',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+                style: TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.w600, color: color)),
           ],
         ),
       );
@@ -1007,7 +1065,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                 okText: 'postgres', offText: 'sqlite'),
             chip('TLS', cfg.tlsEnabled),
             chip('mTLS', cfg.mtlsEnabled),
-            chip('OAuth2', cfg.oauthConfigured, okText: 'đã cấu hình', offText: 'chưa'),
+            chip('OAuth2', cfg.oauthConfigured,
+                okText: 'đã cấu hình', offText: 'chưa'),
             chip('Peers', cfg.peersConfigured.isNotEmpty,
                 okText: '${cfg.peersConfigured.length}', offText: '0'),
           ],
@@ -1033,7 +1092,9 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
               Icon(
                 !declared
                     ? Icons.remove_circle_outline_rounded
-                    : (exists ? Icons.check_circle_rounded : Icons.error_rounded),
+                    : (exists
+                        ? Icons.check_circle_rounded
+                        : Icons.error_rounded),
                 size: 15,
                 color: color,
               ),
@@ -1050,7 +1111,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                   !declared
                       ? 'chưa khai báo'
                       : (exists ? path : '$path — KHÔNG TÌM THẤY trên máy chủ'),
-                  style: TextStyle(fontSize: 11, fontFamily: 'monospace', color: color),
+                  style: TextStyle(
+                      fontSize: 11, fontFamily: 'monospace', color: color),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -1071,8 +1133,14 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
         const SizedBox(height: 6),
         SegmentedButton<String>(
           segments: const [
-            ButtonSegment(value: 'sqlite', label: Text('SQLite'), icon: Icon(Icons.sd_card_rounded, size: 16)),
-            ButtonSegment(value: 'postgres', label: Text('PostgreSQL'), icon: Icon(Icons.dns_rounded, size: 16)),
+            ButtonSegment(
+                value: 'sqlite',
+                label: Text('SQLite'),
+                icon: Icon(Icons.sd_card_rounded, size: 16)),
+            ButtonSegment(
+                value: 'postgres',
+                label: Text('PostgreSQL'),
+                icon: Icon(Icons.dns_rounded, size: 16)),
           ],
           selected: {current == 'postgres' ? 'postgres' : 'sqlite'},
           onSelectionChanged: (s) {
@@ -1084,13 +1152,15 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
         Text(
           'SQLite chỉ cho MỘT writer — đủ dùng ở biên. Chuyển sang PostgreSQL '
           'khi có nhiều adapter (SAP/OPC/Historian) ghi song song.',
-          style: TextStyle(fontSize: 11, color: isDark ? Colors.white38 : Colors.black45),
+          style: TextStyle(
+              fontSize: 11, color: isDark ? Colors.white38 : Colors.black45),
         ),
       ],
     );
   }
 
-  Widget _buildBoolField(String key, String label, bool isDark, {String? help}) {
+  Widget _buildBoolField(String key, String label, bool isDark,
+      {String? help}) {
     final ctrl = _envCtrl(key);
     final value = ['1', 'true', 'yes'].contains(ctrl.text.trim().toLowerCase());
     return Padding(
@@ -1120,7 +1190,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           if (help != null)
             Text(help,
                 style: TextStyle(
-                    fontSize: 11, color: isDark ? Colors.white38 : Colors.black45)),
+                    fontSize: 11,
+                    color: isDark ? Colors.white38 : Colors.black45)),
         ],
       ),
     );
@@ -1159,7 +1230,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
             const SizedBox(height: 4),
             Text(help,
                 style: TextStyle(
-                    fontSize: 11, color: isDark ? Colors.white38 : Colors.black45)),
+                    fontSize: 11,
+                    color: isDark ? Colors.white38 : Colors.black45)),
           ],
         ],
       ),
@@ -1187,7 +1259,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                 fontWeight: FontWeight.w700,
                 color: isDark ? Colors.white : Colors.black87)),
         children: [
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: children),
+          Column(
+              crossAxisAlignment: CrossAxisAlignment.start, children: children),
         ],
       ),
     );
@@ -1249,7 +1322,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.folder_open_rounded, size: 18, color: Color(0xFF10B981)),
+                  const Icon(Icons.folder_open_rounded,
+                      size: 18, color: Color(0xFF10B981)),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -1285,8 +1359,10 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF10B981),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                 ),
                 onPressed: _handleCreateBackup,
               ),
@@ -1295,13 +1371,18 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           const SizedBox(height: 12),
 
           if (_isBackupLoading)
-            const Center(child: Padding(padding: EdgeInsets.all(12.0), child: CircularProgressIndicator()))
+            const Center(
+                child: Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: CircularProgressIndicator()))
           else if (_backups.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
                 'No database backups created yet. Click "Create Backup Now" to create one.',
-                style: TextStyle(fontSize: 12, color: isDark ? Colors.white54 : Colors.black45),
+                style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.white54 : Colors.black45),
               ),
             )
           else
@@ -1313,26 +1394,35 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
               itemBuilder: (ctx, i) {
                 final b = _backups[i];
                 final sizeMb = (b.sizeBytes / (1024 * 1024)).toStringAsFixed(2);
-                final dateStr = "${b.modifiedAt.year}-${b.modifiedAt.month.toString().padLeft(2, '0')}-${b.modifiedAt.day.toString().padLeft(2, '0')} ${b.modifiedAt.hour.toString().padLeft(2, '0')}:${b.modifiedAt.minute.toString().padLeft(2, '0')}";
+                final dateStr =
+                    "${b.modifiedAt.year}-${b.modifiedAt.month.toString().padLeft(2, '0')}-${b.modifiedAt.day.toString().padLeft(2, '0')} ${b.modifiedAt.hour.toString().padLeft(2, '0')}:${b.modifiedAt.minute.toString().padLeft(2, '0')}";
 
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.insert_drive_file_rounded, color: Color(0xFF10B981)),
+                  leading: const Icon(Icons.insert_drive_file_rounded,
+                      color: Color(0xFF10B981)),
                   title: Text(
                     b.fileName,
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87),
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87),
                   ),
                   subtitle: Text(
                     '$dateStr • $sizeMb MB',
-                    style: TextStyle(fontSize: 11, color: isDark ? Colors.white54 : Colors.black45),
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: isDark ? Colors.white54 : Colors.black45),
                   ),
                   trailing: OutlinedButton.icon(
                     icon: const Icon(Icons.restore_rounded, size: 14),
-                    label: const Text('Restore', style: TextStyle(fontSize: 12)),
+                    label:
+                        const Text('Restore', style: TextStyle(fontSize: 12)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF10B981),
                       side: const BorderSide(color: Color(0xFF10B981)),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
                     ),
                     onPressed: () => _confirmRestore(b),
                   ),
@@ -1410,7 +1500,8 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           const Divider(height: 20),
           _buildInfoRow('Version', '2.0.0 (Modular Architecture)', isDark),
           const Divider(height: 20),
-          _buildInfoRow('Server Engine', 'FastAPI + Uvicorn (SQLite WAL)', isDark),
+          _buildInfoRow(
+              'Server Engine', 'FastAPI + Uvicorn (SQLite WAL)', isDark),
           const Divider(height: 20),
           _buildInfoRow('Platform', _getPlatformString(), isDark),
           const Divider(height: 20),
@@ -1507,10 +1598,14 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
           color: isDark ? Colors.white24 : Colors.black26,
           fontSize: 13,
         ),
-        prefixIcon: Icon(icon, size: 18, color: isDark ? Colors.white38 : Colors.black38),
+        prefixIcon: Icon(icon,
+            size: 18, color: isDark ? Colors.white38 : Colors.black38),
         filled: true,
-        fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF8F8F6),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        fillColor: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : const Color(0xFFF8F8F6),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(

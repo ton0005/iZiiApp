@@ -34,7 +34,7 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
   String _profile = 'shared';
   final _ownerIdController = TextEditingController();
   final _ownerNameController = TextEditingController();
-  int? _sessionMaxHours;   // null = mặc định theo chế độ
+  int? _sessionMaxHours; // null = mặc định theo chế độ
 
   @override
   void initState() {
@@ -62,14 +62,14 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
     });
     try {
       final ticket = await _service.requestTicket(
-        note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
+        note: _noteController.text.trim().isEmpty
+            ? null
+            : _noteController.text.trim(),
         profile: _profile,
-        ownerUserId: _profile == 'personal'
-            ? _ownerIdController.text.trim()
-            : null,
-        ownerUserName: _profile == 'personal'
-            ? _ownerNameController.text.trim()
-            : null,
+        ownerUserId:
+            _profile == 'personal' ? _ownerIdController.text.trim() : null,
+        ownerUserName:
+            _profile == 'personal' ? _ownerNameController.text.trim() : null,
         sessionMaxHours: _sessionMaxHours,
       );
       if (!mounted) return;
@@ -103,7 +103,7 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
   Future<void> _writeToNfc() async {
     final ticket = _ticket;
     if (ticket == null) return;
-    setState(() => _nfcStatus = 'Đang chờ thẻ...');
+    setState(() => _nfcStatus = 'Waiting for NFC card...');
     try {
       await _nfc.writeTicket(ticket,
           onStatus: (m) => mounted ? setState(() => _nfcStatus = m) : null);
@@ -119,7 +119,7 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
     final expired = ticket != null && _secondsLeft <= 0;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Cấp mã đăng ký thiết bị')),
+      appBar: AppBar(title: const Text('Create Enrollment Ticket (QR/NFC)')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -127,14 +127,15 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
           children: [
             _infoBox(
               isDark,
-              'Mã này là VÉ MỜI dùng một lần, không phải mật khẩu hệ thống. '
-              'Hết hạn sau ít phút và chỉ đăng ký được đúng một thiết bị — '
-              'ai chụp lại màn hình cũng không dùng lại được.',
+              'This ticket is a one-time use invitation, not a system password. '
+              'It will expire in a few minutes and can only be registered to one device — '
+              'even if someone screenshots the screen, they cannot reuse it.',
             ),
             const SizedBox(height: 16),
 
             // ── Chọn chế độ thiết bị ──────────────────────────────────────
-            Text('Loại thiết bị', style: Theme.of(context).textTheme.titleSmall),
+            Text('Loại thiết bị',
+                style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
             SegmentedButton<String>(
               segments: const [
@@ -161,11 +162,11 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
             _infoBox(
               isDark,
               _profile == 'shared'
-                  ? 'Tablet đặt tại phòng, nhiều ca dùng chung. Người dùng PHẢI '
-                      'điểm danh đầu mỗi ca; phiên tự hết hạn sau 12 giờ.'
-                  : 'iPhone/iPad riêng của Manager hoặc Supervisor, mang về nhà. '
-                      'KHÔNG cần điểm danh hằng ngày — danh tính đã xác định từ '
-                      'lúc cấp máy.',
+                  ? 'The tablet is placed in the room and shared across multiple shifts. '
+                      'Users MUST check in at the beginning of each shift; the session automatically expires after 12 hours.'
+                  : 'Personal iPhone/iPad belonging to the Manager or Supervisor, taken home after work. '
+                      'NO daily check‑in required _ '
+                      'the identity was already established at the time the device was issued.',
             ),
 
             // ── Chủ máy (chỉ với máy cá nhân) ─────────────────────────────
@@ -176,18 +177,19 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
                 // Nút "Cấp mã" bật/tắt theo ô này nên phải vẽ lại mỗi lần gõ.
                 onChanged: (_) => setState(() {}),
                 decoration: const InputDecoration(
-                  labelText: 'Mã nhân viên chủ máy *',
-                  hintText: 'VD: EMP007',
+                  labelText: 'UserID *',
+                  hintText: 'e.g.: 305000',
                   border: OutlineInputBorder(),
-                  helperText: 'Bắt buộc — đây là danh tính thay cho việc điểm danh',
+                  helperText:
+                      'Required for personal devices. Must match the UserID of the Manager/Supervisor in the system.',
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _ownerNameController,
                 decoration: const InputDecoration(
-                  labelText: 'Tên chủ máy',
-                  hintText: 'VD: Minh T. (Manager)',
+                  labelText: 'Name (optional)',
+                  hintText: 'e.g.: John Doe (Manager)',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -195,16 +197,17 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
               DropdownButtonFormField<int>(
                 initialValue: _sessionMaxHours ?? 0,
                 decoration: const InputDecoration(
-                  labelText: 'Thời lượng ca tối đa',
+                  labelText: 'Session Duration Limit (hours)',
                   border: OutlineInputBorder(),
-                  helperText: 'Chỉ áp dụng khi chủ máy chủ động bấm "Bắt đầu ca"',
+                  helperText:
+                      'Only applies when the device owner manually taps "Start Shift"',
                 ),
                 items: const [
-                  DropdownMenuItem(value: 0, child: Text('Không giới hạn')),
-                  DropdownMenuItem(value: 8, child: Text('8 giờ')),
-                  DropdownMenuItem(value: 12, child: Text('12 giờ')),
-                  DropdownMenuItem(value: 16, child: Text('16 giờ')),
-                  DropdownMenuItem(value: 24, child: Text('24 giờ')),
+                  DropdownMenuItem(value: 0, child: Text('Unlimited')),
+                  DropdownMenuItem(value: 8, child: Text('8 hours')),
+                  DropdownMenuItem(value: 12, child: Text('12 hours')),
+                  DropdownMenuItem(value: 16, child: Text('16 hours')),
+                  DropdownMenuItem(value: 24, child: Text('24 hours')),
                 ],
                 onChanged: (v) => setState(() => _sessionMaxHours = v),
               ),
@@ -214,8 +217,8 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
             TextField(
               controller: _noteController,
               decoration: const InputDecoration(
-                labelText: 'Ghi chú (tuỳ chọn)',
-                hintText: 'VD: Máy tablet phòng M1 — ca sáng',
+                labelText: 'Note (optional)',
+                hintText: 'e.g.: Tablet in Room M1 — Morning Shift',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -231,12 +234,16 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
                   : _issue,
               icon: _loading
                   ? const SizedBox(
-                      width: 16, height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
                   : const Icon(Icons.confirmation_number_rounded),
               label: Text(_loading
-                  ? 'Đang tạo...'
-                  : (ticket == null ? 'Tạo mã đăng ký' : 'Tạo mã mới')),
+                  ? 'Creating...'
+                  : (ticket == null
+                      ? 'Create Enrollment Code'
+                      : 'Create New Code')),
             ),
 
             if (_error != null) ...[
@@ -270,8 +277,8 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
               Center(
                 child: Text(
                   expired
-                      ? '⏰ Mã đã hết hạn — bấm "Tạo mã mới"'
-                      : 'Còn hiệu lực ${_fmt(_secondsLeft)}',
+                      ? '⏰ Code has expired — tap "Create New Code"'
+                      : 'Valid for ${_fmt(_secondsLeft)}',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: expired ? Colors.redAccent : Colors.green,
@@ -280,7 +287,8 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
               ),
               const SizedBox(height: 6),
               Center(
-                child: Text('Server: ${ticket.serverUrl}   ·   Zone: ${ticket.zone}',
+                child: Text(
+                    'Server: ${ticket.serverUrl}   ·   Zone: ${ticket.zone}',
                     style: TextStyle(
                         fontSize: 11,
                         color: isDark ? Colors.white38 : Colors.black45)),
@@ -298,8 +306,8 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
                   ),
                   label: Text(
                     _profile == 'personal'
-                        ? 'Máy cá nhân · ${_ownerNameController.text.trim().isEmpty ? _ownerIdController.text.trim() : _ownerNameController.text.trim()}'
-                        : 'Máy dùng chung · cần điểm danh mỗi ca',
+                        ? 'Personal Device · ${_ownerNameController.text.trim().isEmpty ? _ownerIdController.text.trim() : _ownerNameController.text.trim()}'
+                        : 'Shared Device · Requires attendance check-in each shift',
                     style: const TextStyle(fontSize: 12),
                   ),
                 ),
@@ -310,22 +318,23 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
               const SizedBox(height: 8),
 
               // ── Ghi lên thẻ NFC ──────────────────────────────────────────
-              Text('Hoặc ghi lên thẻ NFC',
+              Text('Or write to NFC card',
                   style: Theme.of(context).textTheme.titleSmall),
               const SizedBox(height: 6),
               Text(
                 _nfcAvailable
-                    ? 'Dùng thẻ NTAG213 trở lên. Công nhân chỉ cần chạm máy vào thẻ, '
-                        'không phải mở camera — tiện khi đeo găng hoặc phòng thiếu sáng.'
-                    : 'Máy này không có NFC hoặc NFC đang tắt. Dùng mã QR ở trên.',
+                    ? 'Use NTAG213 or higher. Workers just need to tap the device on the card, '
+                        'no camera needed — convenient when wearing gloves or in low-light conditions.'
+                    : 'This device does not have NFC or NFC is turned off. Use the QR code above.',
                 style: TextStyle(
-                    fontSize: 12, color: isDark ? Colors.white54 : Colors.black54),
+                    fontSize: 12,
+                    color: isDark ? Colors.white54 : Colors.black54),
               ),
               const SizedBox(height: 10),
               OutlinedButton.icon(
                 onPressed: (!_nfcAvailable || expired) ? null : _writeToNfc,
                 icon: const Icon(Icons.nfc_rounded),
-                label: const Text('Ghi vé lên thẻ NFC'),
+                label: const Text('Write Code to NFC Card'),
               ),
               if (_nfcStatus != null) ...[
                 const SizedBox(height: 10),
@@ -351,9 +360,12 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.info_outline_rounded, size: 16, color: Colors.blue),
+            const Icon(Icons.info_outline_rounded,
+                size: 16, color: Colors.blue),
             const SizedBox(width: 10),
-            Expanded(child: Text(text, style: const TextStyle(fontSize: 12, height: 1.45))),
+            Expanded(
+                child: Text(text,
+                    style: const TextStyle(fontSize: 12, height: 1.45))),
           ],
         ),
       );
@@ -368,7 +380,8 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 16, color: Colors.red),
+            const Icon(Icons.error_outline_rounded,
+                size: 16, color: Colors.red),
             const SizedBox(width: 10),
             Expanded(child: Text(text, style: const TextStyle(fontSize: 12))),
           ],

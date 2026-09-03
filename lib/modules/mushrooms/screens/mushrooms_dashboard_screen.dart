@@ -7,6 +7,7 @@ import '../../../core/theme/izii_colors.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../../../core/localization/app_localizations.dart';
 import 'mushboom_monarto_screen.dart';
+import 'growing_performance_board_screen.dart';
 
 class MushroomsDashboardScreen extends StatefulWidget {
   const MushroomsDashboardScreen({super.key});
@@ -56,6 +57,18 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
             ),
           ),
           actions: [
+            IconButton(
+              icon: const Icon(Icons.analytics_rounded),
+              tooltip: 'Performance Board',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const GrowingPerformanceBoardScreen(),
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.desktop_windows_rounded),
               tooltip: 'Desktop View (Monarto)',
