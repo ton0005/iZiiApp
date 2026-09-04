@@ -670,6 +670,161 @@ class MushroomsRepository {
     });
   }
 
+  // === JOB TYPES MANAGEMENT ===
+
+  Future<void> seedJobTypesIfEmpty() async {
+    try {
+      final existing = await _db.select(_db.mushroomJobTypes).get();
+      if (existing.isNotEmpty) return;
+
+      final defaults = <(String, String, int, bool)>[
+        ('filling', 'Filling', 60, false),
+        ('airing', 'Airing', 20, false),
+        ('floor_wet', 'Floor Wet', 25, false),
+        ('clean_room', 'Clean Room', 45, false),
+        ('watering', 'Watering', 25, false),
+        ('clean_bed', 'Clean Bed', 35, false),
+        ('prochloraz', 'Prochloraz', 30, false),
+        ('packup_tree', 'Pack Up Tree', 50, false),
+        ('alone_worker', 'Alone Worker', 40, true),
+      ];
+      for (final d in defaults) {
+        await _db.into(_db.mushroomJobTypes).insertOnConflictUpdate(
+              MushroomJobType(
+                id: d.$1,
+                name: d.$2,
+                planMinutes: d.$3,
+                isSoloJob: d.$4,
+                isCustom: false,
+                isActive: true,
+                createdAt: DateTime.now(),
+              ),
+            );
+      }
+    } catch (e) {
+      print('Error seeding job types: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getJobTypes({bool activeOnly = false}) async {
+    await seedJobTypesIfEmpty();
+    final query = _db.select(_db.mushroomJobTypes)
+      ..orderBy([(t) => OrderingTerm(expression: t.name)]);
+    if (activeOnly) {
+      query.where((t) => t.isActive.equals(true));
+    }
+    final list = await query.get();
+    return list.map((j) => <String, dynamic>{
+      'id': j.id,
+      'name': j.name,
+      'plan_minutes': j.planMinutes,
+      'is_solo_job': j.isSoloJob,
+      'is_custom': j.isCustom,
+      'is_active': j.isActive,
+      'created_at': j.createdAt.toIso8601String(),
+    }).toList();
+  }
+
+  /// Returns false if a job type with this id already exists (id must be unique).
+  Future<bool> addJobType({
+    required String id,
+    required String name,
+    required int planMinutes,
+    bool isSoloJob = false,
+  }) async {
+    final trimmedId = id.trim();
+    final existing = await (_db.select(_db.mushroomJobTypes)
+          ..where((t) => t.id.equals(trimmedId)))
+        .getSingleOrNull();
+    if (existing != null) return false;
+
+    await _db.into(_db.mushroomJobTypes).insert(
+          MushroomJobTypesCompanion.insert(
+            id: trimmedId,
+            name: name.trim(),
+            planMinutes: Value(planMinutes),
+            isSoloJob: Value(isSoloJob),
+            isCustom: const Value(true),
+            isActive: const Value(true),
+          ),
+        );
+
+    await SyncService().queueMutation('mushroom_job_types', 'insert', {
+      'id': trimmedId,
+      'name': name.trim(),
+      'plan_minutes': planMinutes,
+      'is_solo_job': isSoloJob,
+      'is_custom': true,
+      'is_active': true,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+    return true;
+  }
+
+  Future<void> updateJobType({
+    required String id,
+    required String name,
+    required int planMinutes,
+    required bool isSoloJob,
+    required bool isActive,
+  }) async {
+    await (_db.update(_db.mushroomJobTypes)..where((t) => t.id.equals(id))).write(
+      MushroomJobTypesCompanion(
+        name: Value(name.trim()),
+        planMinutes: Value(planMinutes),
+        isSoloJob: Value(isSoloJob),
+        isActive: Value(isActive),
+      ),
+    );
+    await SyncService().queueMutation('mushroom_job_types', 'update', {
+      'id': id,
+      'name': name.trim(),
+      'plan_minutes': planMinutes,
+      'is_solo_job': isSoloJob,
+      'is_active': isActive,
+    });
+  }
+
+  Future<void> deleteJobType(String id) async {
+    await (_db.delete(_db.mushroomJobTypes)..where((t) => t.id.equals(id))).go();
+    await SyncService().queueMutation('mushroom_job_types', 'delete', {'id': id});
+  }
+
+  // === MANAGEMENT LEVEL / ACCESS CONTROL ===
+  //
+  // Role -> numeric level, resolved from the same role/level catalogue the
+  // Employees screen edits (see getRolesWithLevels below):
+  // 0 = Worker, 1 = Specialist, 2 = Lead/Supervisor, 3 = Manager.
+  // Falls back to a name heuristic for roles that aren't in the catalogue
+  // (e.g. the fixed accounts seeded with role: 'Manager').
+
+  Future<int> getRoleLevel(String role) async {
+    final roles = await getRolesWithLevels();
+    for (final r in roles) {
+      if ((r['name']?.toString() ?? '').toLowerCase() == role.trim().toLowerCase()) {
+        return (r['level'] as int?) ?? 0;
+      }
+    }
+    final rl = role.toLowerCase();
+    if (rl.contains('manager')) return 3;
+    if (rl.contains('lead') || rl.contains('supervisor')) return 2;
+    if (rl.contains('specialist')) return 1;
+    return 0;
+  }
+
+  /// Level of the given employee (by their role), or 0 if not found.
+  Future<int> getEmployeeLevel(String employeeId) async {
+    try {
+      final emp = await (_db.select(_db.mushroomEmployees)
+            ..where((e) => e.id.equals(employeeId)))
+          .getSingleOrNull();
+      if (emp == null) return 0;
+      return getRoleLevel(emp.role);
+    } catch (_) {
+      return 0;
+    }
+  }
+
   // === ROOMS ===
 
   Future<List<Map<String, dynamic>>> getRooms() async {

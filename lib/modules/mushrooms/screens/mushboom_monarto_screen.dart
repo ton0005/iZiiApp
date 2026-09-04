@@ -17,6 +17,7 @@ import 'chat_tab_screen.dart';
 import 'safety_tab_screen.dart';
 import 'employees_tab_screen.dart';
 import 'departments_tab_screen.dart';
+import 'job_types_management_screen.dart';
 import 'settings_tab_screen.dart';
 import 'growing_performance_board_screen.dart';
 import 'mushrooms_profile_screen.dart';
@@ -222,24 +223,31 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     _loadMushroomData();
   }
 
+  // Role name -> numeric level (0=Worker, 1=Specialist, 2=Lead/Supervisor,
+  // 3=Manager), resolved against the same catalogue the Employees screen
+  // edits (_rolesWithLevels), with a name-based fallback heuristic.
+  int _getRoleLevel(String role) {
+    for (final r in _rolesWithLevels) {
+      if (r['name']?.toString().toLowerCase() == role.toLowerCase()) {
+        return r['level'] as int? ?? 0;
+      }
+    }
+    final r = role.toLowerCase();
+    if (r.contains('manager') ||
+        r.contains('site manager') ||
+        r.contains('cool room manager')) return 3;
+    if (r.contains('lead') || r.contains('supervisor')) return 2;
+    if (r.contains('specialist')) return 1;
+    return 0; // picker, box mover, worker, etc.
+  }
+
+  // Job Types management is a Level 2+ (Lead/Supervisor/Manager) destination.
+  bool get _canManageJobTypes =>
+      _currentEmployee != null && _getRoleLevel(_currentEmployee!.role) >= 2;
+
   bool _isJobVisible(Map<String, dynamic> job, String activeRole,
       List<Map<String, dynamic>> employees) {
-    int getUserLevel(String role) {
-      for (final r in _rolesWithLevels) {
-        if (r['name']?.toString().toLowerCase() == role.toLowerCase()) {
-          return r['level'] as int? ?? 0;
-        }
-      }
-      final r = role.toLowerCase();
-      if (r.contains('manager') ||
-          r.contains('site manager') ||
-          r.contains('cool room manager')) return 3;
-      if (r.contains('lead') || r.contains('supervisor')) return 2;
-      if (r.contains('specialist')) return 1;
-      return 0; // picker, box mover, worker, etc.
-    }
-
-    final userLevel = getUserLevel(activeRole);
+    final userLevel = _getRoleLevel(activeRole);
 
     final assignee =
         job['assignee']?.toString() ?? job['assigneeName']?.toString() ?? '';
@@ -276,7 +284,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       return true; // Default visible if employee not found (could be supervisor or system generated)
     }
 
-    final assigneeLevel = getUserLevel(assigneeRole);
+    final assigneeLevel = _getRoleLevel(assigneeRole);
     return userLevel >= assigneeLevel;
   }
 
@@ -967,6 +975,17 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                             : 'Departments',
                         Colors.indigo,
                         effectiveExpanded),
+                    // Level 2+ (Lead/Supervisor/Manager) only — see
+                    // _canManageJobTypes.
+                    if (_canManageJobTypes)
+                      _buildSidebarItem(
+                          'jobtypes',
+                          Icons.add_task_rounded,
+                          _language == 'vi'
+                              ? 'Loại công việc (Job Types)'
+                              : 'Job Types',
+                          Colors.deepPurple,
+                          effectiveExpanded),
                     if (effectiveExpanded)
                       const Divider()
                     else
@@ -1251,6 +1270,33 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       return DepartmentsTabScreen(
         isDark: isDark,
       );
+    }
+    if (_activeTab == 'jobtypes') {
+      // Sidebar already hides this destination below Level 2, but a direct
+      // _activeTab assignment (e.g. deep link) still gets the same gate —
+      // the screen re-checks on its own too (see JobTypesManagementScreen).
+      if (!_canManageJobTypes) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.lock_rounded, size: 40, color: Colors.grey),
+                const SizedBox(height: 12),
+                Text(
+                  _language == 'vi'
+                      ? 'Chỉ Quản lý Cấp 2 trở lên mới truy cập được mục này.'
+                      : 'Only Level 2+ management can access this screen.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      return JobTypesManagementScreen(isDark: isDark);
     }
     if (_activeTab == 'settings') {
       return SettingsTabScreen(

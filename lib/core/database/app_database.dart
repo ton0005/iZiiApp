@@ -58,6 +58,7 @@ part 'app_database.g.dart';
   UserShareModuleDefaults,
   GrowRooms,
   MushroomJobs,
+  MushroomJobTypes,
   MushroomJobSafetyConfigs,
   MushroomSafetyCheckinLogs,
   MushroomMaintenanceTickets,
@@ -100,7 +101,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 26;
+  int get schemaVersion => 27;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -438,6 +439,11 @@ class AppDatabase extends _$AppDatabase {
             } catch (_) {}
             try {
               await m.createTable(mushroomPayrollCalculations);
+            } catch (_) {}
+          }
+          if (from < 27) {
+            try {
+              await m.createTable(mushroomJobTypes);
             } catch (_) {}
           }
         },

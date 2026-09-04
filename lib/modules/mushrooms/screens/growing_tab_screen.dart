@@ -1649,11 +1649,21 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   //
   // presetRoomName / presetJobType: điền sẵn khi mở từ thẻ NFC. Công nhân chạm
   // thẻ ở cửa phòng là dialog đã đúng phòng, đúng loại việc.
-  void _showNewJobDialog(
+  Future<void> _showNewJobDialog(
     BuildContext context, {
     String? presetRoomName,
     String? presetJobType,
-  }) {
+  }) async {
+    // Custom Job Types added from the Job Types management screen (Level 2+)
+    // — appended to the built-in list below so they're actually selectable
+    // here, not just entries sitting unused in a catalogue.
+    List<Map<String, dynamic>> customJobTypes = [];
+    try {
+      final allTypes = await MushroomsRepository().getJobTypes(activeOnly: true);
+      customJobTypes = allTypes.where((t) => t['is_custom'] == true).toList();
+    } catch (_) {}
+    if (!context.mounted) return;
+
     final availableRooms = widget.localRooms.keys
         .where((k) => widget.localRooms[k]!['plant'] == widget.activePlant)
         .toList();
@@ -1755,24 +1765,34 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         decoration:
                             const InputDecoration(labelText: 'Job Type'),
                         value: jobType,
-                        items: const [
-                          DropdownMenuItem(
+                        items: [
+                          const DropdownMenuItem(
                               value: 'filling',
                               child: Text('Filling (Substrate Filling)')),
-                          DropdownMenuItem(
+                          const DropdownMenuItem(
                               value: 'airing',
                               child: Text('Airing (Plastic floor wet)')),
-                          DropdownMenuItem(
+                          const DropdownMenuItem(
                               value: 'watering', child: Text('Watering')),
-                          DropdownMenuItem(
+                          const DropdownMenuItem(
                               value: 'prochloraz',
                               child: Text('Prochloraz (Chemical spray)')),
-                          DropdownMenuItem(
+                          const DropdownMenuItem(
                               value: 'packuptree',
                               child: Text('Pack Up Tree (Root cleanup)')),
-                          DropdownMenuItem(
+                          const DropdownMenuItem(
                               value: 'alone_worker',
                               child: Text('Alone Worker (Working alone)')),
+                          // Custom job types added from Job Types management
+                          // (Level 2+). Not one of the built-ins above, so no
+                          // special fields render for these — just Assignee
+                          // + Notes.
+                          ...customJobTypes.map(
+                            (t) => DropdownMenuItem(
+                              value: t['id'] as String,
+                              child: Text('${t['name']} (Custom)'),
+                            ),
+                          ),
                         ],
                         onChanged: (val) {
                           if (val != null) setDialogState(() => jobType = val);

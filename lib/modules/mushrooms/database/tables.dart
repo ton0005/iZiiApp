@@ -16,6 +16,23 @@ class GrowRooms extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Catalog of Job Types available when creating a Growing job — CRUD-managed
+/// from the "Job Types" screen (Level 2+ only). Seeded with the built-in
+/// pipeline steps (filling, watering, prochloraz, ...); anything beyond that
+/// is a custom type added by a manager.
+class MushroomJobTypes extends Table {
+  TextColumn get id => text()(); // slug, e.g. 'filling' or 'custom_deep_clean'
+  TextColumn get name => text()(); // Display name
+  IntColumn get planMinutes => integer().withDefault(const Constant(30))(); // standard/target duration
+  BoolColumn get isSoloJob => boolean().withDefault(const Constant(false))(); // requires Alone Worker safety flow
+  BoolColumn get isCustom => boolean().withDefault(const Constant(true))(); // false for the seeded built-ins
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))(); // inactive = hidden from new-job dropdown
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class MushroomJobs extends Table {
   TextColumn get id => text()(); // UUID
   TextColumn get roomId => text()();

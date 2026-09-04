@@ -16007,6 +16007,395 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
   }
 }
 
+class $MushroomJobTypesTable extends MushroomJobTypes
+    with TableInfo<$MushroomJobTypesTable, MushroomJobType> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomJobTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _planMinutesMeta =
+      const VerificationMeta('planMinutes');
+  @override
+  late final GeneratedColumn<int> planMinutes = GeneratedColumn<int>(
+      'plan_minutes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(30));
+  static const VerificationMeta _isSoloJobMeta =
+      const VerificationMeta('isSoloJob');
+  @override
+  late final GeneratedColumn<bool> isSoloJob = GeneratedColumn<bool>(
+      'is_solo_job', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_solo_job" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _isCustomMeta =
+      const VerificationMeta('isCustom');
+  @override
+  late final GeneratedColumn<bool> isCustom = GeneratedColumn<bool>(
+      'is_custom', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_custom" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _isActiveMeta =
+      const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+      'is_active', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, planMinutes, isSoloJob, isCustom, isActive, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_job_types';
+  @override
+  VerificationContext validateIntegrity(Insertable<MushroomJobType> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('plan_minutes')) {
+      context.handle(
+          _planMinutesMeta,
+          planMinutes.isAcceptableOrUnknown(
+              data['plan_minutes']!, _planMinutesMeta));
+    }
+    if (data.containsKey('is_solo_job')) {
+      context.handle(
+          _isSoloJobMeta,
+          isSoloJob.isAcceptableOrUnknown(
+              data['is_solo_job']!, _isSoloJobMeta));
+    }
+    if (data.containsKey('is_custom')) {
+      context.handle(_isCustomMeta,
+          isCustom.isAcceptableOrUnknown(data['is_custom']!, _isCustomMeta));
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomJobType map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomJobType(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      planMinutes: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}plan_minutes'])!,
+      isSoloJob: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_solo_job'])!,
+      isCustom: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_custom'])!,
+      isActive: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $MushroomJobTypesTable createAlias(String alias) {
+    return $MushroomJobTypesTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
+  final String id;
+  final String name;
+  final int planMinutes;
+  final bool isSoloJob;
+  final bool isCustom;
+  final bool isActive;
+  final DateTime createdAt;
+  const MushroomJobType(
+      {required this.id,
+      required this.name,
+      required this.planMinutes,
+      required this.isSoloJob,
+      required this.isCustom,
+      required this.isActive,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['plan_minutes'] = Variable<int>(planMinutes);
+    map['is_solo_job'] = Variable<bool>(isSoloJob);
+    map['is_custom'] = Variable<bool>(isCustom);
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  MushroomJobTypesCompanion toCompanion(bool nullToAbsent) {
+    return MushroomJobTypesCompanion(
+      id: Value(id),
+      name: Value(name),
+      planMinutes: Value(planMinutes),
+      isSoloJob: Value(isSoloJob),
+      isCustom: Value(isCustom),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory MushroomJobType.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomJobType(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      planMinutes: serializer.fromJson<int>(json['planMinutes']),
+      isSoloJob: serializer.fromJson<bool>(json['isSoloJob']),
+      isCustom: serializer.fromJson<bool>(json['isCustom']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'planMinutes': serializer.toJson<int>(planMinutes),
+      'isSoloJob': serializer.toJson<bool>(isSoloJob),
+      'isCustom': serializer.toJson<bool>(isCustom),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  MushroomJobType copyWith(
+          {String? id,
+          String? name,
+          int? planMinutes,
+          bool? isSoloJob,
+          bool? isCustom,
+          bool? isActive,
+          DateTime? createdAt}) =>
+      MushroomJobType(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        planMinutes: planMinutes ?? this.planMinutes,
+        isSoloJob: isSoloJob ?? this.isSoloJob,
+        isCustom: isCustom ?? this.isCustom,
+        isActive: isActive ?? this.isActive,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  MushroomJobType copyWithCompanion(MushroomJobTypesCompanion data) {
+    return MushroomJobType(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      planMinutes:
+          data.planMinutes.present ? data.planMinutes.value : this.planMinutes,
+      isSoloJob: data.isSoloJob.present ? data.isSoloJob.value : this.isSoloJob,
+      isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomJobType(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('planMinutes: $planMinutes, ')
+          ..write('isSoloJob: $isSoloJob, ')
+          ..write('isCustom: $isCustom, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, name, planMinutes, isSoloJob, isCustom, isActive, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomJobType &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.planMinutes == this.planMinutes &&
+          other.isSoloJob == this.isSoloJob &&
+          other.isCustom == this.isCustom &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt);
+}
+
+class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<int> planMinutes;
+  final Value<bool> isSoloJob;
+  final Value<bool> isCustom;
+  final Value<bool> isActive;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const MushroomJobTypesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.planMinutes = const Value.absent(),
+    this.isSoloJob = const Value.absent(),
+    this.isCustom = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomJobTypesCompanion.insert({
+    required String id,
+    required String name,
+    this.planMinutes = const Value.absent(),
+    this.isSoloJob = const Value.absent(),
+    this.isCustom = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name);
+  static Insertable<MushroomJobType> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<int>? planMinutes,
+    Expression<bool>? isSoloJob,
+    Expression<bool>? isCustom,
+    Expression<bool>? isActive,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (planMinutes != null) 'plan_minutes': planMinutes,
+      if (isSoloJob != null) 'is_solo_job': isSoloJob,
+      if (isCustom != null) 'is_custom': isCustom,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomJobTypesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<int>? planMinutes,
+      Value<bool>? isSoloJob,
+      Value<bool>? isCustom,
+      Value<bool>? isActive,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return MushroomJobTypesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      planMinutes: planMinutes ?? this.planMinutes,
+      isSoloJob: isSoloJob ?? this.isSoloJob,
+      isCustom: isCustom ?? this.isCustom,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (planMinutes.present) {
+      map['plan_minutes'] = Variable<int>(planMinutes.value);
+    }
+    if (isSoloJob.present) {
+      map['is_solo_job'] = Variable<bool>(isSoloJob.value);
+    }
+    if (isCustom.present) {
+      map['is_custom'] = Variable<bool>(isCustom.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomJobTypesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('planMinutes: $planMinutes, ')
+          ..write('isSoloJob: $isSoloJob, ')
+          ..write('isCustom: $isCustom, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $MushroomJobSafetyConfigsTable extends MushroomJobSafetyConfigs
     with TableInfo<$MushroomJobSafetyConfigsTable, MushroomJobSafetyConfig> {
   @override
@@ -27156,6 +27545,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $UserShareModuleDefaultsTable(this);
   late final $GrowRoomsTable growRooms = $GrowRoomsTable(this);
   late final $MushroomJobsTable mushroomJobs = $MushroomJobsTable(this);
+  late final $MushroomJobTypesTable mushroomJobTypes =
+      $MushroomJobTypesTable(this);
   late final $MushroomJobSafetyConfigsTable mushroomJobSafetyConfigs =
       $MushroomJobSafetyConfigsTable(this);
   late final $MushroomSafetyCheckinLogsTable mushroomSafetyCheckinLogs =
@@ -27248,6 +27639,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         userShareModuleDefaults,
         growRooms,
         mushroomJobs,
+        mushroomJobTypes,
         mushroomJobSafetyConfigs,
         mushroomSafetyCheckinLogs,
         mushroomMaintenanceTickets,
@@ -35151,6 +35543,210 @@ typedef $$MushroomJobsTableProcessedTableManager = ProcessedTableManager<
     ),
     MushroomJob,
     PrefetchHooks Function()>;
+typedef $$MushroomJobTypesTableCreateCompanionBuilder
+    = MushroomJobTypesCompanion Function({
+  required String id,
+  required String name,
+  Value<int> planMinutes,
+  Value<bool> isSoloJob,
+  Value<bool> isCustom,
+  Value<bool> isActive,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+typedef $$MushroomJobTypesTableUpdateCompanionBuilder
+    = MushroomJobTypesCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<int> planMinutes,
+  Value<bool> isSoloJob,
+  Value<bool> isCustom,
+  Value<bool> isActive,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$MushroomJobTypesTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomJobTypesTable> {
+  $$MushroomJobTypesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get planMinutes => $composableBuilder(
+      column: $table.planMinutes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSoloJob => $composableBuilder(
+      column: $table.isSoloJob, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isCustom => $composableBuilder(
+      column: $table.isCustom, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomJobTypesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomJobTypesTable> {
+  $$MushroomJobTypesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get planMinutes => $composableBuilder(
+      column: $table.planMinutes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSoloJob => $composableBuilder(
+      column: $table.isSoloJob, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isCustom => $composableBuilder(
+      column: $table.isCustom, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomJobTypesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomJobTypesTable> {
+  $$MushroomJobTypesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get planMinutes => $composableBuilder(
+      column: $table.planMinutes, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSoloJob =>
+      $composableBuilder(column: $table.isSoloJob, builder: (column) => column);
+
+  GeneratedColumn<bool> get isCustom =>
+      $composableBuilder(column: $table.isCustom, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$MushroomJobTypesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomJobTypesTable,
+    MushroomJobType,
+    $$MushroomJobTypesTableFilterComposer,
+    $$MushroomJobTypesTableOrderingComposer,
+    $$MushroomJobTypesTableAnnotationComposer,
+    $$MushroomJobTypesTableCreateCompanionBuilder,
+    $$MushroomJobTypesTableUpdateCompanionBuilder,
+    (
+      MushroomJobType,
+      BaseReferences<_$AppDatabase, $MushroomJobTypesTable, MushroomJobType>
+    ),
+    MushroomJobType,
+    PrefetchHooks Function()> {
+  $$MushroomJobTypesTableTableManager(
+      _$AppDatabase db, $MushroomJobTypesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomJobTypesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomJobTypesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomJobTypesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> planMinutes = const Value.absent(),
+            Value<bool> isSoloJob = const Value.absent(),
+            Value<bool> isCustom = const Value.absent(),
+            Value<bool> isActive = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomJobTypesCompanion(
+            id: id,
+            name: name,
+            planMinutes: planMinutes,
+            isSoloJob: isSoloJob,
+            isCustom: isCustom,
+            isActive: isActive,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            Value<int> planMinutes = const Value.absent(),
+            Value<bool> isSoloJob = const Value.absent(),
+            Value<bool> isCustom = const Value.absent(),
+            Value<bool> isActive = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomJobTypesCompanion.insert(
+            id: id,
+            name: name,
+            planMinutes: planMinutes,
+            isSoloJob: isSoloJob,
+            isCustom: isCustom,
+            isActive: isActive,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomJobTypesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $MushroomJobTypesTable,
+    MushroomJobType,
+    $$MushroomJobTypesTableFilterComposer,
+    $$MushroomJobTypesTableOrderingComposer,
+    $$MushroomJobTypesTableAnnotationComposer,
+    $$MushroomJobTypesTableCreateCompanionBuilder,
+    $$MushroomJobTypesTableUpdateCompanionBuilder,
+    (
+      MushroomJobType,
+      BaseReferences<_$AppDatabase, $MushroomJobTypesTable, MushroomJobType>
+    ),
+    MushroomJobType,
+    PrefetchHooks Function()>;
 typedef $$MushroomJobSafetyConfigsTableCreateCompanionBuilder
     = MushroomJobSafetyConfigsCompanion Function({
   required String id,
@@ -41009,6 +41605,8 @@ class $AppDatabaseManager {
       $$GrowRoomsTableTableManager(_db, _db.growRooms);
   $$MushroomJobsTableTableManager get mushroomJobs =>
       $$MushroomJobsTableTableManager(_db, _db.mushroomJobs);
+  $$MushroomJobTypesTableTableManager get mushroomJobTypes =>
+      $$MushroomJobTypesTableTableManager(_db, _db.mushroomJobTypes);
   $$MushroomJobSafetyConfigsTableTableManager get mushroomJobSafetyConfigs =>
       $$MushroomJobSafetyConfigsTableTableManager(
           _db, _db.mushroomJobSafetyConfigs);
