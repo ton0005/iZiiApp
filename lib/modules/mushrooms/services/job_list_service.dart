@@ -58,6 +58,7 @@ abstract class JobListService {
     double? co2Level,
     DateTime? checkInTime,
     DateTime? checkOutTime,
+    String jobType,
   });
 
   /// Giao công việc custom
@@ -327,6 +328,7 @@ class JobListServiceImpl implements JobListService {
     double? co2Level,
     DateTime? checkInTime,
     DateTime? checkOutTime,
+    String jobType = 'alone_worker',
   }) async {
     final currentEmpId = await _employeeService.getCurrentEmployeeId() ?? '555555';
     final hasPerm = await _employeeService.hasPermission(currentEmpId, 'createJob');
@@ -342,6 +344,7 @@ class JobListServiceImpl implements JobListService {
       co2Level: co2Level,
       checkInTime: checkInTime,
       checkOutTime: checkOutTime,
+      jobType: jobType,
     );
   }
 

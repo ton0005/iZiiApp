@@ -274,7 +274,8 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                       : LayoutBuilder(
                           builder: (context, constraints) {
                             final isMobile = constraints.maxWidth < 650;
-                            final double childAspectRatio = isMobile ? 1.15 : 1.35;
+                            final double childAspectRatio =
+                                isMobile ? 1.15 : 1.35;
 
                             return GridView.builder(
                               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -296,12 +297,18 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                 // Custom color coding based on stage
                                 Color statusColor = Colors.grey;
                                 if (isRoomActive) {
-                                  final s = currentStage.trim().toLowerCase().replaceAll(' ', '_');
+                                  final s = currentStage
+                                      .trim()
+                                      .toLowerCase()
+                                      .replaceAll(' ', '_');
                                   if (s == 'alone_timeout') {
                                     statusColor = Colors.red;
                                   } else if (s == 'alone_worker') {
                                     statusColor = Colors.orange;
-                                  } else if (s == 'clean_room' || s == 'cleanroom' || s == 'clean_bed' || s == 'cleanbed') {
+                                  } else if (s == 'clean_room' ||
+                                      s == 'cleanroom' ||
+                                      s == 'clean_bed' ||
+                                      s == 'cleanbed') {
                                     statusColor = const Color(0xFF10B981);
                                   } else if (s == 'watering') {
                                     statusColor = const Color(0xFF3B82F6);
@@ -334,7 +341,8 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                     ),
                                     elevation: 2,
                                     child: Padding(
-                                      padding: EdgeInsets.all(isMobile ? 8.0 : 12.0),
+                                      padding:
+                                          EdgeInsets.all(isMobile ? 8.0 : 12.0),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -349,9 +357,11 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                 child: Text(
                                                   room['name'] as String,
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       fontSize: 16),
                                                 ),
                                               ),
@@ -370,7 +380,8 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                       padding: EdgeInsets.zero,
                                                       constraints:
                                                           const BoxConstraints(),
-                                                      tooltip: 'Reset Room Status',
+                                                      tooltip:
+                                                          'Reset Room Status',
                                                       onPressed: () =>
                                                           _showResetRoomConfirmDialog(
                                                               context, room),
@@ -402,26 +413,30 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: isMobile ? 2.0 : 6.0),
+                                          SizedBox(
+                                              height: isMobile ? 2.0 : 6.0),
                                           // Secondary details
                                           if (isRoomActive) ...[
                                             Row(
                                               children: [
                                                 const Icon(
-                                                    Icons.calendar_today_rounded,
+                                                    Icons
+                                                        .calendar_today_rounded,
                                                     size: 12,
                                                     color: Colors.grey),
                                                 const SizedBox(width: 4),
                                                 Expanded(
                                                   child: Text(
                                                     context
-                                                        .tr('mushrooms_day_in_cycle')
+                                                        .tr(
+                                                            'mushrooms_day_in_cycle')
                                                         .replaceAll(
                                                             '{day}',
                                                             room['day_in_cycle']
                                                                 .toString()),
                                                     maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                     style: const TextStyle(
                                                         fontSize: 12,
                                                         color: Colors.grey),
@@ -429,14 +444,16 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                 ),
                                               ],
                                             ),
-                                            if (currentStage == 'alone_worker' ||
+                                            if (currentStage ==
+                                                    'alone_worker' ||
                                                 currentStage == 'alone_timeout')
                                               Row(
                                                 children: [
                                                   Icon(
                                                       currentStage ==
                                                               'alone_timeout'
-                                                          ? Icons.gpp_bad_rounded
+                                                          ? Icons
+                                                              .gpp_bad_rounded
                                                           : Icons
                                                               .warning_amber_rounded,
                                                       size: 14,
@@ -447,12 +464,14 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                   const SizedBox(width: 4),
                                                   Expanded(
                                                     child: Text(
-                                                      currentStage == 'alone_timeout'
+                                                      currentStage ==
+                                                              'alone_timeout'
                                                           ? 'CẢNH BÁO AN TOÀN'
                                                           : context.tr(
                                                               'mushrooms_has_solo_job'),
                                                       maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: TextStyle(
                                                           fontSize: 10,
                                                           color: currentStage ==
@@ -468,10 +487,11 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                             else
                                               Expanded(
                                                 child: Text(
-                                                  context
-                                                      .tr('mushrooms_running_cycle'),
+                                                  context.tr(
+                                                      'mushrooms_running_cycle'),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: const TextStyle(
                                                       fontSize: 11,
                                                       color: Colors.grey),
@@ -483,32 +503,39 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                   context.tr(
                                                       'mushrooms_ready_for_cycle'),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: const TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.grey,
-                                                      fontStyle: FontStyle.italic)),
+                                                      fontStyle:
+                                                          FontStyle.italic)),
                                             ),
                                           ],
                                           const SizedBox(height: 2),
                                           // Progress line
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(2),
+                                            borderRadius:
+                                                BorderRadius.circular(2),
                                             child: LinearProgressIndicator(
                                               value: isRoomActive
-                                                  ? (currentStage == 'packup_tree'
+                                                  ? (currentStage ==
+                                                          'packup_tree'
                                                       ? 1.0
                                                       : 0.5)
                                                   : 0.0,
                                               backgroundColor: Colors.grey
                                                   .withValues(alpha: 0.1),
-                                              valueColor: AlwaysStoppedAnimation<
-                                                  Color>(currentStage ==
-                                                      'alone_timeout'
-                                                  ? Colors.red
-                                                  : (currentStage == 'alone_worker'
-                                                      ? Colors.orange
-                                                      : const Color(0xFF0EA5E9))),
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      currentStage ==
+                                                              'alone_timeout'
+                                                          ? Colors.red
+                                                          : (currentStage ==
+                                                                  'alone_worker'
+                                                              ? Colors.orange
+                                                              : const Color(
+                                                                  0xFF0EA5E9))),
                                               minHeight: 4,
                                             ),
                                           )
@@ -706,7 +733,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
 
   // Prochloraz
   double _prochlorazRate = 1.3;
-  double _prochlorazArea = 112.0;
+  double _prochlorazArea = 777.0;
 
   // Alone Worker / Solo Safety
   double _coLevel = 0.0;

@@ -35,6 +35,7 @@ class GrowingTabScreen extends StatefulWidget {
     double? co2Level,
     DateTime? checkInTime,
     DateTime? checkOutTime,
+    bool isSoloJob,
   }) onJobCreated;
   final Function(String roomName, dynamic jobId, bool done) onJobStatusChanged;
   final Function(String roomName, String viewMode) onSwitchToTasks;
@@ -1654,15 +1655,26 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     String? presetRoomName,
     String? presetJobType,
   }) async {
-    // Custom Job Types added from the Job Types management screen (Level 2+)
-    // — appended to the built-in list below so they're actually selectable
-    // here, not just entries sitting unused in a catalogue.
-    List<Map<String, dynamic>> customJobTypes = [];
+    // Job Type dropdown is fully database-driven (mushroom_job_types) — both
+    // the seeded built-ins and any custom type added from the Job Types
+    // management screen (Level 2+). Built-ins first, then custom, each
+    // alphabetical — closer to the old curated order than a flat A-Z list.
+    List<Map<String, dynamic>> allJobTypes = [];
     try {
-      final allTypes = await MushroomsRepository().getJobTypes(activeOnly: true);
-      customJobTypes = allTypes.where((t) => t['is_custom'] == true).toList();
+      allJobTypes = await MushroomsRepository().getJobTypes(activeOnly: true);
+      allJobTypes.sort((a, b) {
+        final aCustom = a['is_custom'] == true;
+        final bCustom = b['is_custom'] == true;
+        if (aCustom != bCustom) return aCustom ? 1 : -1;
+        return (a['name'] as String).compareTo(b['name'] as String);
+      });
     } catch (_) {}
     if (!context.mounted) return;
+
+    bool isSoloJobType(String id) {
+      final match = allJobTypes.where((t) => t['id'] == id);
+      return match.isNotEmpty && match.first['is_solo_job'] == true;
+    }
 
     final availableRooms = widget.localRooms.keys
         .where((k) => widget.localRooms[k]!['plant'] == widget.activePlant)
@@ -1699,7 +1711,12 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
       }
     }
 
-    String jobType = presetJobType ?? 'filling';
+    final validJobTypeIds = allJobTypes.map((t) => t['id'] as String).toSet();
+    String jobType = (presetJobType != null && validJobTypeIds.contains(presetJobType))
+        ? presetJobType
+        : (validJobTypeIds.contains('filling')
+            ? 'filling'
+            : (allJobTypes.isNotEmpty ? allJobTypes.first['id'] as String : 'filling'));
     String assignee = uniqueEmployees.isNotEmpty
         ? uniqueEmployees.keys.first
         : 'Minh T.';
@@ -1764,36 +1781,38 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       DropdownButtonFormField<String>(
                         decoration:
                             const InputDecoration(labelText: 'Job Type'),
-                        value: jobType,
-                        items: [
-                          const DropdownMenuItem(
-                              value: 'filling',
-                              child: Text('Filling (Substrate Filling)')),
-                          const DropdownMenuItem(
-                              value: 'airing',
-                              child: Text('Airing (Plastic floor wet)')),
-                          const DropdownMenuItem(
-                              value: 'watering', child: Text('Watering')),
-                          const DropdownMenuItem(
-                              value: 'prochloraz',
-                              child: Text('Prochloraz (Chemical spray)')),
-                          const DropdownMenuItem(
-                              value: 'packuptree',
-                              child: Text('Pack Up Tree (Root cleanup)')),
-                          const DropdownMenuItem(
-                              value: 'alone_worker',
-                              child: Text('Alone Worker (Working alone)')),
-                          // Custom job types added from Job Types management
-                          // (Level 2+). Not one of the built-ins above, so no
-                          // special fields render for these — just Assignee
-                          // + Notes.
-                          ...customJobTypes.map(
-                            (t) => DropdownMenuItem(
-                              value: t['id'] as String,
-                              child: Text('${t['name']} (Custom)'),
-                            ),
-                          ),
-                        ],
+                        value: allJobTypes.isEmpty
+                            ? null
+                            : (validJobTypeIds.contains(jobType)
+                                ? jobType
+                                : allJobTypes.first['id'] as String),
+                        items: allJobTypes.isEmpty
+                            ? const [
+                                DropdownMenuItem(
+                                    value: 'filling', child: Text('Filling')),
+                              ]
+                            : allJobTypes
+                                .map((t) => DropdownMenuItem(
+                                      value: t['id'] as String,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(t['name'] as String),
+                                          if (t['is_solo_job'] == true) ...[
+                                            const SizedBox(width: 6),
+                                            const Icon(Icons.shield_rounded,
+                                                size: 13,
+                                                color: Colors.redAccent),
+                                          ],
+                                          if (t['is_custom'] == true)
+                                            const Text(' (Custom)',
+                                                style: TextStyle(
+                                                    fontSize: 11,
+                                                    color: Colors.grey)),
+                                        ],
+                                      ),
+                                    ))
+                                .toList(),
                         onChanged: (val) {
                           if (val != null) setDialogState(() => jobType = val);
                         },
@@ -1875,7 +1894,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                           ),
                         )
                       ],
-                      if (jobType == 'alone_worker') ...[
+                      if (jobType == 'alone_worker' || isSoloJobType(jobType)) ...[
                         const SizedBox(height: 10),
                         TextFormField(
                           decoration: const InputDecoration(
@@ -2055,7 +2074,9 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                     // an toàn phải nói được ĐÍCH DANH ai đang trong phòng, chứ
                     // không phải "máy nào". Chặn ở đây để mở luôn màn hình
                     // điểm danh thay vì để server trả lỗi 409 khó hiểu.
-                    if (jobType == 'alone_worker') {
+                    final isSolo =
+                        jobType == 'alone_worker' || isSoloJobType(jobType);
+                    if (isSolo) {
                       final ok = await ensureCheckedIn(
                         context,
                         // Người cần đang trong ca là NGƯỜI ĐƯỢC GIAO VIỆC, chứ
@@ -2082,13 +2103,12 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       jobType == 'prochloraz' ? area : null,
                       jobType == 'watering' ? wateringPlan : null,
                       jobType == 'watering' ? wateringVol : null,
-                      timeLimit: jobType == 'alone_worker' ? timeLimit : null,
-                      coLevel: jobType == 'alone_worker' ? coLevel : null,
-                      co2Level: jobType == 'alone_worker' ? co2Level : null,
-                      checkInTime:
-                          jobType == 'alone_worker' ? checkInTime : null,
-                      checkOutTime:
-                          jobType == 'alone_worker' ? checkOutTime : null,
+                      timeLimit: isSolo ? timeLimit : null,
+                      coLevel: isSolo ? coLevel : null,
+                      co2Level: isSolo ? co2Level : null,
+                      checkInTime: isSolo ? checkInTime : null,
+                      checkOutTime: isSolo ? checkOutTime : null,
+                      isSoloJob: isSolo,
                     );
 
                     final shouldWriteTag = writeNfcTag;

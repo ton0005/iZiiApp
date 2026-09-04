@@ -91,6 +91,39 @@ class _SessionBannerState extends State<SessionBanner> {
     await _load(force: true);
   }
 
+  Future<void> _handleStartBreak() async {
+    final s = _session;
+    if (s == null) return;
+    await _service.startBreak();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('☕ Bắt đầu nghỉ giải lao (Break Start)'),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      await _load(force: true);
+    }
+  }
+
+  Future<void> _handleEndBreak() async {
+    final s = _session;
+    if (s == null) return;
+    await _service.endBreak();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('▶️ Kết thúc nghỉ giải lao (Break End) — Quay lại ca làm việc'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Color(0xFF10B981),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      await _load(force: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loading) return const SizedBox.shrink();
@@ -145,49 +178,170 @@ class _SessionBannerState extends State<SessionBanner> {
       );
     }
 
-    final color = hasSession ? const Color(0xFF14B8A6) : const Color(0xFFF59E0B);
+    final bool isOnBreak = hasSession && s.isOnBreak;
+    final color = hasSession
+        ? (isOnBreak ? const Color(0xFFF59E0B) : const Color(0xFF14B8A6))
+        : const Color(0xFFF59E0B);
 
     return Material(
       color: color.withValues(alpha: widget.isDark ? .18 : .12),
-      child: InkWell(
-        onTap: hasSession ? _confirmCheckOut : _openCheckIn,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-          child: Row(
-            children: [
-              Icon(
-                hasSession ? Icons.how_to_reg_rounded : Icons.person_off_rounded,
-                size: 20, color: color,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        child: Row(
+          children: [
+            InkWell(
+              onTap: hasSession ? null : _openCheckIn,
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: Icon(
+                  hasSession
+                      ? (isOnBreak ? Icons.coffee_rounded : Icons.how_to_reg_rounded)
+                      : Icons.person_off_rounded,
+                  size: 22,
+                  color: color,
+                ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: InkWell(
+                onTap: hasSession ? null : _openCheckIn,
                 child: hasSession
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(s.displayName,
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w700)),
-                          Text('On shift · ${s.elapsedText}',
-                              style: const TextStyle(fontSize: 11.5)),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  s.displayName,
+                                  style: const TextStyle(
+                                      fontSize: 13.5, fontWeight: FontWeight.w700),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (isOnBreak) ...[
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 1.5),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF59E0B)
+                                        .withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                        color: const Color(0xFFF59E0B), width: 0.8),
+                                  ),
+                                  child: const Text(
+                                    'Đang nghỉ',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFF59E0B),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 1),
+                          Text(
+                            isOnBreak
+                                ? '☕ Nghỉ: ${s.breakElapsedText} (Chuẩn 30m)'
+                                : '🟢 Trong ca: ${s.elapsedText}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isOnBreak
+                                  ? const Color(0xFFF59E0B)
+                                  : (widget.isDark
+                                      ? Colors.white70
+                                      : Colors.black54),
+                              fontWeight: isOnBreak
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
+                          ),
                         ],
                       )
                     : const Text(
-                        'Shift Check-in — tap to start shift',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        'Shift Check-in — Bấm để điểm danh đầu ca',
+                        style: TextStyle(
+                            fontSize: 13.5, fontWeight: FontWeight.w600),
                       ),
               ),
+            ),
+            if (hasSession) ...[
+              // Nút Bắt đầu nghỉ / Kết thúc nghỉ
+              if (isOnBreak)
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                    visualDensity: VisualDensity.compact,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  icon: const Icon(Icons.play_arrow_rounded, size: 16),
+                  label: const Text('Quay lại ca',
+                      style:
+                          TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold)),
+                  onPressed: _handleEndBreak,
+                )
+              else
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                    side: BorderSide(
+                        color: widget.isDark ? Colors.white30 : Colors.black26),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  icon: const Icon(Icons.coffee_outlined,
+                      size: 14, color: Color(0xFFF59E0B)),
+                  label: const Text('Nghỉ',
+                      style: TextStyle(
+                          fontSize: 11.5, fontWeight: FontWeight.w600)),
+                  onPressed: _handleStartBreak,
+                ),
+              const SizedBox(width: 4),
+              // Nút xem danh sách ca
               IconButton(
-                tooltip: 'Who is on shift',
-                icon: const Icon(Icons.groups_rounded, size: 20),
+                tooltip: 'Ai đang trong ca',
+                icon: const Icon(Icons.groups_rounded, size: 19),
+                visualDensity: VisualDensity.compact,
                 onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ActiveSessionsScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => const ActiveSessionsScreen()),
                 ),
               ),
-              Icon(hasSession ? Icons.logout_rounded : Icons.chevron_right_rounded,
-                  size: 18, color: color),
+              // Nút Kết thúc ca
+              IconButton(
+                tooltip: 'Kết thúc ca làm việc',
+                icon: const Icon(Icons.logout_rounded,
+                    size: 18, color: Colors.redAccent),
+                visualDensity: VisualDensity.compact,
+                onPressed: _confirmCheckOut,
+              ),
+            ] else ...[
+              IconButton(
+                tooltip: 'Ai đang trong ca',
+                icon: const Icon(Icons.groups_rounded, size: 20),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (_) => const ActiveSessionsScreen()),
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded,
+                  size: 18, color: Color(0xFFF59E0B)),
             ],
-          ),
+          ],
         ),
       ),
     );

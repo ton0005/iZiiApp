@@ -100,9 +100,10 @@ class SettingsService {
     // được nhưng trình duyệt thì được" là một câu đố không có manh mối nào.
     if (url != _lastResolvedUrl) {
       _lastResolvedUrl = url;
-      final src = serverConfig.hasSelectedServer ? 'server đã chọn' : 'ô Settings';
+      final src =
+          serverConfig.hasSelectedServer ? 'server selected' : 'Settings';
       // ignore: avoid_print
-      print('[Settings] App đang gọi server: $url  (nguồn: $src)');
+      print('[Settings] App is calling server: $url  (source: $src)');
     }
     return url;
   }
@@ -222,8 +223,9 @@ class SettingsService {
       if (token == null || token.isEmpty) continue;
       await prefs.setString(_deviceTokenKeyFor(serverUrl), token);
       // ignore: avoid_print
-      print('[Settings] Đã chuyển device token từ "${key.substring(prefix.length)}" '
-          'sang "$serverUrl".');
+      print(
+          '[Settings] The device token has been transferred from "${key.substring(prefix.length)}" '
+          'to "$serverUrl".');
       return token;
     }
     return null;

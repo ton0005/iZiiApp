@@ -1341,6 +1341,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     double? co2Level,
     DateTime? checkInTime,
     DateTime? checkOutTime,
+    bool isSoloJob = false,
   }) {
     var room = _localRooms[roomName];
     if (room == null) {
@@ -1356,16 +1357,23 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final roomId = (room.isNotEmpty ? room['id'] : null) ??
         roomName.toLowerCase().replaceAll(' ', '_');
 
-    if (jobType == 'alone_worker') {
+    if (jobType == 'alone_worker' || isSoloJob) {
+      // jobType may be a custom solo type from the Job Types catalogue
+      // (e.g. "deep_clean_solo") — title still needs to read like a job
+      // name, not the raw slug.
+      final title = jobType == 'alone_worker'
+          ? 'Alone Worker (Solo)'
+          : '${jobType.split('_').map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1)}').join(' ')} (Solo)';
       _bloc.add(AddSoloJobEvent(
         roomId: roomId,
-        title: 'Alone Worker (Solo)',
+        title: title,
         assignee: assignee,
         timeLimit: timeLimit ?? 45,
         coLevel: coLevel,
         co2Level: co2Level,
         checkInTime: checkInTime,
         checkOutTime: checkOutTime,
+        jobType: jobType,
       ));
       return;
     }

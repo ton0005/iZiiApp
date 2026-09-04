@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:drift/drift.dart' as d;
 
+import '../database/app_database.dart';
 import '../settings/settings_service.dart';
 
 /// Một phiên làm việc đang mở trên máy này.
@@ -12,6 +14,9 @@ class WorkSession {
   final String method;
   final DateTime? startedAt;
 
+  final bool isOnBreak;
+  final DateTime? breakStartedAt;
+
   WorkSession({
     required this.id,
     required this.userId,
@@ -20,6 +25,8 @@ class WorkSession {
     this.zone = '',
     this.method = 'list',
     this.startedAt,
+    this.isOnBreak = false,
+    this.breakStartedAt,
   });
 
   factory WorkSession.fromJson(Map<String, dynamic> j) => WorkSession(
@@ -30,17 +37,55 @@ class WorkSession {
         zone: (j['zone'] ?? '').toString(),
         method: (j['method'] ?? 'list').toString(),
         startedAt: DateTime.tryParse((j['started_at'] ?? '').toString()),
+        isOnBreak: j['is_on_break'] == true,
+        breakStartedAt:
+            DateTime.tryParse((j['break_started_at'] ?? '').toString()),
       );
+
+  WorkSession copyWith({
+    String? id,
+    String? userId,
+    String? userName,
+    String? department,
+    String? zone,
+    String? method,
+    DateTime? startedAt,
+    bool? isOnBreak,
+    DateTime? breakStartedAt,
+  }) {
+    return WorkSession(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      department: department ?? this.department,
+      zone: zone ?? this.zone,
+      method: method ?? this.method,
+      startedAt: startedAt ?? this.startedAt,
+      isOnBreak: isOnBreak ?? this.isOnBreak,
+      breakStartedAt: breakStartedAt ?? this.breakStartedAt,
+    );
+  }
 
   String get displayName => userName.isNotEmpty ? userName : userId;
 
-  Duration get elapsed =>
-      startedAt == null ? Duration.zero : DateTime.now().difference(startedAt!.toLocal());
+  Duration get elapsed => startedAt == null
+      ? Duration.zero
+      : DateTime.now().difference(startedAt!.toLocal());
 
   String get elapsedText {
     final d = elapsed;
-    if (d.inHours > 0) return '${d.inHours} giờ ${d.inMinutes % 60} phút';
-    return '${d.inMinutes} phút';
+    if (d.inHours > 0) return '${d.inHours} hours ${d.inMinutes % 60} minutes';
+    return '${d.inMinutes} minutes';
+  }
+
+  Duration get breakElapsed => breakStartedAt == null
+      ? Duration.zero
+      : DateTime.now().difference(breakStartedAt!.toLocal());
+
+  String get breakElapsedText {
+    final d = breakElapsed;
+    if (d.inHours > 0) return '${d.inHours}h ${d.inMinutes % 60}m';
+    return '${d.inMinutes} minutes';
   }
 }
 
@@ -102,7 +147,8 @@ class WorkSessionService {
   ///
   /// [force] bỏ qua bộ nhớ đệm — dùng sau khi vừa điểm danh hoặc kết thúc ca.
   Future<WorkSession?> getCurrent({bool force = false}) async {
-    if (!force && _cachedAt != null &&
+    if (!force &&
+        _cachedAt != null &&
         DateTime.now().difference(_cachedAt!) < const Duration(seconds: 30)) {
       return _cached;
     }
@@ -121,6 +167,9 @@ class WorkSessionService {
       _cached = data['has_session'] == true && data['session'] != null
           ? WorkSession.fromJson(Map<String, dynamic>.from(data['session']))
           : null;
+      if (_cached != null) {
+        await _enrichWithBreakState(_cached!);
+      }
       _cachedAt = DateTime.now();
       return _cached;
     } on DioException catch (e) {
@@ -132,6 +181,69 @@ class WorkSessionService {
       }
       return _cached;
     }
+  }
+
+  /// Tra cứu sự kiện nghỉ gần nhất trong CSDL cục bộ để khôi phục trạng thái nghỉ.
+  Future<void> _enrichWithBreakState(WorkSession session) async {
+    try {
+      final db = AppDatabase();
+      final lastEvent = await (db.select(db.mushroomAttendanceEvents)
+            ..where((tbl) => tbl.employeeId.equals(session.userId))
+            ..orderBy([(t) => d.OrderingTerm.desc(t.timestamp)])
+            ..limit(1))
+          .getSingleOrNull();
+
+      if (lastEvent != null && lastEvent.eventType == 'BREAK_START') {
+        _cached = session.copyWith(
+          isOnBreak: true,
+          breakStartedAt: lastEvent.timestamp,
+        );
+      }
+    } catch (_) {}
+  }
+
+  /// Bắt đầu nghỉ giải lao (Break Start) — ghi sự kiện và đổi trạng thái.
+  Future<void> startBreak({String? planId}) async {
+    final s = _cached;
+    if (s == null) return;
+    final now = DateTime.now();
+    try {
+      final db = AppDatabase();
+      await db.into(db.mushroomAttendanceEvents).insert(
+            MushroomAttendanceEventsCompanion.insert(
+              id: 'AE_${now.millisecondsSinceEpoch}',
+              employeeId: s.userId,
+              planId: d.Value(planId),
+              eventType: 'BREAK_START',
+              timestamp: d.Value(now),
+              source: 'MANUAL',
+            ),
+          );
+    } catch (_) {}
+    _cached = s.copyWith(isOnBreak: true, breakStartedAt: now);
+    _cachedAt = DateTime.now();
+  }
+
+  /// Kết thúc nghỉ giải lao (Break End) — ghi sự kiện và quay lại làm việc.
+  Future<void> endBreak({String? planId}) async {
+    final s = _cached;
+    if (s == null) return;
+    final now = DateTime.now();
+    try {
+      final db = AppDatabase();
+      await db.into(db.mushroomAttendanceEvents).insert(
+            MushroomAttendanceEventsCompanion.insert(
+              id: 'AE_${now.millisecondsSinceEpoch}',
+              employeeId: s.userId,
+              planId: d.Value(planId),
+              eventType: 'BREAK_END',
+              timestamp: d.Value(now),
+              source: 'MANUAL',
+            ),
+          );
+    } catch (_) {}
+    _cached = s.copyWith(isOnBreak: false, breakStartedAt: null);
+    _cachedAt = DateTime.now();
   }
 
   /// Điểm danh. Trả về phiên mới, hoặc ném [WorkSessionException].
@@ -250,17 +362,18 @@ class WorkSessionService {
       // Phân biệt "chưa từng đăng ký" với "đã đăng ký nhưng token chết".
       // Gộp chung thành một câu khiến người dùng quét lại mã, thấy báo "máy đã
       // đăng ký rồi", rồi quay lại đây vẫn bị chặn — vòng luẩn quẩn đã gặp.
-      return 'Máy chủ không nhận token của máy này.\n\n'
-          'Nếu máy đã từng đăng ký, nhiều khả năng máy chủ vừa được cài lại nên '
-          'token cũ không còn giá trị. Xin quản lý cấp mã QR MỚI rồi quét lại.';
+      return 'The server does not accept this device’s token.\n\n'
+          'If the device has been registered before, it is likely that the server has been reinstalled, '
+          'rendering the old token invalid. Please ask your manager for a new QR code and scan it.';
     }
-    if (code == 403) return detail?.toString() ?? 'Mã PIN không đúng.';
-    if (code == 400) return detail?.toString() ?? 'Thông tin điểm danh không hợp lệ.';
+    if (code == 403) return detail?.toString() ?? 'Incorrect PIN.';
+    if (code == 400)
+      return detail?.toString() ?? 'Invalid check-in information.';
     if (e.type == DioExceptionType.connectionError ||
         e.type == DioExceptionType.connectionTimeout) {
-      return 'Không kết nối được máy chủ. Kiểm tra Wi-Fi.';
+      return 'Cannot connect to the server. Please check your Wi-Fi connection.';
     }
-    return e.message ?? 'Lỗi không xác định.';
+    return e.message ?? 'Undefined error.';
   }
 }
 

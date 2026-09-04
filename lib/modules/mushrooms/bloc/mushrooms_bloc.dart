@@ -33,6 +33,7 @@ class AddSoloJobEvent extends MushroomsEvent {
   final double? co2Level;
   final DateTime? checkInTime;
   final DateTime? checkOutTime;
+  final String jobType;
 
   AddSoloJobEvent({
     required this.roomId,
@@ -43,6 +44,7 @@ class AddSoloJobEvent extends MushroomsEvent {
     this.co2Level,
     this.checkInTime,
     this.checkOutTime,
+    this.jobType = 'alone_worker',
   });
 }
 
@@ -338,6 +340,7 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
         co2Level: event.co2Level,
         checkInTime: event.checkInTime,
         checkOutTime: event.checkOutTime,
+        jobType: event.jobType,
       );
       emit(state.copyWith(isLoading: false));
     } catch (e) {

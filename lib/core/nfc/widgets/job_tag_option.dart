@@ -68,11 +68,10 @@ class _JobTagOptionState extends State<JobTagOption> {
           dense: true,
           value: widget.enabled,
           onChanged: (v) => widget.onChanged(v ?? false),
-          title: const Text('Ghi thẻ NFC cho công việc này',
+          title: const Text('Write the NFC tag for this task',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
           subtitle: const Text(
-            'Dán thẻ NTAG213 ở cửa phòng. Công nhân chạm thẻ là mở thẳng '
-            'công việc, không phải tìm trong danh sách.',
+            'Place an NTAG213 tag at the room entrance. The Workers tap the tag to open directly, instead of searching in the list.',
             style: TextStyle(fontSize: 11, height: 1.35),
           ),
         ),
@@ -81,8 +80,8 @@ class _JobTagOptionState extends State<JobTagOption> {
           TextFormField(
             initialValue: widget.label,
             decoration: const InputDecoration(
-              labelText: 'Nhãn trên thẻ (tuỳ chọn)',
-              hintText: 'VD: Cửa chính · Kệ A',
+              labelText: 'Label on the tag (optional)',
+              hintText: 'e.g., Main Door · Shelf A',
               isDense: true,
             ),
             style: const TextStyle(fontSize: 13),
@@ -94,7 +93,8 @@ class _JobTagOptionState extends State<JobTagOption> {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: (tooBig ? Colors.red : Colors.purple).withValues(alpha: 0.08),
+                color: (tooBig ? Colors.red : Colors.purple)
+                    .withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                     color: (tooBig ? Colors.red : Colors.purple)
@@ -117,7 +117,7 @@ class _JobTagOptionState extends State<JobTagOption> {
                         Text(
                           tooBig
                               ? '${preview.estimatedBytes}/${JobTagService.ntag213Capacity} byte — '
-                                  'VƯỢT dung lượng NTAG213, rút ngắn nhãn'
+                                  'Exceeds the NTAG213 capacity, please shorten the label or remove the optional fields.'
                               : '${preview.estimatedBytes}/${JobTagService.ntag213Capacity} byte',
                           style: TextStyle(
                             fontSize: 11,
@@ -160,7 +160,7 @@ class _WriteJobTagSheet extends StatefulWidget {
 }
 
 class _WriteJobTagSheetState extends State<_WriteJobTagSheet> {
-  String _status = 'Đưa thẻ NFC vào mặt sau máy...';
+  String _status = 'Place the NFC tag on the back of the device...';
   bool _done = false;
   bool _failed = false;
 
@@ -179,7 +179,7 @@ class _WriteJobTagSheetState extends State<_WriteJobTagSheet> {
   Future<void> _write() async {
     setState(() {
       _failed = false;
-      _status = 'Đưa thẻ NFC vào mặt sau máy...';
+      _status = 'Place the NFC tag on the back of the device...';
     });
     try {
       await JobTagService.write(widget.tag,
@@ -187,7 +187,7 @@ class _WriteJobTagSheetState extends State<_WriteJobTagSheet> {
       if (!mounted) return;
       setState(() {
         _done = true;
-        _status = '✅ Đã ghi thẻ xong. Dán thẻ vào cửa phòng.';
+        _status = '✅ Done writing the tag. Stick the tag on the room door.';
       });
     } catch (e) {
       if (!mounted) return;

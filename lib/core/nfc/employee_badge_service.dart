@@ -72,8 +72,7 @@ class EmployeeBadgeService {
   }) async {
     if (badge.fitsNtag213 == false) {
       throw NfcTagException(
-        'Nội dung ${badge.estimatedBytes} byte, vượt quá $ntag213Capacity byte của '
-        'NTAG213. Rút ngắn tên hoặc bỏ tên phòng ban.',
+        'Content is ${badge.estimatedBytes} byte, exceeds the $ntag213Capacity byte capacity of the NTAG213. Please shorten the name or remove the department name.',
       );
     }
     await NfcUriService.writeUri(badge.toUri(), onStatus: onStatus);
@@ -89,15 +88,15 @@ class EmployeeBadgeService {
       // Phân biệt rõ với hai loại thẻ kia để công nhân không loay hoay.
       if (raw.contains('izii://enroll')) {
         throw NfcTagException(
-          'Đây là thẻ ĐĂNG KÝ THIẾT BỊ, không phải thẻ nhân viên.',
+          'This is an ENROLLMENT TAG, not an employee badge.',
         );
       }
       if (raw.contains('izii://job')) {
         throw NfcTagException(
-          'Đây là thẻ CÔNG VIỆC dán ở cửa phòng, không phải thẻ nhân viên.',
+          'This is a JOB TAG attached to a room door, not an employee badge.',
         );
       }
-      throw NfcTagException('Thẻ này không phải thẻ nhân viên iZii.');
+      throw NfcTagException('This is not an iZii employee badge.');
     }
     return badge;
   }
