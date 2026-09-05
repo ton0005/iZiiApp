@@ -101,7 +101,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 27;
+  int get schemaVersion => 28;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -444,6 +444,11 @@ class AppDatabase extends _$AppDatabase {
           if (from < 27) {
             try {
               await m.createTable(mushroomJobTypes);
+            } catch (_) {}
+          }
+          if (from < 28) {
+            try {
+              await m.addColumn(mushroomJobs, mushroomJobs.onTimeOverride);
             } catch (_) {}
           }
         },

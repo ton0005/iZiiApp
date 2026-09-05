@@ -1171,15 +1171,22 @@ class MushroomsRepository {
     });
   }
 
-  Future<void> updateJobStatus(String jobId, String newStatus) async {
+  Future<void> updateJobStatus(String jobId, String newStatus, {bool? onTimeOverride}) async {
     final job = await (_db.select(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).getSingleOrNull();
     if (job == null) return;
+
+    // Reopening a job clears any prior on-time review — it needs a fresh
+    // one if completed again. Only a 'completed' transition can set it.
+    final onTimeOverrideValue = newStatus == 'completed'
+        ? (onTimeOverride != null ? Value(onTimeOverride) : const Value<bool?>.absent())
+        : const Value<bool?>(null);
 
     await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).write(
       MushroomJobsCompanion(
         status: Value(newStatus),
         completedAt: Value(newStatus == 'completed' ? DateTime.now() : null),
         alarmTriggered: Value(newStatus == 'completed' ? false : job.alarmTriggered),
+        onTimeOverride: onTimeOverrideValue,
       ),
     );
 
@@ -1189,6 +1196,7 @@ class MushroomsRepository {
       'status': newStatus,
       'completed_at': newStatus == 'completed' ? DateTime.now().toIso8601String() : null,
       'alarm_triggered': newStatus == 'completed' ? false : job.alarmTriggered,
+      if (onTimeOverrideValue.present) 'on_time_override': onTimeOverrideValue.value,
     });
 
     // Sync status back to linked project task
@@ -1378,11 +1386,11 @@ class MushroomsRepository {
     });
   }
 
-  Future<void> completeJob(String jobId) async {
+  Future<void> completeJob(String jobId, {bool? onTimeOverride}) async {
     final job = await (_db.select(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).getSingleOrNull();
     if (job == null) return;
 
-    await updateJobStatus(jobId, 'completed');
+    await updateJobStatus(jobId, 'completed', onTimeOverride: onTimeOverride);
 
     if (job.isSoloJob) {
       try {

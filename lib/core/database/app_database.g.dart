@@ -14996,6 +14996,15 @@ class $MushroomJobsTable extends MushroomJobs
   late final GeneratedColumn<String> linkedTaskId = GeneratedColumn<String>(
       'linked_task_id', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _onTimeOverrideMeta =
+      const VerificationMeta('onTimeOverride');
+  @override
+  late final GeneratedColumn<bool> onTimeOverride = GeneratedColumn<bool>(
+      'on_time_override', aliasedName, true,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("on_time_override" IN (0, 1))'));
   static const VerificationMeta _isSoloJobMeta =
       const VerificationMeta('isSoloJob');
   @override
@@ -15098,6 +15107,7 @@ class $MushroomJobsTable extends MushroomJobs
         prochlorazRate,
         completedAt,
         linkedTaskId,
+        onTimeOverride,
         isSoloJob,
         timeLimitMinutes,
         startedAt,
@@ -15176,6 +15186,12 @@ class $MushroomJobsTable extends MushroomJobs
           _linkedTaskIdMeta,
           linkedTaskId.isAcceptableOrUnknown(
               data['linked_task_id']!, _linkedTaskIdMeta));
+    }
+    if (data.containsKey('on_time_override')) {
+      context.handle(
+          _onTimeOverrideMeta,
+          onTimeOverride.isAcceptableOrUnknown(
+              data['on_time_override']!, _onTimeOverrideMeta));
     }
     if (data.containsKey('is_solo_job')) {
       context.handle(
@@ -15270,6 +15286,8 @@ class $MushroomJobsTable extends MushroomJobs
           .read(DriftSqlType.dateTime, data['${effectivePrefix}completed_at']),
       linkedTaskId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}linked_task_id']),
+      onTimeOverride: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}on_time_override']),
       isSoloJob: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_solo_job'])!,
       timeLimitMinutes: attachedDatabase.typeMapping
@@ -15316,6 +15334,7 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
   final String? prochlorazRate;
   final DateTime? completedAt;
   final String? linkedTaskId;
+  final bool? onTimeOverride;
   final bool isSoloJob;
   final int? timeLimitMinutes;
   final DateTime? startedAt;
@@ -15340,6 +15359,7 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       this.prochlorazRate,
       this.completedAt,
       this.linkedTaskId,
+      this.onTimeOverride,
       required this.isSoloJob,
       this.timeLimitMinutes,
       this.startedAt,
@@ -15375,6 +15395,9 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
     }
     if (!nullToAbsent || linkedTaskId != null) {
       map['linked_task_id'] = Variable<String>(linkedTaskId);
+    }
+    if (!nullToAbsent || onTimeOverride != null) {
+      map['on_time_override'] = Variable<bool>(onTimeOverride);
     }
     map['is_solo_job'] = Variable<bool>(isSoloJob);
     if (!nullToAbsent || timeLimitMinutes != null) {
@@ -15434,6 +15457,9 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       linkedTaskId: linkedTaskId == null && nullToAbsent
           ? const Value.absent()
           : Value(linkedTaskId),
+      onTimeOverride: onTimeOverride == null && nullToAbsent
+          ? const Value.absent()
+          : Value(onTimeOverride),
       isSoloJob: Value(isSoloJob),
       timeLimitMinutes: timeLimitMinutes == null && nullToAbsent
           ? const Value.absent()
@@ -15484,6 +15510,7 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       prochlorazRate: serializer.fromJson<String?>(json['prochlorazRate']),
       completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
       linkedTaskId: serializer.fromJson<String?>(json['linkedTaskId']),
+      onTimeOverride: serializer.fromJson<bool?>(json['onTimeOverride']),
       isSoloJob: serializer.fromJson<bool>(json['isSoloJob']),
       timeLimitMinutes: serializer.fromJson<int?>(json['timeLimitMinutes']),
       startedAt: serializer.fromJson<DateTime?>(json['startedAt']),
@@ -15513,6 +15540,7 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       'prochlorazRate': serializer.toJson<String?>(prochlorazRate),
       'completedAt': serializer.toJson<DateTime?>(completedAt),
       'linkedTaskId': serializer.toJson<String?>(linkedTaskId),
+      'onTimeOverride': serializer.toJson<bool?>(onTimeOverride),
       'isSoloJob': serializer.toJson<bool>(isSoloJob),
       'timeLimitMinutes': serializer.toJson<int?>(timeLimitMinutes),
       'startedAt': serializer.toJson<DateTime?>(startedAt),
@@ -15540,6 +15568,7 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
           Value<String?> prochlorazRate = const Value.absent(),
           Value<DateTime?> completedAt = const Value.absent(),
           Value<String?> linkedTaskId = const Value.absent(),
+          Value<bool?> onTimeOverride = const Value.absent(),
           bool? isSoloJob,
           Value<int?> timeLimitMinutes = const Value.absent(),
           Value<DateTime?> startedAt = const Value.absent(),
@@ -15566,6 +15595,8 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
         completedAt: completedAt.present ? completedAt.value : this.completedAt,
         linkedTaskId:
             linkedTaskId.present ? linkedTaskId.value : this.linkedTaskId,
+        onTimeOverride:
+            onTimeOverride.present ? onTimeOverride.value : this.onTimeOverride,
         isSoloJob: isSoloJob ?? this.isSoloJob,
         timeLimitMinutes: timeLimitMinutes.present
             ? timeLimitMinutes.value
@@ -15601,6 +15632,9 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
       linkedTaskId: data.linkedTaskId.present
           ? data.linkedTaskId.value
           : this.linkedTaskId,
+      onTimeOverride: data.onTimeOverride.present
+          ? data.onTimeOverride.value
+          : this.onTimeOverride,
       isSoloJob: data.isSoloJob.present ? data.isSoloJob.value : this.isSoloJob,
       timeLimitMinutes: data.timeLimitMinutes.present
           ? data.timeLimitMinutes.value
@@ -15638,6 +15672,7 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
           ..write('prochlorazRate: $prochlorazRate, ')
           ..write('completedAt: $completedAt, ')
           ..write('linkedTaskId: $linkedTaskId, ')
+          ..write('onTimeOverride: $onTimeOverride, ')
           ..write('isSoloJob: $isSoloJob, ')
           ..write('timeLimitMinutes: $timeLimitMinutes, ')
           ..write('startedAt: $startedAt, ')
@@ -15667,6 +15702,7 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
         prochlorazRate,
         completedAt,
         linkedTaskId,
+        onTimeOverride,
         isSoloJob,
         timeLimitMinutes,
         startedAt,
@@ -15695,6 +15731,7 @@ class MushroomJob extends DataClass implements Insertable<MushroomJob> {
           other.prochlorazRate == this.prochlorazRate &&
           other.completedAt == this.completedAt &&
           other.linkedTaskId == this.linkedTaskId &&
+          other.onTimeOverride == this.onTimeOverride &&
           other.isSoloJob == this.isSoloJob &&
           other.timeLimitMinutes == this.timeLimitMinutes &&
           other.startedAt == this.startedAt &&
@@ -15721,6 +15758,7 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
   final Value<String?> prochlorazRate;
   final Value<DateTime?> completedAt;
   final Value<String?> linkedTaskId;
+  final Value<bool?> onTimeOverride;
   final Value<bool> isSoloJob;
   final Value<int?> timeLimitMinutes;
   final Value<DateTime?> startedAt;
@@ -15746,6 +15784,7 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
     this.prochlorazRate = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.linkedTaskId = const Value.absent(),
+    this.onTimeOverride = const Value.absent(),
     this.isSoloJob = const Value.absent(),
     this.timeLimitMinutes = const Value.absent(),
     this.startedAt = const Value.absent(),
@@ -15772,6 +15811,7 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
     this.prochlorazRate = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.linkedTaskId = const Value.absent(),
+    this.onTimeOverride = const Value.absent(),
     this.isSoloJob = const Value.absent(),
     this.timeLimitMinutes = const Value.absent(),
     this.startedAt = const Value.absent(),
@@ -15801,6 +15841,7 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
     Expression<String>? prochlorazRate,
     Expression<DateTime>? completedAt,
     Expression<String>? linkedTaskId,
+    Expression<bool>? onTimeOverride,
     Expression<bool>? isSoloJob,
     Expression<int>? timeLimitMinutes,
     Expression<DateTime>? startedAt,
@@ -15827,6 +15868,7 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
       if (prochlorazRate != null) 'prochloraz_rate': prochlorazRate,
       if (completedAt != null) 'completed_at': completedAt,
       if (linkedTaskId != null) 'linked_task_id': linkedTaskId,
+      if (onTimeOverride != null) 'on_time_override': onTimeOverride,
       if (isSoloJob != null) 'is_solo_job': isSoloJob,
       if (timeLimitMinutes != null) 'time_limit_minutes': timeLimitMinutes,
       if (startedAt != null) 'started_at': startedAt,
@@ -15855,6 +15897,7 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
       Value<String?>? prochlorazRate,
       Value<DateTime?>? completedAt,
       Value<String?>? linkedTaskId,
+      Value<bool?>? onTimeOverride,
       Value<bool>? isSoloJob,
       Value<int?>? timeLimitMinutes,
       Value<DateTime?>? startedAt,
@@ -15880,6 +15923,7 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
       prochlorazRate: prochlorazRate ?? this.prochlorazRate,
       completedAt: completedAt ?? this.completedAt,
       linkedTaskId: linkedTaskId ?? this.linkedTaskId,
+      onTimeOverride: onTimeOverride ?? this.onTimeOverride,
       isSoloJob: isSoloJob ?? this.isSoloJob,
       timeLimitMinutes: timeLimitMinutes ?? this.timeLimitMinutes,
       startedAt: startedAt ?? this.startedAt,
@@ -15929,6 +15973,9 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
     }
     if (linkedTaskId.present) {
       map['linked_task_id'] = Variable<String>(linkedTaskId.value);
+    }
+    if (onTimeOverride.present) {
+      map['on_time_override'] = Variable<bool>(onTimeOverride.value);
     }
     if (isSoloJob.present) {
       map['is_solo_job'] = Variable<bool>(isSoloJob.value);
@@ -15988,6 +16035,7 @@ class MushroomJobsCompanion extends UpdateCompanion<MushroomJob> {
           ..write('prochlorazRate: $prochlorazRate, ')
           ..write('completedAt: $completedAt, ')
           ..write('linkedTaskId: $linkedTaskId, ')
+          ..write('onTimeOverride: $onTimeOverride, ')
           ..write('isSoloJob: $isSoloJob, ')
           ..write('timeLimitMinutes: $timeLimitMinutes, ')
           ..write('startedAt: $startedAt, ')
@@ -35104,6 +35152,7 @@ typedef $$MushroomJobsTableCreateCompanionBuilder = MushroomJobsCompanion
   Value<String?> prochlorazRate,
   Value<DateTime?> completedAt,
   Value<String?> linkedTaskId,
+  Value<bool?> onTimeOverride,
   Value<bool> isSoloJob,
   Value<int?> timeLimitMinutes,
   Value<DateTime?> startedAt,
@@ -35131,6 +35180,7 @@ typedef $$MushroomJobsTableUpdateCompanionBuilder = MushroomJobsCompanion
   Value<String?> prochlorazRate,
   Value<DateTime?> completedAt,
   Value<String?> linkedTaskId,
+  Value<bool?> onTimeOverride,
   Value<bool> isSoloJob,
   Value<int?> timeLimitMinutes,
   Value<DateTime?> startedAt,
@@ -35186,6 +35236,10 @@ class $$MushroomJobsTableFilterComposer
 
   ColumnFilters<String> get linkedTaskId => $composableBuilder(
       column: $table.linkedTaskId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get onTimeOverride => $composableBuilder(
+      column: $table.onTimeOverride,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get isSoloJob => $composableBuilder(
       column: $table.isSoloJob, builder: (column) => ColumnFilters(column));
@@ -35270,6 +35324,10 @@ class $$MushroomJobsTableOrderingComposer
       column: $table.linkedTaskId,
       builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<bool> get onTimeOverride => $composableBuilder(
+      column: $table.onTimeOverride,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<bool> get isSoloJob => $composableBuilder(
       column: $table.isSoloJob, builder: (column) => ColumnOrderings(column));
 
@@ -35352,6 +35410,9 @@ class $$MushroomJobsTableAnnotationComposer
   GeneratedColumn<String> get linkedTaskId => $composableBuilder(
       column: $table.linkedTaskId, builder: (column) => column);
 
+  GeneratedColumn<bool> get onTimeOverride => $composableBuilder(
+      column: $table.onTimeOverride, builder: (column) => column);
+
   GeneratedColumn<bool> get isSoloJob =>
       $composableBuilder(column: $table.isSoloJob, builder: (column) => column);
 
@@ -35428,6 +35489,7 @@ class $$MushroomJobsTableTableManager extends RootTableManager<
             Value<String?> prochlorazRate = const Value.absent(),
             Value<DateTime?> completedAt = const Value.absent(),
             Value<String?> linkedTaskId = const Value.absent(),
+            Value<bool?> onTimeOverride = const Value.absent(),
             Value<bool> isSoloJob = const Value.absent(),
             Value<int?> timeLimitMinutes = const Value.absent(),
             Value<DateTime?> startedAt = const Value.absent(),
@@ -35454,6 +35516,7 @@ class $$MushroomJobsTableTableManager extends RootTableManager<
             prochlorazRate: prochlorazRate,
             completedAt: completedAt,
             linkedTaskId: linkedTaskId,
+            onTimeOverride: onTimeOverride,
             isSoloJob: isSoloJob,
             timeLimitMinutes: timeLimitMinutes,
             startedAt: startedAt,
@@ -35480,6 +35543,7 @@ class $$MushroomJobsTableTableManager extends RootTableManager<
             Value<String?> prochlorazRate = const Value.absent(),
             Value<DateTime?> completedAt = const Value.absent(),
             Value<String?> linkedTaskId = const Value.absent(),
+            Value<bool?> onTimeOverride = const Value.absent(),
             Value<bool> isSoloJob = const Value.absent(),
             Value<int?> timeLimitMinutes = const Value.absent(),
             Value<DateTime?> startedAt = const Value.absent(),
@@ -35506,6 +35570,7 @@ class $$MushroomJobsTableTableManager extends RootTableManager<
             prochlorazRate: prochlorazRate,
             completedAt: completedAt,
             linkedTaskId: linkedTaskId,
+            onTimeOverride: onTimeOverride,
             isSoloJob: isSoloJob,
             timeLimitMinutes: timeLimitMinutes,
             startedAt: startedAt,

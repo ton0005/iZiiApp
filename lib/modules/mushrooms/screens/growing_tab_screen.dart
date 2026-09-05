@@ -9,6 +9,7 @@ import '../widgets/plant_map_widget.dart';
 import '../../../core/nfc/job_tag_service.dart';
 import '../../../core/nfc/widgets/job_tag_option.dart';
 import '../../../core/session/widgets/session_banner.dart';
+import '../widgets/job_completion_review_dialog.dart';
 
 class GrowingTabScreen extends StatefulWidget {
   final bool isDark;
@@ -37,7 +38,8 @@ class GrowingTabScreen extends StatefulWidget {
     DateTime? checkOutTime,
     bool isSoloJob,
   }) onJobCreated;
-  final Function(String roomName, dynamic jobId, bool done) onJobStatusChanged;
+  final Function(String roomName, dynamic jobId, bool done, {bool? onTimeOverride})
+      onJobStatusChanged;
   final Function(String roomName, String viewMode) onSwitchToTasks;
   final Function(String roomName, String wateringPlan, String prochlorazRate)
       onStartCycle;
@@ -1479,9 +1481,29 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         children: [
                           Checkbox(
                             value: done,
-                            onChanged: (val) {
+                            onChanged: (val) async {
+                              if (val != true) {
+                                widget.onJobStatusChanged(
+                                    roomName, jobId, false);
+                                return;
+                              }
+                              final result = await confirmJobCompletion(
+                                context,
+                                jobType: job['job_type'] as String? ?? '',
+                                startedAt: job['started_at'] != null
+                                    ? DateTime.tryParse(
+                                        job['started_at'] as String)
+                                    : null,
+                                createdAt: job['created_at'] != null
+                                    ? DateTime.tryParse(
+                                        job['created_at'] as String)
+                                    : null,
+                              );
+                              if (result == null) return; // cancelled
                               widget.onJobStatusChanged(
-                                  roomName, jobId, val ?? false);
+                                  roomName, jobId, true,
+                                  onTimeOverride:
+                                      result == true ? true : null);
                             },
                           ),
                           const SizedBox(width: 8),

@@ -1402,13 +1402,15 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     ));
   }
 
-  void _onJobStatusChanged(String roomName, dynamic jobId, bool done) {
+  void _onJobStatusChanged(String roomName, dynamic jobId, bool done,
+      {bool? onTimeOverride}) {
     final room = _localRooms[roomName];
     if (room != null) {
       _bloc.add(UpdateJobStatusEvent(
         jobId as String,
         room['id'],
         done ? 'completed' : 'todo',
+        onTimeOverride,
       ));
     }
   }

@@ -8,6 +8,7 @@ import '../bloc/mushrooms_bloc.dart';
 import '../../../core/localization/app_localizations.dart';
 import 'mushboom_monarto_screen.dart';
 import 'growing_performance_board_screen.dart';
+import '../widgets/job_completion_review_dialog.dart';
 
 class MushroomsDashboardScreen extends StatefulWidget {
   const MushroomsDashboardScreen({super.key});
@@ -2049,12 +2050,22 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
         leading: Checkbox(
           value: isDone,
           activeColor: const Color(0xFF3B82F6),
-          onChanged: (val) {
-            if (val == true && !isDone) {
-              context
-                  .read<MushroomsBloc>()
-                  .add(CompleteJobEvent(job['id'], widget.roomId));
-            }
+          onChanged: (val) async {
+            if (val != true || isDone) return;
+            final bloc = context.read<MushroomsBloc>();
+            final result = await confirmJobCompletion(
+              context,
+              jobType: job['job_type'] as String? ?? '',
+              startedAt: job['started_at'] != null
+                  ? DateTime.tryParse(job['started_at'] as String)
+                  : null,
+              createdAt: job['created_at'] != null
+                  ? DateTime.tryParse(job['created_at'] as String)
+                  : null,
+            );
+            if (result == null) return; // cancelled
+            bloc.add(CompleteJobEvent(
+                job['id'], widget.roomId, result == true ? true : null));
           },
         ),
         title: Text(

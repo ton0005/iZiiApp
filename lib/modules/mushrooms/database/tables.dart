@@ -45,6 +45,14 @@ class MushroomJobs extends Table {
   DateTimeColumn get completedAt => dateTime().nullable()();
   TextColumn get linkedTaskId => text().nullable()(); // Project & Task integration ID
 
+  // Manual on-time review, set from the "Mark Done" confirmation when
+  // completing late would otherwise look like Over Standard on the
+  // Performance Board (e.g. a Supervisor batch-confirming jobs finished
+  // earlier in the field). null = no review, use the automatic
+  // actual-vs-plan calculation; true/false = Supervisor-confirmed verdict,
+  // takes priority over the automatic calculation.
+  BoolColumn get onTimeOverride => boolean().nullable()();
+
   // --- Solo Safety System Fields ---
   BoolColumn get isSoloJob => boolean().withDefault(const Constant(false))();
   IntColumn get timeLimitMinutes => integer().nullable()();

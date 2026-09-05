@@ -31,10 +31,12 @@ abstract class JobListService {
   Future<void> addJobToRoom({required String roomId, required Map<String, dynamic> jobData});
 
   /// Cập nhật trạng thái công việc và đồng bộ trạng thái Task liên kết.
-  Future<void> updateJobStatus(String jobId, String status);
+  /// [onTimeOverride]: khi hoàn thành trễ (Sup xác nhận dồn), cho phép ghi đè
+  /// thủ công kết quả đúng giờ/quá giờ hiển thị trên Performance Board.
+  Future<void> updateJobStatus(String jobId, String status, {bool? onTimeOverride});
 
   /// Đánh dấu hoàn thành một công việc.
-  Future<void> completeJob(String jobId);
+  Future<void> completeJob(String jobId, {bool? onTimeOverride});
 
   /// Đăng ký điểm danh hoặc thoát chế độ làm việc một mình
   Future<void> checkInSoloJob(String jobId);
@@ -276,7 +278,7 @@ class JobListServiceImpl implements JobListService {
   }
 
   @override
-  Future<void> updateJobStatus(String jobId, String status) async {
+  Future<void> updateJobStatus(String jobId, String status, {bool? onTimeOverride}) async {
     final currentEmpId = await _employeeService.getCurrentEmployeeId();
     if (currentEmpId == null) {
       throw Exception('Chưa đăng nhập nhân viên.');
@@ -285,17 +287,17 @@ class JobListServiceImpl implements JobListService {
     if (!hasPerm) {
       throw Exception('Nhân viên không có quyền cập nhật trạng thái công việc.');
     }
-    await _repository.updateJobStatus(jobId, status);
+    await _repository.updateJobStatus(jobId, status, onTimeOverride: onTimeOverride);
   }
 
   @override
-  Future<void> completeJob(String jobId) async {
+  Future<void> completeJob(String jobId, {bool? onTimeOverride}) async {
     final currentEmpId = await _employeeService.getCurrentEmployeeId() ?? '555555';
     final hasPerm = await _employeeService.hasPermission(currentEmpId, 'updateJobStatus');
     if (!hasPerm) {
       throw Exception('Nhân viên không có quyền hoàn thành công việc.');
     }
-    await _repository.completeJob(jobId);
+    await _repository.completeJob(jobId, onTimeOverride: onTimeOverride);
   }
 
   @override

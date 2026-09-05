@@ -51,14 +51,19 @@ class AddSoloJobEvent extends MushroomsEvent {
 class CompleteJobEvent extends MushroomsEvent {
   final String jobId;
   final String? roomId;
-  CompleteJobEvent(this.jobId, [this.roomId]);
+  // Manual on-time review from the "Mark Done" confirmation — see
+  // MushroomJobs.onTimeOverride. null = let the automatic actual-vs-plan
+  // calculation decide.
+  final bool? onTimeOverride;
+  CompleteJobEvent(this.jobId, [this.roomId, this.onTimeOverride]);
 }
 
 class UpdateJobStatusEvent extends MushroomsEvent {
   final String jobId;
   final String? roomId;
   final String newStatus;
-  UpdateJobStatusEvent(this.jobId, dynamic arg2, [String? arg3])
+  final bool? onTimeOverride;
+  UpdateJobStatusEvent(this.jobId, dynamic arg2, [String? arg3, this.onTimeOverride])
       : roomId = arg3 != null ? arg2 as String? : null,
         newStatus = arg3 != null ? arg3 : (arg2 as String);
 }
@@ -352,7 +357,7 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
       CompleteJobEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      await _jobService.completeJob(event.jobId);
+      await _jobService.completeJob(event.jobId, onTimeOverride: event.onTimeOverride);
       emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
@@ -383,7 +388,8 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
       UpdateJobStatusEvent event, Emitter<MushroomsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      await _jobService.updateJobStatus(event.jobId, event.newStatus);
+      await _jobService.updateJobStatus(event.jobId, event.newStatus,
+          onTimeOverride: event.onTimeOverride);
       emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));

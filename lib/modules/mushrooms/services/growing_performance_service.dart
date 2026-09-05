@@ -156,7 +156,11 @@ class GrowingPerformanceService {
           ? (j.timeLimitMinutes?.toDouble() ?? jobType.planMinutes)
           : jobType.planMinutes;
       final grace = planMinutes * 0.10;
-      final onTime = actualMinutes <= planMinutes + grace;
+      // Supervisor-confirmed on-time review (see MushroomJobs.onTimeOverride)
+      // takes priority over the automatic actual-vs-plan calculation — a job
+      // completed on time in the field shouldn't look Over Standard just
+      // because "Done" was tapped late.
+      final onTime = j.onTimeOverride ?? (actualMinutes <= planMinutes + grace);
 
       SoloSafetyInfo? solo;
       if (isSolo) {
