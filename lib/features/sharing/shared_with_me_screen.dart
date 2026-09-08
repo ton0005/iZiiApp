@@ -89,7 +89,7 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
       final sharerName = users
           .firstWhere((u) => u.id == perm.sharedBy,
               orElse: () =>
-                  _defaultUser(id: '', name: 'Cộng tác viên', type: 'both'))
+                  _defaultUser(id: '', name: 'Staff', type: 'both'))
           .name;
 
       switch (perm.recordType) {
@@ -377,7 +377,7 @@ class _SharedWithMeScreenState extends State<SharedWithMeScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                        'Đang mở bản ghi ${rec['title']} với quyền ${rec['permission']}'),
+                        'Opening ${rec['title']} with permission ${rec['permission']}'),
                   ),
                 );
               }

@@ -12,7 +12,7 @@ class ScaffoldWithNav extends StatelessWidget {
     _NavTab(
         icon: Icons.home_rounded,
         activeIcon: Icons.home_rounded,
-        label: 'Trang chủ',
+        label: 'Home',
         path: '/'),
     _NavTab(
         icon: Icons.smart_toy_outlined,
@@ -22,12 +22,12 @@ class ScaffoldWithNav extends StatelessWidget {
     _NavTab(
         icon: Icons.explore_outlined,
         activeIcon: Icons.explore_rounded,
-        label: 'Khám phá',
+        label: 'Discover',
         path: '/discover'),
     _NavTab(
         icon: Icons.person_outline_rounded,
         activeIcon: Icons.person_rounded,
-        label: 'Hồ sơ',
+        label: 'Profile',
         path: '/profile'),
   ];
 

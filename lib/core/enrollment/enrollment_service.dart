@@ -233,22 +233,22 @@ class EnrollmentService {
   String _describe(DioException e) {
     final code = e.response?.statusCode;
     if (code == 403) {
-      return 'Mã đăng ký không hợp lệ hoặc đã hết hạn. Hãy xin quản lý cấp mã mới.';
+      return 'Code registration is invalid or has expired. Please request a new code from your administrator.';
     }
     if (code == 429) {
-      return 'Thử quá nhiều lần. Đợi vài phút rồi thử lại.';
+      return 'Too many attempts. Please wait a few minutes and try again.';
     }
     if (code == 401) {
-      return 'Không có quyền admin. Kiểm tra Auth Token trong phần Sync Server.';
+      return 'No admin privileges. Please check the Auth Token in the Sync Server section.';
     }
     if (code == 503) {
-      return 'Máy chủ chưa cấu hình IZIIAPP_ADMIN_SECRET nên từ chối thao tác quản trị.';
+      return 'Server is not configured with IZIIAPP_ADMIN_SECRET, so it refuses administrative actions.';
     }
     if (e.type == DioExceptionType.connectionError ||
         e.type == DioExceptionType.connectionTimeout) {
-      return 'Không kết nối được máy chủ. Kiểm tra mạng và địa chỉ server.';
+      return 'Unable to connect to the server. Please check your network connection and the server address.';
     }
-    return e.message ?? 'Lỗi không xác định.';
+    return e.message ?? 'Undefined error.';
   }
 }
 

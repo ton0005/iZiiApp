@@ -157,7 +157,7 @@ class _MyDevicesView extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Không thể tải thiết bị',
+              'Cannot load devices',
               style: GoogleFonts.outfit(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -166,7 +166,7 @@ class _MyDevicesView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              errorMessage ?? 'Đã xảy ra lỗi không xác định.',
+              errorMessage ?? 'An undefined error occurred.',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 14,
@@ -217,7 +217,7 @@ class _MyDevicesView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'Chưa có thiết bị nào',
+            'No devices available',
             style: GoogleFonts.outfit(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -226,7 +226,7 @@ class _MyDevicesView extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Thiết bị của bạn sẽ xuất hiện ở đây\nsau khi đăng ký.',
+            'Your devices will appear here\nafter enrollment.',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 14,
@@ -270,7 +270,7 @@ class _MyDevicesView extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
                   child: Text(
-                    'THIẾT BỊ HIỆN TẠI',
+                    'CURRENT DEVICES',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -408,7 +408,7 @@ class _MyDevicesView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Mã hoá đầu cuối (E2EE)',
+                    'End-to-End Encryption (E2EE)',
                     style: GoogleFonts.outfit(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -417,7 +417,7 @@ class _MyDevicesView extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Mọi tin nhắn được mã hoá X25519 + AES-256-GCM giữa các thiết bị tin cậy.',
+                    'All messages are end-to-end encrypted with X25519 + AES-256-GCM between trusted devices.',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       color: Colors.white60,
@@ -450,7 +450,7 @@ class _MyDevicesView extends StatelessWidget {
       ),
       child: SafeArea(
         child: Tooltip(
-          message: 'Phase 3 — Sắp ra mắt',
+          message: 'Phase 3 — Coming soon',
           child: SizedBox(
             width: double.infinity,
             height: 52,
@@ -458,7 +458,7 @@ class _MyDevicesView extends StatelessWidget {
               onPressed: null, // Disabled
               icon: const Icon(Icons.add_rounded, size: 20),
               label: Text(
-                '+ Phê duyệt thiết bị mới',
+                '+ Approve New Device',
                 style: GoogleFonts.inter(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -641,18 +641,18 @@ class _CurrentDeviceCard extends StatelessWidget {
             children: [
               const _InfoChip(
                 icon: '🟢',
-                label: 'Trực tuyến',
+                label: 'Online',
                 color: _kSuccess,
               ),
               const _InfoChip(
                 icon: '🔑',
-                label: 'Tin cậy',
+                label: 'Trusted',
                 color: _kPrimary,
               ),
               _InfoChip(
                 icon: '📅',
                 label:
-                    'Đăng ký: ${DateFormat('dd/MM/yyyy').format(device.registeredAt)}',
+                    'Enrolled: ${DateFormat('dd/MM/yyyy').format(device.registeredAt)}',
                 color: Colors.white38,
               ),
             ],
@@ -836,7 +836,7 @@ class _DeviceCard extends StatelessWidget {
                   onPressed: null,
                   icon: const Icon(Icons.link_off_rounded, size: 14),
                   label: Text(
-                    'Thu hồi',
+                    'Revoke',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -957,19 +957,19 @@ String _statusEmoji(DevicePresenceStatus status) {
 String _statusLabel(DevicePresenceStatus status) {
   switch (status) {
     case DevicePresenceStatus.online:
-      return 'Trực tuyến';
+      return 'Online';
     case DevicePresenceStatus.idle:
-      return 'Nhàn rỗi';
+      return 'Idle';
     case DevicePresenceStatus.offline:
-      return 'Ngoại tuyến';
+      return 'Offline';
   }
 }
 
 String _formatLastSeen(DateTime lastSeen) {
   final diff = DateTime.now().difference(lastSeen);
-  if (diff.inMinutes < 1) return 'Vừa xong';
-  if (diff.inMinutes < 60) return '${diff.inMinutes} phút trước';
-  if (diff.inHours < 24) return '${diff.inHours} giờ trước';
-  if (diff.inDays < 7) return '${diff.inDays} ngày trước';
+  if (diff.inMinutes < 1) return 'Just now';
+  if (diff.inMinutes < 60) return '${diff.inMinutes} minutes ago';
+  if (diff.inHours < 24) return '${diff.inHours} hours ago';
+  if (diff.inDays < 7) return '${diff.inDays} days ago';
   return DateFormat('dd/MM/yyyy').format(lastSeen);
 }

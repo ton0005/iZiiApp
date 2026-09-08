@@ -75,14 +75,14 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Đổi mật khẩu thành công!'),
+          content: Text('Password changed successfully!'),
           backgroundColor: Color(0xFF10B981),
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Mật khẩu hiện tại không đúng.'),
+          content: Text('Current password is incorrect.'),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -108,7 +108,8 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Thông Tin & Tài Khoản', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Profile & Account',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         foregroundColor: isDark ? Colors.white : Colors.black87,
         elevation: 0,
@@ -139,13 +140,16 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: 28,
-                                    backgroundColor: primaryColor.withValues(alpha: 0.15),
-                                    child: Icon(Icons.person_rounded, size: 32, color: primaryColor),
+                                    backgroundColor:
+                                        primaryColor.withValues(alpha: 0.15),
+                                    child: Icon(Icons.person_rounded,
+                                        size: 32, color: primaryColor),
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           _employee?.name ?? 'Chưa xác định',
@@ -170,11 +174,20 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                 ],
                               ),
                               const Divider(height: 32),
-                              _buildInfoRow('Chức vụ (Role)', _employee?.role ?? 'N/A', textColor, subTextColor),
+                              _buildInfoRow('Role', _employee?.role ?? 'N/A',
+                                  textColor, subTextColor),
                               const SizedBox(height: 12),
-                              _buildInfoRow('Phòng ban (Dept)', _employee?.department ?? 'N/A', textColor, subTextColor),
+                              _buildInfoRow(
+                                  'Department',
+                                  _employee?.department ?? 'N/A',
+                                  textColor,
+                                  subTextColor),
                               const SizedBox(height: 12),
-                              _buildInfoRow('Trạng thái', _employee?.status.toUpperCase() ?? 'ACTIVE', primaryColor, subTextColor),
+                              _buildInfoRow(
+                                  'Status',
+                                  _employee?.status.toUpperCase() ?? 'ACTIVE',
+                                  primaryColor,
+                                  subTextColor),
                             ],
                           ),
                         ),
@@ -197,10 +210,11 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.lock_reset_rounded, color: primaryColor),
+                                    Icon(Icons.lock_reset_rounded,
+                                        color: primaryColor),
                                     const SizedBox(width: 8),
                                     Text(
-                                      'Đổi Mật Khẩu',
+                                      'Change Password',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -217,19 +231,27 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                   obscureText: _obscureOld,
                                   style: TextStyle(color: textColor),
                                   decoration: InputDecoration(
-                                    labelText: 'Mật khẩu hiện tại',
+                                    labelText: 'Current Password',
                                     labelStyle: TextStyle(color: subTextColor),
-                                    prefixIcon: Icon(Icons.lock_outline_rounded, color: primaryColor),
+                                    prefixIcon: Icon(Icons.lock_outline_rounded,
+                                        color: primaryColor),
                                     suffixIcon: IconButton(
                                       icon: Icon(
-                                        _obscureOld ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                                        _obscureOld
+                                            ? Icons.visibility_off_rounded
+                                            : Icons.visibility_rounded,
                                         color: subTextColor,
                                       ),
-                                      onPressed: () => setState(() => _obscureOld = !_obscureOld),
+                                      onPressed: () => setState(
+                                          () => _obscureOld = !_obscureOld),
                                     ),
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
                                   ),
-                                  validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập mật khẩu hiện tại' : null,
+                                  validator: (v) => v == null || v.isEmpty
+                                      ? 'Please enter your current password'
+                                      : null,
                                 ),
                                 const SizedBox(height: 16),
 
@@ -239,21 +261,29 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                   obscureText: _obscureNew,
                                   style: TextStyle(color: textColor),
                                   decoration: InputDecoration(
-                                    labelText: 'Mật khẩu mới',
+                                    labelText: 'New Password',
                                     labelStyle: TextStyle(color: subTextColor),
-                                    prefixIcon: Icon(Icons.vpn_key_outlined, color: primaryColor),
+                                    prefixIcon: Icon(Icons.vpn_key_outlined,
+                                        color: primaryColor),
                                     suffixIcon: IconButton(
                                       icon: Icon(
-                                        _obscureNew ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                                        _obscureNew
+                                            ? Icons.visibility_off_rounded
+                                            : Icons.visibility_rounded,
                                         color: subTextColor,
                                       ),
-                                      onPressed: () => setState(() => _obscureNew = !_obscureNew),
+                                      onPressed: () => setState(
+                                          () => _obscureNew = !_obscureNew),
                                     ),
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
                                   ),
                                   validator: (v) {
-                                    if (v == null || v.isEmpty) return 'Vui lòng nhập mật khẩu mới';
-                                    if (v.length < 6) return 'Mật khẩu phải từ 6 ký tự trở lên';
+                                    if (v == null || v.isEmpty)
+                                      return 'Please enter your new password';
+                                    if (v.length < 6)
+                                      return 'Password must be at least 6 characters long';
                                     return null;
                                   },
                                 ),
@@ -265,21 +295,30 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                   obscureText: _obscureConfirm,
                                   style: TextStyle(color: textColor),
                                   decoration: InputDecoration(
-                                    labelText: 'Xác nhận mật khẩu mới',
+                                    labelText: 'Confirm New Password',
                                     labelStyle: TextStyle(color: subTextColor),
-                                    prefixIcon: Icon(Icons.check_circle_outline_rounded, color: primaryColor),
+                                    prefixIcon: Icon(
+                                        Icons.check_circle_outline_rounded,
+                                        color: primaryColor),
                                     suffixIcon: IconButton(
                                       icon: Icon(
-                                        _obscureConfirm ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                                        _obscureConfirm
+                                            ? Icons.visibility_off_rounded
+                                            : Icons.visibility_rounded,
                                         color: subTextColor,
                                       ),
-                                      onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                                      onPressed: () => setState(() =>
+                                          _obscureConfirm = !_obscureConfirm),
                                     ),
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
                                   ),
                                   validator: (v) {
-                                    if (v == null || v.isEmpty) return 'Vui lòng xác nhận mật khẩu mới';
-                                    if (v != _newPasswordController.text) return 'Mật khẩu xác nhận không khớp';
+                                    if (v == null || v.isEmpty)
+                                      return 'Please confirm your new password';
+                                    if (v != _newPasswordController.text)
+                                      return 'Password confirmation does not match';
                                     return null;
                                   },
                                 ),
@@ -289,11 +328,14 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
-                                    onPressed: _isSubmitting ? null : _handleChangePassword,
+                                    onPressed: _isSubmitting
+                                        ? null
+                                        : _handleChangePassword,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: primaryColor,
                                       foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 14),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -304,12 +346,16 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                             width: 20,
                                             child: CircularProgressIndicator(
                                               strokeWidth: 2,
-                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Colors.white),
                                             ),
                                           )
                                         : const Text(
                                             'Đổi Mật Khẩu',
-                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                   ),
                                 ),
@@ -326,12 +372,15 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, Color valueColor, Color labelColor) {
+  Widget _buildInfoRow(
+      String label, String value, Color valueColor, Color labelColor) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: TextStyle(fontSize: 14, color: labelColor)),
-        Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: valueColor)),
+        Text(value,
+            style: TextStyle(
+                fontSize: 14, fontWeight: FontWeight.bold, color: valueColor)),
       ],
     );
   }

@@ -47,16 +47,16 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
   static const List<String?> m2TopRow = [
     'Room 33', 'Room 34', 'Room 35', 'Room 36', 'Room 37', 'Room 38',
     'Room 39', 'Room 40', 'Room 41', 'Room 42', 'Room 43', 'Room 44',
-    'corridor',
+    'corridor', 
     'Room 45', 'Room 46', 'Room 47', 'Room 48', 'Room 49', 'Room 50',
     'Room 51', 'Room 52', 'Room 52A'
   ];
 
   static const List<String?> m2BottomRow = [
     'Room 66', 'Room 65', 'Room 64', 'Room 63', 'Room 62', 'Room 61',
-    'Room 60', 'Room 59', 'Room 58', 'Room 57', 'Room 56', 'Room 55',
+    'Room 60', 'Room 59', 'Room 58', 
     'corridor',
-    'Room 54', 'Room 53', null, null, null, null, null, null, null
+    null, null, null, null, null, null, null, 'Room 57', 'Room 56', 'Room 55', 'Room 54', 'Room 53'
   ];
 
   static const List<String?> m1TopRow = [
@@ -81,13 +81,13 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
   }
 
   bool _isSmallRoom(String roomName) {
-    return roomName == 'Room 52A' || roomName == 'Room 20';
+    return roomName == 'Room 40' || roomName == 'Room 41' || roomName == 'Room 52' || roomName == 'Room 56' || roomName == 'Room 57' || roomName == 'Room 52A' || roomName == 'Room 10' || roomName == 'Room 11' || roomName == 'Room 12' || roomName == 'Room 13' || roomName == 'Room 14' || roomName == 'Room 15' || roomName == 'Room 16';
   }
 
   double _getRoomBaseWidth(String? roomName) {
     if (roomName == null) return 96.0;
     if (roomName == 'corridor') return 36.0;
-    if (_isSmallRoom(roomName)) return 48.0;
+    if (_isSmallRoom(roomName)) return 52.0;
     return 96.0;
   }
 

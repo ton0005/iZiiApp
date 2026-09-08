@@ -52,7 +52,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Quét lại mạng LAN',
+            tooltip: 'Scan again network LAN',
             onPressed: () => context
                 .read<ServerSelectionBloc>()
                 .add(const ServerSelectionScanStarted()),
@@ -65,7 +65,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Đã kết nối tới server: ${state.activeServer?.serverId ?? state.activeServer?.baseUrl}',
+                  'Connected to server: ${state.activeServer?.serverId ?? state.activeServer?.baseUrl}',
                 ),
                 backgroundColor: Colors.green,
               ),
@@ -74,7 +74,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
           } else if (state.status == ServerSelectionStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Kết nối thất bại'),
+                content: Text(state.errorMessage ?? 'Connection failed'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -104,7 +104,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
                                 children: [
                                   CircularProgressIndicator(),
                                   SizedBox(height: 12),
-                                  Text('Đang quét mạng LAN tìm iZiiApp Server...'),
+                                  Text('Scanning LAN for iZiiApp Servers...'),
                                 ],
                               ),
                             ),
@@ -113,7 +113,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
                           _buildEmptyScanState(theme),
                         ] else ...[
                           Text(
-                            'Server tìm thấy trong mạng LAN (${state.servers.length}):',
+                            'Servers found on LAN (${state.servers.length}):',
                             style: theme.textTheme.titleMedium,
                           ),
                           const SizedBox(height: 8),
@@ -159,7 +159,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Ứng dụng tự động phát hiện server trong cùng mạng Wi-Fi/LAN qua mDNS. Chọn server thích hợp để đồng bộ dữ liệu.',
+                    'App automatically detects servers on the same Wi-Fi/LAN via mDNS. Select a server to synchronize data.',
                     style: TextStyle(fontSize: 12),
                   ),
                 ],
@@ -180,12 +180,12 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
             Icon(Icons.wifi_find, size: 48, color: theme.disabledColor),
             const SizedBox(height: 12),
             const Text(
-              'Không tìm thấy server mDNS tự động',
+              'No mDNS servers found automatically',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             const Text(
-              'Kiểm tra lại thiết bị đã kết nối cùng mạng Wi-Fi với server, hoặc nhập IP server bên dưới.',
+              'Check that your device is connected to the same Wi-Fi network as the server, or enter the server IP below.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 12),
             ),
@@ -230,7 +230,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
                 : () => context
                     .read<ServerSelectionBloc>()
                     .add(ServerSelectionServerSelected(server)),
-            child: Text(isCurrent ? 'Đang dùng' : 'Kết nối'),
+            child: Text(isCurrent ? 'Currently Using' : 'Connect'),
           ),
         );
       },
@@ -296,7 +296,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
                         : () => context
                             .read<ServerSelectionBloc>()
                             .add(ServerSelectionServerSelected(server)),
-                    child: Text(isCurrent ? 'Đang dùng' : 'Kết nối'),
+                    child: Text(isCurrent ? 'Currently Using' : 'Connect'),
                   ),
                 ),
               ],
@@ -323,12 +323,12 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Nhập IP:Port thủ công',
+              'Enter IP:Port manually',
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             const Text(
-              'Dùng khi router chặn mDNS multicast hoặc server nằm ở subnet khác.',
+              'Use when router blocks mDNS multicast or server is on a different subnet.',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 12),
@@ -339,7 +339,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
                   child: TextField(
                     controller: _hostController,
                     decoration: const InputDecoration(
-                      labelText: 'Địa chỉ IP',
+                      labelText: 'IP Address',
                       hintText: '192.168.1.100',
                       border: OutlineInputBorder(),
                       isDense: true,
@@ -370,7 +370,7 @@ class _ServerSelectionViewState extends State<_ServerSelectionView> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.link),
-                  label: const Text('Kết nối'),
+                  label: const Text('Connect'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   ),

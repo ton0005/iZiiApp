@@ -36,7 +36,8 @@ Future<bool?> confirmJobCompletion(
         ? match.first['plan_minutes'] as int
         : GrowingPerformanceConstants.jobTypeFor(jobType).planMinutes.round();
   } catch (_) {
-    planMinutes = GrowingPerformanceConstants.jobTypeFor(jobType).planMinutes.round();
+    planMinutes =
+        GrowingPerformanceConstants.jobTypeFor(jobType).planMinutes.round();
   }
 
   final grace = (planMinutes * 0.10).round();
@@ -50,14 +51,14 @@ Future<bool?> confirmJobCompletion(
     context: context,
     builder: (dialogCtx) => StatefulBuilder(
       builder: (dialogCtx, setDialogState) => AlertDialog(
-        title: const Text('Xác nhận hoàn thành công việc'),
+        title: const Text('Confirm Job Completion'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Việc này đã bắt đầu $elapsedMinutes phút trước (tiêu chuẩn $planMinutes phút), '
-              'nên nếu hoàn thành ngay bây giờ sẽ bị tính "Quá giờ chuẩn" trên Performance Board.',
+              'This job started $elapsedMinutes minutes ago (standard is $planMinutes minutes), '
+              'so if completed now it will be counted as "Over Standard" on the Performance Board.',
               style: const TextStyle(fontSize: 13),
             ),
             const SizedBox(height: 12),
@@ -65,11 +66,11 @@ Future<bool?> confirmJobCompletion(
               contentPadding: EdgeInsets.zero,
               value: markOnTime,
               title: const Text(
-                'Job này thực tế đã hoàn thành ĐÚNG GIỜ',
+                'Job was actually completed ON TIME',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
               ),
               subtitle: const Text(
-                'Chỉ do bấm Done trễ, không phải làm chậm — bỏ chọn nếu thực sự quá giờ.',
+                'Only delayed completion, not actually slow — uncheck if truly over time.',
                 style: TextStyle(fontSize: 11),
               ),
               onChanged: (v) => setDialogState(() => markOnTime = v ?? true),
@@ -79,11 +80,11 @@ Future<bool?> confirmJobCompletion(
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, null),
-            child: const Text('Huỷ'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogCtx, markOnTime),
-            child: const Text('Hoàn thành'),
+            child: const Text('Complete'),
           ),
         ],
       ),

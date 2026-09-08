@@ -53,7 +53,7 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
     if (!mounted) return;
     setState(() {
       _enrolled = enrolled;
-      _myName = '${contacts.length} liên hệ';
+      _myName = '${contacts.length} contacts';
     });
   }
 
@@ -63,7 +63,7 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
       onPressed: _openMenu,
       backgroundColor: _enrolled ? const Color(0xFF14B8A6) : const Color(0xFFF59E0B),
       foregroundColor: Colors.white,
-      tooltip: _enrolled ? 'Thiết bị đã đăng ký' : 'Thiết bị CHƯA đăng ký',
+      tooltip: _enrolled ? 'Device Enrolled' : 'Device Not Enrolled',
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -109,8 +109,8 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
                   Expanded(
                     child: Text(
                       _enrolled
-                          ? 'Máy này đã đăng ký · $_myName trong danh bạ'
-                          : 'Máy này CHƯA đăng ký — Chat đang dùng danh bạ demo',
+                          ? 'Device is enrolled · $_myName in contacts'
+                          : 'Device is not enrolled — using demo contacts',
                       style: const TextStyle(fontSize: 12, height: 1.4),
                     ),
                   ),
@@ -120,8 +120,8 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
 
             ListTile(
               leading: const Icon(Icons.qr_code_scanner_rounded, color: Color(0xFF6366F1)),
-              title: const Text('Quét mã QR để đăng ký'),
-              subtitle: const Text('Mở camera, quét mã do quản lý cấp'),
+              title: const Text('Scan QR code to enroll'),
+              subtitle: const Text('Open camera to scan the enrollment QR code'),
               onTap: () async {
                 Navigator.pop(ctx);
                 final ok = await Navigator.of(context).push<bool>(
@@ -135,10 +135,10 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
               enabled: _nfcAvailable,
               leading: Icon(Icons.nfc_rounded,
                   color: _nfcAvailable ? const Color(0xFF8B5CF6) : Colors.grey),
-              title: const Text('Chạm thẻ NFC để đăng ký'),
+              title: const Text('Tap NFC Tag to Enroll'),
               subtitle: Text(_nfcAvailable
-                  ? 'Chạm mặt sau máy vào thẻ đăng ký'
-                  : 'Máy này không có NFC hoặc NFC đang tắt'),
+                  ? 'Tap the back of the device against the enrollment tag'
+                  : 'This device does not have NFC or NFC is turned off'),
               onTap: _nfcAvailable
                   ? () async {
                       Navigator.pop(ctx);
@@ -151,8 +151,8 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
 
             ListTile(
               leading: const Icon(Icons.qr_code_2_rounded, color: Color(0xFF14B8A6)),
-              title: const Text('Cấp mã cho máy khác'),
-              subtitle: const Text('Tạo QR hoặc ghi thẻ NFC (cần quyền admin)'),
+              title: const Text('Issue Enrollment Code for Another Device'),
+              subtitle: const Text('Generate QR code or write NFC tag (admin privileges required)'),
               onTap: () async {
                 Navigator.pop(ctx);
                 await Navigator.of(context).push(
@@ -164,8 +164,8 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
 
             ListTile(
               leading: const Icon(Icons.devices_rounded, color: Color(0xFF94A3B8)),
-              title: const Text('Quản lý thiết bị'),
-              subtitle: const Text('Xem danh sách, thu hồi máy đã mất'),
+              title: const Text('Manage Devices'),
+              subtitle: const Text('View list, revoke lost devices'),
               onTap: () async {
                 Navigator.pop(ctx);
                 await Navigator.of(context).push(
@@ -177,8 +177,8 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
 
             ListTile(
               leading: const Icon(Icons.sync_rounded, color: Color(0xFF0EA5E9)),
-              title: const Text('Đồng bộ danh bạ thiết bị'),
-              subtitle: const Text('Nạp lại danh sách liên hệ từ máy chủ'),
+              title: const Text('Sync Device Contacts'),
+              subtitle: const Text('Refresh contact list from the server'),
               onTap: () async {
                 Navigator.pop(ctx);
                 final n = await _deviceUser.syncDirectory();
@@ -187,8 +187,8 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(n > 0
-                        ? 'Đã đồng bộ $n liên hệ từ máy chủ.'
-                        : 'Chưa lấy được danh bạ — kiểm tra kết nối hoặc đăng ký trước.'),
+                        ? 'Successfully synced $n contacts from the server.'
+                        : 'Failed to fetch contacts — check your connection or enrollment status.'),
                   ),
                 );
               },
@@ -204,7 +204,7 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
   Future<void> _enrollViaNfc() async {
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
-      const SnackBar(content: Text('Chạm máy vào thẻ đăng ký...')),
+      const SnackBar(content: Text('Tap the device against the enrollment tag...')),
     );
     try {
       final ticket = await _nfc.readTicket();
@@ -212,7 +212,7 @@ class _DeviceQuickActionsFabState extends State<DeviceQuickActionsFab> {
       await _afterEnroll();
       if (!mounted) return;
       messenger.showSnackBar(
-        const SnackBar(content: Text('✅ Đăng ký thành công qua NFC.')),
+        const SnackBar(content: Text('✅ Enrollment successful via NFC.')),
       );
     } catch (e) {
       if (!mounted) return;

@@ -115,9 +115,8 @@ class DeviceListViewState extends State<DeviceListView> {
             Text(name.isEmpty ? id : '$name\n$id'),
             const SizedBox(height: 14),
             const Text(
-              'Thiết bị này sẽ không đồng bộ được nữa. Dữ liệu đã đồng bộ trước '
-              'đó vẫn giữ nguyên trên máy chủ.\n\n'
-              'Muốn dùng lại thì phải đăng ký lại bằng mã QR hoặc thẻ NFC mới.',
+              'This will revoke the device and it will no longer sync. The data that has been synced will remain on the server.\n\n'
+              'To use it again, you will need to register it again with a new QR code or NFC tag.',
               style: TextStyle(fontSize: 13),
             ),
           ],
@@ -155,14 +154,14 @@ class DeviceListViewState extends State<DeviceListView> {
   String _describe(Object e) {
     if (e is DioException) {
       final code = e.response?.statusCode;
-      if (code == 401) return 'Không có quyền admin. Kiểm tra Auth Token ở phần Sync Server.';
-      if (code == 503) return 'Máy chủ chưa cấu hình IZIIAPP_ADMIN_SECRET.';
-      if (code == 404) return 'Không tìm thấy thiết bị.';
+      if (code == 401) return 'You are not an admin. Please check the Auth Token in the Sync Server section.';
+      if (code == 503) return 'The server is not configured with IZIIAPP_ADMIN_SECRET.';
+      if (code == 404) return 'Device not found.';
       if (e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.connectionTimeout) {
-        return 'Không kết nối được máy chủ.';
+        return 'Unable to connect to the server.';
       }
-      return e.message ?? 'Lỗi kết nối.';
+      return e.message ?? 'Unable to connect to the server.';
     }
     return e.toString();
   }
@@ -187,8 +186,8 @@ class DeviceListViewState extends State<DeviceListView> {
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 24, horizontal: 12),
             child: Text(
-              'Chưa có thiết bị nào đăng ký.\n'
-              'Dùng "Cấp mã đăng ký" để tạo mã QR hoặc ghi thẻ NFC.',
+              'No devices registered yet.\n'
+              'Use "Generate Registration Code" to create a QR code or NFC tag.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13),
             ),
@@ -212,20 +211,20 @@ class DeviceListViewState extends State<DeviceListView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('$activeCount đang hoạt động / $totalCount tổng',
+              Text('$activeCount active / $totalCount total',
                   style: const TextStyle(fontSize: 12)),
               Row(
                 children: [
                   TextButton.icon(
                     onPressed: _loading ? null : reload,
                     icon: const Icon(Icons.refresh_rounded, size: 16),
-                    label: const Text('Làm mới'),
+                    label: const Text('Reload'),
                   ),
                   if (widget.onRequestNewCode != null)
                     TextButton.icon(
                       onPressed: widget.onRequestNewCode,
                       icon: const Icon(Icons.add_rounded, size: 16),
-                      label: const Text('Cấp mã'),
+                      label: const Text('Generate Code'),
                     ),
                 ],
               ),
@@ -251,8 +250,8 @@ class DeviceListViewState extends State<DeviceListView> {
             SizedBox(width: 8),
             Expanded(
               child: Text(
-                'IZIIAPP_REQUIRE_DEVICE_TOKEN đang TẮT — máy chưa đăng ký vẫn '
-                'đồng bộ được. Chỉ bật sau khi tất cả máy đã đăng ký xong.',
+                'IZIIAPP_REQUIRE_DEVICE_TOKEN is not enabled — devices that are not registered will still '
+                'be able to sync. Only enable after all devices have been registered.',
                 style: TextStyle(fontSize: 11, height: 1.4),
               ),
             ),
@@ -314,7 +313,7 @@ class DeviceListViewState extends State<DeviceListView> {
                 color: const Color(0xFF6366F1).withValues(alpha: .15),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text('CÁ NHÂN',
+              child: const Text('Personal',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w700,
@@ -330,24 +329,24 @@ class DeviceListViewState extends State<DeviceListView> {
               style: const TextStyle(fontSize: 10, fontFamily: 'monospace')),
           if (personal)
             Text(
-              'Chủ máy: ${ownerName.isEmpty ? "(chưa khai)" : ownerName}'
-              ' · ca ${maxHours == null ? "không giới hạn" : "$maxHours giờ"}'
-              ' · không cần điểm danh',
+              'Device Owner: ${ownerName.isEmpty ? "(not registered)" : ownerName}'
+              ' · Session Duration: ${maxHours == null ? "unlimited" : "$maxHours hours"}'
+              ' · No Attendance Required',
               style: const TextStyle(fontSize: 11, color: Color(0xFF6366F1)),
             ),
           Text(
             activeDevice
                 ? (lastUsed.isEmpty
-                    ? 'Chưa đồng bộ lần nào'
-                    : 'Hoạt động gần nhất: ${_shortTime(lastUsed)}')
-                : 'Đã thu hồi ${_shortTime(d['revoked_at']?.toString() ?? '')}',
+                    ? 'Not synced yet'
+                    : 'Last active: ${_shortTime(lastUsed)}')
+                : 'Revoked ${_shortTime(d['revoked_at']?.toString() ?? '')}',
             style: const TextStyle(fontSize: 11),
           ),
         ],
       ),
       trailing: activeDevice
           ? IconButton(
-              tooltip: 'Thu hồi',
+              tooltip: 'Revoke',
               icon: const Icon(Icons.block_rounded, color: Colors.redAccent, size: 20),
               onPressed: () => _revoke(d),
             )

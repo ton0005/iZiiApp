@@ -36,7 +36,6 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
   final EmployeeService _employeeService = EmployeeServiceImpl();
   List<Map<String, dynamic>> _employees = [];
   List<Map<String, dynamic>> _safetyLogs = [];
-  Map<String, dynamic> _liveKpis = {};
   bool _isAuthenticated = false;
   String? _currentEmployeeId;
 
@@ -54,13 +53,13 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           _isAuthenticated = true;
           _currentEmployeeId = empId;
         });
-        // Đăng nhập đổi TÊN HIỂN THỊ, KHÔNG đổi khoá định danh.
+        // Login changes DISPLAY NAME, NOT the identity key.
         //
-        // Trước đây chỗ này gọi SwitchUserEvent(empId) — biến danh tính Chat
-        // từ device_id thành mã nhân viên. Hậu quả: `/call/ws/{device_id}` đã
-        // mở từ trước vẫn nằm dưới id cũ, còn gói tín hiệu thì mang id mới,
-        // hai bên không bao giờ khớp và mọi cuộc gọi im lặng. Xem
-        // DeviceUserService.applyLoggedInName để biết vì sao id phải cố định.
+        // Previously, SwitchUserEvent(empId) was called here — changing Chat identity
+        // from device_id to employee ID. Consequence: `/call/ws/{device_id}` already
+        // opened before was still under the old id, while signaling packets carried the new id,
+        // so both sides never matched and all calls remained silent. See
+        // DeviceUserService.applyLoggedInName to understand why id must be fixed.
         _applyEmployeeDisplayName(empId);
         context.read<MushroomsBloc>().add(LoadRoomsEvent());
         _loadMushroomData();
@@ -68,7 +67,7 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     }
   }
 
-  /// Gắn tên nhân viên đang đăng nhập vào danh tính thiết bị.
+  /// Attaches the logged-in employee name to the device identity.
   Future<void> _applyEmployeeDisplayName(String empId) async {
     try {
       final employees = await MushroomsRepository().getEmployees();
@@ -103,12 +102,10 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     try {
       final dbEmployees = await _repository.getEmployees();
       final soloJobs = await _repository.getAllSoloJobs();
-      final kpis = await _repository.getTodayLivePerformanceMetrics();
       if (mounted) {
         setState(() {
           _employees = dbEmployees;
           _safetyLogs = soloJobs;
-          _liveKpis = kpis;
         });
       }
     } catch (_) {}
@@ -458,7 +455,7 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             _isAuthenticated = true;
             _currentEmployeeId = empId;
           });
-          // Xem chú thích ở _checkAuth: chỉ đổi tên hiển thị, giữ nguyên id.
+          // See note in _checkAuth: only update display name, keep id intact.
           _applyEmployeeDisplayName(empId);
           context.read<MushroomsBloc>().add(LoadRoomsEvent());
           _loadMushroomData();
@@ -469,9 +466,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? IZiiColors.darkBackground : IZiiColors.lightBackground,
-      // Menu nhanh cho luồng đăng ký thiết bị (QR / NFC). Đặt ở FAB thay vì
-      // chèn vào layout để không xô lệch bố cục hiện có và gỡ ra dễ dàng khi
-      // test xong.
+      // Quick menu for device enrollment flow (QR / NFC). Placed on FAB instead of
+      // inserting into layout to avoid disrupting existing layout and easy removal after testing.
       floatingActionButton: DeviceQuickActionsFab(isDark: isDark),
       appBar: AppBar(
         title: const Text('Costa Mushrooms',
@@ -520,9 +516,9 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           return SafeArea(
             child: Column(
               children: [
-                // Thanh điểm danh đầu ca (G1) — đặt trên cùng vì đây là việc
-                // dễ quên nhất trong ngày, và hậu quả chỉ lộ ra khi công nhân
-                // định tạo công việc Alone Worker rồi bị chặn.
+                // Shift check-in banner (G1) — placed at top because this is
+                // the easiest thing to forget during the day, and the consequence only appears
+                // when workers try to create an Alone Worker task and get blocked.
                 SessionBanner(isDark: isDark),
                 Expanded(
                   child: isTablet
@@ -554,9 +550,7 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildLiveStatsRow(activeRooms, runningJobs, hasAlarms, isDark),
-          const SizedBox(height: 16),
-          _buildLivePerformanceBoard(context, isDark),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildSectionTitle('Operational Modules', isDark),
           const SizedBox(height: 12),
           QuickAccessCard(
@@ -640,9 +634,7 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildLiveStatsRow(activeRooms, runningJobs, hasAlarms, isDark),
-                const SizedBox(height: 20),
-                _buildLivePerformanceBoard(context, isDark),
-                const SizedBox(height: 28),
+                const SizedBox(height: 24),
                 _buildSectionTitle('Operational Modules', isDark),
                 const SizedBox(height: 16),
               ],
@@ -720,319 +712,6 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
               ),
             ]),
           )
-        ],
-      ),
-    );
-  }
-
-  // 📊 Live Performance Board Widget for Home Screen
-  Widget _buildLivePerformanceBoard(BuildContext context, bool isDark) {
-    final pickedBoxes = _liveKpis['pickedBoxes'] ?? 1840;
-    final targetBoxes = _liveKpis['targetBoxes'] ?? 3200;
-    final harvestProgressPct = (_liveKpis['harvestProgressPct'] is num)
-        ? (_liveKpis['harvestProgressPct'] as num).toDouble()
-        : 57.5;
-    final onTimeRatePct = (_liveKpis['onTimeRatePct'] is num)
-        ? (_liveKpis['onTimeRatePct'] as num).toDouble()
-        : 94.2;
-    final completedJobs = _liveKpis['completedJobsCount'] ?? 28;
-    final totalJobs = _liveKpis['totalJobsCount'] ?? 30;
-    final avgBreakMinutes = (_liveKpis['avgBreakMinutes'] is num)
-        ? (_liveKpis['avgBreakMinutes'] as num).toDouble()
-        : 26.5;
-    final extraBreakAlerts = _liveKpis['extraBreakAlertCount'] ?? 0;
-    final soloJobsActive = _liveKpis['soloJobsActive'] ?? 2;
-    final hasSoloAlarm = _liveKpis['hasSoloAlarm'] ?? false;
-    final stages = (_liveKpis['stageDistribution'] as Map?) ?? {};
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-            color: isDark ? Colors.white10 : const Color(0xFFE2E0D9)),
-        boxShadow: isDark
-            ? null
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.02),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
-              ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.speed_rounded,
-                      size: 18, color: Color(0xFF2A78D6)),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Performance Board (Hiệu suất hôm nay)',
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-              InkWell(
-                onTap: () => _navigateToPerformanceBoard(context),
-                borderRadius: BorderRadius.circular(6),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text(
-                        'Xem chi tiết',
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2A78D6),
-                        ),
-                      ),
-                      SizedBox(width: 2),
-                      Icon(Icons.arrow_forward_ios_rounded,
-                          size: 10, color: Color(0xFF2A78D6)),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          // 4 KPI Metric Grid
-          Row(
-            children: [
-              Expanded(
-                child: _buildPerformanceMetricTile(
-                  title: 'Sản lượng hái',
-                  value: '$pickedBoxes / $targetBoxes',
-                  subtext:
-                      '${harvestProgressPct.toStringAsFixed(1)}% Mục tiêu ca',
-                  color: const Color(0xFFEB6834),
-                  icon: Icons.inventory_2_rounded,
-                  isDark: isDark,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildPerformanceMetricTile(
-                  title: 'Đúng hạn (On-Time)',
-                  value: '${onTimeRatePct.toStringAsFixed(1)}%',
-                  subtext: '$completedJobs/$totalJobs Việc xong',
-                  color: const Color(0xFF10B981),
-                  icon: Icons.timer_outlined,
-                  isDark: isDark,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: _buildPerformanceMetricTile(
-                  title: 'Break time average',
-                  value: '${avgBreakMinutes.toStringAsFixed(1)}m',
-                  subtext: extraBreakAlerts > 0
-                      ? '⚠️ $extraBreakAlerts shift breaks exceeded'
-                      : 'Standard 30m (Good)',
-                  color: extraBreakAlerts > 0
-                      ? IZiiColors.error
-                      : const Color(0xFFF59E0B),
-                  icon: Icons.coffee_rounded,
-                  isDark: isDark,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildPerformanceMetricTile(
-                  title: 'An toàn Solo',
-                  value: '$soloJobsActive Phòng',
-                  subtext:
-                      hasSoloAlarm ? '⚠️ Safety alert!' : 'Normal gas levels',
-                  color:
-                      hasSoloAlarm ? IZiiColors.error : const Color(0xFF6366F1),
-                  icon: Icons.shield_rounded,
-                  isDark: isDark,
-                  isAlert: hasSoloAlarm,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          // Room Stage Pipeline Bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                  color: isDark ? Colors.white10 : const Color(0xFFE2E8F0)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Progress of Rooms (Room Stages):',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white70 : Colors.black54,
-                      ),
-                    ),
-                    Text(
-                      '${_liveKpis['activeRoomsCount'] ?? 18} active rooms',
-                      style: TextStyle(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.bold,
-                        color: isDark
-                            ? const Color(0xFF38BDF8)
-                            : const Color(0xFF0284C7),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildPipelineChip('Airing', stages['airing'] ?? 4,
-                          const Color(0xFF3B82F6), isDark),
-                      _buildPipelineChip('Watering', stages['watering'] ?? 6,
-                          const Color(0xFF10B981), isDark),
-                      _buildPipelineChip(
-                          'Prochloraz',
-                          stages['prochloraz'] ?? 2,
-                          const Color(0xFFF59E0B),
-                          isDark),
-                      _buildPipelineChip(
-                          'Harvesting',
-                          stages['harvesting'] ?? 18,
-                          const Color(0xFF8B5CF6),
-                          isDark),
-                      _buildPipelineChip(
-                          'Clean/Idle',
-                          (stages['clean_bed'] ?? 0) + (stages['idle'] ?? 3),
-                          const Color(0xFF64748B),
-                          isDark),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPipelineChip(
-      String label, dynamic count, Color color, bool isDark) {
-    return Container(
-      margin: const EdgeInsets.only(right: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: isDark ? 0.2 : 0.12),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            '$label: $count',
-            style: TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : Colors.black87,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPerformanceMetricTile({
-    required String title,
-    required String value,
-    required String subtext,
-    required Color color,
-    required IconData icon,
-    required bool isDark,
-    bool isAlert = false,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: isDark ? 0.12 : 0.07),
-        borderRadius: BorderRadius.circular(10),
-        border:
-            Border.all(color: color.withValues(alpha: isAlert ? 0.8 : 0.25)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 14, color: color),
-              const SizedBox(width: 5),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white70 : Colors.black87,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: isAlert
-                  ? IZiiColors.error
-                  : (isDark ? Colors.white : Colors.black87),
-            ),
-          ),
-          const SizedBox(height: 1),
-          Text(
-            subtext,
-            style: TextStyle(
-              fontSize: 10,
-              color: isAlert
-                  ? IZiiColors.error
-                  : (isDark ? Colors.white54 : Colors.black54),
-              fontWeight: isAlert ? FontWeight.bold : FontWeight.normal,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
         ],
       ),
     );

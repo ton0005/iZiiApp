@@ -98,7 +98,7 @@ class _SessionBannerState extends State<SessionBanner> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('☕ Bắt đầu nghỉ giải lao (Break Start)'),
+          content: Text('☕ Break Start 30m'),
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
@@ -114,7 +114,7 @@ class _SessionBannerState extends State<SessionBanner> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('▶️ Kết thúc nghỉ giải lao (Break End) — Quay lại ca làm việc'),
+          content: Text('▶️ Break End'),
           duration: Duration(seconds: 2),
           backgroundColor: Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
@@ -249,8 +249,8 @@ class _SessionBannerState extends State<SessionBanner> {
                           const SizedBox(height: 1),
                           Text(
                             isOnBreak
-                                ? '☕ Nghỉ: ${s.breakElapsedText} (Chuẩn 30m)'
-                                : '🟢 Trong ca: ${s.elapsedText}',
+                                ? '☕ Break: ${s.breakElapsedText} (Standard 30m)'
+                                : '🟢 In Shift: ${s.elapsedText}',
                             style: TextStyle(
                               fontSize: 11,
                               color: isOnBreak
@@ -266,7 +266,7 @@ class _SessionBannerState extends State<SessionBanner> {
                         ],
                       )
                     : const Text(
-                        'Shift Check-in — Bấm để điểm danh đầu ca',
+                        'Shift Check-in Required',
                         style: TextStyle(
                             fontSize: 13.5, fontWeight: FontWeight.w600),
                       ),
@@ -287,7 +287,7 @@ class _SessionBannerState extends State<SessionBanner> {
                         borderRadius: BorderRadius.circular(8)),
                   ),
                   icon: const Icon(Icons.play_arrow_rounded, size: 16),
-                  label: const Text('Quay lại ca',
+                  label: const Text('Back to Shift',
                       style:
                           TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold)),
                   onPressed: _handleEndBreak,
@@ -305,7 +305,7 @@ class _SessionBannerState extends State<SessionBanner> {
                   ),
                   icon: const Icon(Icons.coffee_outlined,
                       size: 14, color: Color(0xFFF59E0B)),
-                  label: const Text('Nghỉ',
+                  label: const Text('Break',
                       style: TextStyle(
                           fontSize: 11.5, fontWeight: FontWeight.w600)),
                   onPressed: _handleStartBreak,
@@ -313,7 +313,7 @@ class _SessionBannerState extends State<SessionBanner> {
               const SizedBox(width: 4),
               // Nút xem danh sách ca
               IconButton(
-                tooltip: 'Ai đang trong ca',
+                tooltip: 'People in Shift',
                 icon: const Icon(Icons.groups_rounded, size: 19),
                 visualDensity: VisualDensity.compact,
                 onPressed: () => Navigator.of(context).push(
@@ -323,7 +323,7 @@ class _SessionBannerState extends State<SessionBanner> {
               ),
               // Nút Kết thúc ca
               IconButton(
-                tooltip: 'Kết thúc ca làm việc',
+                tooltip: 'End Shift',
                 icon: const Icon(Icons.logout_rounded,
                     size: 18, color: Colors.redAccent),
                 visualDensity: VisualDensity.compact,
@@ -331,7 +331,7 @@ class _SessionBannerState extends State<SessionBanner> {
               ),
             ] else ...[
               IconButton(
-                tooltip: 'Ai đang trong ca',
+                tooltip: 'People in Shift',
                 icon: const Icon(Icons.groups_rounded, size: 20),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(

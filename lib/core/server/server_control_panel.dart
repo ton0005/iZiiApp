@@ -224,7 +224,7 @@ class _ServerControlPanelState extends State<ServerControlPanel>
               color: isDark ? Colors.cyanAccent : IZiiColors.primary,
               size: 20,
             ),
-            tooltip: 'Quét & Chọn iZiiApp Server (Multi-Server)',
+            tooltip: 'Scan & Select iZiiApp Server (Multi-Server)',
             onPressed: () {
               Navigator.push(
                 context,

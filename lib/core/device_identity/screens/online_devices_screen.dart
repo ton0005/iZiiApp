@@ -80,8 +80,8 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
             labelColor: _textPrimary,
             unselectedLabelColor: _textSecondary,
             tabs: const [
-              Tab(text: 'Trực tuyến (Server)'),
-              Tab(text: 'Ngoại tuyến (Bluetooth)'),
+              Tab(text: 'Online (Server)'),
+              Tab(text: 'Offline (Bluetooth)'),
             ],
           ),
           actions: [
@@ -94,13 +94,13 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
                     backgroundColor: _surfaceCard,
                     title: Text('Reset Bluetooth?', style: GoogleFonts.outfit(color: _textPrimary, fontWeight: FontWeight.bold)),
                     content: Text(
-                      'Hành động này sẽ xóa sạch cache kết nối, danh sách thiết bị ngoại tuyến đã lưu và khởi động lại dịch vụ Bluetooth để giải phóng các tiến trình bị treo. Bạn có chắc chắn?',
+                      'This action will clear the connection cache, remove the list of saved offline devices, and restart the Bluetooth service to free up any hanging processes. Are you sure?',
                       style: GoogleFonts.inter(color: _textSecondary),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, false),
-                        child: Text('Hủy', style: GoogleFonts.inter(color: _textSecondary)),
+                        child: Text('Cancel', style: GoogleFonts.inter(color: _textSecondary)),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(backgroundColor: _warning),
@@ -114,13 +114,13 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
                 if (confirm == true) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Đang reset hệ thống kết nối Bluetooth...')),
+                      const SnackBar(content: Text('Resetting Bluetooth connection system...')),
                     );
                   }
                   await _bleDiscovery.resetBleRegistry();
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Đã reset Bluetooth thành công!')),
+                      const SnackBar(content: Text('Bluetooth reset successfully!')),
                     );
                   }
                 }
@@ -139,7 +139,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
                   _bleDiscovery.startScanning();
                 }
               },
-              tooltip: 'Làm mới',
+              tooltip: 'Refresh',
             ),
           ],
         ),
@@ -205,7 +205,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
           ),
           const SizedBox(height: 24),
           Text(
-            'Đang quét Bluetooth...',
+            'Scanning for Bluetooth devices...',
             style: GoogleFonts.outfit(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -214,7 +214,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Đảm bảo rằng Bluetooth đã bật\nvà thiết bị khác cũng đang chạy iZiiApp.',
+            'Make sure Bluetooth is enabled\nand other devices are running iZiiApp.',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 14,
@@ -264,7 +264,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                      'Xác thực bảo mật thành công với ${peer.deviceName}!'),
+                      'Secure authentication successful with ${peer.deviceName}!'),
                   backgroundColor: _success,
                 ),
               );
@@ -272,7 +272,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content:
-                      Text('Không thể kết nối bảo mật tới ${peer.deviceName}.'),
+                      Text('Failed to establish secure connection with ${peer.deviceName}.'),
                   backgroundColor: Colors.redAccent,
                 ),
               );
@@ -347,7 +347,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Kết nối P2P',
+                        'Connect P2P',
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -386,7 +386,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
           ),
           const SizedBox(height: 24),
           Text(
-            'Không có thiết bị nào trực tuyến',
+            'No devices online',
             style: GoogleFonts.outfit(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -395,7 +395,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Khi các thiết bị khác kết nối tới cùng server,\nchúng sẽ xuất hiện ở đây.',
+            'When other devices connect to the same server,\nthey will appear here.',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 14,
@@ -417,7 +417,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
               size: 48, color: Color(0xFFF43F5E)),
           const SizedBox(height: 16),
           Text(
-            'Không thể tải danh sách thiết bị',
+            'Failed to load device list',
             style: GoogleFonts.outfit(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -438,7 +438,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
                   .add(DiscoverOnlineDevicesEvent());
             },
             icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: const Text('Thử lại'),
+            label: const Text('Try Again'),
             style: ElevatedButton.styleFrom(
               backgroundColor: _primary,
               foregroundColor: Colors.white,
@@ -516,7 +516,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        '${devices.length} thiết bị',
+                        '${devices.length} devices',
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
@@ -552,10 +552,10 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
             : _textSecondary;
 
     final statusLabel = device.status == DevicePresenceStatus.online
-        ? 'Trực tuyến'
+        ? 'Online'
         : device.status == DevicePresenceStatus.idle
-            ? 'Không hoạt động'
-            : 'Ngoại tuyến';
+            ? 'Idle'
+            : 'Offline';
 
     final platformIcon = _getPlatformIcon(device.platform);
 

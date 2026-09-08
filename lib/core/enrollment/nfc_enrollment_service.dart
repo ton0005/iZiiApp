@@ -42,7 +42,7 @@ class NfcEnrollmentService {
   }) async {
     final completer = Completer<void>();
 
-    onStatus?.call('Đưa thẻ NFC lại gần mặt sau máy...');
+    onStatus?.call('Take NFC card near the back of the device...');
 
     await NfcManager.instance.startSession(
       pollingOptions: {NfcPollingOption.iso14443, NfcPollingOption.iso15693},
@@ -50,10 +50,10 @@ class NfcEnrollmentService {
         try {
           final ndef = Ndef.from(tag);
           if (ndef == null) {
-            throw Exception('Thẻ này không hỗ trợ NDEF. Dùng thẻ NTAG213/215.');
+            throw Exception('The card does not support NDEF. Please use an NTAG213/215 card.');
           }
           if (!ndef.isWritable) {
-            throw Exception('Thẻ đang ở chế độ chỉ đọc, không ghi được.');
+            throw Exception('The card is in read-only mode, and cannot be written to.');
           }
 
           // Dùng URI record thay vì text record: iOS đọc được thẻ ngay cả khi
@@ -64,12 +64,12 @@ class NfcEnrollmentService {
 
           if (ndef.maxSize < _messageSize(message)) {
             throw Exception(
-              'Thẻ quá nhỏ (${ndef.maxSize} byte). Cần NTAG213 trở lên.',
+              'The card is too small (${ndef.maxSize} byte). Please use an NTAG213 or higher.',
             );
           }
 
           await ndef.write(message: message);
-          onStatus?.call('✅ Đã ghi vé mời lên thẻ.');
+          onStatus?.call('✅ Successfully wrote enrollment ticket to NFC card.');
           if (!completer.isCompleted) completer.complete();
         } catch (e) {
           if (!completer.isCompleted) completer.completeError(e);
@@ -83,7 +83,7 @@ class NfcEnrollmentService {
       const Duration(seconds: 60),
       onTimeout: () async {
         await NfcManager.instance.stopSession();
-        throw Exception('Hết thời gian chờ thẻ NFC.');
+        throw Exception('Timeout waiting for NFC card.');
       },
     );
   }
@@ -97,7 +97,7 @@ class NfcEnrollmentService {
   }) async {
     final completer = Completer<EnrollmentTicket>();
 
-    onStatus?.call('Chạm máy vào thẻ đăng ký...');
+    onStatus?.call('Touch the device to the NFC card...');
 
     await NfcManager.instance.startSession(
       pollingOptions: {NfcPollingOption.iso14443, NfcPollingOption.iso15693},
@@ -106,7 +106,7 @@ class NfcEnrollmentService {
           final ndef = Ndef.from(tag);
           final message = await ndef?.read();
           if (message == null || message.records.isEmpty) {
-            throw Exception('Thẻ trống hoặc không đọc được.');
+            throw Exception('The card is empty or cannot be read.');
           }
 
           EnrollmentTicket? ticket;
@@ -118,10 +118,10 @@ class NfcEnrollmentService {
           }
 
           if (ticket == null) {
-            throw Exception('Thẻ này không phải thẻ đăng ký iZii.');
+            throw Exception('The card is not an iZii enrollment card.');
           }
 
-          onStatus?.call('✅ Đã đọc vé mời.');
+          onStatus?.call('✅ Successfully read enrollment ticket.');
           if (!completer.isCompleted) completer.complete(ticket);
         } catch (e) {
           if (!completer.isCompleted) completer.completeError(e);
@@ -135,7 +135,7 @@ class NfcEnrollmentService {
       const Duration(seconds: 60),
       onTimeout: () async {
         await NfcManager.instance.stopSession();
-        throw Exception('Hết thời gian chờ thẻ NFC.');
+        throw Exception('Timeout waiting for NFC card.');
       },
     );
   }

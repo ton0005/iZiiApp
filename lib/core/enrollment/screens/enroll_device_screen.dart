@@ -49,7 +49,7 @@ class _EnrollDeviceScreenState extends State<EnrollDeviceScreen> {
     setState(() {
       _busy = true;
       _error = null;
-      _status = 'Đang đăng ký với máy chủ...';
+      _status = 'Registering with the server...';
     });
     try {
       final result = await _service.enroll(ticket);
@@ -84,7 +84,7 @@ class _EnrollDeviceScreenState extends State<EnrollDeviceScreen> {
       } else {
         if (mounted && _error == null) {
           setState(() {
-            _error = 'Mã QR không đúng định dạng đăng ký. Hãy xin quản lý cấp lại mã mới.';
+            _error = 'Invalid enrollment QR code. Please request a new one from your administrator.';
           });
         }
       }
@@ -95,7 +95,7 @@ class _EnrollDeviceScreenState extends State<EnrollDeviceScreen> {
     if (_busy) return;
     setState(() {
       _error = null;
-      _status = 'Chạm máy vào thẻ đăng ký...';
+      _status = 'Tap the device against the enrollment tag...';
     });
     try {
       final ticket = await _nfc.readTicket(
@@ -117,7 +117,7 @@ class _EnrollDeviceScreenState extends State<EnrollDeviceScreen> {
     if (_result != null) return _buildSuccess();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Đăng ký thiết bị')),
+      appBar: AppBar(title: const Text('Enroll Device')),
       body: Column(
         children: [
           // ── Vùng camera quét QR ─────────────────────────────────────────
@@ -152,7 +152,7 @@ class _EnrollDeviceScreenState extends State<EnrollDeviceScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Hướng camera vào mã QR do quản lý cung cấp',
+                  'Point the camera at the QR code provided by your administrator to enroll this device.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
@@ -162,7 +162,7 @@ class _EnrollDeviceScreenState extends State<EnrollDeviceScreen> {
                     Expanded(child: Divider()),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text('hoặc', style: TextStyle(fontSize: 12)),
+                      child: Text('or', style: TextStyle(fontSize: 12)),
                     ),
                     Expanded(child: Divider()),
                   ]),
@@ -170,7 +170,7 @@ class _EnrollDeviceScreenState extends State<EnrollDeviceScreen> {
                   FilledButton.icon(
                     onPressed: _busy ? null : _scanNfc,
                     icon: const Icon(Icons.nfc_rounded),
-                    label: const Text('Chạm vào thẻ NFC'),
+                    label: const Text('Tap NFC Tag to Enroll'),
                   ),
                 ],
                 if (_status != null) ...[
@@ -204,23 +204,23 @@ class _EnrollDeviceScreenState extends State<EnrollDeviceScreen> {
             children: [
               const Icon(Icons.check_circle_rounded, size: 76, color: Colors.green),
               const SizedBox(height: 20),
-              Text('Đăng ký thành công',
+              Text('Enrollment Successful',
                   style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 12),
               Text(
-                'Máy này đã được cấp danh tính riêng trên ${r.serverId} (zone ${r.zone}).',
+                'This device has been enrolled on ${r.serverId} (zone ${r.zone}).',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
-                'Mã thiết bị: ${r.deviceId}',
+                'Device ID: ${r.deviceId}',
                 style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               FilledButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Bắt đầu dùng'),
+                child: const Text('Start Using Device'),
               ),
             ],
           ),

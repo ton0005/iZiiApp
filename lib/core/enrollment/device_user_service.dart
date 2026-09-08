@@ -67,7 +67,7 @@ class DeviceUserService {
       return deviceId;
     } catch (e) {
       // ignore: avoid_print
-      print('[DeviceUser] Không tạo được User từ thiết bị: $e');
+      print('[DeviceUser] Can not create User from device: $e');
       return null;
     }
   }
@@ -109,11 +109,11 @@ class DeviceUserService {
       await _pushDisplayName(identity.deviceId, display);
 
       // ignore: avoid_print
-      print('[DeviceUser] Danh tính giữ nguyên ${identity.deviceId}, '
-          'tên hiển thị → "$display"');
+      print('[DeviceUser] name no change ${identity.deviceId}, '
+          'display name → "$display"');
     } catch (e) {
       // ignore: avoid_print
-      print('[DeviceUser] Không đặt được tên hiển thị: $e');
+      print('[DeviceUser] Can not set display name: $e');
     }
   }
 
@@ -183,7 +183,7 @@ class DeviceUserService {
                 id: id,
                 // Máy của chính mình thì gắn nhãn cho dễ nhận ra trong danh bạ.
                 name: id == myId
-                    ? '${name.isEmpty ? id : name} (máy này)'
+                    ? '${name.isEmpty ? id : name} (this device)'
                     : (name.isEmpty ? id : name),
                 type: 'both',
                 kycStatus: 'verified',
@@ -247,8 +247,8 @@ class DeviceUserService {
         // ngừng khẳng định sai và người dùng thấy đúng trạng thái thật.
         await _settings.clearDeviceToken(url);
         // ignore: avoid_print
-        print('[DeviceUser] Token cũ không còn hợp lệ (server đã dựng lại?) — '
-            'đã xoá. Máy cần quét mã đăng ký mới.');
+        print('[DeviceUser] Old token is no longer valid (server has been reset?) — '
+            'token has been cleared. Device needs to scan new enrollment code.');
         return false;
       }
 
@@ -266,15 +266,15 @@ class DeviceUserService {
   /// Phân biệt rõ ba tình huống mà trước đây gộp chung thành "chưa đăng ký".
   Future<String?> enrollmentProblem() async {
     final url = (await _settings.getSyncServerUrl()).replaceAll(RegExp(r'/+$'), '');
-    if (url.isEmpty) return 'Chưa chọn máy chủ. Vào Settings → Sync Server.';
+    if (url.isEmpty) return 'No sync server selected. Please go to Settings → Sync Server.';
 
     final token = await _settings.getDeviceToken(url);
     if (token == null || token.isEmpty) {
-      return 'Máy chưa đăng ký. Xin quản lý cấp mã QR rồi quét để đăng ký.';
+      return 'Device is not enrolled. Please contact your administrator to obtain a QR code and scan it to enroll.';
     }
     if (!await isEnrolled()) {
-      return 'Máy từng đăng ký nhưng máy chủ không còn nhận token này '
-          '(thường do máy chủ được cài lại). Cần quét mã đăng ký mới.';
+      return 'Device was previously enrolled but the server no longer recognizes this token '
+          '(usually due to the server being reset). A new enrollment code needs to be scanned.';
     }
     return null;
   }

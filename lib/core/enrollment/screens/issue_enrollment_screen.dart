@@ -141,12 +141,12 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
               segments: const [
                 ButtonSegment(
                   value: 'shared',
-                  label: Text('Dùng chung'),
+                  label: Text('Sharing Device'),
                   icon: Icon(Icons.tablet_android_rounded, size: 16),
                 ),
                 ButtonSegment(
                   value: 'personal',
-                  label: Text('Cá nhân'),
+                  label: Text('Personal Device'),
                   icon: Icon(Icons.phone_iphone_rounded, size: 16),
                 ),
               ],

@@ -135,21 +135,21 @@ class ServerAdminService {
   String _describe(DioException e) {
     final code = e.response?.statusCode;
     if (code == 401) {
-      return 'Token sai hoặc thiếu. Kiểm tra ô Auth Token ở phần Sync Server — '
-          'giá trị này phải khớp IZIIAPP_SERVER_SECRET trên máy chủ.';
+      return 'Token wrong or missing. Check the Auth Token field in the Sync Server section — '
+          'this value must match the IZIIAPP_SERVER_SECRET on the server.';
     }
     if (code == 503) {
-      return 'Máy chủ chưa đặt IZIIAPP_SERVER_SECRET nên từ chối mọi thao tác admin.';
+      return 'The server has not set IZIIAPP_SERVER_SECRET, so it is rejecting all admin operations.';
     }
     if (code == 400) {
       final detail = e.response?.data is Map ? e.response?.data['detail'] : null;
-      return detail?.toString() ?? 'Dữ liệu gửi lên không hợp lệ.';
+      return detail?.toString() ?? 'Invalid data sent.';
     }
     if (e.type == DioExceptionType.connectionError ||
         e.type == DioExceptionType.connectionTimeout) {
-      return 'Không kết nối được máy chủ. Kiểm tra Server URL và đảm bảo server đang chạy.';
+      return 'Failed to connect to the server. Check the Server URL and ensure the server is running.';
     }
-    return e.message ?? 'Lỗi không xác định.';
+    return e.message ?? 'Undefined error.';
   }
 }
 

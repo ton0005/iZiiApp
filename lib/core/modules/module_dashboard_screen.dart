@@ -237,7 +237,7 @@ class ModuleDashboardScreen extends StatelessWidget {
     if (actions.isEmpty) {
       return Center(
         child: Text(
-          'Không có hành động điều hướng nào được thiết lập.',
+          'No quick actions available for this module.',
           style: TextStyle(
               color: Theme.of(context)
                   .textTheme

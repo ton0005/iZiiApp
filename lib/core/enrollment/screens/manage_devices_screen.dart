@@ -28,11 +28,11 @@ class _ManageDevicesScreenState extends State<ManageDevicesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Thiết bị đã đăng ký')),
+      appBar: AppBar(title: const Text('Device is Registered')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _issueNewCode,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Cấp mã mới'),
+        label: const Text('Issue New Code'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

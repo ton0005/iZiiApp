@@ -94,7 +94,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     for (var s in serviceListings) {
       final provider = users.firstWhere((u) => u.id == s.providerId,
           orElse: () =>
-              _defaultUser(id: '', name: 'Cộng tác viên', type: 'both'));
+              _defaultUser(id: '', name: 'Staff', type: 'both'));
       final trust = trustScores.firstWhere((t) => t.userId == s.providerId,
           orElse: () => _defaultTrustScore(''));
 
@@ -104,7 +104,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         'description': s.description,
         'price_min': s.priceMin,
         'price_max': s.priceMax,
-        'location': s.location ?? 'Cộng đồng',
+        'location': s.location ?? 'Community',
         'provider_name': provider.name,
         'provider_hti': trust.overallHti,
         'provider_level': trust.level,
@@ -117,12 +117,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       final proj = await (_db.select(_db.projects)
             ..where((tbl) => tbl.id.equals(t.projectId)))
           .getSingleOrNull();
-      final creatorName = proj != null ? 'Hàng xóm' : 'Ẩn danh';
+      final creatorName = proj != null ? 'Neighbor' : 'Anonymous';
 
       tasksData.add({
         'id': t.id,
         'title': t.title,
-        'description': t.description ?? 'Cần hỗ trợ công việc này.',
+        'description': t.description ?? 'Need help with this task.',
         'priority': t.priority,
         'creator': creatorName,
         'created_at': t.createdAt,
@@ -245,7 +245,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       itemBuilder: (context, index) {
         final s = _communityServices[index];
         final priceText = (s['price_min'] == null)
-            ? 'Liên hệ báo giá'
+            ? 'Contact for price'
             : '${s['price_min']}k - ${s['price_max']}k AUD';
 
         return Card(
@@ -324,7 +324,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   Widget _buildTasksFeed(Color cardColor) {
     if (_mutualAidTasks.isEmpty) {
       return _buildEmptyState(
-          'Hiện tại không có việc hỗ trợ hàng xóm nào cần giúp đỡ.');
+          'Currently, there are no neighborly assistance tasks that need help.');
     }
 
     return ListView.builder(
@@ -381,7 +381,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Yêu cầu bởi: ${t['creator']}',
+                    Text('Required by: ${t['creator']}',
                         style:
                             const TextStyle(fontSize: 11, color: Colors.grey)),
                     ElevatedButton.icon(
@@ -395,7 +395,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                       ),
                       icon: const Icon(Icons.volunteer_activism_rounded,
                           size: 14),
-                      label: const Text('Hỗ trợ ngay',
+                      label: const Text('Support Now',
                           style: TextStyle(
                               fontSize: 12, fontWeight: FontWeight.bold)),
                       onPressed: () => _claimMutualAidTask(
