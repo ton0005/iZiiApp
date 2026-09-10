@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' show Color;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:drift/drift.dart';
@@ -366,15 +367,24 @@ class MushroomsRepository {
 
     final roleKey = getRoleKey(role);
     final roleBindId = 'bind_$id';
+    final roleBindNow = DateTime.now();
     await _db.into(_db.mushroomEmployeeDepartmentRoles).insertOnConflictUpdate(
       MushroomEmployeeDepartmentRole(
         id: roleBindId,
         employeeId: id,
         departmentId: 'DEP002',
         roleKey: roleKey,
-        createdAt: DateTime.now(),
+        createdAt: roleBindNow,
       ),
     );
+
+    await SyncService().queueMutation('mushroom_employee_department_roles', 'insert', {
+      'id': roleBindId,
+      'employee_id': id,
+      'department_id': 'DEP002',
+      'role_key': roleKey,
+      'created_at': roleBindNow.toIso8601String(),
+    });
 
     await SyncService().queueMutation('mushroom_employees', 'insert', {
       'id': id,
@@ -677,16 +687,16 @@ class MushroomsRepository {
       final existing = await _db.select(_db.mushroomJobTypes).get();
       if (existing.isNotEmpty) return;
 
-      final defaults = <(String, String, int, bool)>[
-        ('filling', 'Filling', 60, false),
-        ('airing', 'Airing', 20, false),
-        ('floor_wet', 'Floor Wet', 25, false),
-        ('clean_room', 'Clean Room', 45, false),
-        ('watering', 'Watering', 25, false),
-        ('clean_bed', 'Clean Bed', 35, false),
-        ('prochloraz', 'Prochloraz', 30, false),
-        ('packup_tree', 'Pack Up Tree', 50, false),
-        ('alone_worker', 'Alone Worker', 40, true),
+      final defaults = <(String, String, int, bool, String)>[
+        ('filling', 'Filling', 60, false, '#F59E0B'),
+        ('airing', 'Airing', 20, false, '#06B6D4'),
+        ('floor_wet', 'Floor Wet', 25, false, '#6366F1'),
+        ('clean_room', 'Clean Room', 45, false, '#10B981'),
+        ('watering', 'Watering', 25, false, '#3B82F6'),
+        ('clean_bed', 'Clean Bed', 35, false, '#10B981'),
+        ('prochloraz', 'Prochloraz', 30, false, '#8B5CF6'),
+        ('packup_tree', 'Pack Up Tree', 50, false, '#14B8A6'),
+        ('alone_worker', 'Alone Worker', 40, true, '#F97316'),
       ];
       for (final d in defaults) {
         await _db.into(_db.mushroomJobTypes).insertOnConflictUpdate(
@@ -697,6 +707,7 @@ class MushroomsRepository {
                 isSoloJob: d.$4,
                 isCustom: false,
                 isActive: true,
+                color: d.$5,
                 createdAt: DateTime.now(),
               ),
             );
@@ -704,6 +715,46 @@ class MushroomsRepository {
     } catch (e) {
       print('Error seeding job types: $e');
     }
+  }
+
+  static final Map<String, String> _jobTypeColorCache = {};
+
+  /// Bộ nhớ đệm màu động tra cứu tức thời cho UI (Growing Tab & Plant Map)
+  static Map<String, String> get cachedJobTypeColors => _jobTypeColorCache;
+
+  /// Chuyển đổi mã hex (vd '#10B981') sang đối tượng [Color]
+  static Color? parseHexColor(String? hexString) {
+    if (hexString == null || hexString.trim().isEmpty) return null;
+    var hex = hexString.trim().replaceAll('#', '');
+    if (hex.length == 6) {
+      hex = 'FF$hex';
+    }
+    if (hex.length == 8) {
+      final val = int.tryParse(hex, radix: 16);
+      if (val != null) return Color(val);
+    }
+    return null;
+  }
+
+  /// Tra cứu màu động theo stage hoặc loại job. Trả về null nếu chưa có trong DB.
+  static Color? resolveDynamicColor(String stageOrJobType) {
+    final s = stageOrJobType.trim().toLowerCase().replaceAll(' ', '_');
+    final hex = _jobTypeColorCache[s];
+    return parseHexColor(hex);
+  }
+
+  Future<Map<String, String>> getJobTypeColorMap() async {
+    final types = await getJobTypes();
+    final map = <String, String>{};
+    for (final t in types) {
+      final id = (t['id'] ?? '').toString().trim().toLowerCase();
+      final color = t['color'] as String?;
+      if (id.isNotEmpty && color != null && color.isNotEmpty) {
+        map[id] = color;
+      }
+    }
+    _jobTypeColorCache.addAll(map);
+    return map;
   }
 
   Future<List<Map<String, dynamic>>> getJobTypes({bool activeOnly = false}) async {
@@ -714,15 +765,28 @@ class MushroomsRepository {
       query.where((t) => t.isActive.equals(true));
     }
     final list = await query.get();
-    return list.map((j) => <String, dynamic>{
+    final res = list.map((j) => <String, dynamic>{
       'id': j.id,
       'name': j.name,
       'plan_minutes': j.planMinutes,
       'is_solo_job': j.isSoloJob,
       'is_custom': j.isCustom,
       'is_active': j.isActive,
+      'color': j.color,
+      'label': j.label,
+      'icon': j.icon,
+      'sort_order': j.sortOrder,
       'created_at': j.createdAt.toIso8601String(),
     }).toList();
+
+    for (final item in res) {
+      final id = (item['id'] ?? '').toString().trim().toLowerCase();
+      final col = item['color'] as String?;
+      if (id.isNotEmpty && col != null && col.isNotEmpty) {
+        _jobTypeColorCache[id] = col;
+      }
+    }
+    return res;
   }
 
   /// Returns false if a job type with this id already exists (id must be unique).
@@ -731,6 +795,7 @@ class MushroomsRepository {
     required String name,
     required int planMinutes,
     bool isSoloJob = false,
+    String? color,
   }) async {
     final trimmedId = id.trim();
     final existing = await (_db.select(_db.mushroomJobTypes)
@@ -746,8 +811,13 @@ class MushroomsRepository {
             isSoloJob: Value(isSoloJob),
             isCustom: const Value(true),
             isActive: const Value(true),
+            color: color != null ? Value(color) : const Value.absent(),
           ),
         );
+
+    if (color != null && color.isNotEmpty) {
+      _jobTypeColorCache[trimmedId.toLowerCase()] = color;
+    }
 
     await SyncService().queueMutation('mushroom_job_types', 'insert', {
       'id': trimmedId,
@@ -756,6 +826,7 @@ class MushroomsRepository {
       'is_solo_job': isSoloJob,
       'is_custom': true,
       'is_active': true,
+      if (color != null) 'color': color,
       'created_at': DateTime.now().toIso8601String(),
     });
     return true;
@@ -767,6 +838,7 @@ class MushroomsRepository {
     required int planMinutes,
     required bool isSoloJob,
     required bool isActive,
+    String? color,
   }) async {
     await (_db.update(_db.mushroomJobTypes)..where((t) => t.id.equals(id))).write(
       MushroomJobTypesCompanion(
@@ -774,14 +846,19 @@ class MushroomsRepository {
         planMinutes: Value(planMinutes),
         isSoloJob: Value(isSoloJob),
         isActive: Value(isActive),
+        color: color != null ? Value(color) : const Value.absent(),
       ),
     );
+    if (color != null && color.isNotEmpty) {
+      _jobTypeColorCache[id.toLowerCase()] = color;
+    }
     await SyncService().queueMutation('mushroom_job_types', 'update', {
       'id': id,
       'name': name.trim(),
       'plan_minutes': planMinutes,
       'is_solo_job': isSoloJob,
       'is_active': isActive,
+      if (color != null) 'color': color,
     });
   }
 
@@ -1582,18 +1659,46 @@ class MushroomsRepository {
         autoStartOnJobBegin: Value(autoStart),
         alarmType: Value(alarmType),
       ));
+
+      try {
+        await SyncService().queueMutation('mushroom_job_safety_configs', 'update', {
+          'id': existing.id,
+          'job_id': jobId,
+          'check_in_interval_minutes': interval,
+          'grace_period_minutes': gracePeriod,
+          'escalation_target': escalationTarget,
+          'auto_start_on_job_begin': autoStart,
+          'alarm_type': alarmType,
+        });
+      } catch (_) {}
     } else {
+      final configId = const Uuid().v4();
+      final now = DateTime.now();
       await _db.into(_db.mushroomJobSafetyConfigs).insert(
         MushroomJobSafetyConfigsCompanion.insert(
-          id: const Uuid().v4(),
+          id: configId,
           jobId: jobId,
           checkInIntervalMinutes: Value(interval),
           gracePeriodMinutes: Value(gracePeriod),
           escalationTarget: Value(escalationTarget),
           autoStartOnJobBegin: Value(autoStart),
           alarmType: Value(alarmType),
+          createdAt: Value(now),
         ),
       );
+
+      try {
+        await SyncService().queueMutation('mushroom_job_safety_configs', 'insert', {
+          'id': configId,
+          'job_id': jobId,
+          'check_in_interval_minutes': interval,
+          'grace_period_minutes': gracePeriod,
+          'escalation_target': escalationTarget,
+          'auto_start_on_job_begin': autoStart,
+          'alarm_type': alarmType,
+          'created_at': now.toIso8601String(),
+        });
+      } catch (_) {}
     }
   }
 
@@ -1606,9 +1711,11 @@ class MushroomsRepository {
     int? responseTimeSeconds,
     String? notes,
   }) async {
+    final logId = const Uuid().v4();
+    final now = DateTime.now();
     await _db.into(_db.mushroomSafetyCheckinLogs).insert(
       MushroomSafetyCheckinLogsCompanion.insert(
-        id: const Uuid().v4(),
+        id: logId,
         jobId: jobId,
         workerId: workerId,
         eventType: eventType,
@@ -1616,9 +1723,23 @@ class MushroomsRepository {
         gpsLongitude: Value(lng),
         responseTimeSeconds: Value(responseTimeSeconds),
         notes: Value(notes),
-        timestamp: Value(DateTime.now()),
+        timestamp: Value(now),
       ),
     );
+
+    try {
+      await SyncService().queueMutation('mushroom_safety_checkin_logs', 'insert', {
+        'id': logId,
+        'job_id': jobId,
+        'worker_id': workerId,
+        'event_type': eventType,
+        'gps_latitude': lat,
+        'gps_longitude': lng,
+        'response_time_seconds': responseTimeSeconds,
+        'notes': notes,
+        'timestamp': now.toIso8601String(),
+      });
+    } catch (_) {}
   }
 
   Future<List<Map<String, dynamic>>> getAllSafetyLogs() async {
@@ -1712,18 +1833,33 @@ class MushroomsRepository {
     final job = await (_db.select(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).getSingleOrNull();
     if (job == null) return;
 
+    final now = DateTime.now();
+    int? responseTimeSeconds;
+    if (job.startedAt != null) {
+      responseTimeSeconds = now.difference(job.startedAt!).inSeconds;
+    }
+
     await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).write(
       MushroomJobsCompanion(
-        startedAt: Value(DateTime.now()),
+        startedAt: Value(now),
         alarmTriggered: const Value(false),
       ),
     );
+
+    try {
+      await SyncService().queueMutation('mushroom_jobs', 'update', {
+        'id': jobId,
+        'started_at': now.toIso8601String(),
+        'alarm_triggered': false,
+      });
+    } catch (_) {}
 
     try {
       await logSafetyCheckin(
         jobId: jobId,
         workerId: job.assignee ?? 'Solo Worker',
         eventType: 'safe',
+        responseTimeSeconds: responseTimeSeconds,
         notes: 'Worker checked in safely, timer reset.',
       );
     } catch (_) {}
@@ -2008,6 +2144,36 @@ class MushroomsRepository {
     }
   }
 
+  Future<void> saveYieldSurvey({
+    required String roomName,
+    required String strain,
+    required int cycle,
+    required double expectedYield,
+  }) async {
+    final id = const Uuid().v4();
+    final now = DateTime.now();
+    await _db.into(_db.mushroomYieldSurveys).insert(
+      MushroomYieldSurveysCompanion.insert(
+        id: id,
+        roomName: roomName,
+        strain: strain,
+        cycle: cycle,
+        expectedYield: expectedYield,
+        surveyedAt: Value(now),
+      ),
+    );
+    try {
+      await SyncService().queueMutation('mushroom_yield_surveys', 'insert', {
+        'id': id,
+        'room_name': roomName,
+        'strain': strain,
+        'cycle': cycle,
+        'expected_yield': expectedYield,
+        'surveyed_at': now.toIso8601String(),
+      });
+    } catch (_) {}
+  }
+
   Future<void> saveAllocatedRoomPlan(String roomName, double targetYield, String planJson) async {
     try {
       final roomQuery = await (_db.select(_db.growRooms)..where((tbl) => tbl.name.equals(roomName))).get();
@@ -2113,6 +2279,9 @@ class MushroomsRepository {
         'priority': t.priority,
         'status': t.status,
         'notes': t.notes ?? '',
+        'created_at': t.createdAt?.toIso8601String(),
+        'due_date': t.dueDate?.toIso8601String(),
+        'completed_at': t.completedAt?.toIso8601String(),
       }).toList();
     } catch (_) {
       return [];
@@ -2126,9 +2295,11 @@ class MushroomsRepository {
     required String assignee,
     required String priority,
     required String notes,
+    DateTime? dueDate,
   }) async {
     try {
       final id = 'MNT-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}';
+      final now = DateTime.now();
       await _db.into(_db.mushroomMaintenanceTickets).insert(MushroomMaintenanceTicketsCompanion.insert(
         id: id,
         title: title,
@@ -2138,15 +2309,44 @@ class MushroomsRepository {
         priority: priority,
         status: const Value('todo'),
         notes: Value(notes),
+        createdAt: Value(now),
+        dueDate: Value(dueDate),
       ));
+
+      await SyncService().queueMutation('mushroom_maintenance_tickets', 'insert', {
+        'id': id,
+        'title': title,
+        'plant': plant,
+        'room': room,
+        'assignee': assignee,
+        'priority': priority,
+        'status': 'todo',
+        'notes': notes,
+        'created_at': now.toIso8601String(),
+        'due_date': dueDate?.toIso8601String(),
+      });
     } catch (_) {}
   }
 
   Future<void> updateMaintenanceTicketStatus(String id, String status) async {
     try {
+      final isDone = status == 'done' || status == 'completed';
+      final completedAt = isDone ? DateTime.now() : null;
       await (_db.update(_db.mushroomMaintenanceTickets)..where((tbl) => tbl.id.equals(id))).write(
-        MushroomMaintenanceTicketsCompanion(status: Value(status)),
+        MushroomMaintenanceTicketsCompanion(
+          status: Value(status),
+          completedAt: isDone ? Value(completedAt) : const Value.absent(),
+        ),
       );
+
+      final payload = <String, dynamic>{
+        'id': id,
+        'status': status,
+      };
+      if (isDone && completedAt != null) {
+        payload['completed_at'] = completedAt.toIso8601String();
+      }
+      await SyncService().queueMutation('mushroom_maintenance_tickets', 'update', payload);
     } catch (_) {}
   }
 
@@ -2207,15 +2407,28 @@ class MushroomsRepository {
     required String role,
   }) async {
     try {
-      final timeStr = DateTime.now().toLocal().toString().substring(11, 16);
+      final id = const Uuid().v4();
+      final now = DateTime.now();
+      final timeStr = now.toLocal().toString().substring(11, 16);
       await _db.into(_db.mushroomChatMessages).insert(MushroomChatMessagesCompanion.insert(
-        id: const Uuid().v4(),
+        id: id,
         sender: sender,
         contact: contact,
         textContent: text,
         timeString: timeStr,
         role: role,
+        createdAt: Value(now),
       ));
+
+      await SyncService().queueMutation('mushroom_chat_messages', 'insert', {
+        'id': id,
+        'sender': sender,
+        'contact': contact,
+        'textContent': text,
+        'timeString': timeStr,
+        'role': role,
+        'created_at': now.toIso8601String(),
+      });
     } catch (_) {}
   }
 

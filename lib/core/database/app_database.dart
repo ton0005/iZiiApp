@@ -101,7 +101,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 28;
+  int get schemaVersion => 30;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -451,6 +451,56 @@ class AppDatabase extends _$AppDatabase {
               await m.addColumn(mushroomJobs, mushroomJobs.onTimeOverride);
             } catch (_) {}
           }
+          if (from < 29) {
+            try {
+              await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN color TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN label TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN icon TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN sort_order INTEGER DEFAULT 100;');
+            } catch (_) {}
+          }
+          if (from < 30) {
+            try {
+              await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN created_at TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN due_date TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN completed_at TEXT;');
+            } catch (_) {}
+          }
+        },
+        beforeOpen: (details) async {
+          // Bảo đảm các cột color, label, icon, sort_order luôn tồn tại trên SQLite
+          try {
+            await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN color TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN label TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN icon TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN sort_order INTEGER DEFAULT 100;');
+          } catch (_) {}
+          // Bảo đảm các cột created_at, due_date, completed_at luôn tồn tại trên mushroom_maintenance_tickets
+          try {
+            await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN created_at TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN due_date TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN completed_at TEXT;');
+          } catch (_) {}
         },
       );
 }

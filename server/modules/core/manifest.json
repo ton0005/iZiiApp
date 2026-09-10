@@ -1,0 +1,31 @@
+﻿{
+  "name": "core",
+  "version": "1.0.0",
+  "display_name": { "vi": "Hệ thống lõi", "en": "Core System" },
+  "depends": [],
+  "owns_tables": [
+    "sync_mutations",
+    "devices",
+    "known_servers",
+    "message_queue",
+    "notifications",
+    "notification_settings",
+    "webhook_subscriptions",
+    "webhook_dead_letters",
+    "enrollment_tokens",
+    "device_tokens",
+    "work_sessions",
+    "employee_pins",
+    "schema_migrations",
+    "tenant_modules",
+    "model_registry",
+    "field_registry"
+  ],
+  "models": [
+    { "model_name": "device", "table_name": "devices", "label": { "vi": "Thiết bị", "en": "Device" } },
+    { "model_name": "work_session", "table_name": "work_sessions", "label": { "vi": "Ca làm việc", "en": "Work Session" } }
+  ],
+  "extends": [],
+  "min_client_schema_version": 1,
+  "enabled_by_default": true
+}

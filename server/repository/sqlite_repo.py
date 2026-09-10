@@ -12,8 +12,11 @@ import sqlite3
 import json
 import uuid
 import hashlib
-from datetime import datetime, timedelta
+import logging
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any, Optional
+
+logger = logging.getLogger(__name__)
 
 from repository.interface import (
     ISyncRepository,
@@ -285,6 +288,61 @@ class SQLiteSyncRepository(ISyncRepository):
             return None
         return int(row["last_synced_seq"])
 
+    def get_record(self, table: str, record_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Endpoint P0.1c: Replays all mutations for (table, record_id) in sequential order.
+        Returns None if record does not exist or was deleted.
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(
+            'SELECT operation, data, seq FROM sync_mutations WHERE "table" = ? AND json_extract(data, "$.id") = ? ORDER BY seq ASC',
+            (table, record_id),
+        )
+        rows = cursor.fetchall()
+        if not rows:
+            # Fallback check if id was stored directly or payload matches
+            cursor.execute(
+                'SELECT operation, data, seq FROM sync_mutations WHERE "table" = ? AND id = ? ORDER BY seq ASC',
+                (table, record_id),
+            )
+            rows = cursor.fetchall()
+
+        if not rows:
+            return None
+
+        merged_data: Dict[str, Any] = {}
+        is_deleted = False
+        last_seq = 0
+        for r in rows:
+            op = (r["operation"] or "").lower()
+            last_seq = r["seq"]
+            try:
+                data = json.loads(r["data"]) if isinstance(r["data"], str) else (r["data"] or {})
+            except Exception:
+                continue
+
+            if op in ("delete",):
+                is_deleted = True
+                merged_data = {}
+            elif op in ("insert", "create"):
+                is_deleted = False
+                merged_data = dict(data)
+            elif op in ("update",):
+                is_deleted = False
+                for k, v in data.items():
+                    merged_data[k] = v
+
+        if is_deleted or not merged_data:
+            return None
+
+        return {
+            "table": table,
+            "id": record_id,
+            "data": merged_data,
+            "last_seq": last_seq,
+        }
+
+
 
 class SQLiteDeviceRepository(IDeviceRepository):
     """SQLite implementation for Track 2 — Device Identity."""
@@ -335,7 +393,7 @@ class SQLiteDeviceRepository(IDeviceRepository):
     def get_online(self, user_id: Optional[str] = None, 
                    exclude_device_id: Optional[str] = None) -> List[Dict[str, Any]]:
         cursor = self.conn.cursor()
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         online_threshold = timedelta(seconds=90)
         idle_threshold = timedelta(minutes=5)
         
@@ -351,8 +409,20 @@ class SQLiteDeviceRepository(IDeviceRepository):
                 continue
             
             try:
-                last_seen = datetime.fromisoformat(r["last_seen_at"])
-            except Exception:
+                raw_last_seen = r["last_seen_at"]
+                if not raw_last_seen:
+                    continue
+                if isinstance(raw_last_seen, datetime):
+                    last_seen = raw_last_seen
+                elif isinstance(raw_last_seen, str):
+                    last_seen = datetime.fromisoformat(raw_last_seen.replace("Z", "+00:00"))
+                else:
+                    logger.warning("Không nhận dạng được kiểu last_seen_at cho thiết bị %s: %s", r["device_id"], type(raw_last_seen))
+                    continue
+                if last_seen.tzinfo is None:
+                    last_seen = last_seen.replace(tzinfo=timezone.utc)
+            except Exception as e:
+                logger.warning("Lỗi phân tích last_seen_at cho thiết bị %s: %s", r["device_id"], e)
                 continue
             
             elapsed = now - last_seen
@@ -362,6 +432,10 @@ class SQLiteDeviceRepository(IDeviceRepository):
                 status = "idle"
             else:
                 continue  # Offline devices are skipped
+
+            reg_at = r["registered_at"]
+            if isinstance(reg_at, datetime):
+                reg_at = reg_at.isoformat()
             
             devices.append({
                 "device_id": r["device_id"],
@@ -370,9 +444,9 @@ class SQLiteDeviceRepository(IDeviceRepository):
                 "platform": r["platform"],
                 "public_key_base64": r["public_key"],
                 "signing_public_key_base64": r["signing_public_key"],
-                "registered_at": r["registered_at"],
+                "registered_at": reg_at,
                 "fingerprint": r["fingerprint"],
-                "last_seen_at": r["last_seen_at"],
+                "last_seen_at": last_seen.isoformat(),
                 "status": status
             })
         

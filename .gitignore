@@ -53,5 +53,5 @@ server/certs/
 # PyInstaller build artifacts
 /server/dist/
 /server/build/
-/server/
+/server/venv/
 _reset_backup_20260803-130428/

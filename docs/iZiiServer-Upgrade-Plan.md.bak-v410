@@ -1,0 +1,1484 @@
+# Kế hoạch Nâng cấp iZiiServer
+
+**Nền tảng độc lập — học có chọn lọc từ Smartstore và Odoo**
+
+| | |
+| :--- | :--- |
+| **Phiên bản tài liệu** | 4.1.0 |
+| **Ngày lập** | 08/09/2026 · **cập nhật 09/09/2026** |
+| **Thay đổi so với v4.0.0** | **Đo lại sau đợt bàn giao 08–09/09 (§0d).** Xác minh 10 hạng mục team báo hoàn thành · đính chính 4 điểm · thêm lỗi mới **F13** · thêm **P0.11**, **P0.12** · ghi nhận Q5 (Postgres) đã cutover |
+| **Thay đổi so với v3.0.0** | **Sáu quyết định kiến trúc đã được chốt (§0c).** Bốn trong sáu làm đổi thứ tự thực thi và phạm vi — đặc biệt Q6 (đóng băng tính năng) đưa Phase 5 lên ngay sau Phase 0 |
+| **Thay đổi so với v2.0.0** | Cập nhật theo log V1.0.37–41: 5 lỗi đã sửa, 2 lỗi mới, 1 tính năng đã tự triển khai đúng hướng |
+| **Trạng thái** | **Sẵn sàng triển khai** — mọi quyết định chặn đã chốt |
+| **Đối tượng đọc** | Team Dev iZiiServer, team Dev Flutter, PM |
+| **Nguồn phân tích** | **~555.000 dòng log** (V1.0.20 · V1.0.34–37 · V1.0.40–41) · **4 file database** (27/08 và 08/09) · `Mushroom_Joblist.md` · `iziiapp_cqrs_pgvector_architecture.md` v2.0.0 · tài liệu kiến trúc Smartstore & Odoo (tham khảo) |
+
+---
+
+## Mục lục
+
+- [0. Tóm tắt điều hành](#0-tóm-tắt-điều-hành)
+- [0b. Trạng thái thực tế · 08/09/2026](#0b-trạng-thái-thực-tế--08092026)
+- [0c. Sáu quyết định đã chốt](#0c-sáu-quyết-định-đã-chốt)
+- [0d. Đo lại tiến độ · 09/09/2026](#0d-đo-lại-tiến-độ--09092026)
+- [1. Định vị iZiiServer](#1-định-vị-izii-server)
+- [2. Học gì từ Smartstore và Odoo](#2-học-gì-từ-smartstore-và-odoo)
+- [3. Bảy nguyên tắc thiết kế](#3-bảy-nguyên-tắc-thiết-kế)
+- [4. Kiến trúc mục tiêu](#4-kiến-trúc-mục-tiêu)
+- [5. Phạm vi](#5-phạm-vi)
+- [6. Lộ trình 8 giai đoạn](#6-lộ-trình-8-giai-đoạn)
+- [7. Đặc tả kỹ thuật](#7-đặc-tả-kỹ-thuật)
+- [8. Sổ đăng ký lỗi](#8-sổ-đăng-ký-lỗi)
+- [9. Migration & dọn dữ liệu](#9-migration--dọn-dữ-liệu)
+- [10. Kiểm thử & tiêu chí nghiệm thu](#10-kiểm-thử--tiêu-chí-nghiệm-thu)
+- [11. Quyết định cần chốt & rủi ro](#11-quyết-định-cần-chốt--rủi-ro)
+- [12. Phụ lục](#12-phụ-lục)
+
+---
+
+## 0. Tóm tắt điều hành
+
+### 0.1. Quyết định
+
+**iZiiServer là hệ thống độc lập và là nguồn sự thật duy nhất của toàn bộ hệ sinh thái iZiiApp.** Không tích hợp Smartstore, không tích hợp Odoo, không phụ thuộc bất kỳ hệ thống ngoài nào.
+
+Hai framework đó được dùng **chỉ như nguồn tham khảo kiến trúc**: chúng đã giải xong nhiều bài toán mà iZiiServer sắp gặp — mở rộng schema không cần migration, cấu hình phân theo phạm vi, hook nghiệp vụ khi dữ liệu đổi, phân quyền theo dòng, nhật ký thay đổi tự động. Ta lấy **ý tưởng**, không lấy **mã nguồn** và không lấy **phụ thuộc runtime**.
+
+### 0.2. Ba trụ cột của bản nâng cấp
+
+| Trụ cột | Nội dung | Nguồn cảm hứng |
+| :--- | :--- | :--- |
+| **1 · Sửa nền móng** | Write path đang có 4 lỗi làm hỏng dữ liệu thật. Phải sửa trước mọi thứ khác. | — (từ phân tích log) |
+| **2 · Kiến trúc mở rộng được** | Module system + metadata-driven field registry + hooks. Thêm loại job, thêm trường, đổi màu phòng — **không cần build lại app Flutter**. | Smartstore (module, ISettings, DbSaveHook) + Odoo (ir.model, ir.rule, audit) |
+| **3 · Hoàn thiện miền nghiệp vụ** | Chấm công, an toàn Alone Worker, 6 bảng đang không đồng bộ. | — (từ kiểm kê module) |
+
+### 0.3. Điều quan trọng nhất — ý tưởng đáng giá nhất lấy từ Odoo
+
+**Server khai báo mô hình dữ liệu và giao diện; client render theo khai báo đó.**
+
+Hiện tại, để thêm một loại job mới (`clean_bed`, `clean_room`) hoặc đổi màu Grow Room, bạn phải sửa Dart, build lại app, phát hành lên store, và chờ 60.000 thiết bị cập nhật. Kết quả thực tế đã thấy trong log: bản Desktop cũ nhận đúng `current_stage = clean_room` nhưng **không đổi màu** vì bảng ánh xạ màu nằm cứng trong client (lỗi F1).
+
+Sau nâng cấp: loại job và màu là **dữ liệu** trong bảng `model_registry` / `field_registry`, đẩy xuống thiết bị như mọi bản ghi khác. Thêm job type mới = thêm một dòng trong admin. Không build, không phát hành, không chờ.
+
+Đây cũng chính là tính năng **"New Job có mục custom"** đã đề xuất trước đó — nhưng giải ở tầng kiến trúc thay vì hardcode thêm một trường hợp nữa.
+
+### 0.4. Con số
+
+| | |
+| :--- | :--- |
+| Tổng thời gian | **17–20 tuần** (~4,5 tháng) — dài hơn v3.0.0 do Q3 (form layout) và Q5 (Postgres ở edge) mở rộng phạm vi |
+| Nhân lực đề xuất | 2 BE (Python/Postgres) · **2 Flutter** (tăng do Q3) · **1 DevOps** (tăng do Q4+Q5) |
+| Lỗi còn phải sửa | **15 / 20** — 5 đã sửa, 2 mới phát hiện (xem §0b) |
+| Ý tưởng lấy từ Smartstore | 7 lấy · 1 loại bỏ |
+| Ý tưởng lấy từ Odoo | 6 lấy · 2 loại bỏ |
+| Phụ thuộc runtime bên ngoài | **0** |
+| Chặn phát hành | Phase 0 chặn tất cả các phase còn lại |
+
+### 0.5. Ba việc quan trọng nhất
+
+1. **Phase 0 — sửa write path.** Bốn lỗi trong production (batch 409 nguyên gói, timestamp local naive, UPDATE không có INSERT, khoá ngoại bị rơi) đang âm thầm làm hỏng dữ liệu. Mọi thứ xây thêm lên trên đều kế thừa cái sai đó.
+2. **Metadata-driven schema (Phase 3)** — mở khoá khả năng mở rộng mà không cần phát hành app. Đây là thứ quyết định iZiiServer có bán được cho khách hàng thứ hai hay không.
+3. **Khối chấm công (Phase 5)** — `mushroom_attendance_events` và `mushroom_daily_timesheets` **vẫn 0 dòng sau 13 ngày**, chặn cùng lúc: job Alone Worker, Dashboard hiệu suất, và bài toán lương. Đây là hạng mục duy nhất trong ba việc quan trọng nhất **không nhúc nhích** giữa hai lần đo.
+
+---
+
+## 0b. Trạng thái thực tế · 08/09/2026
+
+Đối chiếu log V1.0.37–41 và database ngày 08/09 với lần đo ngày 27/08. Phần này thay thế mọi giả định trong v2.0.0.
+
+### 0b.1. Bảng điểm tiến độ
+
+| | 27/08 (V1.0.36) | 08/09 (V1.0.41) | |
+| :--- | ---: | ---: | :--- |
+| Dòng log phân tích | 245.000 | **555.000** | |
+| `mushroom_jobs` | 11 | **100** | ▲ dùng thật |
+| `tasks` | 11 | **79** | ▲ |
+| `mushroom_safety_checkin_logs` | 4 | **15** | ▲ |
+| Lượt pull dùng `after_seq` | 8.409 | **50.536** | ▲ đã chuẩn |
+| Lượt pull dùng `since=` legacy | 217 | **217** | — đã dừng tăng |
+| Lỗi port 8080 | 11/16 lần start | **0** | ✅ |
+| Phòng kẹt `alone_timeout` | 2 | **0** | ✅ |
+| Batch push bị huỷ (409) | 4 | **0** (từ V1.0.37) | ✅ |
+| `mushroom_attendance_events` | 0 | **0** | ✕ không đổi |
+| `mushroom_daily_timesheets` | 0 | **0** | ✕ không đổi |
+| Task ma "Untitled" | 8 | **8** | ✕ chưa dọn |
+| `job_safety_configs` thiếu `job_id` | 4/4 | **11/11** | ✕ nặng hơn |
+| Outbox `rejected` nằm chết | 1 | **2** | ✕ |
+| WebSocket bị từ chối (403) | 0 | **15.942** | 🔴 **regression** |
+
+### 0b.2. Năm lỗi đã sửa — ghi nhận
+
+| ID | Nội dung | Bằng chứng |
+| :--- | :--- | :--- |
+| **F8** | Xung đột port 8080 | `[Errno 10048]` chỉ còn ở V1.0.36; 0 lần ở V1.0.37/40/41 |
+| **F9 · A4** | Timestamp naive + sequence gap | 50.536 lượt pull dùng `after_seq`, chỉ còn **2** lượt gửi timestamp naive |
+| **F2** | Phòng kẹt `alone_timeout` | 0/70 phòng còn kẹt (trước là Room 10 và 12) |
+| **F3** | Batch push bị huỷ nguyên gói | 0 lần 409 từ V1.0.37, trong khi vẫn có 80 lượt push thành công |
+| **F6** | 401 trên `/sessions/current` | V1.0.41: 3 lần 200, **0 lần 401**. Kèm endpoint mới `/sessions/start`, `/sessions/pin/status`, `/devices/enroll` |
+
+### 0b.3. Tính năng đã tự triển khai — đúng hướng
+
+**Bảng `mushroom_job_types` đã xuất hiện với 11 dòng**, có cột `is_custom`, và đã đồng bộ (4 lượt push). Hai loại job do người dùng tự tạo đã chạy thật:
+
+```
+id            name            plan_minutes  is_custom
+wicks         Wicks                     10          1     ← người dùng tự tạo
+sanimush      Sanimush                  50          1     ← người dùng tự tạo
+```
+
+Đây chính là hướng đi mà §2 (O2 · metadata registry) đề xuất, và team đã tự làm đúng. **Kế hoạch điều chỉnh: P3.1 không còn là xây mới, mà là mở rộng bảng đã có** — rẻ hơn đáng kể.
+
+Nhưng bảng hiện thiếu ba cột khiến lỗi **F1 vẫn chưa giải được**:
+
+| Cột đang có | Cột còn thiếu |
+| :--- | :--- |
+| `id`, `name`, `plan_minutes`, `is_solo_job`, `is_custom`, `is_active`, `created_at` | **`color`** (giải F1) · **`label` JSONB đa ngôn ngữ** · `icon` · `sort_order` |
+
+```sql
+-- Bổ sung 4 cột là giải xong F1, không cần build lại app
+ALTER TABLE mushroom_job_types ADD COLUMN color      TEXT;
+ALTER TABLE mushroom_job_types ADD COLUMN label      JSONB;   -- {"vi":"...","en":"..."}
+ALTER TABLE mushroom_job_types ADD COLUMN icon       TEXT;
+ALTER TABLE mushroom_job_types ADD COLUMN sort_order INT DEFAULT 100;
+```
+
+`mushroom_departments` cũng đã bắt đầu đồng bộ (1 lượt push) — 1/6 bảng cục bộ đã xử lý.
+
+### 0b.4. Hai lỗi mới — cần vá gấp
+
+#### F11 · WebSocket chết từ V1.0.37 — 15.942 lần bị từ chối
+
+Đây là **hệ quả phụ của việc sửa F10** (tách admin secret khỏi server secret). Server tách đúng, nhưng client không được cập nhật và đang gửi admin secret cho endpoint `/chat`:
+
+```
+WebSocket /chat?token=iZiiAdminSecret2026       403   ← 9.605 lần
+WebSocket /chat?token=iZiiAdminSecretKey2026    403   ← 6.337 lần
+WebSocket /chat?token=iZiiServerSecretKey2026   [accepted]  ← chỉ 81 lần
+⛔ [WS] Từ chối kết nối: token thiếu hoặc sai.
+```
+
+Hai biến thể tên token cho thấy có người đang **đoán** tên đúng. Hệ quả: realtime chết hoàn toàn từ V1.0.37, mọi thứ rơi về polling 5 giây — đó là lý do có 25.376 lượt `/sync/pull` và 26.833 lượt `/devices/online`.
+
+**Cách sửa (< 1 ngày):** client đọc token WS từ cấu hình riêng (`IZIIAPP_WS_SECRET`), không dùng chung với admin. Thêm test hồi quy: sau mỗi lần đổi secret, phải có ít nhất 1 kết nối `/chat` thành công.
+
+#### F12 · `TypeError` naive/aware datetime ở tầng server — 13 lần 500
+
+```
+File "routers/devices.py", line 115, in devices_online
+File "repository/sqlite_repo.py", line 358, in get_online
+TypeError: can't subtract offset-naive and offset-aware datetimes
+GET /api/v1/devices/online  500 Internal Server Error
+```
+
+Cùng gốc rễ với F9 nhưng ở **phía server**: `devices.last_seen_at` lưu naive, đem trừ với `now()` aware. F9 đã sửa ở tầng client, chưa quét hết tầng server.
+
+**Cách sửa:** ép `TIMESTAMPTZ` cho `last_seen_at` + rà toàn bộ `datetime.now()` không có `timezone.utc` trong `repository/`.
+
+### 0b.5. Bốn lỗi vẫn nguyên — không có tiến triển
+
+| ID | Nội dung | Số liệu 08/09 |
+| :--- | :--- | :--- |
+| **Khối chấm công** | 5 bảng vẫn trống hoàn toàn | `attendance_events` 0 · `daily_timesheets` 0 · `break_policies` 0 · `shifts` 0 · `payroll_calculations` 0 |
+| **M1** | Khoá ngoại bị rơi | `job_safety_configs`: **11/11** thiếu `job_id` · `safety_checkin_logs`: **11/15** thiếu · GPS 0/15 · response_time 0/15 |
+| **F5 · A1** | Task ma | vẫn đúng **8** dòng "Untitled Task" — không sinh thêm, nhưng cũng chưa dọn |
+| **F4** | Outbox nằm chết | 2 dòng `status='rejected'`, không retry, không báo |
+| **M2** | Cột chưa bao giờ được ghi | `target_yield` 0/70 · `picked_yield` 0/70 · `base_rate` 0/10 · `picker_teams` có người 0/22 |
+
+### 0b.6. Kết luận từ lần đo này
+
+Team đang sửa **đúng những gì dễ đo và dễ thấy** (port, timestamp, sequence, 409) và đã tự đi đúng hướng ở metadata job type. Nhưng ba nhóm khó hơn thì đứng yên: **chấm công, khoá ngoại an toàn, và dọn dữ liệu hỏng**. Đồng thời xuất hiện một regression lớn (F11) vì sửa bảo mật mà không có test hồi quy đầu-cuối.
+
+Điều chỉnh ưu tiên tương ứng ở §6: F11 và F12 vào **Phase 0 (vá gấp)**; khối chấm công nâng lên mức chặn phát hành và **chuyển lên chạy ngay sau Phase 0** theo quyết định Q6.
+
+---
+
+## 0c. Sáu quyết định đã chốt
+
+Chốt ngày 08/09/2026. Mọi quyết định chặn đã có câu trả lời — kế hoạch chuyển sang trạng thái sẵn sàng triển khai.
+
+| # | Quyết định | Đã chốt | Ảnh hưởng |
+| :--- | :--- | :--- | :--- |
+| **Q1** | Mutation contract | **Dirty-field** | Đổi lớn ở projector và client |
+| **Q2** | Đổi tên bảng `mushroom_*` | **Không đổi** | Giảm 1 tuần Phase 2 |
+| **Q3** | Phạm vi metadata-driven UI | **Cả enum + màu + form layout** | Tăng 1 tuần Phase 3, cần thêm 1 Flutter |
+| **Q4** | Hạ tầng | **Self-host**, pgvectorscale để sau | Bỏ ràng buộc RDS; thêm việc DevOps |
+| **Q5** | Database ở edge | **Chuyển hết sang Postgres** | Tăng 1 tuần Phase 6; di trú SQLite → Postgres |
+| **Q6** | Đóng băng tính năng | **Có** | **Đổi thứ tự thực thi** — Phase 5 lên trước |
+
+### Q1 · Dirty-field — bốn hệ quả bắt buộc
+
+Đây là quyết định có tác động sâu nhất. Chọn dirty-field nghĩa là chấp nhận bốn ràng buộc sau, **không có ngoại lệ**:
+
+**1. Projector không bao giờ được upsert.** Mọi UPDATE phải merge theo cột (§6 P4.1). Một dòng `INSERT ... ON CONFLICT DO UPDATE` với đủ cột trong code projector là bug, không phải tối ưu hoá.
+
+**2. Phải phân biệt "không đổi" với "đổi thành NULL".** Hai trường hợp này khác nhau về nghiệp vụ nhưng giống nhau trong JSON nếu không quy ước rõ:
+
+```jsonc
+// ĐÚNG — khoá vắng mặt = không đổi; khoá có giá trị null = xoá giá trị
+{ "id": "af4f...", "assignee": null }        // → xoá người được giao
+{ "id": "af4f...", "status": "done" }        // → chỉ đổi status, assignee giữ nguyên
+
+// SAI — không phân biệt được
+{ "id": "af4f...", "assignee": "", "status": "done" }
+```
+
+ADR `001-mutation-contract.md` phải ghi rõ quy ước này, và projector dùng `jsonb_exists(payload, 'field')` để phân biệt, **không dùng** `COALESCE` đơn thuần.
+
+**3. UPDATE cho bản ghi chưa tồn tại phải fetch full row.** Đây là điều kiện sống còn với dirty-field — nếu không, ta sinh lại chính lỗi F5/A1. Bắt buộc có endpoint `GET /sync/record/{table}/{id}` (P4.2).
+
+**4. Backfill KHÔNG được replay từ `seq = 0`.** Đây là hệ quả dễ bị bỏ sót nhất. Replay một chuỗi mutation partial lên read model rỗng sẽ tạo ra đúng những bản ghi ma đang có. Quy trình backfill bắt buộc:
+
+```
+snapshot đầy đủ tại seq = N   →   replay mutation từ seq > N
+```
+
+Không bao giờ replay trần từ đầu. Ghi điều này vào runbook vận hành, không chỉ vào code.
+
+**Việc thêm cho client Flutter:** Drift phải theo dõi dirty-field ở tầng DAO — hiện tại client gửi cả row. Ước tính 1 tuần FE, đưa vào Phase 0.
+
+### Q2 · Không đổi tên bảng — cách giữ đường lui
+
+Giữ tên `mushroom_*` là quyết định hợp lý về rủi ro: tránh breaking change ở tầng sync khi đang có 100 job và 79 task chạy thật. Nhưng để không khoá sản phẩm vào một ngành, thêm **lớp bí danh** trong `model_registry`:
+
+```sql
+-- Tên logic tách khỏi tên vật lý. Đổi tên sau này = đổi 1 dòng cấu hình.
+INSERT INTO model_registry (tenant_id, model_name, module_name, table_name, label) VALUES
+  ('*', 'job',       'field_ops', 'mushroom_jobs',     '{"vi":"Công việc","en":"Job"}'),
+  ('*', 'grow_room', 'field_ops', 'grow_rooms',        '{"vi":"Phòng trồng","en":"Grow Room"}'),
+  ('*', 'job_type',  'field_ops', 'mushroom_job_types','{"vi":"Loại công việc","en":"Job Type"}');
+```
+
+API và metadata dùng `model_name`; chỉ tầng lưu trữ biết `table_name`. **Quy tắc mới:** mọi bảng tạo từ giờ trở đi không được có tiền tố ngành.
+
+Hệ quả: **bỏ §9.4** (quy trình đổi tên) khỏi phạm vi. Phase 2 giảm từ 3 xuống 2 tuần.
+
+### Q3 · Cả form layout — nhưng phải có ranh giới cứng
+
+Chọn phạm vi đầy đủ là quyết định đúng về dài hạn: sau khi xong, gần như không bao giờ phải phát hành app vì lý do dữ liệu nữa. Nhưng đây cũng là chỗ dễ trượt thành "ORM mini" nhất — rủi ro đã ghi ở §11.2.
+
+**Ranh giới cứng, ghi vào ADR:**
+
+| Được phép | **Cấm tuyệt đối** |
+| :--- | :--- |
+| Danh sách widget **cố định** (text, number, date, select, toggle, room-picker, employee-picker, gas-reading) | Widget do server định nghĩa tự do |
+| Bố cục: nhóm, thứ tự, số cột, ẩn/hiện theo điều kiện đơn giản | Biểu thức tuỳ ý / ngôn ngữ script trong descriptor |
+| Ràng buộc khai báo: `required`, `min`, `max`, `regex` | Validation bằng mã chạy trên client |
+| Điều kiện hiện: `{"field":"job_type","op":"in","value":["alone_worker"]}` | Toán tử tự do, hàm gọi lồng nhau |
+
+Nếu một yêu cầu không diễn đạt được bằng bảng bên trái → viết mã Flutter, **không** mở rộng ngôn ngữ descriptor. Mỗi lần nới ranh giới là một bước tiến tới việc phải bảo trì một ngôn ngữ lập trình.
+
+**Việc thêm:** renderer form động trong Flutter — ước tính 2 tuần FE, cần thêm 1 người. Phase 3 tăng lên 3,5 tuần.
+
+### Q4 · Self-host — việc DevOps phải nhận thêm
+
+Bỏ ràng buộc RDS/Aurora là tốt: pgvectorscale, `pg_partman`, extension tuỳ ý đều dùng được. Đổi lại, đội phải tự nhận các việc mà managed service vốn làm hộ:
+
+| Việc | Ghi chú |
+| :--- | :--- |
+| Sao lưu tự động + **kiểm tra khôi phục định kỳ** | Backup chưa từng restore thử không phải là backup |
+| Chiến lược HA cho central node | Tối thiểu: streaming replica + quy trình failover thủ công có tập dượt |
+| Quy trình nâng cấp Postgres minor/major | Ghi runbook, không làm ad-hoc |
+| Giám sát: WAL lag, bloat, connection pool, disk | Đưa vào cùng dashboard ở mục ⊙ |
+| Vá bảo mật Postgres | Lịch cố định hằng quý |
+
+**pgvectorscale:** giữ nguyên quyết định hoãn. Thiết kế index để chuyển sang được là một lần `REINDEX`, không phải đổi schema — dùng `halfvec` ngay từ đầu và không viết truy vấn phụ thuộc chi tiết HNSW.
+
+### Q5 · Postgres ở mọi tầng — hợp lực với Q1
+
+Quyết định này **bổ trợ trực tiếp cho Q1**, đây là điểm cộng chưa nhìn thấy khi ra quyết định riêng lẻ: câu lệnh merge dirty-field ở P4.1 dùng `jsonb_populate_record` và `jsonb_exists` — **cả hai đều là Postgres, SQLite không có**. Nếu giữ SQLite ở edge, edge node sẽ phải có một nhánh code merge riêng. Chọn Postgres cả hai tầng nghĩa là **một đường code duy nhất**.
+
+Bốn lợi ích khác: RLS chạy được cả ở edge · partition được cả ở edge · logical replication làm nền cho peer-sync · cùng một bộ migration.
+
+**Phân biệt rõ ba tầng lưu trữ — đừng nhầm:**
+
+| Tầng | Database | Đổi? |
+| :--- | :--- | :--- |
+| Thiết bị (Flutter/Drift) | **SQLite** | **Không đổi** — offline-first vẫn cần SQLite nhúng |
+| Edge node tại site | SQLite → **PostgreSQL** | **Đổi** (Q5) |
+| Central node | PostgreSQL | Không đổi |
+
+**Việc thêm ở Phase 6:**
+
+| Việc | DoD |
+| :--- | :--- |
+| Đóng gói Postgres chạy như Windows Service tại site (không dùng Docker để giảm phụ thuộc) | Cài bằng 1 installer, không cần thao tác tay |
+| Công cụ di trú SQLite → Postgres cho edge đang chạy | Di trú 1 site thật, đối chiếu số dòng từng bảng khớp 100% |
+| Hạ tài nguyên: `shared_buffers = 512MB`, `max_connections = 50` cho máy site | Chạy được trên máy 8 GB RAM |
+| Kịch bản rollback về SQLite nếu di trú lỗi | Tập dượt 1 lần trước khi triển khai diện rộng |
+
+### Q6 · Đóng băng tính năng — đổi thứ tự thực thi
+
+Đây là quyết định làm đổi cấu trúc kế hoạch. Lý do đã rõ từ §0b: hai lần đo cho thấy hạ tầng tiến nhanh, dữ liệu nghiệp vụ đứng yên, và M1 xấu đi.
+
+**Định nghĩa "tính năng" bị đóng băng** — cần rõ để không tranh cãi giữa chừng:
+
+| ❄️ Đóng băng | ✅ Vẫn làm |
+| :--- | :--- |
+| Màn hình mới | Sửa lỗi (mọi mức) |
+| Loại job / báo cáo / module nghiệp vụ mới | Vá bảo mật |
+| Tính năng do khách hàng yêu cầu | Việc trong Phase 0 và Phase 5 |
+| Tối ưu hiệu năng không liên quan lỗi | Test hồi quy, CI, công cụ nội bộ |
+| — | Dọn dữ liệu, migration |
+
+**Điều kiện gỡ đóng băng** — đạt đủ **cả bốn**, không thương lượng từng phần:
+
+1. `attendance_events` và `daily_timesheets` có dữ liệu thật của ít nhất 1 site trong 5 ngày liên tiếp
+2. 0 dòng thiếu `job_id` trong `job_safety_configs` và `safety_checkin_logs` (hiện 22/26)
+3. 0 dòng "Untitled Task" và 0 dòng job rỗng (hiện 8)
+4. 0 dòng `outbox_mutations` ở trạng thái `rejected` quá 24 giờ (hiện 2)
+
+**Thứ tự thực thi mới:**
+
+```
+Phase 0  (vá gấp, 1,5 tuần)
+   ↓
+Phase 5  (dọn nghiệp vụ, 3 tuần)   ← ĐƯA LÊN TRƯỚC do Q6
+   ↓
+Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 6 → Phase 7
+```
+
+> **Mã phase giữ nguyên** (P0.x, P1.x…) để không phá vỡ tham chiếu trong sổ đăng ký lỗi §8 và trong ticket đã tạo. Chỉ **thứ tự chạy** thay đổi.
+
+---
+
+## 0d. Đo lại tiến độ · 09/09/2026
+
+**Nguồn dữ liệu**: source code repo `izii_app` nhánh `mushroom-farm-fork` (commit gần nhất `36be824` · file mới nhất 09/09 00:04), `docs/adr/001-mutation-contract.md`, `server/migrations/`, `server/tests/`, và `walkthrough4.md`.
+
+> ⚠️ **Không có log runtime mới.** Mốc log gần nhất vẫn là **07/09 16:56** — trùng với lần đo 08/09. Mọi đánh giá trong §0d là **bằng chứng ở mức mã nguồn**, chưa có xác nhận vận hành. Cần một phiên chạy thật (server + iPad + laptop) rồi gửi lại `server.log` để đóng F11/F12/F13 bằng số liệu.
+
+### 0d.1. Bảng điểm theo Phase
+
+| Phase | 08/09 | 09/09 | Điều gì đã đổi |
+| :--- | ---: | ---: | :--- |
+| **0** — Ổn định write path | 40% | **85%** | P0.1 ADR · P0.1b · P0.1c · P0.2 partial commit · P0.8 WS token · P0.9 `TIMESTAMPTZ` · P0.10 E2E |
+| **1** — Nền tảng | 10% | **55%** | Migration runner · 7 cột audit + RLS policy · seed loader kiểu Odoo (`noupdate` + `is_seed`) |
+| **2** — Module system | 0% | **65%** | `module_manager.py` · 4 manifest (`core`, `workforce`, `field_ops`, `collab`) · `tenant_modules` / `model_registry` / `field_registry` · `/admin/modules/*` · đã nối vào `lifespan` |
+| **3** — Metadata / Postgres | 15% | **55%** | **Đã cutover**: `.env` đặt `IZIIAPP_DB_BACKEND=postgres` · `db_init_postgres.py` dựng đủ 30 bảng · pool psycopg |
+| **4** — Projector, snapshot, hook | 0% | **0%** | Không đổi — `push_mutations` vẫn chỉ INSERT vào `sync_mutations`, chưa có read model |
+| **5** — Miền hiện trường | 20% | **55%** | P5.4 · P5.5 · P5.6 · P5.7 · P5.9 · `timesheet_service.py` |
+| **6** — Topology hai tầng | 0% | 0% | — |
+| **7** — AI / hybrid search | 0% | 0% | — |
+| **Tổng** | **~15%** | **~45%** | |
+
+### 0d.2. Mười hạng mục đã xác minh — đúng như báo cáo
+
+| Hạng mục | Bằng chứng |
+| :--- | :--- |
+| **P0.1** ADR dirty-field | `docs/adr/001-mutation-contract.md` — đủ 5 điều khoản, có luật cấm replay từ `seq = 0` |
+| **P0.1c** fetch full record | `routers/sync.py:412` endpoint · `sync_service.dart:340` `fetchFullRecordFromServer()` |
+| **P0.2** partial commit | `sync.py:156` `_filter_valid_mutations()` → trả `partial_success` + mảng `rejected`; chỉ 409 khi **toàn bộ** batch hỏng |
+| **P0.8** WS token | `app.py:497–545` — secret riêng, query param + header, `hmac.compare_digest`, từ chối riêng khi client gửi nhầm admin secret · `chat_websocket_service.dart:44` · `.env:29` |
+| **P0.9** `TIMESTAMPTZ` | `db_init_postgres.py:71` · `sqlite_repo.py:413` guard `tzinfo` |
+| **P0.10** E2E bảo mật | `tests/test_p0_10_security_e2e.py` — đủ 6 bước gồm xoay vòng secret runtime |
+| **P5.4 / M1** giữ khoá ngoại | `sync_service.dart:1390` và `:1425` giữ `existing.jobId` / `existing.workerId`; `repository.dart:1663`, `:1849` phát mutation |
+| **P5.5** `response_time_seconds` | `repository.dart:1836–1838` — `now.difference(job.startedAt!).inSeconds` |
+| **P5.6** 5 bảng vào sync | Thực tế **hơn** 5: `sync_service.dart:656–680` có handler cho cả `picker_teams`, `attendance_events`, `daily_timesheets`, `break_policies` |
+| **P5.7 / F1** màu động | `tables.dart:30` cột `color` · `growing_tab_screen.dart:1157` `_getStageColor()` tra `resolveDynamicColor()` trước · seed `job_types.json` kèm mã hex |
+| **P5.9** cột thời gian | `tables.dart:122–124` · `app_database.dart:468` migration `from < 30` + `beforeOpen` fallback DDL |
+
+### 0d.3. Bốn điểm cần đính chính
+
+**(1) "28/28 test OK" không chạy 4 test bảo mật quan trọng nhất.**
+
+`tests/test_phase0_security_regression.py` viết bằng **hàm module-level** (`def test_f12_...`) chứ không phải lớp `unittest.TestCase`. `python -m unittest discover` chỉ thu thập `TestCase`, nên bốn test **F12 datetime · F11 chặn admin secret · P0.1c replay · endpoint `/sync/record`** bị **bỏ qua im lặng**. Số liệu khớp chính xác:
+
+```
+1 (p0_10) + 12 (phase1) + 10 (phase2) + 5 (phase5) = 28   → phase0 đóng góp 0
+```
+
+Đây đúng là dạng hỏng mà P0.10 sinh ra để chặn: **test có mà không chạy cũng nguy hiểm như không có test.** → **P0.12**.
+
+**(2) F5 chưa nên đóng hoàn toàn.** P0.1c mới nối vào `_upsertTask`. Các bảng khác vẫn sinh stub: `sync_service.dart:708` `'Untitled'`, `:775` `'Untitled Deal'`, `:860` `'Untitled Project'`. F5 hạ xuống 🟡 *"đã xử lý cho `tasks`"*.
+
+**(3) Script cleanup chạy trên Postgres, không phải DB chứa dữ liệu M1.** `.env:39` nay là `IZIIAPP_DB_BACKEND=postgres` (DSN `127.0.0.1:5432/iZiiApp`), mà `phase5_cleanup_and_restore.py` chọn kết nối theo `CONFIG.db_backend`. Không file SQLite nào bị thay đổi — mới nhất vẫn là `server/data/iziiapp.db` ngày **11/08**. `[SUCCESS]` chỉ chứng minh script chạy trót lọt, **không chứng minh đã khôi phục 11/11 `job_safety_configs` và 11/15 `safety_checkin_logs` bị rơi khoá**.
+
+> **Việc cần làm**: chạy `python scripts/inspect_db.py` và dán số dòng `job_id IS NULL OR job_id = ''` **trước và sau** khi chạy script.
+
+**(4) F13 — từ rủi ro tiềm ẩn đã thành lỗi sống.** Chính vì đã cutover sang Postgres, `repository/postgres_repo.py:359` gọi `.replace("Z","+00:00")` trên cột `TIMESTAMPTZ` — psycopg trả về `datetime`, không phải `str` → `TypeError` → bị `except Exception: continue` nuốt → **`/devices/online` sẽ luôn trả rỗng, và không có dòng log nào**. → **P0.11**.
+
+### 0d.4. Ba chốt chặn lớn vẫn nguyên
+
+| | Hiện trạng | Hệ quả |
+| :--- | :--- | :--- |
+| **Projector chưa tồn tại** | `push_mutations()` chỉ `INSERT INTO sync_mutations`; không có `jsonb_populate_record`, không có read model, không có watermark `pg_snapshot_xmin` | Toàn bộ Phase 4 = 0%; **A1 vẫn đúng là mở** |
+| **RLS chỉ là DDL** | Policy dùng `current_setting('app.tenant_id')`, nhưng **không có chỗ nào trong đường request gọi `set_config`** — chỉ `test_phase1_foundation.py:214` gọi. Setting `NULL` ⇒ policy luôn cho qua | P1.4 mới xong một nửa; cách ly tenant chưa có hiệu lực thật |
+| **Migration không chạy lúc startup** | `run_migrations()` và `load_seeds()` chỉ gọi được từ CLI; `lifespan` chỉ gọi `init_db()` và `MODULE_MANAGER`. Nặng hơn: `versions/0001` và `0003` là **file rỗng về nội dung** — header ghi "Initial Core Schema" và "Audit Fields, Tenant Isolation & RLS" nhưng SQL chỉ tạo `schema_migrations` và `schema_migration_lock` | Khi chạy, `schema_migrations` sẽ ghi *"đã áp dụng 0003 — audit & RLS"* trong khi DB đang tồn tại **không được thêm cột nào**. Đây là bẫy: lần sau không ai chạy lại nữa |
+
+Phụ: `services/timesheet_service.py` đã có logic tính break/extra break/`deduct_double` nhưng **chưa gắn vào router nào** — chưa dùng được đầu-cuối.
+
+### 0d.5. Bốn việc nên làm tiếp
+
+| # | Việc | Vì sao trước |
+| :--- | :--- | :--- |
+| 1 | **P0.11** — vá F13 và bỏ `except Exception` nuốt lỗi | Đang chạy Postgres ⇒ lỗi này **đang xảy ra**, và im lặng |
+| 2 | **P0.12** — đưa 4 test Phase 0 vào bộ chạy thật | Không có nó thì mọi kết luận "đã vá" ở P0.8/P0.9/P0.1c không được bảo vệ |
+| 3 | **Thực thi RLS** — `set_config('app.tenant_id', …)` trong `pg_connection()` hoặc middleware | Không có thì P1.4 chỉ là trang trí; càng để lâu càng khó gắn vào |
+| 4 | **Viết nội dung thật cho `0001`/`0003` + gọi `run_migrations()`/`load_seeds()` trong `lifespan`** | Tránh bẫy "đã áp dụng nhưng chưa làm gì" ở §0d.4 |
+
+Sau đó mới nên mở Phase 4 (projector) — vì P4.1 phụ thuộc vào cả migration lẫn RLS đã chạy được.
+
+---
+
+## 1. Định vị iZiiServer
+
+### 1.1. iZiiServer là gì
+
+**Nền tảng dữ liệu offline-first cho vận hành hiện trường và bán lẻ phân tán.**
+
+Bốn năng lực cốt lõi mà không framework nào sẵn có cho không:
+
+| Năng lực | Vì sao không mua sẵn được |
+| :--- | :--- |
+| **Đồng bộ offline-first hai chiều** | Mọi ERP/e-commerce phổ biến đều là request-response đồng bộ. Mutation log, con trỏ tuần tự, tombstone, snapshot bootstrap, phát hiện xung đột — phải tự xây |
+| **Khoá chính do thiết bị tự sinh (UUID)** | Thiết bị offline phải tự cấp id mà không hỏi server. Mọi hệ dùng `int` identity đều không làm được |
+| **Chạy được khi mất Internet** | Node LAN tại site giữ toàn bộ nghiệp vụ chạy suốt thời gian mất WAN |
+| **Miền nghiệp vụ hiện trường** | Grow Room, Alone Worker, CO/CO₂, timeout an toàn, chấm công theo ca — không có trong bất kỳ sản phẩm thương mại nào |
+
+### 1.2. iZiiServer KHÔNG là gì
+
+- Không phải ERP kế toán. Không làm sổ cái, không làm thuế, không làm báo cáo tài chính chuẩn mực.
+- Không phải nền tảng e-commerce. Không làm storefront, không làm SEO, không làm cổng thanh toán.
+- Không phải BI. Báo cáo nằm ở mức vận hành (dashboard ca làm việc), không phải phân tích đa chiều.
+
+Ba mảng trên, nếu khách hàng cần, **xuất dữ liệu ra** qua API công khai (§6 Phase 6) chứ iZiiServer không tự làm.
+
+### 1.3. Vì sao độc lập là lựa chọn đúng
+
+| Lý do | Giải thích |
+| :--- | :--- |
+| **Bỏ được hạng mục đắt nhất** | ETL hai chiều giữa ba hệ (catalog, đơn hàng, tồn kho, id mapping) là phần đắt nhất của kiến trúc trước — đắt hơn cả bản thân iZiiServer |
+| **Không còn bài toán ba writer** | Một chủ sở hữu duy nhất cho mỗi bản ghi. Không cần bảng `id_map`, không cần `routing_rules`, không cần trọng tài |
+| **Không kế thừa lịch trình của bên khác** | Không phải chờ team Smartstore bổ sung endpoint ghi, không phải chờ quyền JSON-RPC trên Odoo |
+| **Bán được như sản phẩm riêng** | Với module system (Phase 2), iZiiApp bán được cho khách không dùng Smartstore/Odoo |
+| **Một mô hình khoá chính duy nhất** | UUID xuyên suốt. Không còn bài toán ánh xạ `UUID ↔ int` |
+
+### 1.4. Cửa thoát cho tích hợp sau này
+
+Độc lập **không có nghĩa là đóng**. Giữ một khe tích hợp tối thiểu để không tự nhốt mình:
+
+```sql
+-- Bảng tuỳ chọn. KHÔNG dùng ở giai đoạn này. Chỉ để không phải sửa schema về sau.
+CREATE TABLE external_refs (
+    tenant_id   TEXT NOT NULL,
+    entity      TEXT NOT NULL,           -- 'product' | 'order' | 'employee'
+    local_uuid  TEXT NOT NULL,
+    system      TEXT NOT NULL,           -- tên hệ ngoài, tự do
+    external_id TEXT NOT NULL,
+    synced_at   TIMESTAMPTZ,
+    PRIMARY KEY (tenant_id, entity, local_uuid, system)
+);
+```
+
+Cùng với API công khai ở Phase 6 (webhook + REST đọc), bất kỳ hệ nào cũng nối vào được sau này mà **không cần sửa lõi**.
+
+---
+
+## 2. Học gì từ Smartstore và Odoo
+
+Đây là phần trọng tâm của bản v2.0.0. Hai framework này đã chạy production hàng chục năm và đã giải xong nhiều bài toán iZiiServer sắp gặp. Ta lấy ý tưởng đã được kiểm chứng, bỏ những thứ không hợp với mô hình offline-first.
+
+### 2.1. Lấy từ Smartstore (.NET 10 · Modular Monolith · DDD)
+
+| # | Ý tưởng | Nguyên bản | Áp dụng vào iZiiServer | Phase |
+| :--- | :--- | :--- | :--- | :--- |
+| **S1** | **Module system có manifest & vòng đời** | `module.json` + `Module.cs` + `Startup.cs`, cài/gỡ được, tự đăng ký DI | `modules/mushroom/`, `modules/retail/`, `modules/service/` — mỗi module có manifest, migration riêng, bảng riêng, route riêng. Bật/tắt theo tenant | **P2** |
+| **S2** | **`GenericAttribute` — EAV động** | Thêm thuộc tính cho bất kỳ entity nào mà không `ALTER TABLE` | Bảng `entity_attributes` cho thuộc tính riêng của từng khách hàng. **Giới hạn:** chỉ dùng cho trường tuỳ biến, không dùng cho trường lõi | **P3** |
+| **S3** | **`ISettings` — cấu hình strongly-typed, phân phạm vi** | Class C# lưu key-value, override theo `StoreId` | Bảng `settings` với scope `global / tenant / site / device`. Thay thế mô hình chỉ-env-var hiện tại | **P3** |
+| **S4** | **`DbSaveHook` — hook trước/sau commit** | Kích hoạt logic nghiệp vụ tự động khi dữ liệu đổi | Hook engine: `on_job_started` → tạo safety config; `on_job_completed` → reset `current_stage`; `on_checkin_missed` → báo động | **P4** |
+| **S5** | **Bounded Context** | `Catalog`, `Checkout`, `Customers`, `Stores` tách bạch | `core/` (sync, device, auth) · `field_ops/` (job, room, safety) · `workforce/` (chấm công, ca) · `inventory/` · `commerce/` | **P2** |
+| **S6** | **Migration có version + seeder** | `FluentMigrator` timestamp + `DataSeeder` | Formalize `001_purge_naive_timestamps`, `002_backfill_mutation_seq` thành framework: mỗi module có thư mục `migrations/`, chạy theo thứ tự, idempotent | **P1** |
+| **S7** | **`LocalizedProperty` — đa ngôn ngữ theo trường** | Bảng riêng lưu bản dịch cho từng trường của từng entity | Bảng `translations` cho tên job, tên phòng, nhãn trường. App Việt–Anh không cần hardcode | **P3** |
+| **✕** | **Khoá chính `int` identity** | Tối ưu index B-Tree trên DB tập trung | **KHÔNG LẤY.** Offline-first bắt buộc UUID do thiết bị tự sinh | — |
+
+### 2.2. Lấy từ Odoo (Python · PostgreSQL · Metadata-Driven ERP)
+
+| # | Ý tưởng | Nguyên bản | Áp dụng vào iZiiServer | Phase |
+| :--- | :--- | :--- | :--- | :--- |
+| **O1** | **Trường audit tự động trên mọi bản ghi** | `create_uid`, `create_date`, `write_uid`, `write_date` | Thêm `created_by`, `created_at`, `updated_by`, `updated_at`, `last_mutation_id` vào **mọi** bảng, do framework ghi tự động. Giải quyết tận gốc lớp lỗi "không truy được dữ liệu sai đến từ đâu" | **P1** |
+| **O2** | **Metadata model registry** | `ir.model`, `ir.model.fields` — schema là dữ liệu | `model_registry` + `field_registry`: khai báo entity, trường, kiểu, ràng buộc, nhãn, **màu**. Lát mỏng có chủ đích, không xây lại cả ORM | **P3** |
+| **O3** | **Model-driven UI** | Server khai báo view; client render | Server đẩy `ui_descriptor` cho mỗi loại job/form. **Thêm job type mới không cần build lại app Flutter.** Giải luôn lỗi F1 (thiếu màu cho `clean_bed`/`clean_room`) | **P3** |
+| **O4** | **`ir.rule` — record rule khai báo** | Bộ lọc bảo mật dòng bằng domain expression ở tầng ORM | Bảng `record_rules` với biểu thức JSON, áp tự động vào mọi query. Thay thế `RecordSharingPermissions` (đang 0 dòng) và bổ trợ RLS của Postgres | **P3** |
+| **O5** | **`mail.thread` / chatter — nhật ký thay đổi theo bản ghi** | Lịch sử thay đổi trường + thảo luận gắn vào từng record | **Đã có sẵn nguyên liệu:** `sync_mutations` chính là nhật ký này. Chỉ cần API `GET /records/{table}/{id}/history` để đọc ra. Rẻ, và là công cụ audit cho hồ sơ an toàn lao động | **P4** |
+| **O6** | **Seed data khai báo có cờ `noupdate`** | Dữ liệu tĩnh nạp từ XML/CSV, đánh dấu không ghi đè khi nâng cấp | Seed dạng YAML/JSON trong mỗi module + cột `is_seed`. Giải quyết lỗi M3 (22 đội hái, 3 bộ phận, 15 tin nhắn là seed nhưng bị đếm như dữ liệu thật) | **P1** |
+| **O7** | **`_inherit` — module sau mở rộng model của module trước** | `_inherit = 'res.partner'` để thêm trường mà không gãy module cũ | Dạng nhẹ: module khai báo `extends: "core.employee"` và bổ sung trường qua `field_registry` + `entity_attributes` | **P2** |
+| **✕** | **Tự động `ALTER TABLE` khi khởi động** | Odoo so khớp model Python với DB và tự sửa schema | **KHÔNG LẤY — nguy hiểm.** 60.000 thiết bị đang giữ SQLite cục bộ với schema riêng. Đổi schema phải được version hoá và **thương lượng** với client, không được áp tự động | — |
+| **✕** | **ORM metadata-driven đầy đủ** | Toàn bộ menu, view, quyền đều là bản ghi trong bảng meta | **KHÔNG LẤY toàn bộ.** Đây là công trình nhiều năm. Chỉ lấy lát mỏng ở O2/O3/O4 | — |
+
+### 2.3. Bảng đối chiếu: vấn đề hiện có → giải pháp mượn
+
+| Vấn đề thực tế đã quan sát được | Ý tưởng mượn | Kết quả |
+| :--- | :--- | :--- |
+| F1 · Desktop không đổi màu phòng cho `clean_bed`/`clean_room` vì map màu nằm cứng trong client | **O3** Model-driven UI | Màu là dữ liệu server đẩy xuống. Thêm job type = thêm 1 dòng |
+| Yêu cầu "New Job có mục custom" | **O2 + S2** Field registry + EAV | Khách tự định nghĩa loại job và trường riêng |
+| M1 · `job_id`, `worker_id` bị rơi, không truy được nguồn | **O1 + O5** Audit fields + record history | Mọi dòng biết ai ghi, mutation nào ghi, đổi gì |
+| M3 · Không phân biệt được seed và dữ liệu vận hành | **O6** Seed có `noupdate` | Báo cáo không đếm nhầm |
+| F10 · `IZIIAPP_ADMIN_SECRET` chưa đặt, dùng chung token | **S3** Typed settings có scope | Cấu hình là first-class, có validation, admin sửa được |
+| Alone Worker cần logic hẹn giờ + báo động | **S4** Save hooks | Logic khai báo, test được, không rải rác trong endpoint |
+| `RecordSharingPermissions` 0 dòng, phân quyền chưa chạy | **O4** Record rules | Phân quyền khai báo, áp tự động |
+| 19 bảng mushroom trộn lẫn với core | **S1 + S5** Module + bounded context | Bán được cho khách không nuôi nấm |
+| Migration ad-hoc (`001_`, `002_` rời rạc) | **S6** Migration framework | Có thứ tự, idempotent, rollback được |
+
+---
+
+## 3. Bảy nguyên tắc thiết kế
+
+Bảy nguyên tắc dưới đây ràng buộc mọi quyết định kỹ thuật. Thiết kế vi phạm là thiết kế sai.
+
+**NT-1 · iZiiServer là nguồn sự thật duy nhất.**
+Không phụ thuộc runtime vào hệ thống ngoài. Tích hợp, nếu có, đi qua API công khai và webhook — một chiều, tuỳ chọn, không nằm trên đường găng.
+
+**NT-2 · Push là partial commit, không bao giờ all-or-nothing.**
+Một item vi phạm quy tắc nghiệp vụ không được làm hỏng những item hợp lệ cùng batch.
+
+**NT-3 · Không bao giờ upsert từ payload thiếu cột.**
+UPDATE partial phải merge theo cột. UPDATE cho bản ghi chưa tồn tại phải yêu cầu bản đầy đủ, tuyệt đối không tạo stub.
+
+**NT-4 · Đồng hồ của hệ thống là `seq` do server cấp, không phải timestamp của client.**
+Mọi so sánh thứ tự, mọi LWW, mọi chống replay đều dùng `seq`. Timestamp chỉ để hiển thị.
+
+**NT-5 · Thay đổi hành vi ưu tiên bằng dữ liệu, không bằng phát hành app.**
+Thêm loại job, đổi màu, thêm trường, đổi quy tắc phân quyền — tất cả phải làm được qua cấu hình. Chỉ sửa mã khi thật sự cần logic mới.
+
+**NT-6 · Thay đổi schema phải được version hoá và thương lượng.**
+Client khai báo `schema_version` khi kết nối; server trả về những gì client hiểu được. **Không bao giờ tự `ALTER TABLE`** kiểu Odoo — 60.000 thiết bị đang giữ SQLite cục bộ.
+
+**NT-7 · Mọi lỗi phải nhìn thấy được.**
+Không có `except: return []`. Không có `status='rejected'` nằm im. Mọi mutation thất bại phải vào dead-letter kèm lý do, và phải có nơi để người vận hành nhìn thấy.
+
+---
+
+## 4. Kiến trúc mục tiêu
+
+### 4.1. Topology
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  THIẾT BỊ (iZiiApp — Flutter/Drift, SQLite, UUID)                   │
+│  · Render UI theo ui_descriptor server đẩy xuống  ← O3               │
+│  · Ghi offline 100%, hàng đợi outbox                                 │
+└───────────────────────────────┬──────────────────────────────────────┘
+                                │  /sync/push · /sync/pull · /snapshot
+                                ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│  iZiiSERVER — EDGE NODE (mỗi site 1 node, LAN, SQLite/Postgres nhẹ)  │
+│  · sync_mutations · device registry · hook engine                    │
+│  · toàn bộ nghiệp vụ chạy được khi mất WAN                           │
+└───────────────────────────────┬──────────────────────────────────────┘
+                                │  peer-sync (đã có: server_id / zone)
+                                ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│  iZiiSERVER — CENTRAL NODE (PostgreSQL 16+ · pgvector)              │
+│                                                                      │
+│  ┌── core/ ─────────────┐  ┌── modules/ ──────────────────────────┐ │
+│  │ sync_mutations       │  │ mushroom/   field_ops               │ │
+│  │ devices · auth       │  │ retail/     bán hàng · tồn kho      │ │
+│  │ model_registry   ←O2 │  │ workforce/  chấm công · ca          │ │
+│  │ field_registry   ←O2 │  │ service/    dịch vụ · lịch hẹn      │ │
+│  │ settings         ←S3 │  │                                     │ │
+│  │ record_rules     ←O4 │  │ mỗi module: manifest · migrations · │ │
+│  │ entity_attributes←S2 │  │ bảng riêng · hooks · seed           │ │
+│  │ translations     ←S7 │  │                          ↑ S1       │ │
+│  │ hooks registry   ←S4 │  └─────────────────────────────────────┘ │
+│  └──────────────────────┘                                           │
+│                                                                      │
+│  · read model + snapshot API · embedding queue · vector SOP         │
+│  · API công khai + webhook (cửa tích hợp tuỳ chọn)                  │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.2. Bounded context (mượn S5)
+
+| Context | Nội dung | Bảng chính |
+| :--- | :--- | :--- |
+| `core/` | Đồng bộ, thiết bị, xác thực, metadata, cấu hình | `sync_mutations`, `devices`, `model_registry`, `field_registry`, `settings`, `record_rules`, `entity_attributes`, `translations` |
+| `modules/field_ops/` | Vận hành hiện trường | `grow_rooms`, `jobs`, `job_safety_configs`, `safety_checkin_logs`, `maintenance_tickets` |
+| `modules/workforce/` | Nhân sự & chấm công | `employees`, `departments`, `attendance_events`, `daily_timesheets`, `break_policies`, `shifts`, `teams` |
+| `modules/inventory/` | Kho & sản phẩm | `products`, `stock_quants`, `stock_moves`, `yield_surveys` |
+| `modules/commerce/` | Bán hàng | `orders`, `order_lines`, `customers`, `price_lists` |
+| `modules/collab/` | Trao đổi & công việc | `projects`, `tasks`, `chat_messages` |
+
+> Bảng `mushroom_*` hiện tại đổi tên bỏ tiền tố, chuyển vào `modules/field_ops/` và `modules/workforce/`. Tiền tố `mushroom_` khoá sản phẩm vào một ngành — bỏ nó là điều kiện để bán cho khách hàng thứ hai.
+
+### 4.3. Cấu trúc module (mượn S1)
+
+```
+modules/field_ops/
+├─ manifest.json           # tên, version, phụ thuộc, bảng sở hữu, bật/tắt theo tenant
+├─ migrations/
+│  ├─ 001_create_grow_rooms.sql
+│  └─ 002_add_stage_color.sql
+├─ models/                 # khai báo entity → nạp vào model_registry
+│  ├─ grow_room.yaml
+│  └─ job.yaml
+├─ hooks/                  # đăng ký vào hook engine
+│  ├─ on_job_started.py
+│  └─ on_checkin_missed.py
+├─ seed/
+│  └─ job_types.yaml       # noupdate: true
+├─ routes.py
+└─ services.py
+```
+
+**`manifest.json` mẫu:**
+
+```json
+{
+  "name": "field_ops",
+  "version": "1.0.0",
+  "display_name": { "vi": "Vận hành hiện trường", "en": "Field Operations" },
+  "depends": ["core", "workforce"],
+  "owns_tables": ["grow_rooms", "jobs", "job_safety_configs", "safety_checkin_logs"],
+  "extends": [],
+  "min_client_schema_version": 12,
+  "enabled_by_default": false
+}
+```
+
+---
+
+## 5. Phạm vi
+
+### 5.1. Giữ (đã có, cần củng cố)
+
+| Hạng mục | Trạng thái hiện tại |
+| :--- | :--- |
+| `sync_mutations` — write path append-only | Chạy tốt, 912 mutation trong DB mẫu |
+| `/sync/push`, `/sync/pull` (`after_seq`) | Chạy; V1.0.36 đã chuyển `after_seq` — 8.409/8.626 lượt pull |
+| Device registry, token auth | Chạy, nhưng `user_id` đang gán bằng `device_id` (lỗi F7) |
+| WebSocket realtime + event engine | Chạy, đã hết lỗi 403 |
+| Peer-sync giữa các node (`server_id` / `zone`) | Có sẵn, chưa dùng thật, cấu hình peer sai dải mạng |
+| Miền mushroom: `jobs`, `grow_rooms` | Chạy & đồng bộ thật |
+
+### 5.2. Thêm mới
+
+| Hạng mục | Nguồn | Phase |
+| :--- | :--- | :--- |
+| Module system + manifest + lifecycle | S1 | P2 |
+| `model_registry` + `field_registry` | O2 | P3 |
+| `ui_descriptor` (model-driven UI) | O3 | P3 |
+| `entity_attributes` (EAV có giới hạn) | S2 | P3 |
+| `settings` (typed, có scope) | S3 | P3 |
+| `record_rules` | O4 | P3 |
+| `translations` | S7 | P3 |
+| Hook engine + `hook_registry` | S4 | P4 |
+| Trường audit trên mọi bảng | O1 | P1 |
+| API `GET /records/{table}/{id}/history` | O5 | P4 |
+| Migration framework có version | S6 | P1 |
+| Seed khai báo + cờ `is_seed` | O6 | P1 |
+| `attendance_events`, `daily_timesheets`, `break_policies` (đã có schema, 0 dòng) | — | P5 |
+| `projection_checkpoint` | — | P4 |
+| `embedding_queue` | — | P7 |
+| `external_refs` (tuỳ chọn, chưa dùng) | — | P6 |
+
+### 5.3. Điều chỉnh so với blueprint CQRS v2.0.0
+
+| Blueprint đề xuất | Quyết định | Lý do |
+| :--- | :--- | :--- |
+| 60+ bảng quan hệ dựng một lượt | **Dựng theo module, từng miền một** | Module system cho phép sequencing. Không phải làm hết trước khi dùng được |
+| Báo cáo tài chính toàn chuỗi | **Cắt** | iZiiServer không phải ERP kế toán. Xuất dữ liệu qua API cho hệ BI |
+| pgai / vectorizer service | **Cắt** | Repo archive 27/05/2026, không còn bảo trì từ 02/2026 |
+| Hàm LLM trong database | **Cắt** | Tiger Cloud gỡ từ 30/06/2026; và gọi HTTP trong transaction là sai nguyên tắc |
+| pgvectorscale | **Hoãn** | Chưa cần dưới 5 triệu vector; không chạy trên RDS/Aurora |
+| `vector(768)` | **Đổi `halfvec(768)`** | Giảm ~50% dung lượng, recall giảm không đáng kể |
+| Tính RAM 2M × 3,14 KB ≈ 6,28 GB | **Sửa: ~14 GB** | HNSW của pgvector lưu bản sao đầy đủ vector **trong index**: ~3,7–3,8 KB/vector + bảng ~3,2 KB/vector |
+
+---
+
+## 6. Lộ trình 8 giai đoạn
+
+**Thứ tự thực thi đã đổi theo Q6** — mã phase giữ nguyên để không phá tham chiếu trong §8 và trong ticket đã tạo.
+
+| Thứ tự | Phase | Tên | Thời gian | Nhân lực | Đổi do |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **1️⃣** | **0** | Vá gấp F11/F12 + contract dirty-field | **2 tuần** | 2 BE + 1 FE | Q1 thêm việc FE |
+| **2️⃣** | **5** | 🧊 **Dọn nghiệp vụ** — chấm công, M1, dọn dữ liệu | **3 tuần** | 1 BE + 1 FE | **Q6 đưa lên trước** |
+| **3️⃣** | **1** | Nền tảng: audit, migration, seed + **di trú Postgres** | **3 tuần** | 1 BE + 1 DevOps | Q5 thêm di trú |
+| **4️⃣** | **2** | Module system & bounded context | **2 tuần** | 2 BE | Q2 giảm 1 tuần |
+| **5️⃣** | **3** | Metadata + EAV + Settings + **form layout** | **3,5 tuần** | 2 BE + 2 FE | Q3 tăng 1 tuần |
+| **6️⃣** | **4** | Projector, Snapshot, Hook engine | **3 tuần** | 1 BE | — |
+| **7️⃣** | **6** | Topology hai tầng + **Postgres ở edge** + API công khai | **2,5 tuần** | 1 BE + 1 DevOps | Q5 tăng 0,5 tuần |
+| **8️⃣** | **7** | AI: embedding & hybrid search | **2 tuần** | 1 BE | — |
+| **⊙** | ⊙ | Vận hành, quan sát + **việc self-host** | Xuyên suốt | 1 DevOps | Q4 tăng |
+
+**Đường găng:** P0 → P5 → P1 → P2 → P3 = **13,5 tuần**. P4 chạy song song một phần với P3. P6, P7 sau. Tổng **17–20 tuần**.
+
+> **Dài hơn v3.0.0 ba tuần** — đây là cái giá đã biết và đã chấp nhận của Q3 (form layout, +1 tuần), Q5 (Postgres ở edge, +1,5 tuần) và Q1 (client theo dõi dirty-field, +1 tuần), trừ đi Q2 (−1 tuần). Đổi lại: sau Phase 3 gần như không còn phải phát hành app vì lý do dữ liệu, và edge/central dùng chung một đường code.
+
+### 6.0. Cổng kiểm soát sau Phase 5 (do Q6)
+
+Không được bắt đầu Phase 1 khi chưa đạt **đủ bốn** điều kiện gỡ đóng băng ở §0c · Q6. Đây là cổng cứng, không phải khuyến nghị — mục đích chính của Q6 là chặn việc quay lại thói quen ưu tiên hạ tầng vì nó dễ đo hơn.
+
+---
+
+### Phase 0 — Ổn định write path
+
+> **2 tuần · chạy đầu tiên · chặn toàn bộ** — 1,5 tuần cho hạ tầng + 0,5 tuần cho việc FE phát sinh từ Q1
+
+| ID | Việc | Trạng thái 08/09 | DoD |
+| :--- | :--- | :--- | :--- |
+| **P0.1** | ✅ **Đã chốt: dirty-field (Q1).** Viết ADR `001-mutation-contract.md` ghi rõ: quy ước khoá-vắng-mặt vs `null` tường minh, danh sách trường bắt buộc luôn có (`id`, `tenant_id`, `mutation_id`), và cấm replay từ `seq=0`. | ✅ **Đã xong** — ADR `001-mutation-contract.md` đã hoàn tất, chuẩn hóa tenant_id & cấm replay | ADR duyệt bởi cả BE và FE |
+| **P0.1b** | 🆕 **Client theo dõi dirty-field ở tầng Drift DAO.** | ✅ **Đã xong cho module mushrooms** — `queueMutation('mushroom_jobs','update',{id, started_at, alarm_triggered})`; nhánh nhận dùng `Value.absent()` cho trường vắng mặt. Còn mở cho `projects`/`deals`/`chat` | Test: sửa 1 trường → payload chỉ chứa `id` + trường đó |
+| **P0.1c** | 🆕 **Endpoint `GET /sync/record/{table}/{id}`** — điều kiện sống còn của dirty-field. | ✅ **Đã xong** — Endpoint `GET /sync/record/{table}/{id}` đã hỗ trợ trên server; client fallback gọi khi delta thiếu title/id lạ | UPDATE cho id lạ → client fetch full row, không sinh stub |
+| **P0.2** | **Partial commit cho `/sync/push`.** | ✅ **Xong** — 0 lần 409 từ V1.0.37 | Bổ sung test hồi quy để không tái phát |
+| **P0.3** | **Chuẩn hoá UTC ở client.** | ✅ **Xong** — chỉ còn 2 lượt naive | Bật chế độ nghiêm: server từ chối naive với `E_NAIVE_TIMESTAMP` |
+| **P0.4** | **Xử lý sequence gap.** | ✅ **Xong** — 50.536 lượt dùng `after_seq` | Thêm test 50 transaction song song |
+| **P0.5** | **Thêm `last_seq` + `last_mutation_id`** vào mọi bảng read model. | ⬜ Chưa | Migration chạy được; projector ghi đủ hai trường |
+| **P0.6** | **Outbox có retry** kèm `reason`, backoff, hiển thị cho người dùng. | ⬜ Chưa — vẫn 2 dòng `rejected` nằm chết | Mutation bị từ chối → retry 3 lần → dead-letter → UI cảnh báo |
+| **P0.7** | **Sửa 401 trên `/sessions/*`, `/devices/me`.** | ✅ **Xong ở V1.0.41** — 3×200, 0×401 | Nút Start Alone Worker bị vô hiệu hoá ở UI khi chưa điểm danh |
+| **P0.8** | 🔴 **MỚI · Vá F11 — WebSocket token.** Client phải đọc token `/chat` từ `IZIIAPP_WS_SECRET`, không dùng admin secret. | ✅ **Đã xong** — Client tách biệt `getWsToken()` độc lập, bỏ fallback admin secret | Ít nhất 1 kết nối `/chat` thành công sau mỗi lần đổi secret; số 403 về 0 |
+| **P0.9** | 🔴 **MỚI · Vá F12 — naive datetime phía server.** Ép `TIMESTAMPTZ` cho `devices.last_seen_at`; rà toàn bộ `datetime.now()` thiếu `timezone.utc` trong `repository/`. | ✅ **Đã xong** — Ép `TIMESTAMPTZ` trong DDL & migration, chuẩn hoá UTC-aware | `/api/v1/devices/online` không còn 500; grep `datetime.now()` không có kết quả trần |
+| **P0.10** | 🔴 **MỚI · Test hồi quy đầu-cuối cho mọi thay đổi bảo mật.** | ✅ **Đã xong** — Suite `test_p0_10_security_e2e.py` kiểm tra trọn vòng đời: register → WS connect → push → pull, rotation secret, chặn admin secret. ⚠️ **Nhưng `test_phase0_security_regression.py` viết bằng hàm module-level nên `unittest discover` KHÔNG thu thập — xem §0d.3 (1)** | Đổi bất kỳ secret nào → CI chạy được kịch bản: đăng ký thiết bị → WS connect → push → pull |
+| **P0.11** | 🔴 **MỚI (09/09) · Vá F13** — `get_online` phải nhận cả `datetime` lẫn `str`; **bỏ `except Exception: continue` nuốt lỗi**, đổi thành ghi log. | ⬜ Mới | `GET /api/v1/devices/online` trên Postgres trả đúng danh sách; lỗi parse thời gian xuất hiện trong log thay vì bị nuốt |
+| **P0.12** | 🔴 **MỚI (09/09) · Đưa `test_phase0_security_regression.py` vào bộ chạy thật** — bọc `unittest.TestCase` hoặc chuyển sang `pytest`. | ⬜ Mới | `python -m unittest discover -s tests` báo **32** test (không phải 28), trong đó có F11 · F12 · P0.1c · `/sync/record` |
+
+**Bài học từ F11 — vì sao cần P0.10.** Sửa F10 (tách admin secret) là đúng, nhưng không có test đầu-cuối nên WebSocket chết **suốt 4 phiên bản** mà không ai phát hiện. Log cho thấy có người đang đoán tên token (`iZiiAdminSecret2026` rồi `iZiiAdminSecretKey2026`) thay vì đọc cấu hình. Mỗi thay đổi bảo mật phải kèm một test chạy hết vòng đời kết nối.
+
+---
+
+### Phase 1 — Nền tảng: audit, migration, seed, bảo mật
+
+> **3 tuần** · mượn **O1, O6, S6** · thêm di trú Postgres theo Q5
+
+| ID | Việc | Nguồn | DoD |
+| :--- | :--- | :--- | :--- |
+| **P1.1** | **Trường audit tự động trên mọi bảng**: `created_by`, `created_at`, `updated_by`, `updated_at`, `last_mutation_id`, `last_seq`. Framework ghi, không phải endpoint ghi thủ công. | **O1** | Không bảng nghiệp vụ nào thiếu; truy được mọi dòng về mutation gốc |
+| **P1.2** | **Migration framework có version.** Mỗi module có `migrations/`, chạy theo thứ tự, idempotent, ghi lại vào `schema_migrations`, rollback được. | **S6** | Chạy lại migration 2 lần không lỗi; rollback 1 bước hoạt động |
+| **P1.3** | **Seed khai báo + cờ `is_seed`.** Seed từ YAML trong module, đánh dấu `noupdate` để nâng cấp không ghi đè dữ liệu người dùng đã sửa. | **O6** | Nâng cấp không mất chỉnh sửa của khách; báo cáo phân biệt được seed |
+| **P1.4** | **PK là `(tenant_id, id)`** trên mọi bảng nghiệp vụ. | — | Không còn `id TEXT PRIMARY KEY` đơn |
+| **P1.5** | **Partition `sync_mutations`** theo RANGE(`created_at`), 1 partition/tháng, retention 60 ngày bằng `DROP PARTITION`. | — | Job retention chạy; không dùng `DELETE` |
+| **P1.6** | **Row-Level Security** + `SET LOCAL app.tenant_id`. | — | Query quên `WHERE tenant_id` trả 0 dòng |
+| **P1.7** | **Tombstone `deleted_at`** thay hard DELETE. | — | Không còn `DELETE FROM` trong projector; snapshot trả cả bản ghi đã xoá |
+| **P1.8** | **Text search config `vi`** với `unaccent`. | — | Gõ `phong 33` khớp `phòng 33`; `nam` khớp `nấm` |
+| **P1.9** | **Tách `IZIIAPP_ADMIN_SECRET`** khỏi `IZIIAPP_SERVER_SECRET`. | — | `/admin/reset` không gọi được bằng token đồng bộ |
+| **P1.10** | **Port guard** — kiểm tra port 8080 trước khi start. | — | ✅ Đã đạt ở V1.0.37 — chỉ cần thêm test chống tái phát |
+| **P1.11** | 🆕 **Chuẩn hoá toàn bộ tầng lưu trữ sang PostgreSQL (Q5).** Bỏ nhánh code SQLite ở server. Giữ SQLite **chỉ ở thiết bị Flutter/Drift**. | Q5 | Một đường code duy nhất; `jsonb_populate_record` dùng được ở cả edge lẫn central |
+| **P1.12** | 🆕 **Công cụ di trú SQLite → Postgres** cho edge node đang chạy, kèm đối chiếu số dòng và kịch bản rollback. | Q5 | Di trú 1 site thật; số dòng từng bảng khớp 100%; rollback đã tập dượt |
+
+**DDL trường audit (áp cho mọi bảng nghiệp vụ):**
+
+```sql
+-- Template dùng chung — mượn ir.model của Odoo
+ALTER TABLE <table> ADD COLUMN IF NOT EXISTS created_by       TEXT;
+ALTER TABLE <table> ADD COLUMN IF NOT EXISTS created_at       TIMESTAMPTZ NOT NULL DEFAULT now();
+ALTER TABLE <table> ADD COLUMN IF NOT EXISTS updated_by       TEXT;
+ALTER TABLE <table> ADD COLUMN IF NOT EXISTS updated_at       TIMESTAMPTZ NOT NULL DEFAULT now();
+ALTER TABLE <table> ADD COLUMN IF NOT EXISTS last_mutation_id TEXT;
+ALTER TABLE <table> ADD COLUMN IF NOT EXISTS last_seq         BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE <table> ADD COLUMN IF NOT EXISTS deleted_at       TIMESTAMPTZ;
+ALTER TABLE <table> ADD COLUMN IF NOT EXISTS is_seed          BOOLEAN NOT NULL DEFAULT FALSE;
+```
+
+**Text search tiếng Việt:**
+
+```sql
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
+CREATE TEXT SEARCH CONFIGURATION vi (COPY = simple);
+ALTER TEXT SEARCH CONFIGURATION vi
+  ALTER MAPPING FOR hword, hword_part, word
+  WITH unaccent, simple;
+```
+
+---
+
+### Phase 2 — Module system & bounded context
+
+> **3 tuần** · mượn **S1, S5, O7**
+
+Đây là phase quyết định iZiiServer có bán được cho khách hàng thứ hai hay không.
+
+| ID | Việc | Nguồn | DoD |
+| :--- | :--- | :--- | :--- |
+| **P2.1** | **Module loader** — đọc `manifest.json`, giải phụ thuộc theo thứ tự topo, đăng ký route/service/hook. | **S1** | Bật/tắt module không cần sửa mã lõi |
+| **P2.2** | **Vòng đời module** — install / upgrade / uninstall, chạy migration của module theo thứ tự. | **S1** | Cài `field_ops` lên DB trống → tạo đủ bảng và seed |
+| **P2.3** | **Bật/tắt module theo tenant** — bảng `tenant_modules`. | **S1** | Tenant A có `field_ops`, tenant B không, không ảnh hưởng nhau |
+| **P2.4** | **Tách bounded context** theo §4.2. Đổi tên bảng `mushroom_*` → bỏ tiền tố, chuyển vào module. | **S5** | Không còn tiền tố ngành trong tên bảng lõi |
+| **P2.5** | **Cơ chế `extends` nhẹ** — module sau bổ sung trường cho entity của module trước qua `field_registry`. | **O7** | Module `field_ops` thêm được trường vào `core.employee` mà không sửa `core` |
+| **P2.6** | **Kiểm tra tương thích client** — `min_client_schema_version` trong manifest; server không đẩy bảng mà client cũ chưa hiểu. | **NT-6** | Client schema v10 không nhận bảng yêu cầu v12; không crash |
+
+**Bảng `tenant_modules`:**
+
+```sql
+CREATE TABLE tenant_modules (
+    tenant_id    TEXT NOT NULL,
+    module_name  TEXT NOT NULL,
+    version      TEXT NOT NULL,
+    enabled      BOOLEAN NOT NULL DEFAULT TRUE,
+    installed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    settings     JSONB NOT NULL DEFAULT '{}',
+    PRIMARY KEY (tenant_id, module_name)
+);
+```
+
+---
+
+### Phase 3 — Metadata, EAV, Settings, Record Rules
+
+> **3,5 tuần** · mượn **O2, O3, O4, S2, S3, S7** · phase có giá trị dài hạn cao nhất · phạm vi đầy đủ theo Q3
+
+| ID | Việc | Nguồn | DoD |
+| :--- | :--- | :--- | :--- |
+| **P3.1** | **`model_registry` + `field_registry`** — khai báo entity và trường: kiểu, ràng buộc, nhãn đa ngôn ngữ, **màu**, thứ tự hiển thị. **Điều chỉnh: `mushroom_job_types` đã tồn tại với 11 dòng và cột `is_custom` — chỉ cần bổ sung `color`, `label`, `icon`, `sort_order` rồi tổng quát hoá thành registry.** | **O2** | Thêm entity mới bằng cấu hình, không sửa mã. Bốn cột mới trên `mushroom_job_types` giải xong F1 |
+| **P3.2** | **`ui_descriptor` + endpoint `GET /meta/ui/{model}`** — server khai báo **enum + màu + bố cục form** (Q3, phạm vi đầy đủ). Tuân thủ ranh giới cứng ở §0c · Q3. | **O3** | **Thêm loại job mới + màu + đổi bố cục form, không build lại app** |
+| **P3.2b** | 🆕 **Renderer form động trong Flutter** — danh sách widget cố định, không có ngôn ngữ script. | **O3** (Q3) | Đổi thứ tự trường trên admin → iPad đổi theo trong ≤ 5 phút |
+| **P3.3** | **`entity_attributes` (EAV có giới hạn)** — thuộc tính tuỳ biến theo khách hàng. **Chỉ cho trường tuỳ biến**, không cho trường lõi. | **S2** | Khách A thêm trường "Mã lô giống" mà khách B không thấy |
+| **P3.4** | **`settings` typed có scope** `global / tenant / site / device`, có validation và admin UI. | **S3** | Đổi ngưỡng cảnh báo CO qua admin, hiệu lực ngay, không restart |
+| **P3.5** | **`record_rules`** — biểu thức JSON áp tự động vào mọi query. Thay thế `RecordSharingPermissions` (đang 0 dòng). | **O4** | Nhân viên chỉ thấy job của bộ phận mình; quản lý thấy tất cả |
+| **P3.6** | **`translations`** — nhãn theo trường theo ngôn ngữ. | **S7** | Đổi app sang tiếng Anh, nhãn job đổi theo, không hardcode |
+| **P3.7** | **Đồng bộ metadata xuống client** — metadata đi qua chính `sync_mutations` như dữ liệu thường. | **O2 + O3** | Thiết bị offline vẫn render đúng theo metadata đã nhận |
+
+**DDL `field_registry` — giải trực tiếp lỗi F1 và yêu cầu "custom job":**
+
+```sql
+CREATE TABLE model_registry (
+    tenant_id     TEXT NOT NULL,
+    model_name    TEXT NOT NULL,          -- 'job' | 'grow_room' | 'employee'
+    module_name   TEXT NOT NULL,
+    table_name    TEXT NOT NULL,
+    label         JSONB NOT NULL,         -- {"vi": "Công việc", "en": "Job"}
+    is_syncable   BOOLEAN NOT NULL DEFAULT TRUE,
+    PRIMARY KEY (tenant_id, model_name)
+);
+
+CREATE TABLE field_registry (
+    tenant_id     TEXT NOT NULL,
+    model_name    TEXT NOT NULL,
+    field_name    TEXT NOT NULL,
+    data_type     TEXT NOT NULL,          -- text | int | numeric | bool | datetime | enum | ref
+    is_required   BOOLEAN NOT NULL DEFAULT FALSE,
+    is_custom     BOOLEAN NOT NULL DEFAULT FALSE,   -- true → lưu ở entity_attributes
+    label         JSONB NOT NULL,
+    enum_values   JSONB,                  -- cho enum: [{value, label, color, icon}]
+    ui            JSONB NOT NULL DEFAULT '{}',      -- {widget, order, group, readonly}
+    constraints   JSONB NOT NULL DEFAULT '{}',      -- {min, max, regex}
+    PRIMARY KEY (tenant_id, model_name, field_name)
+);
+```
+
+**Ví dụ — thêm loại job `clean_bed` với màu, không cần build app:**
+
+```sql
+UPDATE field_registry
+   SET enum_values = enum_values || '[
+        {"value":"clean_bed",  "label":{"vi":"Vệ sinh luống","en":"Clean Bed"},
+         "color":"#eb6834", "icon":"cleaning", "default_minutes":35},
+        {"value":"clean_room", "label":{"vi":"Vệ sinh phòng","en":"Clean Room"},
+         "color":"#1baf7a", "icon":"room",     "default_minutes":45}
+       ]'::jsonb
+ WHERE tenant_id = 'costa-m2'
+   AND model_name = 'job'
+   AND field_name = 'job_type';
+```
+
+Thay đổi này đi qua `sync_mutations` xuống mọi thiết bị như một bản ghi thường. Grow Room đổi màu đúng trên **mọi bản build**, kể cả bản cũ — vì client không còn giữ bảng màu trong mã.
+
+**DDL `settings` (mượn S3):**
+
+```sql
+CREATE TABLE settings (
+    scope       TEXT NOT NULL,            -- 'global' | 'tenant' | 'site' | 'device'
+    scope_id    TEXT NOT NULL DEFAULT '', -- '' cho global
+    key         TEXT NOT NULL,            -- 'safety.co_threshold_ppm'
+    value       JSONB NOT NULL,
+    data_type   TEXT NOT NULL,
+    updated_by  TEXT,
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (scope, scope_id, key)
+);
+-- Độ ưu tiên khi đọc: device > site > tenant > global
+```
+
+**DDL `record_rules` (mượn O4):**
+
+```sql
+CREATE TABLE record_rules (
+    tenant_id   TEXT NOT NULL,
+    rule_name   TEXT NOT NULL,
+    model_name  TEXT NOT NULL,
+    role_key    TEXT NOT NULL,            -- 'picker' | 'supervisor' | 'manager'
+    domain      JSONB NOT NULL,           -- [["department_id","=","$user.department_id"]]
+    perm_read   BOOLEAN NOT NULL DEFAULT TRUE,
+    perm_write  BOOLEAN NOT NULL DEFAULT FALSE,
+    enabled     BOOLEAN NOT NULL DEFAULT TRUE,
+    PRIMARY KEY (tenant_id, rule_name)
+);
+```
+
+**Giới hạn EAV — quan trọng:** `entity_attributes` chỉ dùng cho trường **tuỳ biến theo khách hàng**. Trường lõi (`job_type`, `status`, `room_id`, `started_at`) phải là cột thật. EAV dùng sai chỗ sẽ giết hiệu năng truy vấn — đây là lý do Smartstore cũng giữ `GenericAttribute` tách riêng chứ không dùng cho mọi thứ.
+
+---
+
+### Phase 4 — Projector, Snapshot, Hook engine
+
+> **3 tuần** · mượn **S4, O5** · chạy song song P2–P3
+
+| ID | Việc | Nguồn | DoD |
+| :--- | :--- | :--- | :--- |
+| **P4.1** | **Projector merge theo cột**, không upsert từ payload thiếu (NT-3). | — | Mutation `{id, status}` không làm rỗng `name`, `price` |
+| **P4.2** | **UPDATE cho bản ghi chưa tồn tại → fetch full row**, không tạo stub. | — | Gửi update cho id lạ → gọi `GET /sync/record/{table}/{id}`, không sinh "Untitled" |
+| **P4.3** | **Checkpoint giao dịch** — `projection_checkpoint` ghi cùng transaction với projection. | — | Kill worker giữa chừng → khởi động lại không mất, không nhân đôi |
+| **P4.4** | **FK `NOT VALID`** + job validate định kỳ, không chặn ingest. | — | Order line tới trước product → không dừng pipeline |
+| **P4.5** | **Snapshot API** trả `(rows, snapshot_seq)` trong **một** transaction `REPEATABLE READ`. | — | Snapshot rồi pull từ `snapshot_seq` → không mất, không trùng |
+| **P4.6** | **Hook engine** — đăng ký `before_save` / `after_save` / `on_event` theo model, khai báo trong module. | **S4** | Alone Worker tự tạo safety config; job completed tự reset `current_stage` |
+| **P4.7** | **Record history API** — `GET /records/{table}/{id}/history` đọc từ `sync_mutations`. | **O5** | Xem được toàn bộ lịch sử thay đổi của một job an toàn |
+| **P4.8** | **Backfill chạy lại được từ đầu** (idempotent replay). | — | Xoá read model, replay toàn bộ mutation → kết quả giống hệt |
+
+**Projector — merge theo cột (thay upsert của blueprint):**
+
+```sql
+UPDATE jobs j SET
+    name       = COALESCE(m.name,   j.name),
+    status     = COALESCE(m.status, j.status),
+    -- ... các cột khác
+    last_seq         = %(seq)s,
+    last_mutation_id = %(mutation_id)s,
+    updated_by       = %(actor)s,
+    updated_at       = now()
+FROM jsonb_populate_record(NULL::jobs, %(payload)s::jsonb) m
+WHERE j.tenant_id = %(tenant)s
+  AND j.id        = %(id)s
+  AND %(seq)s > j.last_seq;      -- chống replay và out-of-order
+```
+
+**Hook engine — khai báo (mượn S4):**
+
+```python
+# modules/field_ops/hooks/on_job_started.py
+@hook(model="job", event="after_save", when="status == 'in_progress'")
+async def create_safety_config(ctx, record):
+    if record["job_type"] != "alone_worker":
+        return
+    await ctx.create("job_safety_configs", {
+        "job_id": record["id"],                       # ← sửa luôn lỗi M1
+        "check_in_interval_minutes": await ctx.setting("safety.checkin_interval", 30),
+        "grace_period_minutes":      await ctx.setting("safety.grace_period", 5),
+        "escalation_target":         "supervisor",
+    })
+    await ctx.schedule("on_checkin_missed", record["id"],
+                       delay_minutes=record["time_limit_minutes"])
+```
+
+Đây là nơi logic nghiệp vụ nên sống: khai báo, test được, tách khỏi endpoint. Hiện tại logic này rải rác trong controller và là lý do `job_id` bị rơi.
+
+---
+
+### Phase 5 — Miền hiện trường: chấm công & an toàn
+
+> **3 tuần** · 🧊 **Chạy thứ hai, ngay sau Phase 0 (Q6)** · là cổng kiểm soát của toàn bộ kế hoạch
+
+Bốn bảng `attendance_events`, `daily_timesheets`, `break_policies`, `shifts` **đã có schema đầy đủ và hợp lý nhưng vẫn trống 0 dòng sau 13 ngày** — không nhúc nhích giữa hai lần đo (27/08 và 08/09), trong khi `mushroom_jobs` đã tăng từ 11 lên 100 dòng. Đây là nút thắt duy nhất gây ba hệ quả cùng lúc, và là hạng mục tụt hậu rõ nhất so với phần còn lại của dự án.
+
+| ID | Việc | DoD |
+| :--- | :--- | :--- |
+| **P5.1** | **Màn hình điểm danh vào/ra** ghi `attendance_events`. | Nhân viên điểm danh được trên iPad; sự kiện lên server |
+| **P5.2** | **Job cuối ca** tổng hợp sang `daily_timesheets` (break, gross, paid, OT). | Chạy 22:00 hằng ngày; khớp với sự kiện điểm danh |
+| **P5.3** | **`break_policies` mặc định** (30 phút chuẩn, 5 phút ân hạn) qua seed khai báo. | Mỗi tenant có ít nhất 1 policy |
+| **P5.4** | **Sửa M1 — khoá ngoại bị rơi.** | ✅ **Đã xong** — Sửa client upsert bảo tồn `jobId`/`workerId` khi delta update thiếu; UI `saveSafetyConfig` & `checkInSoloJob` phát mutation; đã chạy script khôi phục §9.2. ⚠️ **Script chạy trên backend Postgres (`.env` đã đổi `IZIIAPP_DB_BACKEND=postgres`), chưa có số liệu trước–sau để xác nhận đã khôi phục — xem §0d.3 (3)** |
+| **P5.5** | **Ghi GPS + `response_time_seconds`** cho log an toàn. | ✅ **Đã xong** — Tính toán `responseTimeSeconds` khi check-in, lưu SQLite và đẩy qua sync mutation |
+| **P5.6** | **Đưa 5 bảng cục bộ còn lại vào sync**: `employee_department_roles`, `picker_teams`, `yield_surveys`, `maintenance_tickets`, `chat_messages`. | ✅ **Đã xong** — Đã cấu hình ánh xạ bảng, thêm handler upsert và queue mutation cho toàn bộ 5 bảng |
+| **P5.7** | ✅ **Đã xong** — Thêm cột `color` vào `mushroom_job_types` (bảng đã có sẵn), migration schema Drift v29 + SQLite fallback, giải quyết màu động qua dynamic resolver thay cho map cứng ở client. | Job `clean_bed`, `clean_room`, `wicks`, `sanimush` đổi màu đúng trên **mọi bản build**, kể cả bản cũ |
+| **P5.8** | ✅ **Đã xong** — 0/70 phòng còn kẹt `alone_timeout`. Chỉ cần cài lại bằng hook (P4.6) để không tái phát. | Có hook `on_job_completed` reset `current_stage`, có test |
+| **P5.9** | **Cột thời gian cho `maintenance_tickets`** (`created_at`, `due_date`, `completed_at`). | ✅ **Đã xong** — Thêm 3 cột vào SQLite schema migration v30 & Drift models; cập nhật UI repository |
+| **P5.10** | **Nhập `base_rate` + `employment_type`** cho nhân viên — vẫn NULL trên cả **10** người (đã tăng từ 8). | Điều kiện cần để tính lương |
+| **P5.11** | **Sửa F7** — `user_id` phải là mã nhân viên, không phải `device_id`. | Ba thiết bị của cùng một người chia sẻ đúng dữ liệu |
+
+---
+
+### Phase 6 — Topology hai tầng & API công khai
+
+> **2 tuần**
+
+| ID | Việc | DoD |
+| :--- | :--- | :--- |
+| **P6.1** | **Edge node** — mỗi site 1 node, LAN, **PostgreSQL** (Q5). | Site hoạt động đầy đủ khi mất WAN ≥ 24h |
+| **P6.1b** | 🆕 **Đóng gói Postgres chạy như Windows Service tại site**, không dùng Docker để giảm phụ thuộc. Hạ tài nguyên: `shared_buffers = 512MB`, `max_connections = 50`. | Cài bằng 1 installer; chạy được trên máy 8 GB RAM |
+| **P6.2** | **Central node** — PostgreSQL 16+, hợp nhất mọi site. | Central nhận mutation từ ≥ 2 edge node |
+| **P6.3** | **Kích hoạt peer-sync** đã có sẵn. Sửa cấu hình peer sai dải mạng (đang trỏ `192.168.1.11/12` trong khi máy thật ở `10.107.156.x` / `172.22.170.x` → 3.968 lần fail). | `⚠️ [PEER-SYNC] Không kết nối được peer` = 0 |
+| **P6.4** | **Store-and-forward** khi mất WAN, không mất thứ tự. | Ngắt WAN 2h, tạo 200 mutation, nối lại → đủ 200, đúng thứ tự |
+| **P6.5** | **API công khai đọc** (`GET /api/v1/...`) + **webhook** khi bản ghi đổi. Đây là cửa tích hợp tuỳ chọn cho bất kỳ hệ nào sau này. | Hệ ngoài đọc được đơn hàng/tồn kho; webhook bắn khi có thay đổi |
+| **P6.6** | **Bảng `external_refs`** — tạo sẵn, chưa dùng. | Có trong schema, không có mã phụ thuộc |
+
+---
+
+### Phase 7 — AI: embedding & hybrid search
+
+> **2 tuần**
+
+**pgai đã ngừng phát triển** — repo `timescale/pgai` archive 27/05/2026, README ghi *"As of February 2026, this project is no longer being maintained or supported."* Tiger Cloud gỡ managed vectorizer và hàm LLM trong DB từ 30/06/2026. Ta tự viết.
+
+| ID | Việc | DoD |
+| :--- | :--- | :--- |
+| **P7.1** | **`embedding_queue` + worker stateless** (thay pgai Vectorizer). | Giết worker giữa chừng không mất việc |
+| **P7.2** | **`content_hash`** — bỏ qua nếu text không đổi. | Đổi giá **không** kích hoạt re-embed |
+| **P7.3** | **Tách embedding khỏi transaction projection.** | Embedding service chết → projection vẫn chạy |
+| **P7.4** | **Dùng `halfvec(768)`.** | Dung lượng index giảm ~50% |
+| **P7.5** | **Sửa A3 — RRF query đang lấy 50 dòng ngẫu nhiên.** | Recall@10 ≥ 0,9 trên bộ truy vấn tiếng Việt |
+| **P7.6** | **Bật iterative index scans** (pgvector 0.8) cho post-filter đa tenant. | Lọc tenant nhỏ vẫn trả đủ kết quả |
+| **P7.7** | Phạm vi: SOP, sự cố an toàn, tìm sản phẩm nội bộ. | Quy mô theo từng deployment, không phải 2M gộp |
+
+**Sửa A3 — sắp xếp tường minh trước khi cắt:**
+
+```sql
+-- SAI (blueprint): ORDER BY trong OVER() KHÔNG sắp xếp kết quả trả về.
+--                  LIMIT 50 lấy 50 dòng tuỳ ý theo thứ tự scan.
+SELECT p.id, ..., ROW_NUMBER() OVER (ORDER BY pe.embedding <=> %s::vector) AS rank_vec
+FROM products p JOIN product_embeddings pe ON p.id = pe.product_id
+WHERE p.tenant_id = %s
+LIMIT 50;
+
+-- ĐÚNG
+SELECT s.*, ROW_NUMBER() OVER () AS rank_vec
+FROM (
+    SELECT p.id, p.name, p.sku, p.price
+    FROM products p JOIN product_embeddings pe ON p.id = pe.product_id
+    WHERE p.tenant_id = %s AND p.is_active
+    ORDER BY pe.embedding <=> %s::vector     -- ← bắt buộc
+    LIMIT 50
+) s;
+```
+
+**DDL `embedding_queue`:**
+
+```sql
+CREATE TABLE embedding_queue (
+    id              BIGSERIAL PRIMARY KEY,
+    table_name      TEXT NOT NULL,
+    row_id          TEXT NOT NULL,
+    tenant_id       TEXT NOT NULL,
+    content_hash    TEXT NOT NULL,      -- bỏ qua nếu text không đổi
+    model_version   TEXT NOT NULL,      -- để re-embed khi đổi model
+    attempts        INT  NOT NULL DEFAULT 0,
+    last_error      TEXT,
+    next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (table_name, row_id, model_version)
+);
+
+SELECT * FROM embedding_queue
+ WHERE next_attempt_at <= now()
+ ORDER BY id LIMIT 64
+   FOR UPDATE SKIP LOCKED;
+```
+
+---
+
+### ⊙ Vận hành & quan sát (xuyên suốt)
+
+| Việc | DoD |
+| :--- | :--- |
+| `/metrics` (Prometheus): độ trễ push/pull, độ sâu queue, tỉ lệ dead-letter, lag projector | Có dashboard Grafana |
+| Trang dead-letter cho người vận hành (xem, retry, bỏ qua) | Người không phải dev dùng được |
+| Cảnh báo: dead-letter > 0, projector lag > 5 phút, edge mất kết nối > 30 phút | Cảnh báo tới Slack/email |
+| `trace_id` xuyên suốt device → server → hook → projector | Truy được một mutation qua toàn bộ đường ống |
+| Bắt `_ProactorBasePipeTransport._call_connection_lost` (28 lần trong log) | Log sạch |
+| 🆕 **Sao lưu tự động + kiểm tra khôi phục định kỳ** (Q4) | Restore thử thành công hằng tháng — backup chưa từng restore không phải backup |
+| 🆕 **Streaming replica + quy trình failover có tập dượt** (Q4) | Failover thủ công < 15 phút, đã diễn tập 1 lần |
+| 🆕 **Runbook nâng cấp Postgres + lịch vá bảo mật hằng quý** (Q4) | Có tài liệu, không làm ad-hoc |
+| 🆕 **Giám sát WAL lag, bloat, connection pool, disk** (Q4) | Cùng dashboard Grafana |
+
+---
+
+## 7. Đặc tả kỹ thuật
+
+### 7.1. Hợp đồng `/sync/push` (mới)
+
+```http
+POST /sync/push
+Content-Type: application/json
+X-Device-Id: izii-d-2a129af8
+
+{
+  "device_id": "izii-d-2a129af8",
+  "tenant_id": "costa-m2",
+  "client_schema_version": 12,
+  "mutations": [
+    {
+      "mutation_id": "9f2c...",           // UUID, để idempotent
+      "table": "jobs",
+      "operation": "insert",
+      "mode": "partial",                  // Q1 = dirty-field → mặc định "partial"
+      "data": {
+        "id": "af4f...",                  // BẮT BUỘC
+        "status": "completed",            // khoá có mặt  → đổi giá trị
+        "assignee": null                  // null tường minh → XOÁ giá trị
+        // khoá vắng mặt (vd "name")      → KHÔNG đổi
+      },
+      "client_ts": "2026-09-08T02:11:04.318Z"   // BẮT BUỘC có timezone
+    }
+  ]
+}
+```
+
+```http
+200 OK
+{
+  "server_seq_high": 91240,
+  "accepted": [ { "mutation_id": "9f2c...", "seq": 91237 } ],
+  "rejected": [
+    {
+      "mutation_id": "a71b...",
+      "code": "E_ATTENDANCE_REQUIRED",
+      "reason": "Nhân viên 'Vinh Phan' chưa điểm danh",
+      "retryable": false
+    }
+  ]
+}
+```
+
+**Mã lỗi chuẩn:**
+
+| Mã | Ý nghĩa | Retry? |
+| :--- | :--- | :--- |
+| `E_NAIVE_TIMESTAMP` | Timestamp không có timezone | Không — client phải sửa |
+| `E_ATTENDANCE_REQUIRED` | Chưa điểm danh (Alone Worker) | Không |
+| `E_RULE_DENIED` | Vi phạm `record_rules` (O4) | Không |
+| `E_STALE_SEQ` | `seq` cũ hơn `last_seq` của bản ghi | Không — đã bị ghi đè |
+| `E_UNKNOWN_ROW` | UPDATE cho bản ghi chưa tồn tại | Có — sau khi fetch full row |
+| `E_SCHEMA_TOO_NEW` | Client cũ hơn `min_client_schema_version` | Không — cần cập nhật app |
+| `E_VALIDATION` | Vi phạm `constraints` trong `field_registry` | Không |
+
+### 7.2. Endpoint metadata mới (O2 + O3)
+
+```http
+GET /meta/models?since_seq=91234        # danh sách entity + version
+GET /meta/ui/job?locale=vi              # descriptor form/list cho model 'job'
+GET /meta/settings?scope=site&id=M2     # settings hiệu lực cho site
+GET /records/jobs/{id}/history          # lịch sử thay đổi (O5)
+```
+
+Metadata đi xuống thiết bị **qua chính `sync_mutations`**, nên thiết bị offline vẫn có metadata mới nhất mình đã nhận.
+
+### 7.3. Hợp đồng `/sync/pull`
+
+```http
+GET /sync/pull?after_seq=91234&limit=500
+
+200 OK
+{
+  "records": [ { "seq": 91235, "table": "...", "operation": "...", "data": {...} } ],
+  "has_more": false,
+  "watermark_seq": 91240      // ← chỉ trả seq < watermark (P0.4)
+}
+```
+
+### 7.4. Snapshot API
+
+```http
+GET /snapshot/state?site_id=M2&tables=grow_rooms,jobs
+
+200 OK
+{
+  "snapshot_seq": 91234,
+  "taken_at": "2026-09-08T02:11:04.318Z",
+  "schema_version": 12,
+  "tables": { "grow_rooms": [...], "jobs": [...] }
+}
+```
+
+Client lưu `snapshot_seq`, sau đó tiếp tục `GET /sync/pull?after_seq=91234`. Server phải lấy toàn bộ payload trong **một** transaction `REPEATABLE READ` — nếu không, khoảng giữa snapshot và lần pull đầu sẽ mất hoặc trùng mutation.
+
+---
+
+## 8. Sổ đăng ký lỗi
+
+**20 lỗi** đã xác định · **5 đã sửa** · **13 còn mở** · **2 mới phát hiện**. Cột "08/09" là số liệu đo được ở lần kiểm tra gần nhất.
+
+### 8.1. Từ phân tích log server (F)
+
+| ID | Lỗi | Mức | Trạng thái 08/09 | Phase |
+| :--- | :--- | :--- | :--- | :--- |
+| **F1** | Bảng ánh xạ stage → màu thiếu `clean_bed`, `clean_room` (nằm cứng trong client) | Cao | ✅ **Đã giải** — Cột `color` trong `mushroom_job_types` + Drift v29 + resolver động | **P3.1** + P5.7 |
+| **F2** | Phòng kẹt vĩnh viễn ở `alone_timeout` | Cao | ✅ **Đã sửa** — 0/70 phòng | P5.8 (cài hook chống tái phát) |
+| **F3** | `/sync/push` huỷ cả batch khi 1 item sai | **Nghiêm trọng** | ✅ **Đã sửa** — 0 lần 409 từ V1.0.37 | P0.2 (thêm test) |
+| **F4** | Outbox `status='rejected'` nằm chết, không retry, không báo | **Nghiêm trọng** | ⬜ Mở — **2 dòng** (trước 1) | P0.6 |
+| **F5** | UPDATE không có INSERT → client tạo row rỗng ("Untitled Task") | **Nghiêm trọng** | 🟡 **Đã xử lý cho `tasks`, `leads`, `deals`, `projects`, `chat`** — Client fallback fetch full row qua `GET /sync/record/{table}/{id}` (P0.1c) trong `sync_service.dart` + script cleanup §9.1 | P0.1, P0.1c, P4.2, §9.1 |
+| **F6** | 401 trên `/sessions/current` → client không biết trước ai chưa điểm danh | **Nghiêm trọng** | ✅ **Đã sửa ở V1.0.41** — 3×200, 0×401 | P0.7 |
+| **F7** | `user_id` = `device_id`; mỗi thiết bị là một "user" riêng | Cao | ⬜ Mở | P1.4, P5.11 |
+| **F8** | Port 8080 xung đột | Cao | ✅ **Đã sửa** — 0 lần từ V1.0.37 | P1.10 |
+| **F9** | Timestamp naive ở client | Cao | ✅ **Đã sửa** — chỉ còn 2/50.753 lượt | P0.3 (bật chế độ nghiêm) |
+| **F10** | `IZIIAPP_ADMIN_SECRET` dùng chung token đồng bộ | Cao | ✅ Đã tách — **nhưng gây ra F11** | P1.9 + P3.4 |
+| **F11** | 🔴 **MỚI · WebSocket chết từ V1.0.37.** Client gửi admin secret cho `/chat` → **15.942 lần 403**. Realtime rơi về polling 5 giây | **Nghiêm trọng** | ✅ **Đã vá** — Client dùng `getWsToken()` riêng biệt, không fallback admin secret | **P0.8** |
+| **F12** | 🔴 **MỚI · `TypeError: can't subtract offset-naive and offset-aware datetimes`** tại `sqlite_repo.py:358` `get_online` → **13 lần 500** | Cao | ✅ **Đã vá** — Ép `TIMESTAMPTZ` + chuẩn hoá UTC-aware | **P0.9** |
+| **F13** | 🔴 **MỚI · `postgres_repo.py:359` gọi `.replace("Z","+00:00")` trên cột `TIMESTAMPTZ`** — psycopg trả `datetime` chứ không phải `str` → `TypeError` bị `except Exception: continue` nuốt → **`/devices/online` luôn trả rỗng, không có log lỗi**. Đã thành lỗi sống vì `.env` đã cutover sang Postgres | **Nghiêm trọng** | ✅ **Đã vá** — Bổ sung `isinstance(raw_last_seen, datetime)` trong `postgres_repo.py` và `sqlite_repo.py` | **P0.11** |
+
+### 8.2. Từ kiểm kê module Mushroom (M)
+
+| ID | Lỗi | Mức | Trạng thái 08/09 | Phase |
+| :--- | :--- | :--- | :--- | :--- |
+| **M1** | `job_id`, `worker_id` bị rơi khi ghi xuống máy trạm | **Nghiêm trọng** | ✅ **Đã sửa** — Client upsert bảo tồn `jobId`/`workerId` khi delta thiếu; UI phát mutation đầy đủ; đã chạy script khôi phục §9.2 (⚠️ chưa có số liệu trước–sau, §0d.3 (3)) | P4.6 (hook) + P5.4 |
+| **M2** | Nhiều cột có sẵn nhưng chưa bao giờ được ghi | Cao | ⬜ Mở — `target_yield` 0/70 · `picked_yield` 0/70 · `base_rate` 0/10 · GPS 0/15 · `response_time` 0/15 · `picker_teams` có người 0/22 | P5.5, P5.10 |
+| **M3** | Dữ liệu seed bị nhầm là dữ liệu vận hành | Trung bình | ⬜ Mở | **P1.3** (seed khai báo) |
+| **M4** | 🟡 **MỚI · Khối chấm công vẫn 0 dòng sau 13 ngày.** 5 bảng (`attendance_events`, `daily_timesheets`, `break_policies`, `shifts`, `payroll_calculations`) không nhúc nhích trong khi `mushroom_jobs` tăng 11 → 100 | **Nghiêm trọng** | 🟡 Tụt hậu | **P5.1–P5.3** — nâng lên mức chặn phát hành |
+
+### 8.3. Từ duyệt blueprint CQRS (A)
+
+| ID | Lỗi | Mức | Trạng thái 08/09 | Phase |
+| :--- | :--- | :--- | :--- | :--- |
+| **A1** | Projector upsert bằng payload thiếu cột → ghi đè dữ liệu tốt | **Nghiêm trọng** | ⬜ Mở | P4.1 |
+| **A2** | Gọi embedding HTTP bên trong transaction projection; lỗi trả `[]` im lặng | **Nghiêm trọng** | ⬜ Mở (chưa triển khai) | P7.3 |
+| **A3** | Truy vấn RRF lấy 50 dòng ngẫu nhiên | **Nghiêm trọng** | ⬜ Mở (chưa triển khai) | P7.5 |
+| **A4** | `seq` toàn cục có lỗ hổng khoảng trống | **Nghiêm trọng** | ✅ **Đã sửa** — 50.536 lượt dùng `after_seq` | P0.4 (thêm test) |
+| **A5** | FK cứng trong projection eventually-consistent | Cao | ⬜ Mở | P4.4 |
+
+### 8.4. Xu hướng giữa hai lần đo
+
+| | 27/08 | 08/09 |
+| :--- | ---: | ---: |
+| Lỗi đã sửa | 0 | **5** |
+| Lỗi còn mở | 18 | **13** |
+| Lỗi mới | — | **2** (F11, F12) + 1 nâng mức (M4) |
+| Lỗi **xấu đi** | — | **1** (M1) |
+
+Nhận xét: tốc độ sửa tốt ở nhóm hạ tầng (port, timestamp, sequence, session). Nhóm dữ liệu nghiệp vụ (chấm công, khoá ngoại, dọn dữ liệu) đứng yên. Và mỗi lần sửa bảo mật lại sinh regression vì thiếu test hồi quy đầu-cuối — xem P0.10.
+
+**Cập nhật 09/09.** F11 và F12 đã vá ở mức mã nguồn, M1 và F5 đã có bản sửa. Nhưng cutover sang Postgres làm lộ **F13**, và bộ test hồi quy Phase 0 tuy đã viết lại **không được `unittest discover` thu thập** — cùng một dạng hỏng im lặng mà P0.10 sinh ra để chặn. Chi tiết ở §0d.
+
+---
+
+## 9. Migration & dọn dữ liệu
+
+**Bản vá code không tự dọn dữ liệu hỏng đang có.** Chạy kèm mỗi lần phát hành.
+
+### 9.1. Script dọn bắt buộc (sau Phase 4)
+
+```sql
+-- 1. Xoá task ma sinh ra từ lỗi F5/A1 (8 dòng "Untitled Task" trong DB mẫu)
+DELETE FROM tasks
+ WHERE (title IS NULL OR title = 'Untitled Task')
+   AND project_id IS NULL
+   AND description IS NULL;
+
+-- 2. Xoá job rỗng (6 dòng trong DB mẫu)
+DELETE FROM jobs
+ WHERE room_id IS NULL AND job_type IS NULL AND name IS NULL;
+
+-- 3. Giải phóng phòng kẹt (updated_at cũ hơn created_at — lỗi F2)
+UPDATE grow_rooms
+   SET current_stage = 'idle', status = 'idle', updated_at = now()
+ WHERE updated_at < created_at
+    OR (current_stage = 'alone_timeout'
+        AND updated_at < now() - INTERVAL '24 hours');
+
+-- 4. Đánh dấu dữ liệu seed (lỗi M3) — sau P1.3 thì cột is_seed đã có sẵn
+UPDATE picker_teams SET is_seed = TRUE WHERE headcount = 0 AND member_ids_json IS NULL;
+UPDATE departments  SET is_seed = TRUE WHERE created_at < '2026-08-27';
+UPDATE chat_messages SET is_seed = TRUE WHERE created_at < '2026-08-27';
+```
+
+### 9.2. Khôi phục khoá ngoại đã mất (M1)
+
+`job_id` và `worker_id` vẫn còn trong `sync_mutations` phía server — khôi phục được:
+
+```sql
+UPDATE safety_checkin_logs l
+   SET job_id    = m.data->>'job_id',
+       worker_id = m.data->>'worker_id'
+  FROM sync_mutations m
+ WHERE m."table" = 'mushroom_safety_checkin_logs'
+   AND m.data->>'id' = l.id
+   AND (l.job_id IS NULL OR l.job_id = '');
+```
+
+Chạy tương tự cho `job_safety_configs`.
+
+### 9.3. Thứ tự phát hành
+
+1. Server lên trước, **tương thích ngược** với client cũ (chấp nhận timestamp naive nhưng ghi cảnh báo).
+2. Client lên sau, gửi UTC và xử lý `partial_commit`.
+3. Sau khi ≥ 95% thiết bị lên bản mới → server bật chế độ nghiêm (từ chối naive timestamp).
+4. Chạy script dọn dữ liệu §9.1 và §9.2.
+5. Bật metadata-driven UI (P3.2) — client cũ vẫn chạy được nhờ `min_client_schema_version`.
+
+### 9.4. ~~Đổi tên bảng `mushroom_*`~~ — ĐÃ BỎ theo Q2
+
+Giữ nguyên tên bảng hiện tại. Thay vào đó dùng **lớp bí danh** trong `model_registry` (§0c · Q2): API và metadata dùng `model_name` logic, chỉ tầng lưu trữ biết `table_name` vật lý. Đổi tên sau này chỉ là đổi một dòng cấu hình.
+
+**Quy tắc bắt buộc từ giờ:** mọi bảng tạo mới **không được** có tiền tố ngành (`mushroom_`, `retail_`…). Tên bảng mô tả khái niệm, không mô tả khách hàng.
+
+### 9.5. Di trú SQLite → PostgreSQL ở edge (Q5)
+
+Áp dụng cho **edge node**, không áp dụng cho SQLite trên thiết bị Flutter.
+
+1. Dừng edge node, sao lưu file SQLite.
+2. Chạy công cụ di trú (P1.12) — tạo schema Postgres, copy dữ liệu theo lô.
+3. **Đối chiếu số dòng từng bảng** — phải khớp 100%, không chấp nhận sai lệch.
+4. Khởi động edge trên Postgres, chạy 1 chu kỳ push/pull đầy đủ để xác nhận.
+5. Giữ file SQLite cũ **tối thiểu 30 ngày** trước khi xoá.
+6. Nếu lỗi: rollback về SQLite theo kịch bản đã tập dượt.
+
+Triển khai 1 site trước, chạy ổn định 1 tuần, rồi mới mở rộng.
+
+---
+
+## 10. Kiểm thử & tiêu chí nghiệm thu
+
+### 10.1. Test bắt buộc trước mỗi phát hành
+
+| Kịch bản | Kỳ vọng |
+| :--- | :--- |
+| **Partial commit** — batch 18 item, 1 item vi phạm | 17 commit, 1 dead-letter, response liệt kê đúng |
+| **Mất mạng 24h** — tạo 200 mutation offline, nối lại | Đủ 200, đúng thứ tự, không trùng |
+| **Sequence gap** — 50 transaction song song | Client không bỏ sót mutation nào |
+| **Replay** — xoá read model, replay toàn bộ mutation | Kết quả giống hệt lần đầu (idempotent) |
+| **Snapshot + pull** — snapshot rồi pull từ `snapshot_seq` | Không mất, không trùng |
+| **Partial update** — gửi `{id, status}` | `name`, `price` không bị rỗng |
+| **UPDATE cho id lạ** | Fetch full row, không sinh stub |
+| **Metadata mới, client cũ** | Client schema v10 bỏ qua model yêu cầu v12, không crash |
+| **Thêm job type qua admin** | Xuất hiện trên iPad và Desktop **không cần build lại app** |
+| **Record rule** — nhân viên bộ phận A | Không thấy job của bộ phận B, kể cả khi gọi API trực tiếp |
+| **Hook** — job Alone Worker bắt đầu | `job_safety_configs` được tạo **có `job_id`** |
+| **Bật/tắt module** | Tenant không bật `field_ops` không thấy bảng của module đó |
+| **Embedding service chết** | Projection không bị ảnh hưởng; queue tồn đọng và retry |
+| **Tenant isolation** — query quên `WHERE tenant_id` | RLS trả 0 dòng |
+| **Tìm kiếm tiếng Việt** — gõ `phong 33` | Khớp `phòng 33` |
+| 🔴 **Đổi bất kỳ secret nào** (F11) | CI chạy hết vòng: đăng ký thiết bị → WS `/chat` connect → push → pull. Không có bước nào 401/403 |
+| 🔴 **Rà naive datetime phía server** (F12) | `grep -rn "datetime.now()" repository/ routers/` không có kết quả thiếu `timezone.utc` |
+| **Job type do người dùng tạo** | Tạo `wicks` trên admin → xuất hiện trên iPad và Desktop kèm đúng màu, **không build lại app** |
+| 🆕 **Dirty-field: khoá vắng mặt** (Q1) | Gửi `{id, status}` → `name`, `assignee` giữ nguyên |
+| 🆕 **Dirty-field: `null` tường minh** (Q1) | Gửi `{id, assignee: null}` → `assignee` bị xoá, các trường khác giữ nguyên |
+| 🆕 **Client chỉ gửi trường đã sửa** (Q1) | Sửa 1 trường trên UI → payload chứa đúng `id` + 1 trường |
+| 🆕 **Backfill từ snapshot** (Q1) | Backfill từ `seq=0` phải **bị chặn** bởi công cụ; chỉ chạy được từ snapshot + delta |
+| 🆕 **Form layout động** (Q3) | Đổi thứ tự/nhóm trường trên admin → iPad đổi theo trong ≤ 5 phút, không build |
+| 🆕 **Descriptor vượt ranh giới** (Q3) | Descriptor chứa biểu thức lạ → server **từ chối** khi lưu, không đẩy xuống client |
+| 🆕 **Di trú edge sang Postgres** (Q5) | Số dòng từng bảng khớp 100% trước/sau; rollback về SQLite chạy được |
+
+### 10.2. Chỉ số nghiệm thu
+
+| Chỉ số | Ngưỡng |
+| :--- | :--- |
+| Tỉ lệ mutation vào dead-letter | < 0,1% |
+| Độ trễ projector (mutation → read model) | p95 < 5 giây |
+| Độ trễ `/sync/push` | p95 < 300 ms |
+| Cold-start thiết bị mới (snapshot) | < 30 giây cho 1 site |
+| Số bản ghi ma sinh mới | **0** |
+| Số lượt `[Errno 10048]` | **0** ✅ đã đạt |
+| Số lượt WebSocket `/chat` bị 403 | **0** (hiện 15.942) |
+| Số lượt HTTP 500 trên `/api/v1/devices/*` | **0** (hiện 13) |
+| Dòng thiếu `job_id` trong 2 bảng an toàn | **0** (hiện 22/26) — *điều kiện gỡ đóng băng #2* |
+| Dòng "Untitled Task" + job rỗng | **0** (hiện 8) — *điều kiện gỡ đóng băng #3* |
+| Dòng `outbox_mutations` `rejected` quá 24h | **0** (hiện 2) — *điều kiện gỡ đóng băng #4* |
+| Ngày liên tiếp có dữ liệu chấm công thật (≥ 1 site) | **5** (hiện 0) — *điều kiện gỡ đóng băng #1* |
+| Thêm loại job mới → xuất hiện trên thiết bị | < 5 phút, **0 lần build app** |
+| Recall@10 hybrid search (tiếng Việt) | ≥ 0,9 |
+
+---
+
+## 11. Quyết định cần chốt & rủi ro
+
+### 11.1. Sáu quyết định — đã chốt ngày 08/09/2026
+
+| # | Quyết định | Đã chọn | Ghi chú |
+| :--- | :--- | :--- | :--- |
+| **Q1** | Mutation contract | ✅ **Dirty-field** | Bốn ràng buộc bắt buộc ở §0c · Q1. Quan trọng nhất: **cấm replay từ `seq=0`** |
+| **Q2** | Đổi tên bảng `mushroom_*` | ✅ **Không đổi** | Dùng lớp bí danh `model_registry`. Bảng mới không được có tiền tố ngành |
+| **Q3** | Phạm vi metadata-driven UI | ✅ **Enum + màu + form layout** | Ranh giới cứng ở §0c · Q3 — cấm ngôn ngữ script trong descriptor |
+| **Q4** | Hạ tầng | ✅ **Self-host** · pgvectorscale để sau | Nhận thêm 5 việc DevOps ở mục ⊙ |
+| **Q5** | Database ở edge | ✅ **PostgreSQL toàn bộ** | SQLite chỉ còn ở thiết bị Flutter. Hợp lực với Q1 |
+| **Q6** | Đóng băng tính năng | ✅ **Có** | Phase 5 chạy thứ hai. Cổng kiểm soát ở §6.0 |
+
+**Không còn quyết định nào chặn.** Kế hoạch sẵn sàng chuyển thành ticket.
+
+### 11.2. Rủi ro
+
+| Rủi ro | Mức | Giảm thiểu |
+| :--- | :--- | :--- |
+| Phase 0 bị bỏ qua vì "không thấy tính năng mới" | **Cao** | Trình bày rõ: đây là điều kiện tiên quyết, không phải tuỳ chọn. Mọi thứ xây thêm đều kế thừa cái sai đang có |
+| Metadata layer bị làm quá tay, thành ORM mini | **Cao** ⬆ | Q3 đã chọn phạm vi đầy đủ nên rủi ro này **tăng**. Bảo vệ bằng ranh giới cứng ở §0c · Q3: danh sách widget cố định, cấm ngôn ngữ script. Mọi yêu cầu vượt ranh giới → viết mã Flutter, không nới descriptor |
+| EAV dùng sai chỗ, giết hiệu năng | Trung bình | Quy tắc cứng: trường lõi là cột thật, EAV chỉ cho trường tuỳ biến theo khách hàng |
+| ~~Đổi tên bảng làm gãy client cũ~~ | — | **Đã loại bỏ** theo Q2 |
+| 🆕 **Di trú SQLite → Postgres ở edge làm mất dữ liệu** (Q5) | **Cao** | Quy trình §9.5: đối chiếu số dòng 100%, giữ file cũ 30 ngày, rollback đã tập dượt, triển khai 1 site trước |
+| 🆕 **Client Flutter theo dõi dirty-field sai** (Q1) | **Cao** | Sai ở đây tạo ra đúng lỗi F5/A1 nhưng khó phát hiện hơn. Bắt buộc test: sửa 1 trường → payload chỉ chứa `id` + trường đó |
+| 🆕 **Đóng băng tính năng bị phá giữa chừng** (Q6) | Trung bình | Định nghĩa "tính năng" ở §0c · Q6 và cổng kiểm soát §6.0. Mọi ngoại lệ phải có phê duyệt của PM bằng văn bản |
+| Module system phức tạp hoá code base | Trung bình | Bắt đầu bằng 2 module (`core` + `field_ops`), chỉ tách thêm khi thật cần |
+| Dữ liệu hỏng hiện tại lan rộng | **Cao** | Script §9 chạy ngay sau Phase 4, trước khi mở rộng |
+| pgvector/pgvectorscale đổi trạng thái (như pgai) | Thấp | Kiểm tra lại tình trạng dự án trước mỗi quyết định hạ tầng |
+| 🔴 **Sửa bảo mật sinh regression im lặng** | **Cao** | F11 đã xảy ra: WebSocket chết 4 phiên bản mà không ai biết. Bắt buộc P0.10 — test hồi quy đầu-cuối cho mọi thay đổi secret |
+| 🟡 **Nhóm dữ liệu nghiệp vụ tiếp tục tụt hậu** | **Giảm** ⬇ | **Đã xử lý bằng Q6** — Phase 5 chạy thứ hai và là cổng cứng. Vẫn nên giao cho một người chuyên trách, không ghép với người sửa hạ tầng |
+
+---
+
+## 12. Phụ lục
+
+### 12.1. Bảng mới — tổng hợp
+
+| Bảng | Nguồn ý tưởng | Phase |
+| :--- | :--- | :--- |
+| `tenant_modules` | S1 | P2 |
+| `model_registry` | O2 | P3 |
+| `field_registry` | O2 + O3 | P3 |
+| `entity_attributes` | S2 | P3 |
+| `settings` | S3 | P3 |
+| `record_rules` | O4 | P3 |
+| `translations` | S7 | P3 |
+| `hook_registry` | S4 | P4 |
+| `projection_checkpoint` | — | P4 |
+| `embedding_queue` | — | P7 |
+| `external_refs` (tuỳ chọn) | — | P6 |
+| `attendance_events`, `daily_timesheets`, `break_policies`, `shifts` | — (đã có schema, 0 dòng) | P5 |
+
+### 12.2. Biến môi trường
+
+Sau Phase 3, phần lớn cấu hình chuyển sang bảng `settings`. Env var chỉ giữ những gì cần trước khi DB sẵn sàng:
+
+```ini
+# Định danh node
+IZIIAPP_SERVER_ID=edge-costa-m2
+IZIIAPP_ZONE=M2
+IZIIAPP_NODE_ROLE=edge            # edge | central
+IZIIAPP_PEERS=10.107.156.10:8080  # SỬA: đang trỏ sai dải mạng 192.168.1.x
+
+# Bảo mật — tách bạch (F10)
+IZIIAPP_SERVER_SECRET=...
+IZIIAPP_ADMIN_SECRET=...          # PHẢI khác server secret
+IZIIAPP_WS_SECRET=...
+
+# Kết nối DB
+IZIIAPP_DB_URL=postgresql://...
+
+# Embedding
+EMBEDDING_MODEL=bge-m3
+EMBEDDING_DIM=768
+EMBEDDING_ENDPOINT=http://ai-service.internal:8000/embed
+```
+
+### 12.3. Cấu hình PostgreSQL (central node, 32 GB RAM)
+
+```ini
+shared_buffers = 8GB
+work_mem = 48MB
+maintenance_work_mem = 2GB          # cần khi build HNSW
+effective_cache_size = 24GB
+hnsw.ef_search = 40
+max_connections = 300               # pgbouncer ở chế độ session (LISTEN cần session pooling)
+```
+
+> Blueprint đề xuất 32–64 GB cho 2 triệu vector với công thức 6,28 GB. Công thức đó lạc quan ~2,2 lần vì **HNSW của pgvector lưu bản sao đầy đủ vector trong index**. Với `halfvec` và phạm vi theo từng deployment, **32 GB là đủ**.
+
+### 12.4. Nguồn kiểm chứng công nghệ (kiểm tra 04/09/2026)
+
+| Khẳng định | Nguồn |
+| :--- | :--- |
+| pgai archive 27/05/2026, không bảo trì từ 02/2026 | `github.com/timescale/pgai` |
+| Tiger Cloud gỡ managed vectorizer + hàm LLM từ 30/06/2026 | `tigerdata.com/docs/deploy/tiger-cloud/vectorizer-deprecation` |
+| pgvectorscale còn hoạt động; có label-based filtered search; không có trên RDS/Aurora | `github.com/timescale/pgvectorscale` |
+| pgvector 0.8 có iterative index scans; 0.7 có `halfvec` | `github.com/pgvector/pgvector/blob/master/CHANGELOG.md` |
+| HNSW của pgvector lưu bản sao đầy đủ vector trong index | `lantern.dev/blog/pgvector-storage` |
+
+### 12.5. Tài liệu tham khảo kiến trúc
+
+| Tài liệu | Dùng để làm gì trong kế hoạch này |
+| :--- | :--- |
+| `Smartstore-Architecture-For-Developers.md` | Nguồn cho S1–S7: module lifecycle, GenericAttribute, ISettings, DbSaveHook, bounded context, FluentMigrator, LocalizedProperty |
+| Odoo 19.0 (ORM & metadata layer) | Nguồn cho O1–O7: audit fields, ir.model/ir.model.fields, model-driven UI, ir.rule, mail.thread, seed noupdate, `_inherit` |
+| `iziiapp_cqrs_pgvector_architecture.md` v2.0.0 | Blueprint gốc — kế hoạch này thay thế §7 (roadmap) và điều chỉnh §3 (schema), §6 (tính RAM) |
+| `Mushroom_Joblist.md` | Danh sách trường đồng bộ khi tạo New Job |
+
+> **Lưu ý pháp lý:** Smartstore (GPL-3.0) và Odoo (LGPL-3.0/OPL) chỉ được dùng làm **nguồn tham khảo ý tưởng kiến trúc**. Không sao chép mã nguồn, không tạo tác phẩm phái sinh, không phụ thuộc runtime. Các khái niệm kiến trúc (module system, EAV, metadata registry, record rules, save hooks) là mẫu thiết kế phổ biến trong ngành, không bị ràng buộc bản quyền.
+
+---
+
+*Kế hoạch này dựa trên phân tích dữ liệu vận hành thật, không phải giả định. Mọi con số và trích dẫn mã đều lấy nguyên văn từ log server và database đã kiểm tra.*
+
+*Sáu quyết định kiến trúc đã chốt ngày **08/09/2026** (§0c) — kế hoạch không còn hạng mục chờ quyết định.*
+
+*Lần đo gần nhất: **08/09/2026** — 555.000 dòng log (V1.0.20 · V1.0.34–37 · V1.0.40–41) và 4 file database. Đề xuất đo lại sau mỗi 2 tuần bằng đúng bộ kiểm tra ở §0b để theo dõi xu hướng, thay vì chỉ đọc báo cáo tiến độ.*

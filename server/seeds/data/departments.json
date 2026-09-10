@@ -1,0 +1,14 @@
+﻿[
+  {
+    "id": "dep_harvest",
+    "name": "Harvest Operations",
+    "description": "Mushroom picking, sorting, and packing",
+    "noupdate": true
+  },
+  {
+    "id": "dep_growing",
+    "name": "Growing & Climate",
+    "description": "Bed preparation, watering, climate control",
+    "noupdate": true
+  }
+]

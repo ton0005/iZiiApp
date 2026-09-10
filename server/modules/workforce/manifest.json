@@ -1,0 +1,29 @@
+﻿{
+  "name": "workforce",
+  "version": "1.0.0",
+  "display_name": { "vi": "Nhân sự & Chấm công", "en": "Workforce & Time Tracking" },
+  "depends": ["core"],
+  "owns_tables": [
+    "departments",
+    "mushroom_job_types",
+    "mushroom_attendance_events",
+    "mushroom_daily_timesheets",
+    "mushroom_break_policies",
+    "mushroom_shifts",
+    "mushroom_payroll_calculations",
+    "picker_teams"
+  ],
+  "models": [
+    { "model_name": "department", "table_name": "departments", "label": { "vi": "Phòng ban", "en": "Department" } },
+    { "model_name": "job_type", "table_name": "mushroom_job_types", "label": { "vi": "Loại công việc", "en": "Job Type" } },
+    { "model_name": "attendance_event", "table_name": "mushroom_attendance_events", "label": { "vi": "Sự kiện điểm danh", "en": "Attendance Event" } },
+    { "model_name": "timesheet", "table_name": "mushroom_daily_timesheets", "label": { "vi": "Bảng chấm công", "en": "Timesheet" } },
+    { "model_name": "break_policy", "table_name": "mushroom_break_policies", "label": { "vi": "Chính sách giải lao", "en": "Break Policy" } },
+    { "model_name": "shift", "table_name": "mushroom_shifts", "label": { "vi": "Ca làm việc", "en": "Shift" } },
+    { "model_name": "payroll", "table_name": "mushroom_payroll_calculations", "label": { "vi": "Tính lương", "en": "Payroll" } },
+    { "model_name": "picker_team", "table_name": "picker_teams", "label": { "vi": "Đội thu hoạch", "en": "Picker Team" } }
+  ],
+  "extends": [],
+  "min_client_schema_version": 10,
+  "enabled_by_default": true
+}

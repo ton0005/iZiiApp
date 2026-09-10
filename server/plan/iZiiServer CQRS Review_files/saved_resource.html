@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<!-- saved from url=(0253)https://9d5430ac-6f4d-4fbe-897a-a80babf0f8cd.frame.claudeusercontent.com/_f/1788507380-66ee/?__frame_t=glcbKRdNBrzMfY8EvvgXSElz.11a8a03f-1155-417f-8c18-38f8ef47f979.f749c53f-58bd-4073-9307-06e3aa13484f.1788511077&__frame_v=manifest.4438b201f031cc1b.json -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!-- frame-runtime --><script>window.__FRAME_PREAMBLE={"v":1,"capabilities":{"artifact":"artifact.BYHii2AW.js","assets":"assets.8Gk803W0.js","comments":"comments.BiSa9uTt.js","db":"db.h-3sndFg.js","downloads":"downloads.th1YuAIk.js","embed":"embed.eqL6deQM.js","endpoints":"endpoints.CfzSv5nM.js","mcp":"mcp.Bvma3qD7.js","network":"network.B5UA9Su4.js","permissions":"permissions.BNySkLV5.js","room":"room.VSdFwTE9.js","sample":"sample.BW2Uysoh.js","self":"artifact.BYHii2AW.js","user":"user.BpKav-Rf.js"},"transforms":"_transforms.DSB5x63f.js","comments":"_comments.CySkkG-P.js","translate":"_translate.5HCW4BJh.js","ldx":"_ldx.DYFNSryD.js"}</script><script>(function(){"use strict";var ce=["light","dark","system"],le=/^[A-Za-z0-9_-]{1,64}$/,Z=/^[a-zA-Z_:][a-zA-Z0-9_:.-]{0,127}$/,ue=new Set(["class","hidden","value","checked","style","title","alt","placeholder","lang","dir","role","tabindex","disabled","readonly","contenteditable","open","colspan","rowspan"]);function fe(e){const t=e.toLowerCase();return t.startsWith("data-")||t.startsWith("aria-")||ue.has(t)}var He="http://www.w3.org/1999/xhtml",de="http://www.w3.org/2000/svg",pe=new Set(["script","style","iframe","noscript","noframes","noembed","xmp","plaintext","template","title","textarea","object","embed"]),me=new Set(["script","style"]);function he(e){const t=e.localName.toLowerCase();return e.namespaceURI==="http://www.w3.org/1999/xhtml"?!pe.has(t):e.namespaceURI===de?!me.has(t):!1}function D(e,t){return e===t||(e===160||e===32)&&(t===160||t===32)}function _e(e,t){const r=e.length,n=t.length;let s=0;for(;s<r&&s<n&&D(e.charCodeAt(s),t.charCodeAt(s));)s++;let o=0;for(;o<r-s&&o<n-s&&D(e.charCodeAt(r-1-o),t.charCodeAt(n-1-o));)o++;return{p:s,s:o}}function ve(e,t){const r=e.firstChild;if(e.childNodes.length!==1||r===null||r.nodeType!==Node.TEXT_NODE){e.textContent=t;return}const n=r.data,s=n.length,o=t.length,{p:i,s:c}=_e(n,t);i===s&&c===0&&s===o||r.replaceData(i,s-i-c,t.slice(i,o-c));const m=r.data,d=e.ownerDocument.getSelection?.()??null,v=d!==null&&d.rangeCount>0&&(d.anchorNode===r||d.focusNode===r)?{anchor:d.anchorNode,anchorOffset:d.anchorOffset,focus:d.focusNode,focusOffset:d.focusOffset}:null;let p=-1,y=-1;for(let h=0;h<m.length&&h<t.length;h++){const E=m.charCodeAt(h),A=t.charCodeAt(h);E!==A&&D(E,A)&&(p<0&&(p=h),y=h)}const w=p>=0;if(w&&r.replaceData(p,y-p+1,t.slice(p,y+1)),w&&v!==null&&v.anchor!==null&&v.focus!==null)try{d.setBaseAndExtent(v.anchor,v.anchorOffset,v.focus,v.focusOffset)}catch{}}var ye=new Set(["html","head","body","frameset"]);function we(e){return e.namespaceURI==="http://www.w3.org/1999/xhtml"&&ye.has(e.localName)}function ge(e){if(e===null||typeof e!="object")return!1;const t=e;if(typeof t.target!="string"||!le.test(t.target)||t.text!==void 0&&typeof t.text!="string")return!1;if(t.attrsSet!==void 0){if(t.attrsSet===null||typeof t.attrsSet!="object")return!1;for(const[r,n]of Object.entries(t.attrsSet))if(!Z.test(r)||typeof n!="string")return!1}if(t.attrsRemoved!==void 0){if(!Array.isArray(t.attrsRemoved))return!1;for(const r of t.attrsRemoved)if(typeof r!="string"||!Z.test(r))return!1}return!0}function Ee(e,t){if(e===null||typeof e!="object")return!1;const{seq:r,elements:n}=e;if(typeof r!="number"||!Number.isSafeInteger(r)||!Array.isArray(n)||n.length===0||n.length>64)return!1;for(let s=0;s<n.length;s++)if(!t(n[s]))return!1;return!0}function be(e){return e===null||typeof e!="object"?!1:Ee(e.__frame_patch,ge)}function Ae(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_init;return t!==null&&typeof t=="object"}function Te(e){return e!==null&&typeof e=="object"&&e.__frame_size_poke===!0}function Re(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_theme;if(t===null||typeof t!="object")return!1;const r=t.theme;return typeof r=="string"&&ce.includes(r)}var S=/^[\w.-]+\.js$/;function Se(e,t,r){return r?"inert":typeof t=="string"&&S.test(t)?e?[t]:"inert":e?"inert":"framed"}var We="frame_ldx_runtime",Ke="script#an-form";function Le(){return{post(e,t){parent.postMessage(e,t)},on(e){const t=r=>{r.source===parent&&e(r.data,r.origin,r.isTrusted)};return addEventListener("message",t),()=>removeEventListener("message",t)}}}function ke(){return{post:()=>{},on:()=>()=>{}}}var I="__frame_scroll",Pe=150,Oe=310,Ce=160,Me=3e4;function je(){let e=0,t=!1,r=!1,n=!1,s=0,o=null;const i=u=>{try{sessionStorage.setItem(I,JSON.stringify({y:u}))}catch{}},c=()=>{if(clearTimeout(e),o===null)return;const u=o;o=null,i(u)},m=()=>{if(t){t=!1;return}r=!0,o=scrollY,clearTimeout(e),e=setTimeout(c,Pe)};try{addEventListener("scroll",m,{passive:!0}),addEventListener("pagehide",c)}catch{}const d=()=>{let u;try{u=sessionStorage.getItem(I)}catch{return null}if(u===null)return null;let a;try{a=JSON.parse(u)}catch{a=null}const f=a?.y;if(!(typeof f=="number"&&Number.isFinite(f)&&f>=0)){try{sessionStorage.removeItem(I)}catch{}return null}return f};let v=!1;const p=u=>{try{const a=scrollY;scrollTo({top:u,left:0,behavior:"instant"}),s=u,n=!0,clearTimeout(e),o=null,i(u);const f=scrollY;f!==a&&(t=!0),f!==u&&!v&&(v=!0,addEventListener("load",()=>{try{if(scrollY===f){const b=d();p(b!==null?b:s)}}catch{}},{once:!0}))}catch{}},y=()=>{try{return!!location.hash}catch{return!0}};let w=!1;const h=()=>{try{if(w||innerWidth>Oe||innerHeight>Ce)return;w=!0;const u=Date.now(),a=()=>{try{removeEventListener("resize",a)}catch{}if(Date.now()-u>Me||r||y())return;const f=d();p(f!==null?f:s)};addEventListener("resize",a)}catch{}};let E=!1,A=!1;return{restore(){if(E||(E=!0,y()))return;const u=d();u!==null&&(p(u),h())},promoted(){if(A||(A=!0,y()))return;const u=d();u!==null?(p(u),h()):n&&p(s)}}}function Ne(e,t,r,n){let s=null;try{s=window.trustedTypes?.createPolicy("frame-runtime",{createScriptURL:m=>m})??null}catch{}const o=window.Worker,i=o?.prototype,c=Object.freeze({Worker:o,workerOn:i?.addEventListener,workerPost:i?.postMessage,workerTerminate:i?.terminate,fetch:window.fetch.bind(window),preventDefault:Event.prototype.preventDefault,policy:s,origins:t});r(e).then(m=>m?.bootTopLevel?m.bootTopLevel(c,n):n.settle()).catch(()=>n.settle())}var $e="modulepreload",qe=function(e){return"/"+e},Xe={},Be=function(t,r,n){let s=Promise.resolve();function o(i){const c=new Event("vite:preloadError",{cancelable:!0});if(c.payload=i,window.dispatchEvent(c),!c.defaultPrevented)throw i}return s.then(i=>{for(const c of i||[])c.status==="rejected"&&o(c.reason);return t().catch(o)})},De=window===top,J=Object.getOwnPropertyDescriptor(window,"claude"),O=Se(De,window.__FRAME_PREAMBLE?.topLevel,J?.writable===!1),U=typeof O=="object"&&O[0],_=U?ke():Le();(function(){const e=Object.defineProperty,t=globalThis,r=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let n=0;for(let s=0;s<r.length;s++){const o=r[s];try{e(t,o,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[o]}catch{}try{e(t,o,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[o]=="function"&&n++}if(n&&O==="framed")try{_.post({__frame_rtc_lockdown_failed:n},"*")}catch{}})();var Ie=1e4,Ue=2e3,Q=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function ee(e){for(const t of Q)if(t.endsWith(":*"))try{const r=new URL(e);if(`${r.protocol}//${r.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}var C=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),x=window.__FRAME_PREAMBLE?.transforms,F=window.__FRAME_PREAMBLE?.comments,z=window.__FRAME_PREAMBLE?.translate,H=window.__FRAME_PREAMBLE?.ldx;function L(e){return Be(()=>import("/_runtime/"+e),void 0)}function te(e,t){return{contract:e.contract,changes:new Set(e.changes??[]),flags:new Set(e.flags??[]),capabilities:e.capabilities??{},capBudgets:e.capBudgets??{},transforms:new Map,shellOrigin:t,mount:$,hooks:j,pipe:()=>({wrap:(r,n)=>(...s)=>{try{return n(...s)}catch(o){return Promise.reject(o)}}})}}var M=null,T=null;function re(e,t,r){try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var W=!1,j={editBefore:null,edit:null};function xe(e,t,r=!1){const n=[];let s;if(r)try{j.editBefore?.(e)}catch{}for(const o of e.elements){const i=document.querySelector(`[data-id="${o.target}"]`);if(!i){s=o.target;break}if([...Object.keys(o.attrsSet??{}),...o.attrsRemoved??[]].some(c=>!fe(c))){s=o.target;break}if(o.text!==void 0&&(!he(i)||we(i))){s=o.target;break}for(const[c,m]of Object.entries(o.attrsSet??{}))if(!oe(i,c)){try{i.setAttribute(c,m)}catch{}ne(i,c,m)}for(const c of o.attrsRemoved??[])oe(i,c)||(i.removeAttribute(c),ne(i,c,null));typeof o.text=="string"&&ve(i,o.text),n.push(o.target)}if(r)try{j.edit?.(e.seq,n,s)}catch{}if(s!==void 0){_.post({__frame_patch_miss:{seq:e.seq}},t);return}try{document.dispatchEvent(new CustomEvent("claude:edit",{detail:{seq:e.seq,targets:n}}))}catch{}}function ne(e,t,r){if(!(e instanceof HTMLInputElement))return;const n=t.toLowerCase();n==="checked"?e.checked=r!==null:n==="value"&&e.type!=="file"&&(e.value=r??"")}function oe(e,t){const r=t.toLowerCase(),n=e;return r==="data-id"||(r==="value"||r==="checked")&&(n.__artifactSecret===!0||/^(password|hidden|file)$/.test(n.type??"")||/(^|\s)(cc-|one-time-code|current-password|new-password)/i.test(`${e.getAttribute("autocomplete")??""} ${n.autocomplete??""}`))}function se(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,W=!0):W&&(delete t.dataset.theme,t.style.colorScheme="",W=!1)}var N=new Map;function Fe(){let e;const t={u:new Promise(r=>{e=r}),r:r=>{t.done=!0,e(r)},done:!1,nulled:!1};return t}function K(){for(const e of N.values())e.done||(e.nulled=!0,e.r(null))}var ze=Object.freeze(Object.assign(Object.create(null),{call:Function.prototype.call,apply:Function.prototype.apply,bind:Function.prototype.bind})),$=(e,t)=>{const r=N.get(e);if(!r||r.done){r?.nulled&&T&&_.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:e}},T);return}const n=typeof t=="function"?Object.setPrototypeOf(t,ze):Object.assign(Object.create(null),t);typeof n.then=="function"&&delete n.then,r.r(Object.freeze(n))};function ae(){const e=J?.value??{};re(window,"claude",e);for(const t of Object.keys(C)){if(e[t]!==void 0){re(e,t,e[t]);continue}N.set(t,Fe())}if(e.use===void 0){const t=r=>{if(typeof r!="string"||!Object.hasOwn(C,r))return Promise.resolve(null);const n=N.get(r);return n?n.u:Promise.resolve(e[r]??null)};try{Object.defineProperty(e,"use",{value:t,writable:!0,configurable:!0,enumerable:!1})}catch{}}}if(O==="framed"){const e=x&&S.test(x)?L(x).catch(()=>{}):Promise.resolve(void 0),t=a=>{if(a.type==="auxclick"&&a.button!==1)return;const f=a.target,b=f&&f.closest?f.closest("a[href],area[href]"):null;if(!b)return;const P=b.getAttribute("href");if(!P)return;let R;try{R=new URL(P,document.baseURI)}catch{return}if((R.protocol==="http:"||R.protocol==="https:")&&R.origin!==location.origin){a.preventDefault();const k=(b.getAttribute("target")??"").toLowerCase(),g=a.type==="auxclick"||a.metaKey||a.ctrlKey||a.shiftKey||a.altKey||!["","_self","_top","_parent"].includes(k);_.post({__frame_nav:!0,url:R.href,newTab:g},"*")}};addEventListener("click",t,!0),addEventListener("auxclick",t,!0);const r={},n=a=>{a.isTrusted&&(r.pointer=!0)},s=a=>{a.isTrusted&&(r.click=!0)};addEventListener("pointermove",n,{capture:!0,passive:!0}),addEventListener("click",s,{capture:!0,passive:!0}),e.then(a=>{a?.wireNav&&(a.wireNav(),removeEventListener("click",t,!0),removeEventListener("auxclick",t,!0),removeEventListener("pointermove",n,!0),removeEventListener("click",s,!0),a.wireEngagement?.(r))});let o=null;try{o=je()}catch{}ae();let i=null,c=null,m=0;const d=_.on((a,f)=>{ee(f)&&Ae(a)&&(i=a.__frame_init,T=f,d(),clearTimeout(m),c?.())});_.post({__frame_connect:!0},"*");const v=setTimeout,p=clearTimeout;let y=0;const w=()=>{try{_.post({__frame_alive:!0},"*")}catch{}y=v(w,Ue)},h=()=>p(y);w(),addEventListener("load",h,{once:!0});const E=new Promise(a=>{c=a,m=setTimeout(()=>{d(),a()},Ie)}),A=document.readyState==="loading"?new Promise(a=>document.addEventListener("DOMContentLoaded",()=>a(),{once:!0})):Promise.resolve();A.then(()=>{try{o?.restore()}catch{}});const u={cb:null};_.on((a,f)=>{if(ee(f)&&Te(a)){try{o?.promoted()}catch{}u.cb?.()}}),E.then(async()=>{if(!i||!T){K();return}se(i.theme);const a=T;let f=!1,b=!1;_.on((l,X,B)=>{if(X!==a)return;Re(l)&&se(l.__frame_theme.theme),be(l)&&xe(l.__frame_patch,a,B);const Y=l?.__fc_mode;Y&&typeof Y=="object"&&!f&&F&&S.test(F)&&(f=!0,L(F).then(V=>V.install?.(a,Y.on===!0)).catch(()=>{}));const G=l?.__ft_cmd;G&&typeof G=="object"&&!b&&z&&S.test(z)&&(b=!0,L(z).then(V=>V.install?.(a,G)).catch(()=>{}))});const P=Object.keys(i.capabilities??{}).filter(l=>Object.hasOwn(C,l)).map(l=>[l,C[l]]).filter(l=>typeof l[1]=="string"&&S.test(l[1])),R=await Promise.allSettled(P.map(([,l])=>L(l))),k=await e,g=T;if(k?.buildBoot||_.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},g),k?.buildBoot)try{M=k.buildBoot(i,k.TRANSFORMS??{},{shellOrigin:g,mount:$,hooks:j},l=>_.post({__frame_cap_telemetry:l},g))}catch{_.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},g),M=te(i,g)}else M=te(i,g);const q=l=>_.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:l}},g),ie=M;R.forEach((l,X)=>{const B=P[X][0];if(l.status!=="fulfilled"){q(B);return}try{l.value?.install?.(ie)}catch{q(B)}}),K(),await A,h(),_.post({__frame_ready:!0},T),e.then(l=>l?.installSizeReporter?.(g,u)),ie.flags.has("frame_ldx_runtime")&&H&&S.test(H)&&document.querySelector("script#an-form")&&L(H).then(l=>l?.boot?.()).catch(()=>!1).then(l=>{l!==!0&&q("_ldx")})})}else U&&(ae(),Ne(U,Q,L,{settle:K,mount:$}))})();</script><!-- /frame-runtime --><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>iZiiServer CQRS Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link rel="stylesheet" href="./css2">
+
+<style>
+:root{
+  color-scheme:light;
+  --ground:#F6F5F9;
+  --surface:#FFFFFF;
+  --surface-2:#EDEBF3;
+  --ink:#16141F;
+  --ink-2:#4B4757;
+  --muted:#7A7589;
+  --line:#E2E0EA;
+  --line-2:#C8C4D6;
+
+  --accent:#5B3FD6;
+  --accent-soft:#EBE6FB;
+  --crit:#C42B2B;   --crit-soft:#FBE7E7;
+  --warn:#96610A;   --warn-soft:#FAF0DC;
+  --ok:#12794F;     --ok-soft:#E1F2EA;
+
+  --code-bg:#161421;
+  --code-fg:#DCD8EA;
+  --code-dim:#7E7794;
+  --code-line:#272338;
+
+  --f-d:"Chivo","Be Vietnam Pro",system-ui,sans-serif;
+  --f-b:"Be Vietnam Pro",system-ui,-apple-system,sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --measure:44rem;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0E0D14;
+    --surface:#17161F;
+    --surface-2:#211F2C;
+    --ink:#EDEBF4;
+    --ink-2:#B6B1C6;
+    --muted:#837E96;
+    --line:#272534;
+    --line-2:#3A3750;
+    --accent:#A594F5;
+    --accent-soft:#241E3D;
+    --crit:#F0837A;   --crit-soft:#33191C;
+    --warn:#E0A02A;   --warn-soft:#2E2415;
+    --ok:#45C08C;     --ok-soft:#122C22;
+    --code-bg:#0A0912;
+    --code-fg:#D2CEE2;
+    --code-dim:#726C89;
+    --code-line:#1D1A2B;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0E0D14;
+  --surface:#17161F;
+  --surface-2:#211F2C;
+  --ink:#EDEBF4;
+  --ink-2:#B6B1C6;
+  --muted:#837E96;
+  --line:#272534;
+  --line-2:#3A3750;
+  --accent:#A594F5;
+  --accent-soft:#241E3D;
+  --crit:#F0837A;   --crit-soft:#33191C;
+  --warn:#E0A02A;   --warn-soft:#2E2415;
+  --ok:#45C08C;     --ok-soft:#122C22;
+  --code-bg:#0A0912;
+  --code-fg:#D2CEE2;
+  --code-dim:#726C89;
+  --code-line:#1D1A2B;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--f-b);font-size:16px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.page{max-width:66rem;margin:0 auto;padding:0 1.4rem 6rem}
+
+/* ---------- masthead ---------- */
+.mast{padding:4rem 0 0}
+.kick{
+  font-family:var(--f-d);font-size:.7rem;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 1rem;
+}
+h1{
+  font-family:var(--f-d);font-weight:900;
+  font-size:clamp(2.1rem,5.4vw,3.3rem);line-height:1.02;letter-spacing:-.035em;
+  text-wrap:balance;margin:0 0 1.1rem;max-width:22ch;
+}
+.stand{font-size:1.14rem;color:var(--ink-2);max-width:42rem;margin:0}
+.meta{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));
+  gap:1.1rem 1.8rem;margin-top:2.4rem;padding-top:1.5rem;border-top:1px solid var(--line);
+}
+.meta dt{
+  font-family:var(--f-d);font-size:.65rem;font-weight:700;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;
+}
+.meta dd{margin:0;font-family:var(--f-m);font-size:.79rem;line-height:1.5;color:var(--ink-2)}
+
+/* ---------- decisions ---------- */
+.decisions{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:1.6rem}
+.dec{background:var(--surface);padding:1.35rem 1.4rem;display:flex;flex-direction:column;gap:.6rem}
+.verb{
+  font-family:var(--f-d);font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  padding:.28rem .55rem;border-radius:4px;align-self:flex-start;
+}
+.verb.keep{background:var(--ok-soft);color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.verb.drop{background:var(--crit-soft);color:var(--crit);box-shadow:inset 0 0 0 1px var(--crit)}
+.verb.hold{background:var(--warn-soft);color:var(--warn);box-shadow:inset 0 0 0 1px var(--warn)}
+.dec h3{font-family:var(--f-d);font-weight:700;font-size:1.06rem;margin:0;letter-spacing:-.015em}
+.dec p{margin:0;font-size:.92rem;color:var(--ink-2)}
+
+/* ---------- structure ---------- */
+section{margin-top:4.5rem}
+h2{
+  font-family:var(--f-d);font-weight:900;font-size:clamp(1.5rem,3.3vw,2.05rem);
+  letter-spacing:-.03em;line-height:1.12;text-wrap:balance;margin:0 0 .6rem;
+}
+h3{font-family:var(--f-d);font-weight:700;font-size:1.14rem;letter-spacing:-.015em;margin:0}
+h4{
+  font-family:var(--f-d);font-size:.67rem;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);margin:1.9rem 0 .55rem;
+}
+p{margin:0 0 1rem;max-width:var(--measure)}
+.lede{font-size:1.04rem;color:var(--ink-2);max-width:var(--measure)}
+code{font-family:var(--f-m);font-size:.84em;background:var(--surface-2);padding:.1em .34em;border-radius:3px;word-break:break-word}
+strong{font-weight:600}
+em{font-style:italic}
+hr.r{border:0;border-top:1px solid var(--line);margin:0}
+a{color:var(--accent)}
+ul.plain{margin:1rem 0;padding-left:1.2rem;max-width:var(--measure)}
+ul.plain li{margin-bottom:.55rem}
+
+/* ---------- defect blocks ---------- */
+.dfct{border-top:1px solid var(--line);padding-top:1.6rem;margin-top:2.6rem}
+.dh{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:baseline;margin-bottom:.75rem}
+.did{
+  font-family:var(--f-m);font-size:.8rem;font-weight:700;color:var(--surface);
+  background:var(--crit);border-radius:4px;padding:.12rem .45rem;white-space:nowrap;
+}
+.did.warn{background:var(--warn)}
+.tag{
+  font-family:var(--f-d);font-size:.63rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  padding:.24rem .5rem;border-radius:4px;white-space:nowrap;
+  background:var(--surface-2);color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--line-2);
+}
+.dh h3{flex:1 1 20rem}
+
+/* ---------- code ---------- */
+.code{
+  background:var(--code-bg);color:var(--code-fg);border-radius:8px;
+  padding:1rem 1.1rem;margin:1.1rem 0 1.3rem;overflow-x:auto;border:1px solid var(--code-line);
+}
+.code .cap{
+  font-family:var(--f-d);font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--code-dim);display:block;margin-bottom:.65rem;padding-bottom:.55rem;border-bottom:1px solid var(--code-line);
+}
+.code .cap.bad{color:#F08A7F}
+.code .cap.good{color:#5FCFA0}
+.code pre{margin:0;font-family:var(--f-m);font-size:.78rem;line-height:1.66;white-space:pre}
+.code .c{color:var(--code-dim)}
+.code .no{color:#F08A7F;font-weight:700}
+.code .yes{color:#5FCFA0;font-weight:700}
+.code .kw{color:#B9A6F7}
+.code .st{color:#E5B75A}
+
+/* ---------- callout ---------- */
+.note{
+  border-left:3px solid var(--accent);background:var(--surface);
+  padding:1rem 1.25rem;margin:1.3rem 0;max-width:var(--measure);border-radius:0 8px 8px 0;
+}
+.note.bad{border-left-color:var(--crit)}
+.note p{margin:0;font-size:.95rem}
+.note p+p{margin-top:.6rem}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:1.5rem 0 1.7rem}
+table{border-collapse:collapse;width:100%;min-width:36rem;font-size:.88rem}
+th{
+  text-align:left;font-family:var(--f-d);font-size:.63rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);padding:0 .9rem .6rem 0;border-bottom:1.5px solid var(--ink);white-space:nowrap;
+}
+td{padding:.7rem .9rem .7rem 0;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n,th.n{font-family:var(--f-m);font-variant-numeric:tabular-nums;white-space:nowrap}
+.wrong{color:var(--crit);font-weight:600}
+.right{color:var(--ok);font-weight:600}
+.prio td:first-child{font-family:var(--f-m);font-weight:700;color:var(--accent);white-space:nowrap}
+.prio td:nth-child(3),.prio td:nth-child(4){white-space:nowrap}
+
+/* ---------- figure ---------- */
+figure{margin:2rem 0 2.6rem}
+.figwrap{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.5rem 1rem;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:52rem;max-width:100%;height:auto;color:var(--ink)}
+figcaption{font-size:.87rem;color:var(--muted);margin-top:.95rem;max-width:var(--measure)}
+.n-box{fill:var(--surface);stroke:var(--line-2);stroke-width:1.5}
+.n-hot{fill:var(--crit-soft);stroke:var(--crit);stroke-width:1.5}
+.t-h{font-family:"Be Vietnam Pro",sans-serif;font-size:12.5px;font-weight:700;fill:var(--ink)}
+.t-b{font-family:"JetBrains Mono",monospace;font-size:10.5px;fill:var(--muted)}
+.t-l{font-family:"Be Vietnam Pro",sans-serif;font-size:10.5px;font-weight:600;fill:var(--muted)}
+.t-m{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;fill:#FFFFFF}
+.ln{stroke:var(--line-2);stroke-width:1.5;fill:none}
+.mk{fill:var(--line-2)}
+.pin{fill:var(--crit)}
+
+/* ---------- sources ---------- */
+.src{display:flex;flex-direction:column;gap:.45rem;max-width:var(--measure);margin-top:1rem}
+.src a{font-size:.87rem;word-break:break-word}
+
+footer{
+  margin-top:5rem;padding-top:1.4rem;border-top:2px solid var(--ink);
+  font-size:.82rem;color:var(--muted);max-width:46rem;
+}
+@media (max-width:640px){
+  body{font-size:15px}
+  .mast{padding-top:2.5rem}
+  section{margin-top:3.2rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="page">
+
+<header class="mast">
+  <p class="kick">Architecture Review · iZiiServer</p>
+  <h1>CQRS, pgvector và hai thứ nên bỏ khỏi kế hoạch</h1>
+  <p class="stand">Duyệt bản blueprint mở rộng lên 1.000–10.000 cửa hàng. Hướng kiến trúc đúng, nhưng có một tin về pgai và năm lỗi trong blueprint sẽ gây mất dữ liệu nếu đem chạy nguyên như vậy.</p>
+
+  <dl class="meta">
+    <div><dt>Tài liệu duyệt</dt><dd>iziiapp_cqrs_pgvector_<br>architecture.md · v2.0.0</dd></div>
+    <div><dt>Đối chiếu</dt><dd>log server ~245.000 dòng<br>+ 2 file database</dd></div>
+    <div><dt>Kiểm tra ngày</dt><dd>04/09/2026</dd></div>
+    <div><dt>Quy mô mục tiêu</dt><dd>10.000 cửa hàng<br>60.000 thiết bị</dd></div>
+  </dl>
+</header>
+
+<section aria-labelledby="kl">
+  <h2 id="kl">Ba quyết định</h2>
+  <p class="lede">Nếu chỉ đọc một phần của tài liệu này, đọc phần này.</p>
+
+  <div class="decisions">
+    <article class="dec">
+      <span class="verb keep">Giữ</span>
+      <h3>CQRS + read model + pgvector</h3>
+      <p>Đúng hướng. Bạn không cần vector database riêng — Postgres làm được cả ba việc, và giữ được một nguồn sự thật duy nhất.</p>
+    </article>
+    <article class="dec">
+      <span class="verb drop">Bỏ</span>
+      <h3>pgai</h3>
+      <p>Repo đã archive 27/05/2026, không còn bảo trì từ 02/2026. Tự viết vectorizer worker — khoảng 300 dòng, và bạn kiểm soát được retry.</p>
+    </article>
+    <article class="dec">
+      <span class="verb hold">Hoãn</span>
+      <h3>pgvectorscale</h3>
+      <p>Chưa cần ở 2 triệu vector. Nhưng thiết kế để chuyển sang được, và chốt hạ tầng trước — nó không chạy trên RDS.</p>
+    </article>
+  </div>
+
+  <div class="note bad">
+    <p><strong>Và một điều kiện tiên quyết.</strong> Bốn lỗi đã tìm thấy trong log hiện tại — batch bị 409 nguyên gói, timestamp local naive, UPDATE không có INSERT, khoá ngoại bị rơi — phải sửa <em>trước</em> khi dựng projection. Projection khuếch đại rác đầu vào: một mutation sai hôm nay chỉ hỏng một máy trạm; dưới CQRS nó đóng băng vĩnh viễn vào read model mà HQ Dashboard và AI Assistant đọc lên.</p>
+  </div>
+</section>
+
+<section aria-labelledby="sd">
+  <h2 id="sd">Năm lỗi nằm ở đâu trên đường ống</h2>
+
+  <figure>
+    <div class="figwrap">
+      <svg viewBox="0 0 940 310" role="img" aria-label="Sơ đồ đường ống CQRS: client đẩy mutation qua FastAPI vào sync_mutations, projection worker chiếu sang 60+ bảng quan hệ và sang tầng embedding, cả hai phục vụ Hybrid Search. Năm điểm gãy được đánh dấu: A4 ở khâu đọc theo seq, A1 và A5 ở projector và bảng quan hệ, A2 ở khâu gọi embedding, A3 ở truy vấn Hybrid Search.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="mk"></path>
+          </marker>
+        </defs>
+
+        <text x="10" y="26" class="t-l">WRITE PATH</text>
+
+        <rect x="10" y="42" width="124" height="62" rx="6" class="n-box"></rect>
+        <text x="24" y="66" class="t-h">Client</text>
+        <text x="24" y="84" class="t-b">Flutter · Drift</text>
+
+        <line x1="134" y1="73" x2="176" y2="73" class="ln" marker-end="url(#ar)"></line>
+
+        <rect x="184" y="42" width="138" height="62" rx="6" class="n-box"></rect>
+        <text x="198" y="66" class="t-h">/sync/push</text>
+        <text x="198" y="84" class="t-b">FastAPI · cấp seq</text>
+
+        <line x1="322" y1="73" x2="364" y2="73" class="ln" marker-end="url(#ar)"></line>
+
+        <rect x="372" y="42" width="152" height="62" rx="6" class="n-box"></rect>
+        <text x="386" y="66" class="t-h">sync_mutations</text>
+        <text x="386" y="84" class="t-b">JSONB + seq</text>
+
+        <line x1="524" y1="73" x2="576" y2="73" class="ln" marker-end="url(#ar)"></line>
+        <circle cx="550" cy="48" r="12" class="pin"></circle>
+        <text x="550" y="52" class="t-m" text-anchor="middle">A4</text>
+
+        <rect x="584" y="42" width="142" height="62" rx="6" class="n-hot"></rect>
+        <text x="598" y="66" class="t-h">Projection Worker</text>
+        <text x="598" y="84" class="t-b">bóc JSON → UPSERT</text>
+        <circle cx="584" cy="42" r="12" class="pin"></circle>
+        <text x="584" y="46" class="t-m" text-anchor="middle">A1</text>
+
+        <line x1="726" y1="62" x2="770" y2="42" class="ln" marker-end="url(#ar)"></line>
+        <line x1="726" y1="86" x2="770" y2="140" class="ln" marker-end="url(#ar)"></line>
+        <circle cx="756" cy="122" r="12" class="pin"></circle>
+        <text x="756" y="126" class="t-m" text-anchor="middle">A2</text>
+
+        <rect x="778" y="10" width="152" height="58" rx="6" class="n-box"></rect>
+        <text x="792" y="33" class="t-h">60+ bảng quan hệ</text>
+        <text x="792" y="51" class="t-b">read model</text>
+        <circle cx="778" cy="10" r="12" class="pin"></circle>
+        <text x="778" y="14" class="t-m" text-anchor="middle">A5</text>
+
+        <rect x="778" y="132" width="152" height="58" rx="6" class="n-box"></rect>
+        <text x="792" y="155" class="t-h">embeddings</text>
+        <text x="792" y="173" class="t-b">pgvector · HNSW</text>
+
+        <path d="M904 68 L904 212" class="ln"></path>
+        <path d="M830 190 L830 212" class="ln"></path>
+        <line x1="904" y1="212" x2="496" y2="212" class="ln"></line>
+        <line x1="496" y1="212" x2="496" y2="242" class="ln" marker-end="url(#ar)"></line>
+
+        <text x="10" y="238" class="t-l">READ / VECTOR PATH</text>
+
+        <rect x="372" y="248" width="248" height="54" rx="6" class="n-hot"></rect>
+        <text x="386" y="270" class="t-h">Hybrid Search · RRF</text>
+        <text x="386" y="288" class="t-b">tsvector + cosine</text>
+        <circle cx="372" cy="248" r="12" class="pin"></circle>
+        <text x="372" y="252" class="t-m" text-anchor="middle">A3</text>
+
+        <line x1="620" y1="275" x2="666" y2="275" class="ln" marker-end="url(#ar)"></line>
+
+        <rect x="674" y="248" width="256" height="54" rx="6" class="n-box"></rect>
+        <text x="688" y="270" class="t-h">HQ Dashboard · AI Assistant</text>
+        <text x="688" y="288" class="t-b">báo cáo chuỗi · RAG SOP</text>
+      </svg>
+    </div>
+    <figcaption>Năm điểm gãy nằm rải đúng trên trục dữ liệu, không tụ ở một chỗ. Hai ô tô đỏ là nơi lỗi gây mất dữ liệu (projector) và nơi kết quả trả về sai (Hybrid Search).</figcaption>
+  </figure>
+</section>
+
+<hr class="r">
+
+<section aria-labelledby="pgai">
+  <h2 id="pgai">1 · pgai đã ngừng phát triển</h2>
+  <p class="lede">Đây là điều bạn cần biết trước khi thiết kế tiếp, vì nó đổi hẳn Phase 3 của roadmap.</p>
+
+  <ul class="plain">
+    <li>Repo <code>timescale/pgai</code> <strong>đã archive ngày 27/05/2026</strong>. README ghi rõ: <em>"As of February 2026, this project is no longer being maintained or supported."</em></li>
+    <li>Tiger Cloud (Timescale cũ) <strong>gỡ bỏ managed vectorizer service và toàn bộ hàm LLM trong DB</strong> — <code>ai.openai_embed()</code>, <code>ai.anthropic_generate()</code>… — từ <strong>30/06/2026</strong>.</li>
+    <li>Khuyến nghị chính thức của chính họ: tự chạy vectorizer worker, hoặc <strong>đưa lời gọi LLM về code ứng dụng</strong>.</li>
+    <li>Phần <em>ở lại</em>: pgvector và pgvectorscale vẫn được hỗ trợ bình thường. Nên tầng vector của bạn không bị ảnh hưởng — chỉ tầng tự động hoá embedding.</li>
+  </ul>
+
+  <p>Nói cách khác: đừng xây phụ thuộc vào pgai. Nhưng <strong>mô hình mà pgai Vectorizer làm vẫn là mô hình đúng</strong> — hàng đợi khai báo, worker stateless, chunking, và version của cấu hình embedding để re-embed được khi đổi model. Bạn tự implement được:</p>
+
+  <div class="code">
+    <span class="cap good">Tự thay pgai Vectorizer · bảng hàng đợi</span>
+<pre><span class="kw">CREATE TABLE</span> embedding_queue (
+    id              <span class="kw">BIGSERIAL PRIMARY KEY</span>,
+    table_name      <span class="kw">TEXT NOT NULL</span>,
+    row_id          <span class="kw">TEXT NOT NULL</span>,
+    tenant_id       <span class="kw">TEXT NOT NULL</span>,
+    content_hash    <span class="kw">TEXT NOT NULL</span>,   <span class="c">-- bỏ qua nếu text không đổi</span>
+    model_version   <span class="kw">TEXT NOT NULL</span>,   <span class="c">-- để re-embed khi đổi model</span>
+    attempts        <span class="kw">INT  NOT NULL DEFAULT</span> 0,
+    last_error      <span class="kw">TEXT</span>,
+    next_attempt_at <span class="kw">TIMESTAMPTZ NOT NULL DEFAULT</span> now(),
+    <span class="kw">UNIQUE</span> (table_name, row_id, model_version)
+);
+
+<span class="c">-- worker lấy việc: an toàn với nhiều worker chạy song song</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> embedding_queue
+ <span class="kw">WHERE</span> next_attempt_at &lt;= now()
+ <span class="kw">ORDER BY</span> id
+ <span class="kw">LIMIT</span> 64
+   <span class="kw">FOR UPDATE SKIP LOCKED</span>;</pre>
+  </div>
+
+  <div class="note">
+    <p><strong><code>content_hash</code> là thứ tiết kiệm tiền nhất trong toàn bộ thiết kế này.</strong> Blueprint hiện tại re-embed <em>mỗi lần có mutation</em>, kể cả khi chỉ đổi giá hay đổi tồn kho. Với 2 triệu sản phẩm thì đó là khoảng 90% hoá đơn embedding bị đốt vô ích.</p>
+  </div>
+
+  <p>Phần "gọi LLM trong database" thì bỏ hẳn, bất kể pgai còn sống hay không: một lời gọi HTTP nằm trong transaction Postgres là độ trễ không giới hạn, không có backpressure, và biến database thành điểm nghẽn rate-limit. FastAPI của bạn đã ở đúng chỗ để làm việc đó.</p>
+</section>
+
+<hr class="r">
+
+<section aria-labelledby="loi">
+  <h2 id="loi">2 · Năm lỗi trong blueprint</h2>
+  <p class="lede">Đây là lỗi trong chính đoạn mã và DDL của tài liệu, không phải góp ý về phong cách.</p>
+
+  <!-- A1 -->
+  <div class="dfct">
+    <div class="dh">
+      <span class="did">A1</span>
+      <span class="tag">Mất dữ liệu</span>
+      <h3>Projector upsert bằng payload thiếu cột</h3>
+    </div>
+
+    <p>Hàm <code>project_single_mutation</code> ghi <strong>tất cả</strong> cột lấy từ <code>data</code>:</p>
+
+    <div class="code">
+      <span class="cap bad">Blueprint · projection_worker.py</span>
+<pre>data.get(<span class="st">"name"</span>, <span class="st">""</span>), data.get(<span class="st">"description"</span>, <span class="st">""</span>),
+data.get(<span class="st">"price"</span>, 0), data.get(<span class="st">"cost_price"</span>, 0), ...</pre>
+    </div>
+
+    <p>Nhưng mutation thật trong log của bạn là <strong>partial</strong>:</p>
+
+    <div class="code">
+      <span class="cap">server.log · sync_mutations seq 663</span>
+<pre>tasks | update | {<span class="st">"id"</span>: <span class="st">"3efbf28c-33fc-..."</span>, <span class="st">"status"</span>: <span class="st">"done"</span>}
+                 <span class="no">↑ không có name, không có project_id</span></pre>
+    </div>
+
+    <p>Chạy đoạn trên với một mutation như vậy sẽ ghi <code>name=''</code>, <code>price=0</code> đè lên dữ liệu tốt. Đây <strong>đúng bằng lỗi đã tạo ra 8 task "Untitled Task" và 6 mushroom_jobs rỗng</strong> trong DB hiện tại — chỉ khác là dưới CQRS nó không dừng ở một máy trạm nữa.</p>
+
+    <p>Phải quyết dứt khoát ngay bây giờ: <strong>client gửi full-row hay dirty-field?</strong> Nếu dirty-field thì projector phải merge, không upsert:</p>
+
+    <div class="code">
+      <span class="cap good">Sửa · merge theo cột, kèm chống replay</span>
+<pre><span class="kw">UPDATE</span> products p <span class="kw">SET</span>
+    name       = <span class="kw">COALESCE</span>(m.name,  p.name),
+    price      = <span class="kw">COALESCE</span>(m.price, p.price),
+    last_seq   = %(seq)s,
+    updated_at = now()
+<span class="kw">FROM</span> jsonb_populate_record(<span class="kw">NULL</span>::products, %(payload)s::jsonb) m
+<span class="kw">WHERE</span> p.tenant_id = %(tenant)s
+  <span class="kw">AND</span> p.id = %(id)s
+  <span class="kw">AND</span> %(seq)s &gt; p.last_seq;   <span class="c">-- out-of-order / replay không lùi được state</span></pre>
+    </div>
+  </div>
+
+  <!-- A2 -->
+  <div class="dfct">
+    <div class="dh">
+      <span class="did">A2</span>
+      <span class="tag">Nghẽn hệ thống</span>
+      <h3>Gọi embedding bên trong transaction projection</h3>
+    </div>
+
+    <div class="code">
+      <span class="cap bad">Blueprint · nằm giữa hai lệnh SQL, đang giữ connection</span>
+<pre>vec = <span class="kw">await</span> generate_embedding(search_content)   <span class="c"># httpx timeout 5.0s</span>
+<span class="kw">if</span> vec:
+    conn.execute(<span class="st">"INSERT INTO product_embeddings ..."</span>)
+
+<span class="c"># và trong generate_embedding:</span>
+<span class="kw">except</span> Exception <span class="kw">as</span> e:
+    print(...)
+    <span class="kw">return</span> []          <span class="no"># ← dòng này im lặng không bao giờ có embedding</span></pre>
+    </div>
+
+    <p>Ở 10.000 cửa hàng, embedding service chậm 2 giây là toàn bộ pipeline projection đứng và connection pool cạn. Tệ hơn: khi lỗi, hàm trả về <code>[]</code> — bản ghi đó <strong>im lặng không có embedding và không có gì retry</strong>. Sau vài tháng bạn sẽ có một tỉ lệ sản phẩm không bao giờ tìm kiếm ngữ nghĩa được, mà không ai biết.</p>
+
+    <p>Tách hẳn hai việc: projection đồng bộ và nhanh, chỉ <code>INSERT ... ON CONFLICT DO NOTHING</code> vào <code>embedding_queue</code>. Embedding là worker riêng, có retry, backoff và <code>last_error</code>.</p>
+  </div>
+
+  <!-- A3 -->
+  <div class="dfct">
+    <div class="dh">
+      <span class="did">A3</span>
+      <span class="tag">Kết quả sai</span>
+      <h3>Truy vấn RRF đang lấy 50 dòng ngẫu nhiên</h3>
+    </div>
+
+    <div class="code">
+      <span class="cap bad">Blueprint · ai_search.py · CTE semantic_ranking</span>
+<pre><span class="kw">SELECT</span> p.id, ...,
+       <span class="kw">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> pe.embedding &lt;=&gt; %s::vector) <span class="kw">AS</span> rank_vec
+<span class="kw">FROM</span> products p <span class="kw">JOIN</span> product_embeddings pe <span class="kw">ON</span> p.id = pe.product_id
+<span class="kw">WHERE</span> p.tenant_id = %s ...
+<span class="kw">LIMIT</span> 50                        <span class="no">← không có ORDER BY ở ngoài</span></pre>
+    </div>
+
+    <p>Trong PostgreSQL, <code>ORDER BY</code> bên trong <code>OVER()</code> chỉ quyết định <em>cách đánh số</em>, nó <strong>không sắp xếp kết quả trả về</strong>. <code>LIMIT 50</code> sau đó lấy 50 dòng tuỳ ý theo thứ tự scan. Với 2 triệu sản phẩm, kết quả tìm kiếm ngữ nghĩa của bạn gần như ngẫu nhiên — và tệ hơn nữa, nó <em>trông như đang chạy</em>, nên rất dễ lọt qua khâu test.</p>
+
+    <div class="code">
+      <span class="cap good">Sửa · sắp xếp tường minh trước khi cắt</span>
+<pre><span class="kw">SELECT</span> p.id, ..., <span class="kw">ROW_NUMBER</span>() <span class="kw">OVER</span> () <span class="kw">AS</span> rank_vec
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span> p.id, p.name, p.sku, p.price, p.store_id
+    <span class="kw">FROM</span> products p <span class="kw">JOIN</span> product_embeddings pe <span class="kw">ON</span> p.id = pe.product_id
+    <span class="kw">WHERE</span> p.tenant_id = %s <span class="kw">AND</span> p.is_active
+    <span class="kw">ORDER BY</span> pe.embedding &lt;=&gt; %s::vector    <span class="yes">← bắt buộc</span>
+    <span class="kw">LIMIT</span> 50
+) p;</pre>
+    </div>
+
+    <p>Hai điểm phụ trong cùng truy vấn: <code>(p.store_id = %s OR %s IS NULL)</code> chặn index — nên build predicate có điều kiện ở tầng Python. Và bộ lọc <code>tenant_id</code> ở đây là <strong>post-filter</strong> sau HNSW: nếu tenant chiếm tỉ lệ nhỏ trong index, bạn có thể nhận về 0 kết quả dù dữ liệu có. Đây chính là chỗ <em>iterative index scans</em> của pgvector 0.8 hoặc label filtering của pgvectorscale giải quyết.</p>
+  </div>
+
+  <!-- A4 -->
+  <div class="dfct">
+    <div class="dh">
+      <span class="did">A4</span>
+      <span class="tag">Mất mutation</span>
+      <h3><code>seq</code> toàn cục có lỗ hổng khoảng trống</h3>
+    </div>
+
+    <p>Đây là cạm bẫy CDC kinh điển, và <code>/sync/pull?after_seq=</code> của bạn dính đúng vào nó:</p>
+
+    <div class="code">
+      <span class="cap bad">Kịch bản mất mutation vĩnh viễn</span>
+<pre>t0   transaction A  lấy seq = 100
+t1   transaction B  lấy seq = 101
+t2   transaction B  <span class="kw">COMMIT</span>              → client đọc được 101
+t3   client         lưu con trỏ after_seq = 101
+t4   transaction A  <span class="kw">COMMIT</span>              <span class="no">→ seq 100 không bao giờ được đọc</span></pre>
+    </div>
+
+    <p>Ở vài chục thiết bị thì hiếm. Ở 60.000 thiết bị và hàng nghìn transaction đồng thời thì xảy ra hằng ngày, và nó im lặng — không có lỗi nào được log.</p>
+
+    <p>Hai cách xử lý, chọn một:</p>
+    <ul class="plain">
+      <li>Chỉ trả về các seq nhỏ hơn một <strong>watermark an toàn</strong>: <code>pg_snapshot_xmin(pg_current_snapshot())</code> — mọi transaction cũ hơn mốc này chắc chắn đã kết thúc.</li>
+      <li>Hoặc gán một cột <code>commit_seq</code> riêng, do một committer duy nhất điền <em>sau khi</em> commit, và client phân trang theo cột đó.</li>
+    </ul>
+
+    <p>Song song đó: một sequence toàn cục cũng là điểm nghẽn ghi ở 10.000 cửa hàng. Nên chuyển sang seq theo tenant, và điều này bắt buộc nếu bạn muốn phân mảnh <code>sync_mutations</code> theo tenant.</p>
+  </div>
+
+  <!-- A5 -->
+  <div class="dfct">
+    <div class="dh">
+      <span class="did warn">A5</span>
+      <span class="tag">Dừng pipeline</span>
+      <h3>Foreign Key cứng trong một projection eventually-consistent</h3>
+    </div>
+
+    <div class="code">
+      <span class="cap bad">Blueprint · DDL</span>
+<pre>product_id <span class="kw">TEXT NOT NULL REFERENCES</span> products(id)</pre>
+    </div>
+
+    <p>Mutation của <code>order_lines</code> có thể tới trước mutation của <code>products</code> — khác thiết bị, khác batch, khác thời điểm mất mạng. FK cứng khi đó biến một lỗi thứ tự thành lỗi <em>dừng toàn bộ pipeline</em>.</p>
+
+    <p>Tài liệu liệt kê "thiếu Foreign Key" là vấn đề cần sửa, và đúng — nhưng FK trong read model cần cách khác: dùng <code>NOT VALID</code> cộng một job validate định kỳ, hoặc để projector buffer-và-retry các dòng mồ côi, chứ đừng để FK chặn ingest. Ràng buộc toàn vẹn nên là thứ bạn <em>đo</em>, không phải thứ chặn luồng.</p>
+  </div>
+</section>
+
+<hr class="r">
+
+<section aria-labelledby="schema">
+  <h2 id="schema">3 · Thiếu ở tầng schema</h2>
+  <p class="lede">Không phải lỗi, mà là những thứ nếu không có ngay từ Phase 1 thì rất đắt để thêm sau.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Thiếu</th><th>Vì sao cần ở 10.000 cửa hàng</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Partitioning</strong></td><td><code>sync_mutations</code> giữ 30–60 ngày thì phải <code>DROP PARTITION</code>, không phải <code>DELETE</code> — xoá hàng trăm triệu dòng bằng DELETE sẽ làm autovacuum và replication chết ngạt. Partition RANGE theo <code>created_at</code>. Hypertable của TimescaleDB cũng hợp ở đây vì bảng là append-only theo thời gian.</td></tr>
+        <tr><td><strong>Row-Level Security</strong></td><td>10.000 tenant chung một cluster. RLS cộng <code>SET LOCAL app.tenant_id</code> là lưới an toàn cho một câu query quên <code>WHERE tenant_id</code> — và sẽ có câu như vậy.</td></tr>
+        <tr><td><strong>PK là <code>(tenant_id, id)</code></strong></td><td><code>id TEXT PRIMARY KEY</code> toàn cục sẽ va chạm khi client tự sinh id. Ngoài ra Postgres bắt buộc khoá phân mảnh phải nằm trong PK — không có <code>tenant_id</code> trong PK thì không phân mảnh theo tenant được.</td></tr>
+        <tr><td><strong><code>deleted_at</code> (tombstone)</strong></td><td>Blueprint đang <code>DELETE FROM products</code>. Hard delete trong read model thì Snapshot API không bao giờ báo được cho thiết bị biết bản ghi đã bị xoá — thiết bị giữ nó mãi mãi.</td></tr>
+        <tr><td><strong><code>last_seq</code> mỗi dòng</strong></td><td>Điều kiện cần cho A1 và để LWW an toàn. Đừng dùng timestamp của client làm đồng hồ — log cho thấy client gửi giờ local naive, lệch 9h30 so với UTC.</td></tr>
+        <tr><td><strong><code>last_mutation_id</code></strong></td><td>Không có nó thì không truy được dòng dữ liệu sai đến từ mutation nào. Với lỗi bản ghi ma vừa rồi, đây không phải xa xỉ.</td></tr>
+        <tr><td><strong><code>unaccent</code> cho tiếng Việt</strong></td><td><code>to_tsvector('simple', ...)</code> không bỏ dấu — người dùng gõ "nam" sẽ không khớp "nấm", "phong 33" không khớp "phòng 33". Cần <code>CREATE EXTENSION unaccent</code> và một text search config riêng.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code">
+    <span class="cap good">Text search config cho tiếng Việt</span>
+<pre><span class="kw">CREATE EXTENSION IF NOT EXISTS</span> unaccent;
+
+<span class="kw">CREATE TEXT SEARCH CONFIGURATION</span> vi (<span class="kw">COPY</span> = simple);
+<span class="kw">ALTER TEXT SEARCH CONFIGURATION</span> vi
+  <span class="kw">ALTER MAPPING FOR</span> hword, hword_part, word
+  <span class="kw">WITH</span> unaccent, simple;
+
+<span class="c">-- rồi dùng 'vi' thay cho 'simple' trong cột tsvector và trong plainto_tsquery</span></pre>
+  </div>
+
+  <p><strong>Điểm cộng:</strong> <code>TIMESTAMPTZ NOT NULL</code> trên toàn bộ schema mới là đúng, và nó sửa luôn lỗi naive timestamp ở tầng gốc — miễn là projector từ chối mutation có timestamp không mang timezone thay vì lặng lẽ ép kiểu.</p>
+</section>
+
+<hr class="r">
+
+<section aria-labelledby="pvs">
+  <h2 id="pvs">4 · pgvectorscale: có nên không</h2>
+  <p class="lede">Trả lời ngắn: chưa cần cho Phase 1–3, nhưng nên thiết kế để chuyển sang được, và phải chốt hạ tầng trước.</p>
+
+  <h4>Trước hết, sửa lại phép tính RAM ở mục 6.1</h4>
+  <p>Nó đang lạc quan khoảng 2,2 lần. Lý do: <strong>HNSW của pgvector lưu một bản sao đầy đủ của vector ngay trong index</strong>, không chỉ 64 byte node overhead như tài liệu giả định.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th></th><th class="n">Tài liệu</th><th class="n">Thực tế</th></tr></thead>
+      <tbody>
+        <tr><td>Index / vector (768d float32)</td><td class="n">~3,14 KB</td><td class="n">~3,7–3,8 KB</td></tr>
+        <tr><td>Bảng / vector</td><td class="n">không tính</td><td class="n">~3,2 KB</td></tr>
+        <tr><td><strong>2 triệu vector</strong></td><td class="n wrong">6,28 GB</td><td class="n right">~14 GB<br><span style="font-weight:400;color:var(--muted)">index nóng ~7,5 GB</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Kết luận "32–64 GB là đủ" <em>vẫn đúng</em> cho 2 triệu vector. Nhưng công thức sai sẽ dẫn bạn đi lạc ở quy mô sau: ở 10 triệu vector, tài liệu sẽ nói 31 GB trong khi thực tế khoảng 70 GB — và đó là lúc bạn đã mua máy rồi.</p>
+
+  <div class="note">
+    <p><strong>Cách rẻ nhất để giảm ngay, không cần thêm extension nào:</strong> đổi <code>vector(768)</code> thành <code>halfvec(768)</code> (float16, có từ pgvector 0.7). Giảm một nửa cả index lẫn bảng, mất recall không đáng kể ở 768 chiều. Đây là thay đổi một dòng DDL.</p>
+  </div>
+
+  <h4>Khi nào pgvectorscale mới đáng đổi</h4>
+  <ul class="plain">
+    <li><strong>StreamingDiskANN + SBQ</strong> giữ vector trên SSD và chỉ giữ bản nén trong RAM. Đây là thứ cứu bạn ở 10–50 triệu vector, không phải ở 2 triệu.</li>
+    <li><strong>Filtered DiskANN (label-based search)</strong> — lọc theo <code>smallint[]</code> với toán tử <code>&amp;&amp;</code>, ngay trong quá trình duyệt đồ thị. Ánh xạ rất gọn vào <code>tenant_id</code> / <code>store_id</code> / <code>category</code>, và đây là lý do kỹ thuật thật để cân nhắc, vì post-filter đa tenant là điểm yếu cố hữu của HNSW (xem A3).</li>
+    <li><strong>Nhưng hãy công bằng với pgvector:</strong> bản 0.8 đã thêm <em>iterative index scans</em>, thu hẹp phần lớn khoảng cách này. Và con số "28× lower p95 latency" mà TigerData công bố là so với Pinecone storage-optimized, <em>không phải</em> so với pgvector HNSW.</li>
+  </ul>
+
+  <div class="note bad">
+    <p><strong>Ràng buộc phải chốt trước Phase 1:</strong> pgvectorscale là extension Rust riêng, <strong>không có trên Amazon RDS và Aurora</strong>. Chỉ chạy được nếu bạn tự host, hoặc dùng Tiger Cloud / DigitalOcean managed. Nếu roadmap hạ tầng đang nhắm RDS thì đây là điểm chặn — và đổi sau khi đã có vài trăm cửa hàng chạy thì rất đắt.</p>
+  </div>
+</section>
+
+<hr class="r">
+
+<section aria-labelledby="rm">
+  <h2 id="rm">5 · Roadmap sửa lại</h2>
+
+  <div class="tw">
+    <table class="prio">
+      <thead><tr><th>Giai đoạn</th><th>Nội dung</th><th class="n">Thời gian</th><th>Thay đổi</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Phase 0</td>
+          <td><strong>Chốt hợp đồng mutation &amp; sửa write path.</strong> Full-row hay dirty-field; partial commit cho <code>/sync/push</code>; chuẩn hoá UTC ở client; thêm <code>last_seq</code> + <code>last_mutation_id</code>; xử lý sequence gap (A4).</td>
+          <td class="n">1–2 tuần</td>
+          <td><span class="right">Thêm mới</span></td>
+        </tr>
+        <tr>
+          <td>Phase 1</td>
+          <td>Schema &amp; pgvector — thêm partitioning, RLS, PK <code>(tenant_id, id)</code>, tombstone, config <code>vi</code>. Dùng <code>halfvec</code> ngay từ đầu.</td>
+          <td class="n">2 tuần</td>
+          <td>Mở rộng</td>
+        </tr>
+        <tr>
+          <td>Phase 2</td>
+          <td>Projection Worker — merge theo cột (A1), checkpoint giao dịch, FK <code>NOT VALID</code> (A5), backfill có thể chạy lại từ đầu.</td>
+          <td class="n">2–3 tuần</td>
+          <td>Mở rộng</td>
+        </tr>
+        <tr>
+          <td>Phase 3a</td>
+          <td>Embedding pipeline — <code>embedding_queue</code>, worker stateless, <code>content_hash</code>, retry + backoff. Đây là phần thay cho pgai.</td>
+          <td class="n">2 tuần</td>
+          <td><span class="wrong">Tách đôi</span></td>
+        </tr>
+        <tr>
+          <td>Phase 3b</td>
+          <td>Hybrid Search — sửa A3, bật iterative index scans, đo recall thật trên dữ liệu tiếng Việt.</td>
+          <td class="n">1–2 tuần</td>
+          <td><span class="wrong">Tách đôi</span></td>
+        </tr>
+        <tr>
+          <td>Phase 4</td>
+          <td>Snapshot API &amp; báo cáo HQ — snapshot phải trả <code>(rows, snapshot_seq)</code> trong <em>một</em> transaction <code>REPEATABLE READ</code>.</td>
+          <td class="n">2 tuần</td>
+          <td>Mở rộng</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <p><strong>Về Snapshot API — chi tiết dễ bỏ sót nhất của Phase 4.</strong> Client phải nhận cả dữ liệu <em>và</em> mốc <code>snapshot_seq</code> từ cùng một ảnh chụp nhất quán, rồi tiếp tục kéo từ <code>after_seq = snapshot_seq</code>. Không có điều này thì bạn hoặc mất mutation trong khoảng giữa, hoặc apply trùng — đúng loại lỗi đang làm dữ liệu "biến mất sau khi cài lại app" hôm nay, chỉ khác quy mô.</p>
+  </div>
+
+  <h4>Tóm lại</h4>
+  <p>Giữ nguyên hướng CQRS + read model + pgvector — đây là lựa chọn đúng và bạn không cần vector database riêng. Bỏ pgai khỏi kế hoạch, tự viết vectorizer worker. Để pgvectorscale ở dạng "thiết kế sẵn sàng chuyển sang" chứ chưa lắp ngay, và chốt hạ tầng self-host hay RDS trước Phase 1. Và sửa write path trước khi dựng projection — nếu không, bạn sẽ nhân bản chính những lỗi đang có lên quy mô 10.000 cửa hàng.</p>
+</section>
+
+<hr class="r">
+
+<section aria-labelledby="ng">
+  <h2 id="ng">Nguồn kiểm chứng</h2>
+  <p class="lede">Các khẳng định về tình trạng pgai, pgvectorscale và pgvector trong tài liệu này đều kiểm tra ngày 04/09/2026.</p>
+  <div class="src">
+    <a href="https://github.com/timescale/pgai">timescale/pgai — GitHub (đã archive 27/05/2026)</a>
+    <a href="https://www.tigerdata.com/docs/deploy/tiger-cloud/vectorizer-deprecation">Vectorizer and in-database LLM calls migration guide — Tiger Data Docs</a>
+    <a href="https://github.com/timescale/pgvectorscale">timescale/pgvectorscale — GitHub</a>
+    <a href="https://github.com/pgvector/pgvector/blob/master/CHANGELOG.md">pgvector CHANGELOG — GitHub</a>
+    <a href="https://lantern.dev/blog/pgvector-storage">Understanding pgvector's HNSW Index Storage in Postgres — Lantern</a>
+    <a href="https://www.tigerdata.com/blog/pgvector-is-now-as-fast-as-pinecone-at-75-less-cost">Pgvector is now faster than Pinecone at 75% less cost — Tiger Data</a>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Phạm vi.</strong> Bản duyệt dựa trên <code>iziiapp_cqrs_pgvector_architecture.md</code> v2.0.0, đối chiếu với khoảng 245.000 dòng log server (V1.0.20 và V1.0.34–36) và hai file database đã kiểm tra. Các trích dẫn mã và DDL là nguyên văn từ tài liệu. Đánh giá về pgai và pgvectorscale phản ánh tình trạng công khai tại ngày kiểm tra — nên xác nhận lại trước khi ra quyết định mua hạ tầng.</p>
+</footer>
+
+</div>
+
+</body></html>

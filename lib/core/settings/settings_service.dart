@@ -6,6 +6,7 @@ class SettingsService {
   static const String _geminiApiKey = 'gemini_api_key';
   static const String _syncServerUrl = 'sync_server_url';
   static const String _syncToken = 'sync_token';
+  static const String _wsToken = 'ws_token';
   static const String _lastSyncTimestamp = 'last_sync_timestamp';
   static const String _languageCode = 'selected_language_code';
   static const String _activeUserId = 'active_user_id';
@@ -138,6 +139,22 @@ class SettingsService {
   Future<String> getSyncToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_syncToken) ?? '';
+  }
+
+  Future<void> saveWsToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_wsToken, token);
+  }
+
+  Future<String> getWsToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final wsToken = prefs.getString(_wsToken);
+    if (wsToken != null && wsToken.trim().isNotEmpty) {
+      return wsToken.trim();
+    }
+    // Tuyệt đối KHÔNG fallback về getSyncToken() vì syncToken có thể là admin secret,
+    // gây lỗi 403 / code 1008 trên /chat (lỗi F11).
+    return '';
   }
 
   Future<void> saveLastSyncTimestamp(String timestamp) async {

@@ -39,6 +39,16 @@ class SyncConfigRepository {
     'mushroom_chat_messages': 'mushroom_farm',
     'mushroom_room_crews': 'mushroom_farm',
     'mushroom_employees': 'mushroom_farm',
+    'mushroom_departments': 'mushroom_farm',
+    'mushroom_roles': 'mushroom_farm',
+    'mushroom_picker_teams': 'mushroom_farm',
+    'mushroom_job_types': 'mushroom_farm',
+    'mushroom_attendance_events': 'mushroom_farm',
+    'mushroom_daily_timesheets': 'mushroom_farm',
+    'mushroom_break_policies': 'mushroom_farm',
+    'mushroom_payroll_calculations': 'mushroom_farm',
+    'mushroom_yield_surveys': 'mushroom_farm',
+    'mushroom_employee_department_roles': 'mushroom_farm',
   };
 
   /// Lists of modules and metadata

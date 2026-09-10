@@ -28,7 +28,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import socket
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Callable, Optional
 
 from zeroconf import IPVersion, ServiceStateChange, Zeroconf
@@ -140,7 +140,7 @@ class ServerDiscovery:
             "zone": peer_zone,
             "host": host,
             "port": port,
-            "discovered_at": datetime.now().isoformat(),
+            "discovered_at": datetime.now(timezone.utc).isoformat(),
         }
 
         if is_new:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/mushboom_monarto_screen.dart'; // For FarmColors
 import '../services/safety_management_service.dart';
+import '../repository.dart';
 
 class PlantMapWidget extends StatefulWidget {
   final bool isDark;
@@ -17,6 +18,7 @@ class PlantMapWidget extends StatefulWidget {
   final bool showLegend;
   final bool isMaximized;
   final VoidCallback? onToggleMaximize;
+  final Map<String, String>? stageColors;
 
   const PlantMapWidget({
     super.key,
@@ -34,6 +36,7 @@ class PlantMapWidget extends StatefulWidget {
     this.showLegend = true,
     this.isMaximized = false,
     this.onToggleMaximize,
+    this.stageColors,
   });
 
   @override
@@ -91,8 +94,24 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
     return 96.0;
   }
 
+  Color? _tryParseHex(String? hexString) {
+    if (hexString == null || hexString.isEmpty) return null;
+    try {
+      String hex = hexString.replaceAll('#', '').trim();
+      if (hex.length == 6) hex = 'FF$hex';
+      if (hex.length == 8) return Color(int.parse(hex, radix: 16));
+    } catch (_) {}
+    return null;
+  }
+
   Color _getStageColor(String stage) {
     final s = stage.trim().toLowerCase().replaceAll(' ', '_');
+    if (widget.stageColors != null && widget.stageColors!.containsKey(s)) {
+      final dynColor = _tryParseHex(widget.stageColors![s]);
+      if (dynColor != null) return dynColor;
+    }
+    final repoColor = MushroomsRepository.resolveDynamicColor(stage);
+    if (repoColor != null) return repoColor;
     switch (s) {
       case 'spawn':
       case 'casing':

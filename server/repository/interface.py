@@ -112,6 +112,15 @@ class ISyncRepository(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_record(self, table: str, record_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieve the latest accumulated state of a record from sync_mutations.
+        Replays all mutations for (table, record_id) in sequential order.
+        Returns None if record does not exist or was deleted.
+        """
+        pass
+
 
 class IDeviceRepository(ABC):
     """Repository interface for Track 2 — Device Identity operations."""

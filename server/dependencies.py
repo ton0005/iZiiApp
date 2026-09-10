@@ -14,7 +14,8 @@ Usage in routers:
         page = repo.pull_mutations(after_seq=after_seq, limit=limit)
         return {"updates": page["updates"], "next_cursor": page["next_cursor"]}
 """
-from fastapi import Depends
+from typing import Optional
+from fastapi import Depends, Request
 
 from server_config import CONFIG
 from database import get_db_connection
@@ -30,19 +31,24 @@ def _is_postgres() -> bool:
     return CONFIG.db_backend == "postgres"
 
 
-def get_db():
+def get_db(request: Request = None):
     """
     Dependency cấp connection cho 1 request.
+    Trích xuất tenant_id từ header 'X-Tenant-Id' hoặc query param 'tenant_id'.
 
     - SQLite  : mở connection mới, ĐÓNG hẳn khi request xong.
     - Postgres: MƯỢN từ pool, TRẢ VỀ POOL khi request xong (không đóng thật).
-
-    Khác biệt này quan trọng: mở connection Postgres tốn vài chục ms do bắt tay
-    TCP + xác thực, nên tuyệt đối không được mở/đóng theo từng request.
     """
+    tenant_id = "default"
+    if request is not None:
+        try:
+            tenant_id = request.headers.get("x-tenant-id") or request.query_params.get("tenant_id") or "default"
+        except Exception:
+            tenant_id = "default"
+
     if _is_postgres():
         from db_postgres import pg_connection
-        with pg_connection() as conn:
+        with pg_connection(tenant_id=tenant_id) as conn:
             yield conn
     else:
         conn = get_db_connection()
@@ -86,16 +92,17 @@ def get_notification_repo(conn=Depends(get_db)):
 
 # ── Dùng ngoài phạm vi request (vòng lặp peer-sync, event engine, admin) ─────
 
-def open_connection():
+def open_connection(tenant_id: str = "*"):
     """
     Context manager cấp connection ngoài luồng FastAPI dependency.
+    Mặc định tenant_id='*' để các tác vụ nền (peer-sync, prune) truy cập toàn bộ dữ liệu.
 
         with open_connection() as conn:
             repo = make_sync_repo(conn)
     """
     if _is_postgres():
         from db_postgres import pg_connection
-        return pg_connection()
+        return pg_connection(tenant_id=tenant_id)
 
     from contextlib import contextmanager
 

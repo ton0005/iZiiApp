@@ -257,6 +257,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                                               flex: 3,
                                               child: Row(
                                                 children: [
+                                                  _buildColorDot(jt['color'] as String?),
                                                   Expanded(
                                                     child: Text(
                                                       jt['name'],
@@ -376,6 +377,20 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
     );
   }
 
+  Widget _buildColorDot(String? hexColor) {
+    final color = MushroomsRepository.parseHexColor(hexColor) ?? const Color(0xFF0EA5E9);
+    return Container(
+      width: 12,
+      height: 12,
+      margin: const EdgeInsets.only(right: 6),
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.black26, width: 1),
+      ),
+    );
+  }
+
   Widget _buildAccessDenied() {
     return Center(
       child: Padding(
@@ -414,6 +429,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
     String name = '';
     int planMinutes = 30;
     bool isSoloJob = false;
+    String color = '#10B981';
     bool idManuallyEdited = false;
 
     showDialog(
@@ -466,6 +482,15 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                       onChanged: (val) =>
                           planMinutes = int.tryParse(val) ?? 30,
                     ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Stage Color (hex, e.g. #10B981)',
+                        helperText: 'Controls stage color on maps and dashboard',
+                      ),
+                      initialValue: color,
+                      onChanged: (val) => color = val.trim(),
+                    ),
                     const SizedBox(height: 4),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
@@ -497,6 +522,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                   name: name,
                   planMinutes: planMinutes,
                   isSoloJob: isSoloJob,
+                  color: color.isNotEmpty ? color : null,
                 );
                 if (!ok) {
                   if (ctx.mounted) {
@@ -526,6 +552,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
     int planMinutes = jobType['plan_minutes'] as int;
     bool isSoloJob = jobType['is_solo_job'] == true;
     bool isActive = jobType['is_active'] == true;
+    String color = (jobType['color'] as String?) ?? '';
 
     showDialog(
       context: context,
@@ -565,6 +592,15 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                           val == null || val.isEmpty ? 'Required' : null,
                       onChanged: (val) =>
                           planMinutes = int.tryParse(val) ?? planMinutes,
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      initialValue: color,
+                      decoration: const InputDecoration(
+                        labelText: 'Stage Color (hex, e.g. #10B981)',
+                        helperText: 'Controls stage color on maps and dashboard',
+                      ),
+                      onChanged: (val) => color = val.trim(),
                     ),
                     const SizedBox(height: 4),
                     SwitchListTile(
@@ -607,6 +643,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                   planMinutes: planMinutes,
                   isSoloJob: isSoloJob,
                   isActive: isActive,
+                  color: color.isNotEmpty ? color : null,
                 );
                 if (ctx.mounted) Navigator.pop(ctx);
                 _loadJobTypes();

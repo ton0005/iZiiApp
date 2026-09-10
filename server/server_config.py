@@ -271,3 +271,14 @@ def load_server_config() -> ServerConfig:
 
 
 CONFIG = load_server_config()
+
+
+def is_port_in_use(port: int = 8080, host: str = "127.0.0.1") -> bool:
+    """Kiểm tra xem port có đang bị chiếm dụng bởi tiến trình khác hay không (P1.10)."""
+    import socket
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            return s.connect_ex((host, port)) == 0
+    except Exception:
+        return False

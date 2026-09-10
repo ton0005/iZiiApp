@@ -39,11 +39,12 @@ class ChatWebSocketService {
       final uri = Uri.parse(baseUrl.trim());
       final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
       final portStr = uri.hasPort ? ':${uri.port}' : '';
-      final syncToken = await _settingsService.getSyncToken();
-      final effectiveToken = syncToken.isNotEmpty ? syncToken : 'iZiiServerSecretKey2026';
+      final wsToken = await _settingsService.getWsToken();
+      final effectiveToken = wsToken.isNotEmpty ? wsToken : 'iZiiServerSecretKey2026';
       final wsUrl = '$scheme://${uri.host}$portStr/chat?token=${Uri.encodeComponent(effectiveToken)}';
+      final maskedToken = effectiveToken.length > 6 ? '${effectiveToken.substring(0, 4)}...' : '***';
 
-      print('[ChatWS] Connecting to $wsUrl ...');
+      print('[ChatWS] Connecting to $scheme://${uri.host}$portStr/chat?token=$maskedToken ...');
       _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
       
       // Intercept asynchronous sink errors to prevent Unhandled Exception crashes

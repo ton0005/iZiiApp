@@ -13,7 +13,7 @@ Handles in-app notifications and per-user notification preferences:
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from dependencies import get_notification_repo
 from repository.interface import INotificationRepository
@@ -49,7 +49,7 @@ async def notifications_get(user_id: str,
 @router.post("/api/v1/notifications/read")
 async def notifications_read(body: NotificationReadPayload,
                                repo: INotificationRepository = Depends(get_notification_repo)):
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     try:
         updated_count = repo.mark_read(body.user_id, body.notification_ids, now)
@@ -63,7 +63,7 @@ async def notifications_read(body: NotificationReadPayload,
 @router.post("/api/v1/notifications/read-all")
 async def notifications_read_all(body: NotificationReadAllPayload,
                                    repo: INotificationRepository = Depends(get_notification_repo)):
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     try:
         updated_count = repo.mark_read_all(body.user_id, now)

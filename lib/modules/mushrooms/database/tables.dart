@@ -27,6 +27,10 @@ class MushroomJobTypes extends Table {
   BoolColumn get isSoloJob => boolean().withDefault(const Constant(false))(); // requires Alone Worker safety flow
   BoolColumn get isCustom => boolean().withDefault(const Constant(true))(); // false for the seeded built-ins
   BoolColumn get isActive => boolean().withDefault(const Constant(true))(); // inactive = hidden from new-job dropdown
+  TextColumn get color => text().nullable()(); // hex color e.g. #EB6834 for stage & job rendering (solves F1)
+  TextColumn get label => text().nullable()(); // multilingual label JSON e.g. {"vi":"...","en":"..."}
+  TextColumn get icon => text().nullable()(); // icon identifier
+  IntColumn get sortOrder => integer().withDefault(const Constant(100))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -115,6 +119,9 @@ class MushroomMaintenanceTickets extends Table {
   TextColumn get priority => text()(); // low, normal, high
   TextColumn get status => text().withDefault(const Constant('todo'))(); // todo, inprog, done
   TextColumn get notes => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().nullable().withDefault(currentDateAndTime)();
+  DateTimeColumn get dueDate => dateTime().nullable()();
+  DateTimeColumn get completedAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

@@ -121,20 +121,52 @@ class SyncService {
   }
 
   /// Dọn dẹp các bản ghi stub hỏng trong SQLite (sinh ra từ việc nhận UPDATE mà không có INSERT)
+  /// P0.14: Siết chặt điều kiện xoá - có guard project_id/description để không xoá nhầm bản ghi cố ý để trống tiêu đề.
   Future<void> cleanupCorruptedStubRecords() async {
     try {
       // 1. Dọn các task stub rỗng không có title hoặc title là "Untitled Task"
+      // P0.14 Guard: Chỉ xoá khi không thuộc project nào VÀ không có description
       final deletedTasks = await (_db.delete(_db.tasks)
-        ..where((tbl) => tbl.title.equals('Untitled Task') | tbl.title.equals(''))
+        ..where((tbl) =>
+            (tbl.title.equals('Untitled Task') | tbl.title.equals('')) &
+            (tbl.projectId.equals('') | tbl.projectId.isNull()) &
+            (tbl.description.isNull() | tbl.description.equals('')))
       ).go();
 
-      // 2. Dọn các job rỗng không có job_type hoặc room_id
+      // 2. Dọn các job rỗng không có job_type, room_id và name rỗng
       final deletedJobs = await (_db.delete(_db.mushroomJobs)
-        ..where((tbl) => tbl.jobType.equals('') | tbl.roomId.equals(''))
+        ..where((tbl) =>
+            (tbl.jobType.equals('') | tbl.jobType.isNull()) &
+            (tbl.roomId.equals('') | tbl.roomId.isNull()) &
+            (tbl.name.equals('') | tbl.name.isNull()))
       ).go();
 
-      if (deletedTasks > 0 || deletedJobs > 0) {
-        _log('🧹 Đã dọn dẹp $deletedTasks task rác và $deletedJobs job rỗng trong DB cục bộ.');
+      // 3. Dọn các lead stub rỗng không có title hoặc title là "Untitled" và không có contact/notes
+      final deletedLeads = await (_db.delete(_db.leads)
+        ..where((tbl) =>
+            (tbl.title.equals('Untitled') | tbl.title.equals('')) &
+            (tbl.contactId.isNull() | tbl.contactId.equals('')) &
+            (tbl.notes.isNull() | tbl.notes.equals('')))
+      ).go();
+
+      // 4. Dọn các deal stub rỗng không có title hoặc title là "Untitled Deal" và không có contact/lead
+      final deletedDeals = await (_db.delete(_db.deals)
+        ..where((tbl) =>
+            (tbl.title.equals('Untitled Deal') | tbl.title.equals('')) &
+            (tbl.contactId.isNull() | tbl.contactId.equals('')) &
+            (tbl.leadId.isNull() | tbl.leadId.equals('')))
+      ).go();
+
+      // 5. Dọn các project stub rỗng không có name hoặc name là "Untitled Project" và không có description
+      final deletedProjects = await (_db.delete(_db.projects)
+        ..where((tbl) =>
+            (tbl.name.equals('Untitled Project') | tbl.name.equals('')) &
+            (tbl.description.isNull() | tbl.description.equals('')))
+      ).go();
+
+      final totalCleaned = deletedTasks + deletedJobs + deletedLeads + deletedDeals + deletedProjects;
+      if (totalCleaned > 0) {
+        _log('🧹 Đã dọn dẹp $deletedTasks task, $deletedJobs job, $deletedLeads lead, $deletedDeals deal, $deletedProjects project stub trong DB cục bộ.');
       }
     } catch (e) {
       _log('⚠️ Lỗi khi dọn dẹp stub records: $e');
@@ -331,6 +363,35 @@ class SyncService {
       }
     } catch (e) {
       _log('Lỗi tải tệp đính kèm: $e');
+    }
+    return null;
+  }
+
+  /// P0.1c: Lấy bản ghi đầy đủ hiện tại từ server khi nhận mutation delta/update
+  /// cho một bản ghi chưa tồn tại trong SQLite cục bộ.
+  Future<Map<String, dynamic>?> fetchFullRecordFromServer(String table, String id) async {
+    try {
+      final url = await _settingsService.getSyncServerUrl();
+      final token = await _settingsService.getSyncToken();
+      final headers = <String, String>{};
+      if (token.isNotEmpty) {
+        headers['X-Server-Secret'] = token;
+      }
+      final response = await _dio.get(
+        '$url/sync/record/$table/$id',
+        options: Options(
+          headers: headers,
+          validateStatus: (code) => code != null && code < 500,
+        ),
+      );
+      if (response.statusCode == 200 && response.data is Map) {
+        final resData = response.data as Map;
+        if (resData['data'] is Map) {
+          return Map<String, dynamic>.from(resData['data'] as Map);
+        }
+      }
+    } catch (e) {
+      _log('⚠️ [P0.1c] Không fetch được full record $table/$id từ server: $e');
     }
     return null;
   }
@@ -635,9 +696,22 @@ class SyncService {
       case 'mushroom_departments':
         return _upsertMushroomDepartment(data);
       case 'mushroom_roles':
+      case 'mushroom_employee_department_roles':
         return _upsertMushroomRole(data);
+      case 'mushroom_yield_surveys':
+        return _upsertMushroomYieldSurvey(data);
       case 'mushroom_picker_teams':
         return _upsertMushroomPickerTeam(data);
+      case 'mushroom_job_types':
+        return _upsertMushroomJobType(data);
+      case 'mushroom_attendance_events':
+        return _upsertMushroomAttendanceEvent(data);
+      case 'mushroom_daily_timesheets':
+        return _upsertMushroomDailyTimesheet(data);
+      case 'mushroom_break_policies':
+        return _upsertMushroomBreakPolicy(data);
+      case 'mushroom_payroll_calculations':
+        return _upsertMushroomPayrollCalculation(data);
       default:
         _log('   ⚠️ Bảng "$table" chưa được hỗ trợ đồng bộ PULL.');
         return false;
@@ -650,29 +724,70 @@ class SyncService {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
 
-    String customFields = '{}';
-    if (data['custom_fields'] != null) {
-      customFields = data['custom_fields'] is String
-          ? data['custom_fields']
-          : jsonEncode(data['custom_fields']);
+    final existing = await (_db.select(_db.leads)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
+    if (existing != null) {
+      String? customFields;
+      if (data['custom_fields'] != null) {
+        customFields = data['custom_fields'] is String
+            ? data['custom_fields'] as String
+            : jsonEncode(data['custom_fields']);
+      }
+
+      await (_db.update(_db.leads)..where((tbl) => tbl.id.equals(id))).write(
+        LeadsCompanion(
+          title: data.containsKey('title') && data['title'] != null ? Value(data['title'] as String) : const Value.absent(),
+          contactId: data.containsKey('contact_id') ? Value(data['contact_id'] as String?) : const Value.absent(),
+          status: data.containsKey('status') && data['status'] != null ? Value(data['status'] as String) : const Value.absent(),
+          expectedRevenue: data.containsKey('expected_revenue') && data['expected_revenue'] != null
+              ? Value((data['expected_revenue'] as num).toDouble())
+              : const Value.absent(),
+          notes: data.containsKey('name') ? Value(data['name'] as String?) : const Value.absent(),
+          source: data.containsKey('source') && data['source'] != null ? Value(data['source'] as String) : const Value.absent(),
+          ownerId: data.containsKey('owner_id') && data['owner_id'] != null ? Value(data['owner_id'] as String) : const Value.absent(),
+          customFields: customFields != null ? Value(customFields) : const Value.absent(),
+        ),
+      );
+    } else {
+      var recordData = data;
+      var rawTitle = recordData['title'] as String?;
+      if (rawTitle == null || rawTitle.trim().isEmpty || rawTitle.trim() == 'Untitled') {
+        final fullRecord = await fetchFullRecordFromServer('leads', id);
+        if (fullRecord != null && fullRecord.isNotEmpty) {
+          recordData = fullRecord;
+          rawTitle = recordData['title'] as String?;
+        }
+      }
+
+      if (rawTitle == null || rawTitle.trim().isEmpty || rawTitle.trim() == 'Untitled') {
+        _log('⚠️ Bỏ qua tạo Lead stub rỗng cho id $id (thiếu title hợp lệ)');
+        return false;
+      }
+
+      String customFields = '{}';
+      if (recordData['custom_fields'] != null) {
+        customFields = recordData['custom_fields'] is String
+            ? recordData['custom_fields'] as String
+            : jsonEncode(recordData['custom_fields']);
+      }
+
+      final activeUserId = await _getActiveUserId();
+      final ownerId = recordData['owner_id'] as String? ?? activeUserId;
+
+      await _db.into(_db.leads).insert(
+        LeadsCompanion(
+          id: Value(id),
+          title: Value(rawTitle),
+          contactId: Value(recordData['contact_id'] as String?),
+          status: Value(recordData['status'] as String? ?? 'new'),
+          expectedRevenue: Value((recordData['expected_revenue'] as num?)?.toDouble() ?? 0.0),
+          notes: Value(recordData['name'] as String?),
+          source: Value(recordData['source'] as String? ?? 'direct'),
+          ownerId: Value(ownerId),
+          customFields: Value(customFields),
+        ),
+      );
     }
-
-    final activeUserId = await _getActiveUserId();
-    final ownerId = data['owner_id'] as String? ?? activeUserId;
-
-    await _db.into(_db.leads).insertOnConflictUpdate(
-      LeadsCompanion(
-        id: Value(id),
-        title: Value(data['title'] as String? ?? 'Untitled'),
-        contactId: Value(data['contact_id'] as String?),
-        status: Value(data['status'] as String? ?? 'new'),
-        expectedRevenue: Value((data['expected_revenue'] as num?)?.toDouble() ?? 0.0),
-        notes: Value(data['name'] as String?),
-        source: Value(data['source'] as String? ?? 'direct'),
-        ownerId: Value(ownerId),
-        customFields: Value(customFields),
-      ),
-    );
     return true;
   }
 
@@ -724,24 +839,60 @@ class SyncService {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
 
-    final activeUserId = await _getActiveUserId();
-    final ownerId = data['owner_id'] as String? ?? activeUserId;
+    final existing = await (_db.select(_db.deals)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
-    await _db.into(_db.deals).insertOnConflictUpdate(
-      DealsCompanion(
-        id: Value(id),
-        title: Value(data['title'] as String? ?? 'Untitled Deal'),
-        leadId: Value(data['lead_id'] as String?),
-        contactId: Value(data['contact_id'] as String? ?? ''),
-        amount: Value((data['amount'] as num?)?.toDouble() ?? 0.0),
-        stage: Value(data['stage'] as String? ?? 'proposal'),
-        source: Value(data['source'] as String? ?? 'direct'),
-        ownerId: Value(ownerId),
-        expectedCloseDate: data['expected_close_date'] != null
-            ? Value(DateTime.tryParse(data['expected_close_date'].toString()))
-            : const Value(null),
-      ),
-    );
+    if (existing != null) {
+      await (_db.update(_db.deals)..where((tbl) => tbl.id.equals(id))).write(
+        DealsCompanion(
+          title: data.containsKey('title') && data['title'] != null ? Value(data['title'] as String) : const Value.absent(),
+          leadId: data.containsKey('lead_id') ? Value(data['lead_id'] as String?) : const Value.absent(),
+          contactId: data.containsKey('contact_id') && data['contact_id'] != null ? Value(data['contact_id'] as String) : const Value.absent(),
+          amount: data.containsKey('amount') && data['amount'] != null ? Value((data['amount'] as num).toDouble()) : const Value.absent(),
+          stage: data.containsKey('stage') && data['stage'] != null ? Value(data['stage'] as String) : const Value.absent(),
+          source: data.containsKey('source') && data['source'] != null ? Value(data['source'] as String) : const Value.absent(),
+          ownerId: data.containsKey('owner_id') && data['owner_id'] != null ? Value(data['owner_id'] as String) : const Value.absent(),
+          expectedCloseDate: data.containsKey('expected_close_date')
+              ? (data['expected_close_date'] != null
+                  ? Value(DateTime.tryParse(data['expected_close_date'].toString()))
+                  : const Value(null))
+              : const Value.absent(),
+        ),
+      );
+    } else {
+      var recordData = data;
+      var rawTitle = recordData['title'] as String?;
+      if (rawTitle == null || rawTitle.trim().isEmpty || rawTitle.trim() == 'Untitled Deal') {
+        final fullRecord = await fetchFullRecordFromServer('deals', id);
+        if (fullRecord != null && fullRecord.isNotEmpty) {
+          recordData = fullRecord;
+          rawTitle = recordData['title'] as String?;
+        }
+      }
+
+      if (rawTitle == null || rawTitle.trim().isEmpty || rawTitle.trim() == 'Untitled Deal') {
+        _log('⚠️ Bỏ qua tạo Deal stub rỗng cho id $id (thiếu title hợp lệ)');
+        return false;
+      }
+
+      final activeUserId = await _getActiveUserId();
+      final ownerId = recordData['owner_id'] as String? ?? activeUserId;
+
+      await _db.into(_db.deals).insert(
+        DealsCompanion(
+          id: Value(id),
+          title: Value(rawTitle),
+          leadId: Value(recordData['lead_id'] as String?),
+          contactId: Value(recordData['contact_id'] as String? ?? ''),
+          amount: Value((recordData['amount'] as num?)?.toDouble() ?? 0.0),
+          stage: Value(recordData['stage'] as String? ?? 'proposal'),
+          source: Value(recordData['source'] as String? ?? 'direct'),
+          ownerId: Value(ownerId),
+          expectedCloseDate: recordData['expected_close_date'] != null
+              ? Value(DateTime.tryParse(recordData['expected_close_date'].toString()))
+              : const Value(null),
+        ),
+      );
+    }
     return true;
   }
 
@@ -805,25 +956,63 @@ class SyncService {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
 
-    String customFields = '{}';
-    if (data['custom_fields'] != null) {
-      customFields = data['custom_fields'] is String
-          ? data['custom_fields']
-          : jsonEncode(data['custom_fields']);
-    }
+    final existing = await (_db.select(_db.projects)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
-    await _db.into(_db.projects).insertOnConflictUpdate(
-      ProjectsCompanion(
-        id: Value(id),
-        name: Value(data['name'] as String? ?? 'Untitled Project'),
-        description: Value(data['description'] as String?),
-        status: Value(data['status'] as String? ?? 'active'),
-        createdAt: data['created_at'] != null
-            ? Value(DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now())
-            : Value(DateTime.now()),
-        customFields: Value(customFields),
-      ),
-    );
+    if (existing != null) {
+      String? customFields;
+      if (data['custom_fields'] != null) {
+        customFields = data['custom_fields'] is String
+            ? data['custom_fields'] as String
+            : jsonEncode(data['custom_fields']);
+      }
+
+      await (_db.update(_db.projects)..where((tbl) => tbl.id.equals(id))).write(
+        ProjectsCompanion(
+          name: data.containsKey('name') && data['name'] != null ? Value(data['name'] as String) : const Value.absent(),
+          description: data.containsKey('description') ? Value(data['description'] as String?) : const Value.absent(),
+          status: data.containsKey('status') && data['status'] != null ? Value(data['status'] as String) : const Value.absent(),
+          createdAt: data['created_at'] != null
+              ? Value(DateTime.tryParse(data['created_at'].toString()) ?? existing.createdAt)
+              : const Value.absent(),
+          customFields: customFields != null ? Value(customFields) : const Value.absent(),
+        ),
+      );
+    } else {
+      var recordData = data;
+      var rawName = recordData['name'] as String?;
+      if (rawName == null || rawName.trim().isEmpty || rawName.trim() == 'Untitled Project') {
+        final fullRecord = await fetchFullRecordFromServer('projects', id);
+        if (fullRecord != null && fullRecord.isNotEmpty) {
+          recordData = fullRecord;
+          rawName = recordData['name'] as String?;
+        }
+      }
+
+      if (rawName == null || rawName.trim().isEmpty || rawName.trim() == 'Untitled Project') {
+        _log('⚠️ Bỏ qua tạo Project stub rỗng cho id $id (thiếu name hợp lệ)');
+        return false;
+      }
+
+      String customFields = '{}';
+      if (recordData['custom_fields'] != null) {
+        customFields = recordData['custom_fields'] is String
+            ? recordData['custom_fields'] as String
+            : jsonEncode(recordData['custom_fields']);
+      }
+
+      await _db.into(_db.projects).insert(
+        ProjectsCompanion(
+          id: Value(id),
+          name: Value(rawName),
+          description: Value(recordData['description'] as String?),
+          status: Value(recordData['status'] as String? ?? 'active'),
+          createdAt: recordData['created_at'] != null
+              ? Value(DateTime.tryParse(recordData['created_at'].toString()) ?? DateTime.now())
+              : Value(DateTime.now()),
+          customFields: Value(customFields),
+        ),
+      );
+    }
     return true;
   }
 
@@ -859,30 +1048,40 @@ class SyncService {
         ),
       );
     } else {
-      final rawTitle = data['title'] as String?;
+      var recordData = data;
+      var rawTitle = recordData['title'] as String?;
       // Bỏ qua nếu payload UPDATE thiếu title (chống sinh ra stub "Untitled Task")
+      // P0.1c: Khi client nhận delta update cho id chưa có trong SQLite, fetch bản ghi đầy đủ từ server
+      if (rawTitle == null || rawTitle.trim().isEmpty || rawTitle.trim() == 'Untitled Task') {
+        final fullRecord = await fetchFullRecordFromServer('tasks', id);
+        if (fullRecord != null && fullRecord.isNotEmpty) {
+          recordData = fullRecord;
+          rawTitle = recordData['title'] as String?;
+        }
+      }
+
       if (rawTitle == null || rawTitle.trim().isEmpty || rawTitle.trim() == 'Untitled Task') {
         _log('⚠️ Bỏ qua tạo Task stub rỗng cho id $id (thiếu title hợp lệ)');
         return false;
       }
 
       String customFields = '{}';
-      if (data['custom_fields'] != null) {
-        customFields = data['custom_fields'] is String
-            ? data['custom_fields'] as String
-            : jsonEncode(data['custom_fields']);
+      if (recordData['custom_fields'] != null) {
+        customFields = recordData['custom_fields'] is String
+            ? recordData['custom_fields'] as String
+            : jsonEncode(recordData['custom_fields']);
       }
 
       await _db.into(_db.tasks).insert(
         TasksCompanion.insert(
           id: id,
-          projectId: data['project_id'] as String? ?? '',
+          projectId: recordData['project_id'] as String? ?? '',
           title: rawTitle,
-          description: Value(data['description'] as String?),
-          status: Value(data['status'] as String? ?? 'todo'),
-          priority: Value(data['priority'] as String? ?? 'medium'),
-          dueDate: Value(data['due_date'] != null ? DateTime.tryParse(data['due_date'].toString()) : null),
-          createdAt: Value(data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now()),
+          description: Value(recordData['description'] as String?),
+          status: Value(recordData['status'] as String? ?? 'todo'),
+          priority: Value(recordData['priority'] as String? ?? 'medium'),
+          dueDate: Value(recordData['due_date'] != null ? DateTime.tryParse(recordData['due_date'].toString()) : null),
+          createdAt: Value(recordData['created_at'] != null ? DateTime.tryParse(recordData['created_at'].toString()) ?? DateTime.now() : DateTime.now()),
           customFields: Value(customFields),
         ),
       );
@@ -998,23 +1197,44 @@ class SyncService {
   Future<bool> _upsertChatMessage(Map<String, dynamic> data) async {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
+
+    final existing = await (_db.select(_db.chatMessages)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+    var recordData = data;
+
+    if (existing == null) {
+      final rawContent = recordData['content'];
+      final rawConvoId = recordData['conversation_id'] as String?;
+      if (rawContent == null || rawConvoId == null || rawConvoId.isEmpty) {
+        final fullRecord = await fetchFullRecordFromServer('chat_messages', id);
+        if (fullRecord != null && fullRecord.isNotEmpty) {
+          recordData = fullRecord;
+        }
+      }
+
+      if ((recordData['conversation_id'] as String? ?? '').isEmpty) {
+        _log('⚠️ Bỏ qua tạo ChatMessage stub rỗng cho id $id (thiếu conversation_id)');
+        return false;
+      }
+    }
     
     final chatMsg = ChatMessage(
       id: id,
-      conversationId: data['conversation_id'] as String? ?? '',
-      senderId: data['sender_id'] as String? ?? '',
-      type: data['type'] as String? ?? 'text',
-      content: data['content'] is String ? data['content'] as String : jsonEncode(data['content'] ?? {}),
-      sentAt: data['sent_at'] != null
-          ? DateTime.tryParse(data['sent_at'].toString()) ?? DateTime.now()
-          : DateTime.now(),
-      deliveredAt: data['delivered_at'] != null
-          ? DateTime.tryParse(data['delivered_at'].toString())
-          : null,
-      readAt: data['read_at'] != null
-          ? DateTime.tryParse(data['read_at'].toString())
-          : null,
-      isDeleted: data['is_deleted'] as bool? ?? false,
+      conversationId: recordData['conversation_id'] as String? ?? (existing?.conversationId ?? ''),
+      senderId: recordData['sender_id'] as String? ?? (existing?.senderId ?? ''),
+      type: recordData['type'] as String? ?? (existing?.type ?? 'text'),
+      content: recordData['content'] is String
+          ? recordData['content'] as String
+          : (recordData['content'] != null ? jsonEncode(recordData['content']) : (existing?.content ?? '{}')),
+      sentAt: recordData['sent_at'] != null
+          ? DateTime.tryParse(recordData['sent_at'].toString()) ?? existing?.sentAt ?? DateTime.now()
+          : (existing?.sentAt ?? DateTime.now()),
+      deliveredAt: recordData['delivered_at'] != null
+          ? DateTime.tryParse(recordData['delivered_at'].toString())
+          : existing?.deliveredAt,
+      readAt: recordData['read_at'] != null
+          ? DateTime.tryParse(recordData['read_at'].toString())
+          : existing?.readAt,
+      isDeleted: recordData['is_deleted'] as bool? ?? (existing?.isDeleted ?? false),
     );
     
     await _db.into(_db.chatMessages).insertOnConflictUpdate(chatMsg);
@@ -1334,16 +1554,33 @@ class SyncService {
   Future<bool> _upsertMushroomJobSafetyConfig(Map<String, dynamic> data) async {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
+
+    // P5.4 (Sửa M1): Giữ lại jobId từ bản ghi hiện tại nếu payload delta không truyền jobId
+    final existing = await (_db.select(_db.mushroomJobSafetyConfigs)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+    final incomingJobId = (data['job_id'] ?? data['jobId']) as String?;
+    final jobId = (incomingJobId != null && incomingJobId.trim().isNotEmpty)
+        ? incomingJobId
+        : (existing?.jobId ?? '');
+
+    final checkInInterval = ((data['check_in_interval_minutes'] ?? data['checkInIntervalMinutes']) as num?)?.toInt() ?? existing?.checkInIntervalMinutes ?? 30;
+    final gracePeriod = ((data['grace_period_minutes'] ?? data['gracePeriodMinutes']) as num?)?.toInt() ?? existing?.gracePeriodMinutes ?? 5;
+    final escalationTarget = (data['escalation_target'] ?? data['escalationTarget']) as String? ?? existing?.escalationTarget ?? 'supervisor';
+    final autoStart = (data['auto_start_on_job_begin'] ?? data['autoStartOnJobBegin']) as bool? ?? existing?.autoStartOnJobBegin ?? true;
+    final alarmType = (data['alarm_type'] ?? data['alarmType']) as String? ?? existing?.alarmType ?? 'push_inapp';
+    final createdAt = (data['created_at'] ?? data['createdAt']) != null
+        ? DateTime.tryParse((data['created_at'] ?? data['createdAt']).toString()) ?? (existing?.createdAt ?? DateTime.now())
+        : (existing?.createdAt ?? DateTime.now());
+
     await _db.into(_db.mushroomJobSafetyConfigs).insertOnConflictUpdate(
       MushroomJobSafetyConfig(
         id: id,
-        jobId: data['jobId'] as String? ?? '',
-        checkInIntervalMinutes: (data['checkInIntervalMinutes'] as num?)?.toInt() ?? 30,
-        gracePeriodMinutes: (data['gracePeriodMinutes'] as num?)?.toInt() ?? 5,
-        escalationTarget: data['escalationTarget'] as String? ?? 'supervisor',
-        autoStartOnJobBegin: data['autoStartOnJobBegin'] as bool? ?? true,
-        alarmType: data['alarmType'] as String? ?? 'push_inapp',
-        createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
+        jobId: jobId,
+        checkInIntervalMinutes: checkInInterval,
+        gracePeriodMinutes: gracePeriod,
+        escalationTarget: escalationTarget,
+        autoStartOnJobBegin: autoStart,
+        alarmType: alarmType,
+        createdAt: createdAt,
       ),
     );
     return true;
@@ -1352,17 +1589,38 @@ class SyncService {
   Future<bool> _upsertMushroomSafetyCheckinLog(Map<String, dynamic> data) async {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
+
+    // P5.4 (Sửa M1): Giữ lại jobId và workerId từ bản ghi hiện tại nếu payload delta bị thiếu
+    final existing = await (_db.select(_db.mushroomSafetyCheckinLogs)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+    final incomingJobId = (data['job_id'] ?? data['jobId']) as String?;
+    final jobId = (incomingJobId != null && incomingJobId.trim().isNotEmpty)
+        ? incomingJobId
+        : (existing?.jobId ?? '');
+    final incomingWorkerId = (data['worker_id'] ?? data['workerId']) as String?;
+    final workerId = (incomingWorkerId != null && incomingWorkerId.trim().isNotEmpty)
+        ? incomingWorkerId
+        : (existing?.workerId ?? '');
+
+    final eventType = (data['event_type'] ?? data['eventType']) as String? ?? existing?.eventType ?? 'safe';
+    final timestamp = (data['timestamp'] ?? data['time']) != null
+        ? DateTime.tryParse((data['timestamp'] ?? data['time']).toString()) ?? (existing?.timestamp ?? DateTime.now())
+        : (existing?.timestamp ?? DateTime.now());
+    final gpsLatitude = ((data['gps_latitude'] ?? data['gpsLatitude']) as num?)?.toDouble() ?? existing?.gpsLatitude;
+    final gpsLongitude = ((data['gps_longitude'] ?? data['gpsLongitude']) as num?)?.toDouble() ?? existing?.gpsLongitude;
+    final responseTime = ((data['response_time_seconds'] ?? data['responseTimeSeconds']) as num?)?.toInt() ?? existing?.responseTimeSeconds;
+    final notes = (data['notes'] ?? data['note']) as String? ?? existing?.notes;
+
     await _db.into(_db.mushroomSafetyCheckinLogs).insertOnConflictUpdate(
       MushroomSafetyCheckinLog(
         id: id,
-        jobId: data['jobId'] as String? ?? '',
-        workerId: data['workerId'] as String? ?? '',
-        eventType: data['eventType'] as String? ?? 'safe',
-        timestamp: data['timestamp'] != null ? DateTime.tryParse(data['timestamp'].toString()) ?? DateTime.now() : DateTime.now(),
-        gpsLatitude: (data['gpsLatitude'] as num?)?.toDouble(),
-        gpsLongitude: (data['gpsLongitude'] as num?)?.toDouble(),
-        responseTimeSeconds: (data['responseTimeSeconds'] as num?)?.toInt(),
-        notes: data['notes'] as String?,
+        jobId: jobId,
+        workerId: workerId,
+        eventType: eventType,
+        timestamp: timestamp,
+        gpsLatitude: gpsLatitude,
+        gpsLongitude: gpsLongitude,
+        responseTimeSeconds: responseTime,
+        notes: notes,
       ),
     );
     return true;
@@ -1371,6 +1629,16 @@ class SyncService {
   Future<bool> _upsertMushroomMaintenanceTicket(Map<String, dynamic> data) async {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
+    final createdAt = (data['created_at'] ?? data['createdAt']) != null
+        ? DateTime.tryParse((data['created_at'] ?? data['createdAt']).toString())
+        : null;
+    final dueDate = (data['due_date'] ?? data['dueDate']) != null
+        ? DateTime.tryParse((data['due_date'] ?? data['dueDate']).toString())
+        : null;
+    final completedAt = (data['completed_at'] ?? data['completedAt']) != null
+        ? DateTime.tryParse((data['completed_at'] ?? data['completedAt']).toString())
+        : null;
+
     await _db.into(_db.mushroomMaintenanceTickets).insertOnConflictUpdate(
       MushroomMaintenanceTicket(
         id: id,
@@ -1381,6 +1649,33 @@ class SyncService {
         priority: data['priority'] as String? ?? '',
         status: data['status'] as String? ?? 'todo',
         notes: data['notes'] as String?,
+        createdAt: createdAt,
+        dueDate: dueDate,
+        completedAt: completedAt,
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomYieldSurvey(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    final roomName = (data['room_name'] ?? data['roomName']) as String? ?? '';
+    final strain = (data['strain'] as String?) ?? 'Button';
+    final cycle = ((data['cycle']) as num?)?.toInt() ?? 1;
+    final expectedYield = ((data['expected_yield'] ?? data['expectedYield']) as num?)?.toDouble() ?? 0.0;
+    final surveyedAt = (data['surveyed_at'] ?? data['surveyedAt']) != null
+        ? DateTime.tryParse((data['surveyed_at'] ?? data['surveyedAt']).toString()) ?? DateTime.now()
+        : DateTime.now();
+
+    await _db.into(_db.mushroomYieldSurveys).insertOnConflictUpdate(
+      MushroomYieldSurvey(
+        id: id,
+        roomName: roomName,
+        strain: strain,
+        cycle: cycle,
+        expectedYield: expectedYield,
+        surveyedAt: surveyedAt,
       ),
     );
     return true;
@@ -1480,6 +1775,127 @@ class SyncService {
         headcount: (data['headcount'] as num?)?.toInt() ?? (data['headcount_hv'] as num?)?.toInt() ?? (data['headcountHV'] as num?)?.toInt() ?? 0,
         rateEstimate: (data['rate_estimate'] as num?)?.toDouble() ?? (data['speed_rate_w'] as num?)?.toDouble() ?? (data['speedRateW'] as num?)?.toDouble() ?? 0.0,
         memberIdsJson: data['member_ids_json'] as String? ?? data['memberIdsJson'] as String?,
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomJobType(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    final rawLabel = data['label'];
+    final labelStr = rawLabel is Map ? jsonEncode(rawLabel) : rawLabel as String?;
+    await _db.into(_db.mushroomJobTypes).insertOnConflictUpdate(
+      MushroomJobType(
+        id: id,
+        name: data['name'] as String? ?? id,
+        planMinutes: ((data['plan_minutes'] ?? data['planMinutes']) as num?)?.toInt() ?? 30,
+        isSoloJob: (data['is_solo_job'] ?? data['isSoloJob']) as bool? ?? false,
+        isCustom: (data['is_custom'] ?? data['isCustom']) as bool? ?? true,
+        isActive: (data['is_active'] ?? data['isActive']) as bool? ?? true,
+        color: data['color'] as String?,
+        label: labelStr,
+        icon: data['icon'] as String?,
+        sortOrder: ((data['sort_order'] ?? data['sortOrder']) as num?)?.toInt() ?? 100,
+        createdAt: (data['created_at'] ?? data['createdAt']) != null
+            ? DateTime.tryParse((data['created_at'] ?? data['createdAt']).toString()) ?? DateTime.now()
+            : DateTime.now(),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomAttendanceEvent(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    final employeeId = (data['employee_id'] ?? data['employeeId'] ?? data['user_id'] ?? data['userId']) as String? ?? '';
+    final planId = (data['plan_id'] ?? data['planId']) as String?;
+    final eventType = (data['event_type'] ?? data['eventType']) as String? ?? 'CHECK_IN';
+    final timestamp = (data['timestamp'] ?? data['time']) != null
+        ? DateTime.tryParse((data['timestamp'] ?? data['time']).toString()) ?? DateTime.now()
+        : DateTime.now();
+    final source = (data['source'] ?? data['method']) as String? ?? 'MANUAL';
+    final location = (data['location'] ?? data['zone'] ?? data['device_id']) as String?;
+
+    await _db.into(_db.mushroomAttendanceEvents).insertOnConflictUpdate(
+      MushroomAttendanceEvent(
+        id: id,
+        employeeId: employeeId,
+        planId: planId,
+        eventType: eventType,
+        timestamp: timestamp,
+        source: source,
+        location: location,
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomDailyTimesheet(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    final employeeId = (data['employee_id'] ?? data['employeeId']) as String? ?? '';
+    final planDate = (data['plan_date'] ?? data['planDate']) != null
+        ? DateTime.tryParse((data['plan_date'] ?? data['planDate']).toString()) ?? DateTime.now()
+        : DateTime.now();
+    final checkIn = (data['check_in_time'] ?? data['checkInTime']) != null
+        ? DateTime.tryParse((data['check_in_time'] ?? data['checkInTime']).toString())
+        : null;
+    final checkOut = (data['check_out_time'] ?? data['checkOutTime']) != null
+        ? DateTime.tryParse((data['check_out_time'] ?? data['checkOutTime']).toString())
+        : null;
+
+    await _db.into(_db.mushroomDailyTimesheets).insertOnConflictUpdate(
+      MushroomDailyTimesheet(
+        id: id,
+        employeeId: employeeId,
+        planDate: planDate,
+        checkInTime: checkIn,
+        checkOutTime: checkOut,
+        totalBreakTakenMinutes: ((data['total_break_taken_minutes'] ?? data['totalBreakTakenMinutes']) as num?)?.toInt() ?? 0,
+        standardBreakAllowedMinutes: ((data['standard_break_allowed_minutes'] ?? data['standardBreakAllowedMinutes']) as num?)?.toInt() ?? 30,
+        extraBreakMinutes: ((data['extra_break_minutes'] ?? data['extraBreakMinutes']) as num?)?.toInt() ?? 0,
+        grossWorkedMinutes: ((data['gross_worked_minutes'] ?? data['grossWorkedMinutes']) as num?)?.toInt() ?? 0,
+        paidMinutes: ((data['paid_minutes'] ?? data['paidMinutes']) as num?)?.toInt() ?? 0,
+        overtimeMinutes: ((data['overtime_minutes'] ?? data['overtimeMinutes']) as num?)?.toInt() ?? 0,
+        assignedTeamColor: (data['assigned_team_color'] ?? data['assignedTeamColor']) as String?,
+        assignedRoomsJson: (data['assigned_rooms_json'] ?? data['assignedRoomsJson']) as String?,
+        status: (data['status'] as String?) ?? 'normal',
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomBreakPolicy(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomBreakPolicies).insertOnConflictUpdate(
+      MushroomBreakPolicy(
+        id: id,
+        standardBreakMinutes: ((data['standard_break_minutes'] ?? data['standardBreakMinutes']) as num?)?.toInt() ?? 30,
+        graceMinutes: ((data['grace_minutes'] ?? data['graceMinutes']) as num?)?.toInt() ?? 5,
+        extraBreakRule: (data['extra_break_rule'] ?? data['extraBreakRule'] as String?) ?? 'unpaid',
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomPayrollCalculation(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+    await _db.into(_db.mushroomPayrollCalculations).insertOnConflictUpdate(
+      MushroomPayrollCalculation(
+        id: id,
+        employeeId: (data['employee_id'] ?? data['employeeId']) as String? ?? '',
+        payPeriod: (data['pay_period'] ?? data['payPeriod']) as String? ?? '',
+        totalPaidHours: ((data['total_paid_hours'] ?? data['totalPaidHours']) as num?)?.toDouble() ?? 0.0,
+        totalOvertimeHours: ((data['total_overtime_hours'] ?? data['totalOvertimeHours']) as num?)?.toDouble() ?? 0.0,
+        basePay: ((data['base_pay'] ?? data['basePay']) as num?)?.toDouble() ?? 0.0,
+        overtimePay: ((data['overtime_pay'] ?? data['overtimePay']) as num?)?.toDouble() ?? 0.0,
+        totalPay: ((data['total_pay'] ?? data['totalPay']) as num?)?.toDouble() ?? 0.0,
+        createdAt: (data['created_at'] ?? data['createdAt']) != null
+            ? DateTime.tryParse((data['created_at'] ?? data['createdAt']).toString()) ?? DateTime.now()
+            : DateTime.now(),
       ),
     );
     return true;

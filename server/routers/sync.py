@@ -407,3 +407,29 @@ async def sync_status(repo: ISyncRepository = Depends(get_sync_repo)):
         return status
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/record/{table}/{record_id}")
+async def get_record_by_id(
+    table: str,
+    record_id: str,
+    repo: ISyncRepository = Depends(get_sync_repo),
+):
+    """
+    Endpoint P0.1c: Lấy bản ghi đầy đủ hiện tại theo table và record_id.
+    Dùng cho client/projector khi nhận lệnh UPDATE cho một bản ghi chưa tồn tại
+    ở local SQLite, ngăn chặn việc tạo bản ghi ma (Untitled Task / rỗng).
+    """
+    try:
+        record = repo.get_record(table, record_id)
+        if not record:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Record '{record_id}' not found in table '{table}'",
+            )
+        return record
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

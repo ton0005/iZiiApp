@@ -314,6 +314,21 @@ async def lifespan(app: FastAPI):
     global discovery
     # Startup
     init_db()
+    try:
+        from migrations.runner import run_migrations
+        applied_migs = run_migrations()
+        if applied_migs:
+            print(f"🚀 [MIGRATIONS] Đã tự động áp dụng {len(applied_migs)} migrations: {applied_migs}")
+    except Exception as e:
+        print(f"⚠️  [MIGRATIONS] Lỗi khi chạy migration tự động: {e}")
+
+    try:
+        from seeds.seed_loader import load_seeds
+        load_seeds(force_update=False)
+        print("🌱 [SEEDS] Đã nạp declarative seeds thành công.")
+    except Exception as e:
+        print(f"⚠️  [SEEDS] Lỗi khi nạp seeds: {e}")
+
     prune_old_mutations(days=30)
     prune_message_queue()
     print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
@@ -322,6 +337,12 @@ async def lifespan(app: FastAPI):
     print(f"🗄️  Database backend: {CONFIG.db_backend}")
     print(describe_tls())
     print(describe_scopes())
+    try:
+        from modules.module_manager import MODULE_MANAGER
+        MODULE_MANAGER.initialize_default_modules("default")
+        print(f"📦 [MODULES] Đã nạp {len(MODULE_MANAGER.sorted_modules)} modules: {MODULE_MANAGER.sorted_modules}")
+    except Exception as e:
+        print(f"⚠️  [MODULES] Lỗi khi nạp modules: {e}")
     _print_reachable_urls()
 
     discovery = ServerDiscovery(port=8080)
@@ -488,19 +509,29 @@ _ws_background_tasks: set = set()
 #   - header:       X-iZii-WS-Token: <secret>
 # (query param tiện cho Flutter/web vì WebSocket API của trình duyệt không
 #  cho phép set header tuỳ ý khi handshake).
-WS_SECRET = CONFIG.ws_secret or CONFIG.server_secret
+def _get_valid_ws_secrets() -> list[str]:
+    secrets = []
+    if CONFIG.ws_secret:
+        secrets.append(CONFIG.ws_secret)
+    if CONFIG.server_secret and CONFIG.server_secret not in secrets:
+        secrets.append(CONFIG.server_secret)
+    return secrets
 
 
 def _ws_token_is_valid(token: Optional[str]) -> bool:
-    if not token or not WS_SECRET:
+    if not token:
         return False
-    return hmac.compare_digest(token, WS_SECRET)
+    valid_secrets = _get_valid_ws_secrets()
+    if not valid_secrets:
+        return False
+    return any(hmac.compare_digest(token, s) for s in valid_secrets)
 
 
 @app.websocket("/chat")
 async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(None)):
+    valid_secrets = _get_valid_ws_secrets()
     # Không cấu hình secret => từ chối tất cả, thay vì âm thầm mở toang.
-    if not WS_SECRET:
+    if not valid_secrets:
         print(
             "⛔ [WS] Từ chối kết nối: chưa cấu hình IZIIAPP_WS_SECRET "
             "(hoặc IZIIAPP_SERVER_SECRET). Set biến môi trường rồi khởi động lại."
@@ -509,9 +540,24 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(
         return
 
     supplied = token or websocket.headers.get("X-iZii-WS-Token")
+    if not supplied:
+        print(f"⛔ [WS] Từ chối kết nối từ {websocket.client}: thiếu token xác thực.")
+        await websocket.close(code=1008, reason="Missing token")
+        return
+
+    # Kiểm tra nếu client gửi nhầm admin secret (F10/F11 diagnostic)
+    if CONFIG.admin_secret and hmac.compare_digest(supplied, CONFIG.admin_secret):
+        if not any(hmac.compare_digest(supplied, s) for s in valid_secrets):
+            print(
+                f"⛔ [WS] Từ chối kết nối từ {websocket.client}: Client gửi nhầm ADMIN SECRET ({supplied[:6]}...) "
+                f"thay vì WS_SECRET/SERVER_SECRET. Cần cấu hình client dùng IZIIAPP_WS_SECRET."
+            )
+            await websocket.close(code=1008, reason="Admin secret cannot be used for WebSocket. Use IZIIAPP_WS_SECRET.")
+            return
+
     if not _ws_token_is_valid(supplied):
-        print(f"⛔ [WS] Từ chối kết nối từ {websocket.client}: token thiếu hoặc sai.")
-        await websocket.close(code=1008, reason="Invalid or missing token")
+        print(f"⛔ [WS] Từ chối kết nối từ {websocket.client}: token không hợp lệ ({supplied[:6]}...).")
+        await websocket.close(code=1008, reason="Invalid token")
         return
 
     await ws_manager.connect(websocket)
@@ -571,12 +617,19 @@ if __name__ == '__main__':
     # chạy HTTP thuần y như trước.
     ssl_kwargs = uvicorn_ssl_kwargs()
 
+    target_port = int(os.environ.get("IZIIAPP_PORT", 8080))
+    from server_config import is_port_in_use
+    if is_port_in_use(target_port):
+        print(f"\n⛔ DỪNG (Port Guard P1.10): Cổng {target_port} đang bị chiếm dụng bởi tiến trình khác.")
+        print(f"   Vui lòng dừng dịch vụ izii_server đang chạy hoặc đổi biến IZIIAPP_PORT.\n")
+        sys.exit(1)
+
     if is_frozen:
         print("\n🚀 Starting iZiiApp Standalone Server v2.0 in Bundled Mode...")
         uvicorn.run(
             app,
             host="0.0.0.0",
-            port=8080,
+            port=target_port,
             **ssl_kwargs,
         )
     else:
@@ -584,7 +637,7 @@ if __name__ == '__main__':
         uvicorn.run(
             "app:app",
             host="0.0.0.0",
-            port=8080,
+            port=target_port,
             reload=True,
             reload_dirs=["./"],  # Watch server directory
             reload_excludes=["build", ".dart_tool", ".git", "data", "__pycache__", "certs"],

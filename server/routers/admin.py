@@ -622,3 +622,86 @@ async def admin_reset(payload: ResetPayload, request: Request,
             "nếu không chúng sẽ đẩy dữ liệu cũ ngược lên server."
         ),
     }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Phase 2 — Quản lý Module & Bounded Context (P2.1, P2.3)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/modules", summary="Liệt kê toàn bộ module và trạng thái kích hoạt theo tenant")
+async def list_modules(
+    tenant_id: str = "default",
+    x_izii_admin_token: Optional[str] = Header(None, alias="X-iZii-Admin-Token"),
+    x_izii_server_token: Optional[str] = Header(None, alias="X-iZii-Server-Token"),
+):
+    verify_admin_secret(x_izii_admin_token or x_izii_server_token)
+    from modules.module_manager import MODULE_MANAGER
+
+    active = set(MODULE_MANAGER.get_active_modules(tenant_id))
+    installed_models = MODULE_MANAGER.get_model_registry(tenant_id)
+
+    res = []
+    for mod_name in MODULE_MANAGER.sorted_modules:
+        manifest = MODULE_MANAGER.manifests[mod_name]
+        res.append({
+            "name": manifest.name,
+            "version": manifest.version,
+            "display_name": manifest.display_name,
+            "depends": manifest.depends,
+            "owns_tables": manifest.owns_tables,
+            "models": manifest.models,
+            "min_client_schema_version": manifest.min_client_schema_version,
+            "enabled": mod_name in active,
+            "installed": MODULE_MANAGER.is_module_installed(mod_name, tenant_id),
+        })
+
+    return {
+        "tenant_id": tenant_id,
+        "modules": res,
+        "active_modules": list(active),
+        "models_count": len(installed_models),
+    }
+
+
+@router.post("/modules/{name}/enable", summary="Kích hoạt module cho tenant")
+async def enable_module_endpoint(
+    name: str,
+    tenant_id: str = "default",
+    x_izii_admin_token: Optional[str] = Header(None, alias="X-iZii-Admin-Token"),
+    x_izii_server_token: Optional[str] = Header(None, alias="X-iZii-Server-Token"),
+):
+    verify_admin_secret(x_izii_admin_token or x_izii_server_token)
+    from modules.module_manager import MODULE_MANAGER
+    try:
+        MODULE_MANAGER.enable_module(name, tenant_id)
+        return {
+            "status": "success",
+            "module": name,
+            "tenant_id": tenant_id,
+            "enabled": True,
+            "active_modules": MODULE_MANAGER.get_active_modules(tenant_id),
+        }
+    except ValueError as e:
+        raise HTTPException(400, detail=str(e))
+
+
+@router.post("/modules/{name}/disable", summary="Tắt module cho tenant")
+async def disable_module_endpoint(
+    name: str,
+    tenant_id: str = "default",
+    x_izii_admin_token: Optional[str] = Header(None, alias="X-iZii-Admin-Token"),
+    x_izii_server_token: Optional[str] = Header(None, alias="X-iZii-Server-Token"),
+):
+    verify_admin_secret(x_izii_admin_token or x_izii_server_token)
+    from modules.module_manager import MODULE_MANAGER
+    try:
+        MODULE_MANAGER.disable_module(name, tenant_id)
+        return {
+            "status": "success",
+            "module": name,
+            "tenant_id": tenant_id,
+            "enabled": False,
+            "active_modules": MODULE_MANAGER.get_active_modules(tenant_id),
+        }
+    except ValueError as e:
+        raise HTTPException(400, detail=str(e))

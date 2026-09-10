@@ -178,6 +178,9 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   @override
   void initState() {
     super.initState();
+    MushroomsRepository().getJobTypeColorMap().then((_) {
+      if (mounted) setState(() {});
+    });
     // Ẩn nút "Chạm thẻ" trên máy không có NFC thay vì hiện nút bấm không được.
     JobTagService.isAvailable().then((v) {
       if (mounted) setState(() => _jobTagNfcAvailable = v);
@@ -1151,6 +1154,12 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   }
 
   Color _getStageColor(String stage) {
+    // Ưu tiên tra cứu màu động từ cấu hình mushroom_job_types (giải lỗi F1)
+    final dynamicColor = MushroomsRepository.resolveDynamicColor(stage);
+    if (dynamicColor != null) {
+      return dynamicColor;
+    }
+
     final s = stage.trim().toLowerCase().replaceAll(' ', '_');
     switch (s) {
       case 'filling':

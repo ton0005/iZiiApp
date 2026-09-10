@@ -47,6 +47,7 @@ mới nào chỉ tồn tại ở PostgreSQL. Sau khi đã cutover thì phải kh
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import os
 import socket
 import sqlite3
@@ -64,6 +65,7 @@ if sys.platform == "win32":
 
 # Bảng cần chuyển và khoá chính tương ứng (dùng cho ON CONFLICT).
 TABLES = [
+    # Core tables
     ("sync_mutations",        "id"),
     ("known_servers",         "server_id"),
     ("devices",               "device_id"),
@@ -77,26 +79,42 @@ TABLES = [
     ("device_tokens",         "device_id"),
     ("work_sessions",         "id"),
     ("employee_pins",         "user_id"),
+    # Phase 5 & Domain business tables (14 tables)
+    ("mushroom_job_types",           "id"),
+    ("mushroom_attendance_events",    "id"),
+    ("mushroom_break_policies",       "id"),
+    ("mushroom_daily_timesheets",     "id"),
+    ("mushroom_shifts",               "id"),
+    ("mushroom_payroll_calculations", "id"),
+    ("mushroom_job_safety_configs",   "id"),
+    ("mushroom_safety_checkin_logs",  "id"),
+    ("grow_rooms",                    "id"),
+    ("mushroom_jobs",                 "id"),
+    ("tasks",                         "id"),
+    ("picker_teams",                  "id"),
+    ("departments",                   "id"),
+    ("chat_messages",                 "id"),
+    # Phase 2: Module System & Model Registry (3 tables)
+    ("tenant_modules",                "tenant_id, module_name"),
+    ("model_registry",                "tenant_id, model_name"),
+    ("field_registry",                "tenant_id, model_name, field_name"),
 ]
 
 BATCH = 500
 
-# Bảng CỐ Ý không chuyển sang PostgreSQL. Danh sách này phải luôn có lý do kèm
-# theo — nó là ngoại lệ duy nhất được _assert_source_coverage() bỏ qua.
+# Bảng CỐ Ý không chuyển hoặc bảng hệ thống nội bộ chỉ có ở một phía.
 #   sync_sequence: bộ đếm seq thủ công của SQLite. PostgreSQL dùng BIGSERIAL nên
 #                  không cần bảng này. Xem §Rollback trong plan/extend.md để biết
 #                  hệ quả khi cần quay ngược về SQLite.
-NOT_MIGRATED = {"sync_sequence"}
+#   schema_migration_lock: bảng khoá migration của PostgreSQL runner.
+NOT_MIGRATED = {"sync_sequence", "schema_migration_lock"}
 
 
 def _check_server_running(port: int = 8080) -> bool:
-    """Kiểm tra xem iZiiServer có đang chạy trên port cục bộ hay không."""
+    """Kiểm tra xem iZiiServer có đang chạy trên port cục bộ hay không (P1.10)."""
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.5)
-        result = s.connect_ex(("127.0.0.1", port))
-        s.close()
-        return result == 0
+        from server_config import is_port_in_use
+        return is_port_in_use(port)
     except Exception:
         return False
 
@@ -112,6 +130,41 @@ def _pg_columns(pconn, table: str) -> set[str]:
         (table,),
     ).fetchall()
     return {_row_value(r, "column_name") for r in rows}
+
+
+def _pg_column_types(pconn, table: str) -> dict[str, str]:
+    rows = pconn.execute(
+        "SELECT column_name, data_type FROM information_schema.columns "
+        "WHERE table_name = %s AND table_schema = 'public'",
+        (table,),
+    ).fetchall()
+    return {_row_value(r, "column_name"): _row_value(r, "data_type") for r in rows}
+
+
+def _convert_val(col: str, val, target_type: str):
+    """Chuyển đổi kiểu dữ liệu tương thích giữa SQLite và PostgreSQL."""
+    if col in ("created_at", "updated_at") and not val:
+        return datetime.now(timezone.utc).isoformat()
+    if col == "tenant_id" and not val:
+        return "default"
+    if col == "last_seq" and val is None:
+        return 0
+    if col == "is_seed":
+        if val is None:
+            return False
+        if isinstance(val, (int, str)):
+            return str(val).strip().lower() in ("1", "true", "t", "yes")
+        return bool(val)
+
+    if val is None:
+        return None
+
+    if target_type == "boolean":
+        if isinstance(val, (int, str)):
+            return str(val).strip().lower() in ("1", "true", "t", "yes")
+        return bool(val)
+
+    return val
 
 
 def _row_value(row, key: str):
@@ -139,7 +192,7 @@ def _assert_table_coverage(pconn) -> None:
     ).fetchall()
     in_pg = {_row_value(r, "table_name") for r in rows}
     in_script = {t for t, _ in TABLES}
-    missing = in_pg - in_script
+    missing = in_pg - in_script - NOT_MIGRATED
     if missing:
         raise SystemExit(
             f"⛔ DỪNG: {len(missing)} bảng có trong schema PostgreSQL nhưng "
@@ -204,6 +257,20 @@ def _preflight(sconn: sqlite3.Connection) -> list[str]:
         ("work_sessions", "device_id"),
         ("work_sessions", "user_id"),
         ("work_sessions", "started_at"),
+        ("mushroom_job_types", "name"),
+        ("mushroom_attendance_events", "employee_id"),
+        ("mushroom_attendance_events", "event_type"),
+        ("mushroom_attendance_events", "timestamp"),
+        ("mushroom_attendance_events", "source"),
+        ("mushroom_daily_timesheets", "employee_id"),
+        ("mushroom_daily_timesheets", "plan_date"),
+        ("mushroom_payroll_calculations", "employee_id"),
+        ("mushroom_payroll_calculations", "pay_period"),
+        ("mushroom_job_safety_configs", "job_id"),
+        ("mushroom_safety_checkin_logs", "job_id"),
+        ("mushroom_safety_checkin_logs", "worker_id"),
+        ("mushroom_safety_checkin_logs", "event_type"),
+        ("mushroom_safety_checkin_logs", "timestamp"),
     )
     for table, col in not_null_checks:
         try:
@@ -408,7 +475,8 @@ def migrate(dry_run: bool = False, verify_only: bool = False, force: bool = Fals
                 print(f"   [--] {table}: không có trong SQLite, bỏ qua.")
                 continue
 
-            pcols = _pg_columns(pconn, table)
+            ptypes = _pg_column_types(pconn, table)
+            pcols = set(ptypes.keys())
             # Chỉ chuyển những cột TỒN TẠI Ở CẢ HAI BÊN
             cols = [c for c in scols if c in pcols]
             if not cols:
@@ -429,7 +497,10 @@ def migrate(dry_run: bool = False, verify_only: bool = False, force: bool = Fals
                 chunk = cur.fetchmany(BATCH)
                 if not chunk:
                     break
-                batch_data = [tuple(r[c] for c in cols) for r in chunk]
+                batch_data = [
+                    tuple(_convert_val(c, r[c], ptypes.get(c, "")) for c in cols)
+                    for r in chunk
+                ]
                 pgcur.executemany(insert_sql, batch_data)
                 n += len(batch_data)
             pconn.commit()

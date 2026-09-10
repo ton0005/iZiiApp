@@ -11,7 +11,7 @@ Handles device registration, heartbeats, and key lookups:
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from database import sql
 from dependencies import get_device_repo, open_connection
@@ -39,7 +39,7 @@ class DeviceHeartbeat(BaseModel):
 @router.post("/register")
 async def device_register(body: DeviceRegister, 
                            repo: IDeviceRepository = Depends(get_device_repo)):
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     try:
         device = repo.register(body.model_dump(), now)
@@ -57,7 +57,7 @@ async def device_register(body: DeviceRegister,
 @router.post("/heartbeat")
 async def device_heartbeat(body: DeviceHeartbeat,
                             repo: IDeviceRepository = Depends(get_device_repo)):
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     found = repo.heartbeat(body.device_id, now)
     if not found:

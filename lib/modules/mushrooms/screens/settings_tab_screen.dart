@@ -141,6 +141,7 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
       // Giữ lại giá trị admin secret vừa nhập TRƯỚC khi _loadServerConfig()
       // ghi đè controller bằng chuỗi mask.
       final newAdminSecret = values['IZIIAPP_ADMIN_SECRET'];
+      final newWsSecret = values['IZIIAPP_WS_SECRET'];
 
       final updated = await _adminService.updateConfig(values);
       if (!mounted) return;
@@ -150,6 +151,14 @@ class _SettingsTabScreenState extends State<SettingsTabScreen> {
       });
       await _loadServerConfig();
       if (!mounted) return;
+
+      // Đồng bộ WebSocket token cục bộ nếu có cập nhật IZIIAPP_WS_SECRET
+      if (updated.contains('IZIIAPP_WS_SECRET') &&
+          newWsSecret != null &&
+          newWsSecret.isNotEmpty &&
+          !newWsSecret.startsWith('•')) {
+        await _settingsService.saveWsToken(newWsSecret);
+      }
 
       // Đổi admin secret = tự khoá mình ra ngoài sau khi server khởi động lại,
       // vì Auth Token đang lưu trên máy vẫn là giá trị cũ. Đề nghị cập nhật

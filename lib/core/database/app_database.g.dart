@@ -16117,9 +16117,43 @@ class $MushroomJobTypesTable extends MushroomJobTypes
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, planMinutes, isSoloJob, isCustom, isActive, createdAt];
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+      'color', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+      'label', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _iconMeta = const VerificationMeta('icon');
+  @override
+  late final GeneratedColumn<String> icon = GeneratedColumn<String>(
+      'icon', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _sortOrderMeta =
+      const VerificationMeta('sortOrder');
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+      'sort_order', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(100));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        planMinutes,
+        isSoloJob,
+        isCustom,
+        isActive,
+        color,
+        label,
+        icon,
+        sortOrder,
+        createdAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -16161,6 +16195,24 @@ class $MushroomJobTypesTable extends MushroomJobTypes
       context.handle(_isActiveMeta,
           isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
     }
+    if (data.containsKey('color')) {
+      context.handle(
+          _colorMeta, color.isAcceptableOrUnknown(data['color']!, _colorMeta));
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+          _labelMeta, label.isAcceptableOrUnknown(data['label']!, _labelMeta));
+    }
+    if (data.containsKey('icon')) {
+      context.handle(
+          _iconMeta, icon.isAcceptableOrUnknown(data['icon']!, _iconMeta));
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+          _sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(
+              data['sort_order']!, _sortOrderMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -16188,6 +16240,15 @@ class $MushroomJobTypesTable extends MushroomJobTypes
           .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      color: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}color']),
+      label: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}label']),
+      icon: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}icon']),
+      sortOrder: attachedDatabase.typeMapping
+              .read(DriftSqlType.int, data['${effectivePrefix}sort_order']) ??
+          100,
     );
   }
 
@@ -16205,6 +16266,10 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
   final bool isCustom;
   final bool isActive;
   final DateTime createdAt;
+  final String? color;
+  final String? label;
+  final String? icon;
+  final int sortOrder;
   const MushroomJobType(
       {required this.id,
       required this.name,
@@ -16212,7 +16277,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       required this.isSoloJob,
       required this.isCustom,
       required this.isActive,
-      required this.createdAt});
+      required this.createdAt,
+      this.color,
+      this.label,
+      this.icon,
+      this.sortOrder = 100});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -16223,6 +16292,16 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
     map['is_custom'] = Variable<bool>(isCustom);
     map['is_active'] = Variable<bool>(isActive);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || color != null) {
+      map['color'] = Variable<String>(color);
+    }
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    if (!nullToAbsent || icon != null) {
+      map['icon'] = Variable<String>(icon);
+    }
+    map['sort_order'] = Variable<int>(sortOrder);
     return map;
   }
 
@@ -16235,6 +16314,12 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       isCustom: Value(isCustom),
       isActive: Value(isActive),
       createdAt: Value(createdAt),
+      color:
+          color == null && nullToAbsent ? const Value.absent() : Value(color),
+      label:
+          label == null && nullToAbsent ? const Value.absent() : Value(label),
+      icon: icon == null && nullToAbsent ? const Value.absent() : Value(icon),
+      sortOrder: Value(sortOrder),
     );
   }
 
@@ -16249,6 +16334,10 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       isCustom: serializer.fromJson<bool>(json['isCustom']),
       isActive: serializer.fromJson<bool>(json['isActive']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      color: serializer.fromJson<String?>(json['color']),
+      label: serializer.fromJson<String?>(json['label']),
+      icon: serializer.fromJson<String?>(json['icon']),
+      sortOrder: serializer.fromJson<int?>(json['sortOrder']) ?? 100,
     );
   }
   @override
@@ -16262,6 +16351,10 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       'isCustom': serializer.toJson<bool>(isCustom),
       'isActive': serializer.toJson<bool>(isActive),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'color': serializer.toJson<String?>(color),
+      'label': serializer.toJson<String?>(label),
+      'icon': serializer.toJson<String?>(icon),
+      'sortOrder': serializer.toJson<int>(sortOrder),
     };
   }
 
@@ -16272,7 +16365,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
           bool? isSoloJob,
           bool? isCustom,
           bool? isActive,
-          DateTime? createdAt}) =>
+          DateTime? createdAt,
+          String? color,
+          String? label,
+          String? icon,
+          int? sortOrder}) =>
       MushroomJobType(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -16281,6 +16378,10 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
         isCustom: isCustom ?? this.isCustom,
         isActive: isActive ?? this.isActive,
         createdAt: createdAt ?? this.createdAt,
+        color: color ?? this.color,
+        label: label ?? this.label,
+        icon: icon ?? this.icon,
+        sortOrder: sortOrder ?? this.sortOrder,
       );
   MushroomJobType copyWithCompanion(MushroomJobTypesCompanion data) {
     return MushroomJobType(
@@ -16292,6 +16393,10 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      color: data.color.present ? data.color.value : this.color,
+      label: data.label.present ? data.label.value : this.label,
+      icon: data.icon.present ? data.icon.value : this.icon,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
     );
   }
 
@@ -16304,14 +16409,18 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
           ..write('isSoloJob: $isSoloJob, ')
           ..write('isCustom: $isCustom, ')
           ..write('isActive: $isActive, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('color: $color, ')
+          ..write('label: $label, ')
+          ..write('icon: $icon, ')
+          ..write('sortOrder: $sortOrder')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, name, planMinutes, isSoloJob, isCustom, isActive, createdAt);
+  int get hashCode => Object.hash(id, name, planMinutes, isSoloJob, isCustom,
+      isActive, createdAt, color, label, icon, sortOrder);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -16322,7 +16431,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
           other.isSoloJob == this.isSoloJob &&
           other.isCustom == this.isCustom &&
           other.isActive == this.isActive &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.color == this.color &&
+          other.label == this.label &&
+          other.icon == this.icon &&
+          other.sortOrder == this.sortOrder);
 }
 
 class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
@@ -16333,6 +16446,10 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
   final Value<bool> isCustom;
   final Value<bool> isActive;
   final Value<DateTime> createdAt;
+  final Value<String?> color;
+  final Value<String?> label;
+  final Value<String?> icon;
+  final Value<int> sortOrder;
   final Value<int> rowid;
   const MushroomJobTypesCompanion({
     this.id = const Value.absent(),
@@ -16342,6 +16459,10 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
     this.isCustom = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.color = const Value.absent(),
+    this.label = const Value.absent(),
+    this.icon = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   MushroomJobTypesCompanion.insert({
@@ -16352,6 +16473,10 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
     this.isCustom = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.color = const Value.absent(),
+    this.label = const Value.absent(),
+    this.icon = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         name = Value(name);
@@ -16363,6 +16488,10 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
     Expression<bool>? isCustom,
     Expression<bool>? isActive,
     Expression<DateTime>? createdAt,
+    Expression<String>? color,
+    Expression<String>? label,
+    Expression<String>? icon,
+    Expression<int>? sortOrder,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -16373,6 +16502,10 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
       if (isCustom != null) 'is_custom': isCustom,
       if (isActive != null) 'is_active': isActive,
       if (createdAt != null) 'created_at': createdAt,
+      if (color != null) 'color': color,
+      if (label != null) 'label': label,
+      if (icon != null) 'icon': icon,
+      if (sortOrder != null) 'sort_order': sortOrder,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -16385,6 +16518,10 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
       Value<bool>? isCustom,
       Value<bool>? isActive,
       Value<DateTime>? createdAt,
+      Value<String?>? color,
+      Value<String?>? label,
+      Value<String?>? icon,
+      Value<int>? sortOrder,
       Value<int>? rowid}) {
     return MushroomJobTypesCompanion(
       id: id ?? this.id,
@@ -16394,6 +16531,10 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
       isCustom: isCustom ?? this.isCustom,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
+      color: color ?? this.color,
+      label: label ?? this.label,
+      icon: icon ?? this.icon,
+      sortOrder: sortOrder ?? this.sortOrder,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -16421,6 +16562,18 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (icon.present) {
+      map['icon'] = Variable<String>(icon.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -17445,9 +17598,29 @@ class $MushroomMaintenanceTicketsTable extends MushroomMaintenanceTickets
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
       'notes', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _dueDateMeta =
+      const VerificationMeta('dueDate');
+  @override
+  late final GeneratedColumn<DateTime> dueDate = GeneratedColumn<DateTime>(
+      'due_date', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _completedAtMeta =
+      const VerificationMeta('completedAt');
+  @override
+  late final GeneratedColumn<DateTime> completedAt = GeneratedColumn<DateTime>(
+      'completed_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, title, plant, room, assignee, priority, status, notes];
+      [id, title, plant, room, assignee, priority, status, notes, createdAt, dueDate, completedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -17502,6 +17675,18 @@ class $MushroomMaintenanceTicketsTable extends MushroomMaintenanceTickets
       context.handle(
           _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
     }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(_dueDateMeta,
+          dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta));
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(_completedAtMeta,
+          completedAt.isAcceptableOrUnknown(data['completed_at']!, _completedAtMeta));
+    }
     return context;
   }
 
@@ -17528,6 +17713,12 @@ class $MushroomMaintenanceTicketsTable extends MushroomMaintenanceTickets
           .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
       notes: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at']),
+      dueDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}due_date']),
+      completedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}completed_at']),
     );
   }
 
@@ -17547,6 +17738,9 @@ class MushroomMaintenanceTicket extends DataClass
   final String priority;
   final String status;
   final String? notes;
+  final DateTime? createdAt;
+  final DateTime? dueDate;
+  final DateTime? completedAt;
   const MushroomMaintenanceTicket(
       {required this.id,
       required this.title,
@@ -17555,7 +17749,10 @@ class MushroomMaintenanceTicket extends DataClass
       required this.assignee,
       required this.priority,
       required this.status,
-      this.notes});
+      this.notes,
+      this.createdAt,
+      this.dueDate,
+      this.completedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -17568,6 +17765,15 @@ class MushroomMaintenanceTicket extends DataClass
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || createdAt != null) {
+      map['created_at'] = Variable<DateTime>(createdAt);
+    }
+    if (!nullToAbsent || dueDate != null) {
+      map['due_date'] = Variable<DateTime>(dueDate);
+    }
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<DateTime>(completedAt);
     }
     return map;
   }
@@ -17583,6 +17789,15 @@ class MushroomMaintenanceTicket extends DataClass
       status: Value(status),
       notes:
           notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      createdAt: createdAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdAt),
+      dueDate: dueDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dueDate),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
     );
   }
 
@@ -17598,6 +17813,9 @@ class MushroomMaintenanceTicket extends DataClass
       priority: serializer.fromJson<String>(json['priority']),
       status: serializer.fromJson<String>(json['status']),
       notes: serializer.fromJson<String?>(json['notes']),
+      createdAt: serializer.fromJson<DateTime?>(json['createdAt']),
+      dueDate: serializer.fromJson<DateTime?>(json['dueDate']),
+      completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
     );
   }
   @override
@@ -17612,6 +17830,9 @@ class MushroomMaintenanceTicket extends DataClass
       'priority': serializer.toJson<String>(priority),
       'status': serializer.toJson<String>(status),
       'notes': serializer.toJson<String?>(notes),
+      'createdAt': serializer.toJson<DateTime?>(createdAt),
+      'dueDate': serializer.toJson<DateTime?>(dueDate),
+      'completedAt': serializer.toJson<DateTime?>(completedAt),
     };
   }
 
@@ -17623,7 +17844,10 @@ class MushroomMaintenanceTicket extends DataClass
           String? assignee,
           String? priority,
           String? status,
-          Value<String?> notes = const Value.absent()}) =>
+          Value<String?> notes = const Value.absent(),
+          Value<DateTime?> createdAt = const Value.absent(),
+          Value<DateTime?> dueDate = const Value.absent(),
+          Value<DateTime?> completedAt = const Value.absent()}) =>
       MushroomMaintenanceTicket(
         id: id ?? this.id,
         title: title ?? this.title,
@@ -17633,6 +17857,9 @@ class MushroomMaintenanceTicket extends DataClass
         priority: priority ?? this.priority,
         status: status ?? this.status,
         notes: notes.present ? notes.value : this.notes,
+        createdAt: createdAt.present ? createdAt.value : this.createdAt,
+        dueDate: dueDate.present ? dueDate.value : this.dueDate,
+        completedAt: completedAt.present ? completedAt.value : this.completedAt,
       );
   MushroomMaintenanceTicket copyWithCompanion(
       MushroomMaintenanceTicketsCompanion data) {
@@ -17645,6 +17872,10 @@ class MushroomMaintenanceTicket extends DataClass
       priority: data.priority.present ? data.priority.value : this.priority,
       status: data.status.present ? data.status.value : this.status,
       notes: data.notes.present ? data.notes.value : this.notes,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      completedAt:
+          data.completedAt.present ? data.completedAt.value : this.completedAt,
     );
   }
 
@@ -17658,14 +17889,17 @@ class MushroomMaintenanceTicket extends DataClass
           ..write('assignee: $assignee, ')
           ..write('priority: $priority, ')
           ..write('status: $status, ')
-          ..write('notes: $notes')
+          ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('completedAt: $completedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, title, plant, room, assignee, priority, status, notes);
+  int get hashCode => Object.hash(id, title, plant, room, assignee, priority,
+      status, notes, createdAt, dueDate, completedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -17677,7 +17911,10 @@ class MushroomMaintenanceTicket extends DataClass
           other.assignee == this.assignee &&
           other.priority == this.priority &&
           other.status == this.status &&
-          other.notes == this.notes);
+          other.notes == this.notes &&
+          other.createdAt == this.createdAt &&
+          other.dueDate == this.dueDate &&
+          other.completedAt == this.completedAt);
 }
 
 class MushroomMaintenanceTicketsCompanion
@@ -17690,6 +17927,9 @@ class MushroomMaintenanceTicketsCompanion
   final Value<String> priority;
   final Value<String> status;
   final Value<String?> notes;
+  final Value<DateTime?> createdAt;
+  final Value<DateTime?> dueDate;
+  final Value<DateTime?> completedAt;
   final Value<int> rowid;
   const MushroomMaintenanceTicketsCompanion({
     this.id = const Value.absent(),
@@ -17700,6 +17940,9 @@ class MushroomMaintenanceTicketsCompanion
     this.priority = const Value.absent(),
     this.status = const Value.absent(),
     this.notes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.completedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   MushroomMaintenanceTicketsCompanion.insert({
@@ -17711,6 +17954,9 @@ class MushroomMaintenanceTicketsCompanion
     required String priority,
     this.status = const Value.absent(),
     this.notes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.completedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         title = Value(title),
@@ -17727,6 +17973,9 @@ class MushroomMaintenanceTicketsCompanion
     Expression<String>? priority,
     Expression<String>? status,
     Expression<String>? notes,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? dueDate,
+    Expression<DateTime>? completedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -17738,6 +17987,9 @@ class MushroomMaintenanceTicketsCompanion
       if (priority != null) 'priority': priority,
       if (status != null) 'status': status,
       if (notes != null) 'notes': notes,
+      if (createdAt != null) 'created_at': createdAt,
+      if (dueDate != null) 'due_date': dueDate,
+      if (completedAt != null) 'completed_at': completedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -17751,6 +18003,9 @@ class MushroomMaintenanceTicketsCompanion
       Value<String>? priority,
       Value<String>? status,
       Value<String?>? notes,
+      Value<DateTime?>? createdAt,
+      Value<DateTime?>? dueDate,
+      Value<DateTime?>? completedAt,
       Value<int>? rowid}) {
     return MushroomMaintenanceTicketsCompanion(
       id: id ?? this.id,
@@ -17761,6 +18016,9 @@ class MushroomMaintenanceTicketsCompanion
       priority: priority ?? this.priority,
       status: status ?? this.status,
       notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      dueDate: dueDate ?? this.dueDate,
+      completedAt: completedAt ?? this.completedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -17792,6 +18050,15 @@ class MushroomMaintenanceTicketsCompanion
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<DateTime>(dueDate.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<DateTime>(completedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -17809,6 +18076,9 @@ class MushroomMaintenanceTicketsCompanion
           ..write('priority: $priority, ')
           ..write('status: $status, ')
           ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('completedAt: $completedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
