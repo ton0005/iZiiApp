@@ -25,12 +25,14 @@ import '../repository.dart';
 class GrowingPerformanceDataset {
   final List<PerformanceDept> departments;
   final List<PerformanceEmployee> employees;
+  final List<PerformanceJobType> jobTypes;
   final List<PerformanceTaskRecord> tasks;
   final List<PerformanceShiftRecord> shifts;
 
   const GrowingPerformanceDataset({
     required this.departments,
     required this.employees,
+    required this.jobTypes,
     required this.tasks,
     required this.shifts,
   });
@@ -66,9 +68,12 @@ class GrowingPerformanceService {
   int _minutesOfDay(DateTime dt) => dt.hour * 60 + dt.minute;
 
   int _dayOffset(DateTime date, DateTime today) {
-    final d = DateTime(date.year, date.month, date.day);
-    final t = DateTime(today.year, today.month, today.day);
-    return t.difference(d).inDays;
+    final localDate = date.toLocal();
+    final localToday = today.toLocal();
+    final d = DateTime(localDate.year, localDate.month, localDate.day);
+    final t = DateTime(localToday.year, localToday.month, localToday.day);
+    final diff = t.difference(d).inDays;
+    return diff < 0 ? 0 : diff;
   }
 
   Future<List<PerformanceDept>> loadDepartments() async {
@@ -96,7 +101,7 @@ class GrowingPerformanceService {
     final nameToDeptId = {
       for (final d in depts) d.name.trim().toLowerCase(): d.id,
     };
-    return raw.map((e) {
+    final employees = raw.map((e) {
       final deptName = (e['department'] as String?)?.trim();
       final deptId = (deptName != null && deptName.isNotEmpty)
           ? (nameToDeptId[deptName.toLowerCase()] ?? 'unassigned')
@@ -108,6 +113,48 @@ class GrowingPerformanceService {
         deptId: deptId,
       );
     }).toList();
+
+    // Include any assignee from jobs that might not be in mushroom_employees table
+    final knownNames = {for (final e in employees) e.name.trim().toLowerCase()};
+    final allJobs = await _db.select(_db.mushroomJobs).get();
+    for (final j in allJobs) {
+      final a = j.assignee?.trim();
+      if (a != null && a.isNotEmpty && !knownNames.contains(a.toLowerCase())) {
+        knownNames.add(a.toLowerCase());
+        employees.add(PerformanceEmployee(
+          id: 'emp_${a.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '_')}',
+          name: a,
+          role: 'Staff',
+          deptId: 'unassigned',
+        ));
+      }
+    }
+
+    return employees;
+  }
+
+  Future<List<PerformanceJobType>> loadJobTypes() async {
+    final raw = await _repo.getJobTypes();
+    final map = <String, PerformanceJobType>{};
+    for (final j in raw) {
+      final id = (j['id'] as String).trim();
+      final name = (j['name'] as String?)?.trim() ?? id;
+      final planMinutes = (j['plan_minutes'] as num?)?.toDouble() ?? 30.0;
+      final color = j['color'] as String?;
+      map[id.toLowerCase()] = PerformanceJobType(
+        id: id,
+        name: name,
+        planMinutes: planMinutes,
+        color: color,
+      );
+    }
+    // Seed built-in defaults if any are missing
+    for (final d in GrowingPerformanceConstants.defaultJobTypes) {
+      if (!map.containsKey(d.id.toLowerCase())) {
+        map[d.id.toLowerCase()] = d;
+      }
+    }
+    return map.values.toList();
   }
 
   /// Loads up to [rangeDays] days of task/shift history. The screen keeps
@@ -121,6 +168,9 @@ class GrowingPerformanceService {
     final nameToEmployee = {
       for (final e in employees) e.name.trim().toLowerCase(): e,
     };
+
+    final jobTypes = await loadJobTypes();
+    final jobTypeMap = {for (final jt in jobTypes) jt.id.toLowerCase(): jt};
 
     // Resolve mushroom_jobs.room_id -> a human room number for display.
     final rooms = await _db.select(_db.growRooms).get();
@@ -142,7 +192,7 @@ class GrowingPerformanceService {
       if (actualMinutes < 0) continue;
 
       final dayOffset = _dayOffset(end, today);
-      if (dayOffset < 0 || dayOffset >= rangeDays) continue;
+      if (dayOffset >= rangeDays) continue;
 
       final matchedEmployee =
           (j.assignee != null && j.assignee!.trim().isNotEmpty)
@@ -151,7 +201,22 @@ class GrowingPerformanceService {
       final employeeId = matchedEmployee?.id ?? j.assignee ?? 'unknown';
       final deptId = matchedEmployee?.deptId ?? 'unassigned';
 
-      final jobType = GrowingPerformanceConstants.jobTypeFor(j.jobType);
+      // Dynamically resolve jobType or discover it
+      final rawJobTypeId = j.jobType.trim();
+      final key = rawJobTypeId.toLowerCase();
+      PerformanceJobType jobType;
+      if (jobTypeMap.containsKey(key)) {
+        jobType = jobTypeMap[key]!;
+      } else {
+        jobType = PerformanceJobType(
+          id: rawJobTypeId,
+          name: j.name.isNotEmpty ? j.name : rawJobTypeId,
+          planMinutes: GrowingPerformanceConstants.fallbackPlanMinutes,
+        );
+        jobTypeMap[key] = jobType;
+        jobTypes.add(jobType);
+      }
+
       final planMinutes = isSolo
           ? (j.timeLimitMinutes?.toDouble() ?? jobType.planMinutes)
           : jobType.planMinutes;
@@ -231,6 +296,7 @@ class GrowingPerformanceService {
     return GrowingPerformanceDataset(
       departments: departments,
       employees: employees,
+      jobTypes: jobTypes,
       tasks: tasks,
       shifts: shifts,
     );

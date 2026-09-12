@@ -1258,9 +1258,14 @@ class MushroomsRepository {
         ? (onTimeOverride != null ? Value(onTimeOverride) : const Value<bool?>.absent())
         : const Value<bool?>(null);
 
+    final startedAtVal = (newStatus == 'in_progress' || newStatus == 'completed') && job.startedAt == null
+        ? Value(DateTime.now())
+        : const Value<DateTime?>.absent();
+
     await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).write(
       MushroomJobsCompanion(
         status: Value(newStatus),
+        startedAt: startedAtVal,
         completedAt: Value(newStatus == 'completed' ? DateTime.now() : null),
         alarmTriggered: Value(newStatus == 'completed' ? false : job.alarmTriggered),
         onTimeOverride: onTimeOverrideValue,
@@ -1271,6 +1276,7 @@ class MushroomsRepository {
     await SyncService().queueMutation('mushroom_jobs', 'update', {
       'id': jobId,
       'status': newStatus,
+      if (startedAtVal.present) 'started_at': startedAtVal.value?.toIso8601String(),
       'completed_at': newStatus == 'completed' ? DateTime.now().toIso8601String() : null,
       'alarm_triggered': newStatus == 'completed' ? false : job.alarmTriggered,
       if (onTimeOverrideValue.present) 'on_time_override': onTimeOverrideValue.value,
@@ -1347,6 +1353,149 @@ class MushroomsRepository {
           'updated_at': DateTime.now().toIso8601String(),
         });
       }
+    }
+  }
+
+  Future<String> createPlannedDailyJob({
+    required String roomId,
+    required String jobType,
+    required String name,
+    required DateTime scheduledAt,
+    String? assignee,
+    String? priority,
+    String? planDetails,
+    String? prochlorazRate,
+    int? timeLimitMinutes,
+    bool isSoloJob = false,
+    String? notes,
+  }) async {
+    final jobId = const Uuid().v4();
+    final taskId = const Uuid().v4();
+    final status = (assignee != null && assignee.trim().isNotEmpty) ? 'assigned' : 'planned';
+
+    final room = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
+    final roomName = room?.name ?? 'Room';
+
+    try {
+      var project = await (_db.select(_db.projects)..where((tbl) => tbl.name.equals('Costa M2 Operations'))).getSingleOrNull();
+      if (project == null) {
+        final projectId = const Uuid().v4();
+        await _db.into(_db.projects).insert(ProjectsCompanion.insert(
+          id: projectId,
+          name: 'Costa M2 Operations',
+          description: const Value('Daily mushroom operations project'),
+        ));
+        project = await (_db.select(_db.projects)..where((tbl) => tbl.id.equals(projectId))).getSingle();
+
+        await SyncService().queueMutation('projects', 'insert', {
+          'id': project.id,
+          'name': project.name,
+          'description': project.description,
+        });
+      }
+
+      await _db.into(_db.tasks).insert(TasksCompanion.insert(
+        id: taskId,
+        projectId: project.id,
+        title: '$name ($roomName)',
+        description: Value(notes ?? 'Planned Daily Job: $name. Priority: ${priority ?? "normal"}'),
+        status: const Value('todo'),
+        priority: Value(priority == 'urgent' || priority == 'high' ? 'high' : 'normal'),
+        dueDate: Value(scheduledAt),
+      ));
+
+      await SyncService().queueMutation('tasks', 'insert', {
+        'id': taskId,
+        'project_id': project.id,
+        'title': '$name ($roomName)',
+        'description': notes ?? 'Planned Daily Job: $name. Priority: ${priority ?? "normal"}',
+        'status': 'todo',
+        'priority': priority ?? 'normal',
+        'due_date': scheduledAt.toIso8601String(),
+        'created_at': DateTime.now().toIso8601String(),
+      });
+    } catch (_) {}
+
+    await _db.into(_db.mushroomJobs).insert(MushroomJobsCompanion.insert(
+      id: jobId,
+      roomId: roomId,
+      jobType: jobType,
+      name: name,
+      status: Value(status),
+      assignee: Value(assignee),
+      priority: Value(priority ?? 'normal'),
+      scheduledAt: Value(scheduledAt),
+      planDetails: Value(planDetails),
+      prochlorazRate: Value(prochlorazRate),
+      isSoloJob: Value(isSoloJob),
+      timeLimitMinutes: Value(timeLimitMinutes),
+      linkedTaskId: Value(taskId),
+      createdAt: Value(DateTime.now()),
+    ));
+
+    await SyncService().queueMutation('mushroom_jobs', 'insert', {
+      'id': jobId,
+      'room_id': roomId,
+      'job_type': jobType,
+      'name': name,
+      'status': status,
+      'assignee': assignee,
+      'priority': priority ?? 'normal',
+      'scheduled_at': scheduledAt.toIso8601String(),
+      'plan_details': planDetails,
+      'prochloraz_rate': prochlorazRate,
+      'is_solo_job': isSoloJob,
+      'time_limit_minutes': timeLimitMinutes,
+      'linked_task_id': taskId,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+
+    return jobId;
+  }
+
+  Future<void> assignJobToWorker(String jobId, String workerName) async {
+    await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).write(
+      MushroomJobsCompanion(
+        assignee: Value(workerName),
+        status: const Value('assigned'),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+    await SyncService().queueMutation('mushroom_jobs', 'update', {
+      'id': jobId,
+      'assignee': workerName,
+      'status': 'assigned',
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<void> unassignJob(String jobId) async {
+    await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).write(
+      MushroomJobsCompanion(
+        assignee: const Value(null),
+        status: const Value('planned'),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+    await SyncService().queueMutation('mushroom_jobs', 'update', {
+      'id': jobId,
+      'assignee': null,
+      'status': 'planned',
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<void> deleteMushroomJob(String jobId) async {
+    final job = await (_db.select(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).getSingleOrNull();
+    if (job != null) {
+      if (job.linkedTaskId != null && job.linkedTaskId!.isNotEmpty) {
+        try {
+          await (_db.delete(_db.tasks)..where((tbl) => tbl.id.equals(job.linkedTaskId!))).go();
+          await SyncService().queueMutation('tasks', 'delete', {'id': job.linkedTaskId});
+        } catch (_) {}
+      }
+      await (_db.delete(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).go();
+      await SyncService().queueMutation('mushroom_jobs', 'delete', {'id': jobId});
     }
   }
 

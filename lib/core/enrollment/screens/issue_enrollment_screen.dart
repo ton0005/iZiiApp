@@ -134,8 +134,7 @@ class _IssueEnrollmentScreenState extends State<IssueEnrollmentScreen> {
             const SizedBox(height: 16),
 
             // ── Chọn chế độ thiết bị ──────────────────────────────────────
-            Text('Loại thiết bị',
-                style: Theme.of(context).textTheme.titleSmall),
+            Text('Device Type', style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
             SegmentedButton<String>(
               segments: const [

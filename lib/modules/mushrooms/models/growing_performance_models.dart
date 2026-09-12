@@ -20,12 +20,14 @@ class PerformanceJobType {
   final String name;
   final double planMinutes;
   final double difficulty;
+  final String? color;
 
   const PerformanceJobType({
     required this.id,
     required this.name,
     required this.planMinutes,
     this.difficulty = 1.0,
+    this.color,
   });
 }
 

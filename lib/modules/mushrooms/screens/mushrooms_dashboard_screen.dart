@@ -9,6 +9,8 @@ import '../../../core/localization/app_localizations.dart';
 import 'mushboom_monarto_screen.dart';
 import 'growing_performance_board_screen.dart';
 import '../widgets/job_completion_review_dialog.dart';
+import '../repository.dart';
+import 'job_types_management_screen.dart';
 
 class MushroomsDashboardScreen extends StatefulWidget {
   const MushroomsDashboardScreen({super.key});
@@ -83,6 +85,19 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                     ),
                   ),
                 ).then((_) => _bloc.add(LoadRoomsEvent()));
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.work_outline_rounded),
+              tooltip: 'Job Types Management',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        JobTypesManagementScreen(isDark: isDark),
+                  ),
+                );
               },
             ),
             IconButton(
@@ -724,9 +739,64 @@ class _NewJobDialogContent extends StatefulWidget {
 }
 
 class _NewJobDialogContentState extends State<_NewJobDialogContent> {
+  final MushroomsRepository _repo = MushroomsRepository();
+  List<Map<String, dynamic>> _jobTypes = [];
+  bool _isLoadingJobTypes = true;
+
   String? _selectedRoomId;
   String _selectedJobType =
       'filling'; // filling, airing, floor_wet, clean_room, watering, clean_bed, prochloraz, packup_tree, alone_worker
+
+  @override
+  void initState() {
+    super.initState();
+    _loadJobTypes();
+  }
+
+  Future<void> _loadJobTypes() async {
+    try {
+      final list = await _repo.getJobTypes(activeOnly: true);
+      list.sort((a, b) {
+        final aCustom = a['is_custom'] == true;
+        final bCustom = b['is_custom'] == true;
+        if (aCustom != bCustom) return aCustom ? 1 : -1;
+        final aOrder = (a['sort_order'] as int?) ?? 100;
+        final bOrder = (b['sort_order'] as int?) ?? 100;
+        if (aOrder != bOrder) return aOrder.compareTo(bOrder);
+        return (a['name'] as String).compareTo(b['name'] as String);
+      });
+      if (mounted) {
+        setState(() {
+          _jobTypes = list;
+          _isLoadingJobTypes = false;
+          if (_jobTypes.isNotEmpty &&
+              !_jobTypes.any((t) => t['id'] == _selectedJobType)) {
+            _selectedJobType = _jobTypes.first['id'] as String;
+          }
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isLoadingJobTypes = false);
+      }
+    }
+  }
+
+  String _getJobTypeTitle(BuildContext context, Map<String, dynamic> t) {
+    final id = (t['id'] as String?) ?? '';
+    final locKey = 'mushrooms_job_$id';
+    final translated = context.tr(locKey);
+    if (translated != locKey && translated.isNotEmpty) {
+      return translated;
+    }
+    return (t['name'] as String?) ?? id;
+  }
+
+  bool get _isCurrentSolo {
+    if (_selectedJobType == 'alone_worker') return true;
+    final match = _jobTypes.where((t) => t['id'] == _selectedJobType);
+    return match.isNotEmpty && match.first['is_solo_job'] == true;
+  }
 
   // Watering
   String _wateringPlan = '2side'; // 2side, 1side, custom
@@ -836,56 +906,124 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                 const SizedBox(height: 12),
 
                 // Job Type selection
-                Text(context.tr('mushrooms_dialog_select_job_type'),
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 13)),
-                const SizedBox(height: 6),
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedJobType,
-                  decoration:
-                      const InputDecoration(border: OutlineInputBorder()),
-                  items: [
-                    DropdownMenuItem(
-                        value: 'filling',
-                        child: Text(context.tr('mushrooms_job_filling'))),
-                    DropdownMenuItem(
-                        value: 'airing',
-                        child: Text(context.tr('mushrooms_job_airing'))),
-                    DropdownMenuItem(
-                        value: 'floor_wet',
-                        child: Text(context.tr('mushrooms_job_floor_wet'))),
-                    DropdownMenuItem(
-                        value: 'clean_room',
-                        child: Text(context.tr('mushrooms_job_clean_room'))),
-                    DropdownMenuItem(
-                        value: 'watering',
-                        child: Text(context.tr('mushrooms_job_watering'))),
-                    DropdownMenuItem(
-                        value: 'clean_bed',
-                        child: Text(context.tr('mushrooms_job_clean_bed'))),
-                    DropdownMenuItem(
-                        value: 'prochloraz',
-                        child: Text(context.tr('mushrooms_job_prochloraz'))),
-                    DropdownMenuItem(
-                        value: 'packup_tree',
-                        child: Text(context.tr('mushrooms_job_packup_tree'))),
-                    DropdownMenuItem(
-                        value: 'alone_worker',
-                        child: const Text('Alone Worker')),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(context.tr('mushrooms_dialog_select_job_type'),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13)),
+                    InkWell(
+                      borderRadius: BorderRadius.circular(4),
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobTypesManagementScreen(
+                              isDark: Theme.of(context).brightness == Brightness.dark,
+                            ),
+                          ),
+                        );
+                        _loadJobTypes();
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.settings_outlined,
+                                size: 14, color: Color(0xFF0EA5E9)),
+                            SizedBox(width: 4),
+                            Text('Manage',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF0EA5E9))),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
-                  onChanged: (val) {
-                    if (val != null) {
-                      setState(() {
-                        _selectedJobType = val;
-                        if (val == 'alone_worker') {
-                          _titleController.text = 'Alone Worker (Solo)';
-                        } else {
-                          _titleController.text = '';
-                        }
-                      });
-                    }
-                  },
                 ),
+                const SizedBox(height: 6),
+                if (_isLoadingJobTypes)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  )
+                else
+                  DropdownButtonFormField<String>(
+                    value: _jobTypes.any((t) => t['id'] == _selectedJobType)
+                        ? _selectedJobType
+                        : (_jobTypes.isNotEmpty
+                            ? _jobTypes.first['id'] as String
+                            : null),
+                    decoration:
+                        const InputDecoration(border: OutlineInputBorder()),
+                    items: _jobTypes.map((t) {
+                      final id = t['id'] as String;
+                      final name = _getJobTypeTitle(context, t);
+                      final isSolo = t['is_solo_job'] == true;
+                      final isCustom = t['is_custom'] == true;
+                      final colorHex = t['color'] as String?;
+                      final color = MushroomsRepository.parseHexColor(colorHex);
+
+                      return DropdownMenuItem<String>(
+                        value: id,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (color != null) ...[
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Text(name),
+                            if (isSolo) ...[
+                              const SizedBox(width: 6),
+                              const Icon(Icons.shield_rounded,
+                                  size: 13, color: Colors.redAccent),
+                            ],
+                            if (isCustom) ...[
+                              const SizedBox(width: 4),
+                              const Text(' (Custom)',
+                                  style: TextStyle(
+                                      fontSize: 11, color: Colors.grey)),
+                            ],
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setState(() {
+                          _selectedJobType = val;
+                          final match = _jobTypes.where((t) => t['id'] == val);
+                          final isSolo = val == 'alone_worker' ||
+                              (match.isNotEmpty &&
+                                  match.first['is_solo_job'] == true);
+                          if (isSolo) {
+                            _titleController.text = match.isNotEmpty
+                                ? '${match.first['name']} (Solo)'
+                                : 'Alone Worker (Solo)';
+                          } else {
+                            _titleController.text = '';
+                          }
+                        });
+                      }
+                    },
+                  ),
                 const SizedBox(height: 12),
 
                 // Specialized fields
@@ -969,7 +1107,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                   const SizedBox(height: 12),
                 ],
 
-                if (_selectedJobType == 'alone_worker') ...[
+                if (_isCurrentSolo) ...[
                   TextFormField(
                     initialValue: _soloTimeLimit.toString(),
                     decoration: const InputDecoration(
@@ -1147,7 +1285,10 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
 
                   String finalTitle = _titleController.text.trim();
                   if (finalTitle.isEmpty) {
-                    finalTitle = _selectedJobType.toUpperCase();
+                    final match = _jobTypes.where((t) => t['id'] == _selectedJobType);
+                    finalTitle = match.isNotEmpty
+                        ? (match.first['name'] as String)
+                        : _selectedJobType.toUpperCase();
                   }
 
                   String? planDetails;
@@ -1161,7 +1302,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                         '${_prochlorazRate}g/m² · ${_prochlorazArea.toInt()}m²';
                   }
 
-                  if (_selectedJobType == 'alone_worker') {
+                  if (_isCurrentSolo) {
                     context.read<MushroomsBloc>().add(AddSoloJobEvent(
                           roomId: _selectedRoomId!,
                           title: finalTitle,

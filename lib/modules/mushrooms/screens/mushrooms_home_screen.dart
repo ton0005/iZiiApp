@@ -22,6 +22,7 @@ import 'mushrooms_login_screen.dart';
 import 'mushrooms_profile_screen.dart';
 import 'harvest_attendance_screen.dart';
 import 'growing_performance_board_screen.dart';
+import 'growing_daily_job_plan_screen.dart';
 import '../../communication/bloc/chat_bloc.dart';
 
 class MushroomsHomeScreen extends StatefulWidget {
@@ -425,6 +426,7 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
         builder: (context) => HarvestAttendanceScreen(isDark: isDark),
       ),
     ).then((_) {
+      if (!mounted) return;
       context.read<MushroomsBloc>().add(LoadRoomsEvent());
       _loadMushroomData();
     });
@@ -437,6 +439,19 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
         builder: (context) => const GrowingPerformanceBoardScreen(),
       ),
     );
+  }
+
+  void _navigateToDailyJobPlan(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const GrowingDailyJobPlanScreen(),
+      ),
+    ).then((_) {
+      if (!mounted) return;
+      context.read<MushroomsBloc>().add(LoadRoomsEvent());
+      _loadMushroomData();
+    });
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -603,6 +618,16 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           ),
           const SizedBox(height: 12),
           QuickAccessCard(
+            title: 'Daily Job Planning',
+            subtitle:
+                'Manager job planning across rooms & Sup/Lead assignment',
+            icon: Icons.playlist_add_check_circle_rounded,
+            color: const Color(0xFF0D9488),
+            isDark: isDark,
+            onTap: () => _navigateToDailyJobPlan(context),
+          ),
+          const SizedBox(height: 12),
+          QuickAccessCard(
             title: 'Growing Performance Board',
             subtitle:
                 'Job completion time, break duration & solo worker safety',
@@ -691,6 +716,15 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 color: const Color(0xFFC97A3D),
                 isDark: isDark,
                 onTap: () => _navigateToHarvestAttendance(context),
+              ),
+              QuickAccessCard(
+                title: 'Daily Job Planning',
+                subtitle:
+                    'Manager job planning across rooms & Sup/Lead assignment',
+                icon: Icons.playlist_add_check_circle_rounded,
+                color: const Color(0xFF0D9488),
+                isDark: isDark,
+                onTap: () => _navigateToDailyJobPlan(context),
               ),
               QuickAccessCard(
                 title: 'Growing Performance Board',

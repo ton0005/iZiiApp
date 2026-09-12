@@ -1,6 +1,8 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../models/growing_performance_models.dart';
 import '../services/growing_performance_service.dart';
+import 'growing_daily_job_plan_screen.dart';
 
 /// Growing Performance Board Screen
 /// Operational performance dashboard tracking daily Joblist, Break time, and Alone Worker safety.
@@ -22,6 +24,7 @@ class _GrowingPerformanceBoardScreenState
   List<PerformanceShiftRecord> _allShifts = [];
   List<PerformanceDept> _departments = [];
   List<PerformanceEmployee> _employees = [];
+  List<PerformanceJobType> _jobTypes = [];
   bool _isLoading = true;
   String? _loadError;
 
@@ -53,6 +56,7 @@ class _GrowingPerformanceBoardScreenState
       setState(() {
         _departments = dataset.departments;
         _employees = dataset.employees;
+        _jobTypes = dataset.jobTypes;
         _allTasks = dataset.tasks;
         _allShifts = dataset.shifts;
         _isLoading = false;
@@ -66,12 +70,24 @@ class _GrowingPerformanceBoardScreenState
     }
   }
 
+  Color _colorFromHex(String? hex, {required Color fallback}) {
+    if (hex == null || hex.isEmpty) return fallback;
+    final clean = hex.replaceAll('#', '');
+    if (clean.length == 6) {
+      return Color(int.parse('FF$clean', radix: 16));
+    }
+    return fallback;
+  }
+
   // Filter data by range and criteria
   bool _taskMatches(PerformanceTaskRecord r) {
     if (r.dayOffset >= _rangeDays) return false;
     if (_selectedDept != 'all' && r.deptId != _selectedDept) return false;
     if (_selectedEmp != 'all' && r.employeeId != _selectedEmp) return false;
-    if (_selectedJob != 'all' && r.jobId != _selectedJob) return false;
+    if (_selectedJob != 'all' &&
+        r.jobId.toLowerCase() != _selectedJob.toLowerCase()) {
+      return false;
+    }
     return true;
   }
 
@@ -355,12 +371,41 @@ class _GrowingPerformanceBoardScreenState
               ),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              ElevatedButton.icon(
+                icon: const Icon(Icons.playlist_add_check, size: 16),
+                label: const Text('Daily Job Plan',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2A78D6),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const GrowingDailyJobPlanScreen(),
+                    ),
+                  ).then((_) => _loadData());
+                },
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: Icon(Icons.refresh_rounded, color: ink),
+                tooltip: 'Refresh Data',
+                onPressed: _loadData,
+              ),
+              const SizedBox(width: 8),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: ink.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(6),
@@ -512,11 +557,13 @@ class _GrowingPerformanceBoardScreenState
                       color: muted)),
               const SizedBox(width: 8),
               _buildDropdown(
-                value: _selectedJob,
+                value: (_selectedJob == 'all' || _jobTypes.any((j) => j.id == _selectedJob))
+                    ? _selectedJob
+                    : 'all',
                 items: [
                   const DropdownMenuItem(
                       value: 'all', child: Text('All Job Types')),
-                  ...GrowingPerformanceConstants.defaultJobTypes.map(
+                  ..._jobTypes.map(
                     (j) => DropdownMenuItem(value: j.id, child: Text(j.name)),
                   ),
                 ],
@@ -800,10 +847,12 @@ class _GrowingPerformanceBoardScreenState
       Color border,
       Color s1,
       Color critical) {
-    final jobs = GrowingPerformanceConstants.defaultJobTypes
+    final jobs = _jobTypes
         .where((j) => j.id != 'alone_worker')
         .map((j) {
-          final matching = tasks.where((t) => t.jobId == j.id).toList();
+          final matching = tasks
+              .where((t) => t.jobId.toLowerCase() == j.id.toLowerCase())
+              .toList();
           final actualAvg = matching.isNotEmpty
               ? matching.map((t) => t.actualMinutes).reduce((a, b) => a + b) /
                   matching.length
@@ -820,6 +869,12 @@ class _GrowingPerformanceBoardScreenState
 
     // Sort by difference actual - plan descending
     jobs.sort((a, b) => (b.actual - b.plan).compareTo(a.actual - a.plan));
+
+    // Dynamic scale so any job duration fits cleanly without clipping
+    final maxVal = jobs.fold<double>(
+      75.0,
+      (m, item) => math.max(m, math.max(item.actual, item.plan) * 1.15),
+    );
 
     return _buildPanelContainer(
       surface: surface,
@@ -842,20 +897,20 @@ class _GrowingPerformanceBoardScreenState
           : Column(
               children: jobs.map((item) {
                 final over = item.actual > item.plan;
-                const maxVal = 75.0; // standard scale
                 final inPlanPortion =
                     (item.actual > item.plan ? item.plan : item.actual) /
                         maxVal;
                 final overPortion =
                     over ? (item.actual - item.plan) / maxVal : 0.0;
                 final planLinePos = (item.plan / maxVal).clamp(0.0, 1.0);
+                final jobColor = _colorFromHex(item.j.color, fallback: s1);
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
                     children: [
                       SizedBox(
-                        width: 100,
+                        width: 110,
                         child: Text(
                           item.j.name,
                           style: TextStyle(
@@ -863,6 +918,8 @@ class _GrowingPerformanceBoardScreenState
                               fontWeight: FontWeight.w600,
                               color: ink),
                           textAlign: TextAlign.right,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -889,7 +946,7 @@ class _GrowingPerformanceBoardScreenState
                                   width: w * inPlanPortion,
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: s1,
+                                      color: jobColor,
                                       borderRadius: BorderRadius.horizontal(
                                         left: const Radius.circular(4),
                                         right: over
@@ -932,13 +989,13 @@ class _GrowingPerformanceBoardScreenState
                       ),
                       const SizedBox(width: 10),
                       SizedBox(
-                        width: 32,
+                        width: 44,
                         child: Text(
                           '${item.actual.round()}′',
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
-                              color: ink2),
+                              color: over ? critical : ink2),
                         ),
                       ),
                     ],
