@@ -277,6 +277,10 @@ class DailyJobPlanPdfService {
           final assigneeName = (j.assignee != null && j.assignee!.trim().isNotEmpty)
               ? (empNameById[j.assignee!] ?? j.assignee!)
               : '________________';
+          final notes = [
+            if (j.planDetails != null && j.planDetails!.trim().isNotEmpty) j.planDetails!.trim(),
+            if (j.prochlorazRate != null && j.prochlorazRate!.trim().isNotEmpty) j.prochlorazRate!.trim(),
+          ].join(' · ');
 
           final isEven = entry.key % 2 == 0;
           return pw.TableRow(
@@ -322,7 +326,7 @@ class DailyJobPlanPdfService {
               ),
               pw.Padding(
                 padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: pw.Text(j.notes ?? '', style: pw.TextStyle(font: fontRegular, fontSize: 7.5, color: PdfColors.grey800)),
+                child: pw.Text(notes, style: pw.TextStyle(font: fontRegular, fontSize: 7.5, color: PdfColors.grey800)),
               ),
               pw.Padding(
                 padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),

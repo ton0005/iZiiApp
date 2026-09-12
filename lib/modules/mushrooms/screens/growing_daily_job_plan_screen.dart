@@ -1143,6 +1143,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                     _selectedDate.add(const Duration(days: 1))),
               ),
             ],
+          ),
           Row(
             children: [
               OutlinedButton.icon(
