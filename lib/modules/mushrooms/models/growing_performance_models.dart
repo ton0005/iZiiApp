@@ -77,6 +77,7 @@ class PerformanceTaskRecord {
   final int startMinutesOfDay;
   final int roomNumber;
   final bool onTime;
+  final bool? onTimeOverride;
   final SoloSafetyInfo? soloInfo;
 
   const PerformanceTaskRecord({
@@ -90,6 +91,7 @@ class PerformanceTaskRecord {
     required this.startMinutesOfDay,
     required this.roomNumber,
     required this.onTime,
+    this.onTimeOverride,
     this.soloInfo,
   });
 }

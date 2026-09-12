@@ -84,7 +84,7 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
   }
 
   bool _isSmallRoom(String roomName) {
-    return roomName == 'Room 40' || roomName == 'Room 41' || roomName == 'Room 46' || roomName == 'Room 47' || roomName == 'Room 55' ||roomName == 'Room 56' || roomName == 'Room 57' || roomName == 'Room 52A' || roomName == 'Room 10' || roomName == 'Room 11' || roomName == 'Room 12' || roomName == 'Room 13' || roomName == 'Room 14' || roomName == 'Room 15' || roomName == 'Room 16';
+    return roomName == 'Room 40' || roomName == 'Room 41' || roomName == 'Room 46' || roomName == 'Room 47' || roomName == 'Room 55' ||roomName == 'Room 56' || roomName == 'Room 57' || roomName == 'Room 52' || roomName == 'Room 52A' || roomName == 'Room 10' || roomName == 'Room 11' || roomName == 'Room 12' || roomName == 'Room 13' || roomName == 'Room 14' || roomName == 'Room 15' || roomName == 'Room 16';
   }
 
   double _getRoomBaseWidth(String? roomName) {

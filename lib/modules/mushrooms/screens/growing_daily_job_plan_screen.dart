@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../core/database/app_database.dart';
 import '../repository.dart';
 import '../widgets/job_completion_review_dialog.dart';
+import '../services/daily_job_plan_pdf_service.dart';
 
 class GrowingDailyJobPlanScreen extends StatefulWidget {
   final DateTime? initialDate;
@@ -92,6 +93,32 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       _selectedDate = newDate;
     });
     _loadData();
+  }
+
+  Future<void> _exportOrPrintPdf() async {
+    if (_allJobs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No jobs planned for this date to export.'),
+        ),
+      );
+      return;
+    }
+    try {
+      await DailyJobPlanPdfService.printDailyPlan(
+        context: context,
+        date: _selectedDate,
+        jobs: _allJobs,
+        rooms: _rooms,
+        jobTypes: _jobTypes,
+        employees: _employees,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error exporting PDF: $e')),
+      );
+    }
   }
 
   Color _colorFromHex(String? hex, {Color fallback = const Color(0xFF2A78D6)}) {
@@ -610,8 +637,14 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: const Color(0xFF10B981),
+          duration: const Duration(seconds: 6),
           content: Text(
             'Successfully planned $name for ${roomIds.length} room(s). Waiting for Sup/Lead assignment.',
+          ),
+          action: SnackBarAction(
+            label: 'Print PDF',
+            textColor: Colors.white,
+            onPressed: _exportOrPrintPdf,
           ),
         ),
       );
@@ -965,6 +998,18 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         backgroundColor: surface,
         foregroundColor: ink,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.print_rounded),
+            tooltip: 'Export & Print Daily Job Plan (PDF)',
+            onPressed: _exportOrPrintPdf,
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            tooltip: 'Refresh',
+            onPressed: _loadData,
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: TabBar(
@@ -1098,15 +1143,28 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                     _selectedDate.add(const Duration(days: 1))),
               ),
             ],
-          ),
-          if (!isToday)
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          Row(
+            children: [
+              OutlinedButton.icon(
+                icon: const Icon(Icons.print_rounded, size: 16),
+                label: const Text('Export / Print PDF'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                ),
+                onPressed: _exportOrPrintPdf,
               ),
-              onPressed: () => _onDateChanged(DateTime.now()),
-              child: const Text('Go to Today'),
-            ),
+              if (!isToday) ...[
+                const SizedBox(width: 8),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  ),
+                  onPressed: () => _onDateChanged(DateTime.now()),
+                  child: const Text('Go to Today'),
+                ),
+              ],
+            ],
+          ),
         ],
       ),
     );

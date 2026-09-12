@@ -256,6 +256,7 @@ class GrowingPerformanceService {
         startMinutesOfDay: _minutesOfDay(start),
         roomNumber: _roomNumberFromName(roomNameById[j.roomId]) ?? 0,
         onTime: onTime,
+        onTimeOverride: j.onTimeOverride,
         soloInfo: solo,
       ));
     }

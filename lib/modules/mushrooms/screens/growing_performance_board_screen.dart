@@ -853,8 +853,16 @@ class _GrowingPerformanceBoardScreenState
           final matching = tasks
               .where((t) => t.jobId.toLowerCase() == j.id.toLowerCase())
               .toList();
+          // Supervisor/manager confirmed complete on time (onTimeOverride == true)
+          // means the job completed within standard time in reality, so cap at planMinutes
+          // and do not draw any Over Standard portion.
           final actualAvg = matching.isNotEmpty
-              ? matching.map((t) => t.actualMinutes).reduce((a, b) => a + b) /
+              ? matching.map((t) {
+                  if (t.onTimeOverride == true) {
+                    return math.min(t.actualMinutes, t.planMinutes);
+                  }
+                  return t.actualMinutes;
+                }).reduce((a, b) => a + b) /
                   matching.length
               : 0.0;
           return (
