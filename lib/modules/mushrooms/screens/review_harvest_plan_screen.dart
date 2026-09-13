@@ -289,7 +289,7 @@ class _ReviewHarvestPlanScreenState extends State<ReviewHarvestPlanScreen> {
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? FarmColors.forestGreen.withOpacity(0.12)
+                                    ? FarmColors.forestGreen.withValues(alpha: 0.12)
                                     : (isDark ? Colors.white10 : Colors.grey.shade50),
                                 border: Border.all(
                                     color: isSelected ? FarmColors.forestGreen : Colors.transparent),
@@ -308,7 +308,7 @@ class _ReviewHarvestPlanScreenState extends State<ReviewHarvestPlanScreen> {
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                         decoration: BoxDecoration(
-                                          color: statusColor.withOpacity(0.15),
+                                          color: statusColor.withValues(alpha: 0.15),
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
@@ -368,7 +368,7 @@ class _ReviewHarvestPlanScreenState extends State<ReviewHarvestPlanScreen> {
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                         decoration: BoxDecoration(
-                                          color: _getStatusColor(activePlan['status']).withOpacity(0.15),
+                                          color: _getStatusColor(activePlan['status']).withValues(alpha: 0.15),
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(

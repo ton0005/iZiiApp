@@ -6,7 +6,6 @@ import '../../../core/localization/app_localizations.dart';
 import '../../../core/theme/izii_colors.dart';
 import '../../../core/database/app_database.dart';
 import '../bloc/chat_bloc.dart';
-import '../models/chat_models.dart';
 
 class RecordChatTab extends StatefulWidget {
   final String recordType; // 'lead' | 'deal' | 'job' | 'service'

@@ -330,9 +330,11 @@ async def lifespan(app: FastAPI):
         print(f"⚠️  [SEEDS] Lỗi khi nạp seeds: {e}")
 
     prune_old_mutations(days=30)
-    prune_message_queue()
-    print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
-    print(f"✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB")
+    if CONFIG.db_backend == "sqlite":
+        print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
+        print(f"✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB")
+    else:
+        print(f"✅ PostgreSQL backend initialized with connection pool ({CONFIG.pg_pool_min}-{CONFIG.pg_pool_max} connections)")
     print(f"🌐 Server identity: server_id={CONFIG.server_id} zone={CONFIG.zone}")
     print(f"🗄️  Database backend: {CONFIG.db_backend}")
     print(describe_tls())
@@ -564,21 +566,34 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(
     try:
         while True:
             data = await websocket.receive_text()
-            print(f"💬 [WS] Broadcast message: {data[:120]}...")
-            
-            # Log latency measurement asynchronously for events containing 'sent_at' or 'timestamp'
+            if data == "ping":
+                await websocket.send_text("pong")
+                continue
+
             try:
                 payload = json.loads(data)
                 event = payload.get("event")
-                msg_data = payload.get("data", {})
-                if isinstance(msg_data, dict):
-                    sent_at = msg_data.get("sent_at") or msg_data.get("timestamp")
-                    if sent_at:
-                        _t = asyncio.create_task(log_latency(f"WS_{event}", sent_at))
-                        _ws_background_tasks.add(_t)
-                        _t.add_done_callback(_ws_background_tasks.discard)
+                if event == "ping":
+                    await websocket.send_text(json.dumps({"event": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}))
+                    continue
             except Exception:
-                pass
+                payload = None
+                event = None
+
+            print(f"💬 [WS] Broadcast message: {data[:120]}...")
+            
+            # Log latency measurement asynchronously for events containing 'sent_at' or 'timestamp'
+            if payload and isinstance(payload, dict):
+                try:
+                    msg_data = payload.get("data", {})
+                    if isinstance(msg_data, dict):
+                        sent_at = msg_data.get("sent_at") or msg_data.get("timestamp")
+                        if sent_at:
+                            _t = asyncio.create_task(log_latency(f"WS_{event}", sent_at))
+                            _ws_background_tasks.add(_t)
+                            _t.add_done_callback(_ws_background_tasks.discard)
+                except Exception:
+                    pass
                 
             await ws_manager.broadcast(data, exclude=websocket)
     except WebSocketDisconnect:
@@ -624,22 +639,24 @@ if __name__ == '__main__':
         print(f"   Vui lòng dừng dịch vụ izii_server đang chạy hoặc đổi biến IZIIAPP_PORT.\n")
         sys.exit(1)
 
-    if is_frozen:
-        print("\n🚀 Starting iZiiApp Standalone Server v2.0 in Bundled Mode...")
-        uvicorn.run(
-            app,
-            host="0.0.0.0",
-            port=target_port,
-            **ssl_kwargs,
-        )
-    else:
-        print("\n🚀 Starting iZiiApp Standalone Server v2.0 in Development Mode...")
+    dev_reload = os.environ.get("IZIIAPP_DEV_RELOAD", "0").lower() in ("1", "true", "yes")
+    if dev_reload and not is_frozen:
+        print("\n🚀 Starting iZiiApp Standalone Server v2.0 in Dev-Reload Mode (IZIIAPP_DEV_RELOAD=1)...")
         uvicorn.run(
             "app:app",
             host="0.0.0.0",
             port=target_port,
             reload=True,
             reload_dirs=["./"],  # Watch server directory
-            reload_excludes=["build", ".dart_tool", ".git", "data", "__pycache__", "certs"],
+            reload_excludes=["build", ".dart_tool", ".git", "data", "__pycache__", "certs", "logs"],
+            **ssl_kwargs,
+        )
+    else:
+        mode_str = "Bundled" if is_frozen else "Standard Production"
+        print(f"\n🚀 Starting iZiiApp Standalone Server v2.0 in {mode_str} Mode (Reload Disabled)...")
+        uvicorn.run(
+            app,
+            host="0.0.0.0",
+            port=target_port,
             **ssl_kwargs,
         )

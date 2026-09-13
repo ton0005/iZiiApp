@@ -372,10 +372,10 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                               backgroundColor: widget.isDark
                                   ? FarmColors.forestGreen
                                   : (emp['role'].toString().contains('Specialist')
-                                      ? Colors.blue.withOpacity(0.1)
+                                      ? Colors.blue.withValues(alpha: 0.1)
                                       : (emp['role'].toString().contains('Picker')
-                                          ? Colors.green.withOpacity(0.1)
-                                          : Colors.orange.withOpacity(0.1))),
+                                          ? Colors.green.withValues(alpha: 0.1)
+                                          : Colors.orange.withValues(alpha: 0.1))),
                               label: Text(
                                 emp['role'],
                                 style: TextStyle(
@@ -594,10 +594,10 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                       backgroundColor: widget.isDark
                           ? FarmColors.forestGreen
                           : (emp['role'].toString().contains('Specialist')
-                              ? Colors.blue.withOpacity(0.1)
+                              ? Colors.blue.withValues(alpha: 0.1)
                               : (emp['role'].toString().contains('Picker')
-                                  ? Colors.green.withOpacity(0.1)
-                                  : Colors.orange.withOpacity(0.1))),
+                                  ? Colors.green.withValues(alpha: 0.1)
+                                  : Colors.orange.withValues(alpha: 0.1))),
                       label: Text(
                         emp['role']?.toString() ?? '',
                         style: TextStyle(
@@ -736,7 +736,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Role'),
-                    value: role,
+                    initialValue: role,
                     items: dropDownItems
                         .map((r) => DropdownMenuItem(value: r, child: Text(r)))
                         .toList(),
@@ -745,7 +745,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Department'),
-                    value: department,
+                    initialValue: department,
                     items: _getDepartmentItems(),
                     onChanged: (val) => setDialogState(() => department = val!),
                   ),
@@ -753,7 +753,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       decoration: const InputDecoration(labelText: 'Harvest Team (Đội màu/Nhóm)'),
-                      value: pickerTeamColor,
+                      initialValue: pickerTeamColor,
                       items: _teams
                           .map((t) => DropdownMenuItem(
                                 value: t,
@@ -766,7 +766,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Status (Trạng thái)'),
-                    value: status,
+                    initialValue: status,
                     items: const [
                       DropdownMenuItem(
                         value: 'active',
@@ -995,7 +995,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Role'),
-                    value: role,
+                    initialValue: role,
                     items: dropDownItems
                         .map((r) => DropdownMenuItem(value: r, child: Text(r)))
                         .toList(),
@@ -1008,7 +1008,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Department'),
-                    value: department,
+                    initialValue: department,
                     items: _getDepartmentItems(),
                     onChanged: (val) {
                       setDialogState(() {
@@ -1020,7 +1020,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       decoration: const InputDecoration(labelText: 'Harvest Team (Đội màu/Nhóm)'),
-                      value: pickerTeamColor,
+                      initialValue: pickerTeamColor,
                       items: _teams
                           .map((t) => DropdownMenuItem(
                                 value: t,
@@ -1033,7 +1033,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Status (Trạng thái)'),
-                    value: status,
+                    initialValue: status,
                     items: const [
                       DropdownMenuItem(
                         value: 'active',
@@ -1228,8 +1228,8 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                           }
                         },
                       ),
-                      Positioned.fill(
-                        child: const Padding(
+                      const Positioned.fill(
+                        child: Padding(
                           padding: EdgeInsets.all(20.0),
                           child: BorderPainterWidget(),
                         ),
@@ -1375,7 +1375,7 @@ class _BorderPainter extends CustomPainter {
 
     // Draw scanning laser
     final laserPaint = Paint()
-      ..color = Colors.green.withOpacity(0.5)
+      ..color = Colors.green.withValues(alpha: 0.5)
       ..strokeWidth = 1.5;
     canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), laserPaint);
   }
@@ -1431,7 +1431,7 @@ class _ScanningLaserLineState extends State<_ScanningLaserLine>
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.red.withOpacity(0.5),
+                    color: Colors.red.withValues(alpha: 0.5),
                     blurRadius: 4,
                     spreadRadius: 1,
                   )

@@ -65,7 +65,7 @@ class UpdateJobStatusEvent extends MushroomsEvent {
   final bool? onTimeOverride;
   UpdateJobStatusEvent(this.jobId, dynamic arg2, [String? arg3, this.onTimeOverride])
       : roomId = arg3 != null ? arg2 as String? : null,
-        newStatus = arg3 != null ? arg3 : (arg2 as String);
+        newStatus = arg3 ?? (arg2 as String);
 }
 
 class CreateCustomJobEvent extends MushroomsEvent {
@@ -124,7 +124,7 @@ class RoomJobsUpdatedEvent extends MushroomsEvent {
   final List<Map<String, dynamic>> jobs;
   RoomJobsUpdatedEvent(dynamic arg1, [List<Map<String, dynamic>>? arg2])
       : roomId = arg2 != null ? arg1 as String? : null,
-        jobs = arg2 != null ? arg2 : (arg1 as List<Map<String, dynamic>>);
+        jobs = arg2 ?? (arg1 as List<Map<String, dynamic>>);
 }
 
 // === STATE ===

@@ -180,7 +180,7 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           color: isExpired
-              ? Colors.red.withOpacity(0.08)
+              ? Colors.red.withValues(alpha: 0.08)
               : (widget.isDark ? const Color(0xFF2E2E2E) : Colors.grey.shade50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),

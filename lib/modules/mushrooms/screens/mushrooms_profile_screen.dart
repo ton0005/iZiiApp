@@ -100,7 +100,7 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDark;
-    final primaryColor = const Color(0xFF10B981);
+    const primaryColor = Color(0xFF10B981);
     final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
     final textColor = isDark ? Colors.white : Colors.black87;
     final subTextColor = isDark ? Colors.white70 : Colors.black54;
@@ -280,10 +280,12 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                             BorderRadius.circular(12)),
                                   ),
                                   validator: (v) {
-                                    if (v == null || v.isEmpty)
+                                    if (v == null || v.isEmpty) {
                                       return 'Please enter your new password';
-                                    if (v.length < 6)
+                                    }
+                                    if (v.length < 6) {
                                       return 'Password must be at least 6 characters long';
+                                    }
                                     return null;
                                   },
                                 ),
@@ -315,10 +317,12 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                             BorderRadius.circular(12)),
                                   ),
                                   validator: (v) {
-                                    if (v == null || v.isEmpty)
+                                    if (v == null || v.isEmpty) {
                                       return 'Please confirm your new password';
-                                    if (v != _newPasswordController.text)
+                                    }
+                                    if (v != _newPasswordController.text) {
                                       return 'Password confirmation does not match';
+                                    }
                                     return null;
                                   },
                                 ),

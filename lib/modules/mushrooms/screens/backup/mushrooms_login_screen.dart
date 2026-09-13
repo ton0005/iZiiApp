@@ -171,7 +171,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final primaryColor = const Color(0xFF10B981); // Emerald Green
+    const primaryColor = Color(0xFF10B981); // Emerald Green
     final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
     final textColor = isDark ? Colors.white : Colors.black87;
     final subTextColor = isDark ? Colors.white70 : Colors.black54;

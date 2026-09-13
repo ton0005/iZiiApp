@@ -71,7 +71,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   String? _tasksSelectedRoomName;
   String _tasksViewMode = 'kanban'; // kanban or gantt
 
-  String _activeChatContact = 'Growing Crew';
+  final String _activeChatContact = 'Growing Crew';
 
   bool _emergencyActive = false;
 
@@ -235,7 +235,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final r = role.toLowerCase();
     if (r.contains('manager') ||
         r.contains('site manager') ||
-        r.contains('cool room manager')) return 3;
+        r.contains('cool room manager')) {
+      return 3;
+    }
     if (r.contains('lead') || r.contains('supervisor')) return 2;
     if (r.contains('specialist')) return 1;
     return 0; // picker, box mover, worker, etc.
@@ -669,7 +671,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                     Text(
                       _currentEmployee != null
                           ? '${_currentEmployee!.name} (ID: ${_currentEmployee!.id}) • ${_currentEmployee!.role}'
-                          : 'NV: ${_activeRole}',
+                          : 'NV: $_activeRole',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -743,10 +745,12 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'tasks') return 'Kanban Board & Gantt Chart Timeline';
     if (_activeTab == 'chat') return 'Offline BLE P2P Chat Simulator';
     if (_activeTab == 'employees') return 'Staff & Specialist Registry';
-    if (_activeTab == 'departments')
+    if (_activeTab == 'departments') {
       return 'Manage business department listings';
-    if (_activeTab == 'settings')
+    }
+    if (_activeTab == 'settings') {
       return 'Server, Sync & Application Preferences';
+    }
     return 'Solo Working Alerts & Incident Manager';
   }
 
@@ -799,9 +803,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                     ),
                     if (effectiveExpanded) ...[
                       const SizedBox(height: 4),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.call_split, size: 10, color: Colors.grey),
                           SizedBox(width: 4),
                           Flexible(
@@ -1075,7 +1079,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final Color? bgCol = isActive
         ? (isDark
             ? FarmColors.forestGreen
-            : FarmColors.forestGreenLight.withOpacity(0.4))
+            : FarmColors.forestGreenLight.withValues(alpha: 0.4))
         : null;
 
     final Color textIconCol = isActive
@@ -1344,8 +1348,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     bool isSoloJob = false,
   }) {
     var room = _localRooms[roomName];
-    if (room == null) {
-      room = _localRooms.values.firstWhere(
+    room ??= _localRooms.values.firstWhere(
         (r) =>
             r['name'] == roomName ||
             r['id'] == roomName ||
@@ -1353,7 +1356,6 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
             'Grow Room ${r['name'].replaceAll('Room', '').trim()}' == roomName,
         orElse: () => <String, dynamic>{},
       );
-    }
     final roomId = (room.isNotEmpty ? room['id'] : null) ??
         roomName.toLowerCase().replaceAll(' ', '_');
 
@@ -1648,8 +1650,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       String dbStatus = 'todo';
       if (nextStatus == 'inprog') dbStatus = 'in_progress';
       if (nextStatus == 'review') dbStatus = 'review';
-      if (nextStatus == 'done' || nextStatus == 'completed')
+      if (nextStatus == 'done' || nextStatus == 'completed') {
         dbStatus = 'completed';
+      }
 
       _bloc.add(UpdateJobStatusEvent(
         jobId as String,

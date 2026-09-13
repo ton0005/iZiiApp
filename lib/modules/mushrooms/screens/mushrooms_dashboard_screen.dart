@@ -878,7 +878,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
           _selectedRoomId = rooms.first['id'] as String;
         }
 
-        double prochlorazTotal = _prochlorazRate * _prochlorazArea;
+        final double prochlorazTotal = _prochlorazRate * _prochlorazArea;
 
         return AlertDialog(
           backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
@@ -958,7 +958,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                   )
                 else
                   DropdownButtonFormField<String>(
-                    value: _jobTypes.any((t) => t['id'] == _selectedJobType)
+                    initialValue: _jobTypes.any((t) => t['id'] == _selectedJobType)
                         ? _selectedJobType
                         : (_jobTypes.isNotEmpty
                             ? _jobTypes.first['id'] as String
@@ -1293,7 +1293,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
 
                   String? planDetails;
                   if (_selectedJobType == 'watering') {
-                    planDetails = '$_wateringPlan — ${_wateringVol} L/m²';
+                    planDetails = '$_wateringPlan — $_wateringVol L/m²';
                   }
 
                   String? prochlorazRate;

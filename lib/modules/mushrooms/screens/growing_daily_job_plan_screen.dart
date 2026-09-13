@@ -32,7 +32,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
 
   // Filter for Sup/Lead Tab
   String _leadStatusFilter = 'all'; // all, unassigned, assigned, in_progress, completed
-  String _leadRoomFilter = 'all';
+  final String _leadRoomFilter = 'all';
 
   @override
   void initState() {
@@ -209,7 +209,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: ink2.withOpacity(0.3),
+                        color: ink2.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -282,7 +282,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                               label: Text(r.name),
                               selected: isSel,
                               selectedColor:
-                                  const Color(0xFF2A78D6).withOpacity(0.2),
+                                  const Color(0xFF2A78D6).withValues(alpha: 0.2),
                               checkmarkColor: const Color(0xFF2A78D6),
                               labelStyle: TextStyle(
                                 fontSize: 12,
@@ -315,7 +315,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                         ),
                         const SizedBox(height: 8),
                         DropdownButtonFormField<String>(
-                          value: selectedJobType,
+                          initialValue: selectedJobType,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10)),
@@ -370,7 +370,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                           color: ink)),
                                   const SizedBox(height: 6),
                                   DropdownButtonFormField<String>(
-                                    value: priority,
+                                    initialValue: priority,
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(
                                           borderRadius:
@@ -705,7 +705,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: ink2.withOpacity(0.3),
+                        color: ink2.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -724,10 +724,10 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                   color: ink)),
                           Text(
                             '${job.name} · Room: ${_getRoomName(job.roomId)}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xFF2A78D6)),
+                                color: Color(0xFF2A78D6)),
                           ),
                         ],
                       ),
@@ -805,7 +805,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                               return ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: const Color(0xFF2A78D6)
-                                      .withOpacity(0.15),
+                                      .withValues(alpha: 0.15),
                                   child: Text(
                                     empName.isNotEmpty ? empName[0] : '?',
                                     style: const TextStyle(
@@ -1019,13 +1019,13 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
             indicatorColor: const Color(0xFF2A78D6),
             indicatorWeight: 3,
             tabs: [
-              Tab(
+              const Tab(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.assignment_outlined, size: 18),
-                    const SizedBox(width: 8),
-                    const Text('Manager Plan', style: TextStyle(fontWeight: FontWeight.w700)),
+                    Icon(Icons.assignment_outlined, size: 18),
+                    SizedBox(width: 8),
+                    Text('Manager Plan', style: TextStyle(fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
@@ -1210,7 +1210,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
               : EdgeInsets.zero,
           decoration: isHighlight
               ? BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 )
               : null,
@@ -1241,7 +1241,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.event_note, size: 64, color: ink2.withOpacity(0.4)),
+            Icon(Icons.event_note, size: 64, color: ink2.withValues(alpha: 0.4)),
             const SizedBox(height: 12),
             Text(
               'No jobs planned for ${DateFormat('dd/MM/yyyy').format(_selectedDate)}',
@@ -1301,7 +1301,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                         Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2A78D6).withOpacity(0.1),
+                            color: const Color(0xFF2A78D6).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(Icons.meeting_room, size: 18, color: Color(0xFF2A78D6)),
@@ -1338,7 +1338,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: border.withOpacity(0.2),
+        color: border.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -1367,7 +1367,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.amber.withOpacity(0.2),
+                          color: Colors.amber.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text('SOLO', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.amber)),
@@ -1394,7 +1394,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF59E0B).withOpacity(0.15),
+                    color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Text(
@@ -1470,7 +1470,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                 const SizedBox(width: 8),
                 ChoiceChip(
                   label: const Text('Needs Worker (Unassigned)'),
-                  selectedColor: const Color(0xFFF59E0B).withOpacity(0.2),
+                  selectedColor: const Color(0xFFF59E0B).withValues(alpha: 0.2),
                   selected: _leadStatusFilter == 'unassigned',
                   onSelected: (s) => setState(() => _leadStatusFilter = 'unassigned'),
                 ),
@@ -1559,12 +1559,12 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: job.status == 'completed'
-                        ? const Color(0xFF10B981).withOpacity(0.15)
+                        ? const Color(0xFF10B981).withValues(alpha: 0.15)
                         : (job.status == 'in_progress'
-                            ? const Color(0xFF8B5CF6).withOpacity(0.15)
+                            ? const Color(0xFF8B5CF6).withValues(alpha: 0.15)
                             : (isUnassigned
-                                ? const Color(0xFFF59E0B).withOpacity(0.15)
-                                : const Color(0xFF2A78D6).withOpacity(0.15))),
+                                ? const Color(0xFFF59E0B).withValues(alpha: 0.15)
+                                : const Color(0xFF2A78D6).withValues(alpha: 0.15))),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -1598,7 +1598,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   children: [
                     CircleAvatar(
                       radius: 14,
-                      backgroundColor: isUnassigned ? const Color(0xFFF59E0B).withOpacity(0.2) : const Color(0xFF2A78D6).withOpacity(0.2),
+                      backgroundColor: isUnassigned ? const Color(0xFFF59E0B).withValues(alpha: 0.2) : const Color(0xFF2A78D6).withValues(alpha: 0.2),
                       child: Icon(
                         isUnassigned ? Icons.person_add : Icons.person,
                         size: 16,

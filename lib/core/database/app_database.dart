@@ -93,7 +93,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase() => _instance;
 
   // Constructor for testing with in-memory or mock database executor
-  AppDatabase.forTesting(QueryExecutor e) : super(e);
+  AppDatabase.forTesting(super.e);
 
   // Set test instance override
   static set testInstance(AppDatabase db) => _instance = db;

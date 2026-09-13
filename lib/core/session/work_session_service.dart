@@ -367,8 +367,9 @@ class WorkSessionService {
           'rendering the old token invalid. Please ask your manager for a new QR code and scan it.';
     }
     if (code == 403) return detail?.toString() ?? 'Incorrect PIN.';
-    if (code == 400)
+    if (code == 400) {
       return detail?.toString() ?? 'Invalid check-in information.';
+    }
     if (e.type == DioExceptionType.connectionError ||
         e.type == DioExceptionType.connectionTimeout) {
       return 'Cannot connect to the server. Please check your Wi-Fi connection.';

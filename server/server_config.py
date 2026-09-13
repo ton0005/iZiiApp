@@ -134,7 +134,7 @@ class ServerConfig:
     db_backend: str = "sqlite"
     pg_dsn: str = ""
     pg_pool_min: int = 1
-    pg_pool_max: int = 10
+    pg_pool_max: int = 20
 
     # ── 6.4 — TLS / mTLS ─────────────────────────────────────────────────────
     # Bật khi có đủ 3 đường dẫn. Không set thì server chạy HTTP như cũ.
@@ -257,7 +257,7 @@ def load_server_config() -> ServerConfig:
         db_backend=db_backend,
         pg_dsn=pg_dsn,
         pg_pool_min=_int_env("IZIIAPP_PG_POOL_MIN", 1),
-        pg_pool_max=_int_env("IZIIAPP_PG_POOL_MAX", 10),
+        pg_pool_max=_int_env("IZIIAPP_PG_POOL_MAX", 20),
         tls_cert_file=tls_cert,
         tls_key_file=tls_key,
         tls_ca_file=tls_ca,

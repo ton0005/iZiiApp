@@ -407,7 +407,7 @@ class _GrowingPerformanceBoardScreenState
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                  color: ink.withOpacity(0.05),
+                  color: ink.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
@@ -776,7 +776,7 @@ class _GrowingPerformanceBoardScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        border: Border.all(color: border.withOpacity(0.5)),
+        border: Border.all(color: border.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -942,7 +942,7 @@ class _GrowingPerformanceBoardScreenState
                                 Container(
                                   height: 16,
                                   decoration: BoxDecoration(
-                                    color: ink.withOpacity(0.04),
+                                    color: ink.withValues(alpha: 0.04),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
@@ -1216,7 +1216,7 @@ class _GrowingPerformanceBoardScreenState
                                 Container(
                                   height: 16,
                                   decoration: BoxDecoration(
-                                    color: ink.withOpacity(0.04),
+                                    color: ink.withValues(alpha: 0.04),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
@@ -1581,7 +1581,7 @@ class _GrowingPerformanceBoardScreenState
               arrow,
               style: TextStyle(
                 fontSize: 12,
-                color: active ? ink : muted.withOpacity(0.5),
+                color: active ? ink : muted.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -1594,9 +1594,9 @@ class _GrowingPerformanceBoardScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: color.withOpacity(0.8), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.8), width: 1),
       ),
       child: Text(
         text,
@@ -1831,7 +1831,7 @@ class _GrowingPerformanceBoardScreenState
                                 width: box.maxWidth * ratio,
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF2A78D6)
-                                      .withOpacity(0.4 + 0.6 * ratio),
+                                      .withValues(alpha: 0.4 + 0.6 * ratio),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                               ),

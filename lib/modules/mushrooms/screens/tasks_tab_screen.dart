@@ -164,8 +164,8 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
           return Container(
             decoration: BoxDecoration(
               color: isOver
-                  ? labelColor.withOpacity(0.12)
-                  : Colors.grey.withOpacity(0.08),
+                  ? labelColor.withValues(alpha: 0.12)
+                  : Colors.grey.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isOver ? labelColor : FarmColors.borderLight,
@@ -340,7 +340,7 @@ class _TasksTabScreenState extends State<TasksTabScreen> {
                     final status = job['status'] as String;
 
                     final startDay = idx * 2;
-                    final duration = 3;
+                    const duration = 3;
 
                     Color barColor = Colors.grey.shade300;
                     if (status == 'done') {

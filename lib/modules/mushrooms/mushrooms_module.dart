@@ -6,10 +6,7 @@ import '../../core/ai_agent/models/chat_models.dart';
 import '../../core/localization/app_localizations.dart';
 import 'bloc/mushrooms_bloc.dart';
 import 'repository.dart';
-import 'screens/mushboom_monarto_screen.dart';
-import 'screens/mushrooms_dashboard_screen.dart';
 import 'screens/mushrooms_home_screen.dart';
-import 'dart:io' show Platform;
 
 const mushroomsManifest = ModuleManifest(
   id: 'izii.mushrooms',

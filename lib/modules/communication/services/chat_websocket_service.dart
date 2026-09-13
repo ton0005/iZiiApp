@@ -24,6 +24,7 @@ class ChatWebSocketService {
 
   Timer? _heartbeatTimer;
   Timer? _reconnectTimer;
+  int _reconnectAttempts = 0;
   String? _currentUserId;
 
   void setUserId(String userId) {
@@ -58,6 +59,7 @@ class ChatWebSocketService {
       
       _isConnected = true;
       _isConnecting = false;
+      _reconnectAttempts = 0;
       _connectionStateController.add(true);
       print('[ChatWS] Connected successfully.');
 
@@ -148,15 +150,22 @@ class ChatWebSocketService {
 
   void _startHeartbeat() {
     _heartbeatTimer?.cancel();
-    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (_isConnected && _currentUserId != null) {
-        sendEvent(ChatWebSocketEvent(
-          event: 'heartbeat',
-          data: {
-            'user_id': _currentUserId,
-            'sync_status': 'synced',
-          },
-        ));
+    _heartbeatTimer = Timer.periodic(const Duration(seconds: 20), (_) {
+      if (_isConnected) {
+        // Send raw text ping to keep tunnel and proxies alive
+        try {
+          _channel?.sink.add('ping');
+        } catch (_) {}
+
+        if (_currentUserId != null) {
+          sendEvent(ChatWebSocketEvent(
+            event: 'heartbeat',
+            data: {
+              'user_id': _currentUserId,
+              'sync_status': 'synced',
+            },
+          ));
+        }
       }
     });
   }
@@ -168,10 +177,13 @@ class ChatWebSocketService {
     _heartbeatTimer?.cancel();
     _channel = null;
 
-    // Schedule reconnection
+    // Exponential backoff: 2s, 4s, 8s, up to 30s
+    _reconnectAttempts++;
+    final backoffSeconds = (_reconnectAttempts * 2).clamp(2, 30);
+
     _reconnectTimer?.cancel();
-    _reconnectTimer = Timer(const Duration(seconds: 5), () {
-      print('[ChatWS] Retrying connection...');
+    _reconnectTimer = Timer(Duration(seconds: backoffSeconds), () {
+      print('[ChatWS] Retrying connection (attempt $_reconnectAttempts after ${backoffSeconds}s)...');
       connect();
     });
   }

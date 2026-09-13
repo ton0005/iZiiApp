@@ -528,23 +528,23 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen> {
                   InkWell(
                     onTap: () => _showTestAccountsSheet(context, isDark, primaryColor),
                     borderRadius: BorderRadius.circular(12),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.lock_person_outlined, size: 16, color: accentColor),
-                          const SizedBox(width: 8),
-                          Text(
+                          const Icon(Icons.lock_person_outlined, size: 16, color: accentColor),
+                          SizedBox(width: 8),
+                          const Text(
                             'Quick Demo Accounts (Shift Profiles)',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: accentColor,
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: accentColor),
+                          SizedBox(width: 4),
+                          const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: accentColor),
                         ],
                       ),
                     ),
@@ -963,8 +963,8 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: const [
+                      const Row(
+                        children: [
                           Icon(Icons.shield_outlined, size: 14, color: Color(0xFF10B981)),
                           SizedBox(width: 4),
                           Text('Ed25519 Cryptographic Proof',

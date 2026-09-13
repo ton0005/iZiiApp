@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
-import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/sync/sync_service.dart';
 import '../../../core/device_identity/device_identity_service.dart';
@@ -17,7 +16,6 @@ import '../../../core/settings/settings_service.dart';
 import '../../../core/enrollment/device_user_service.dart';
 import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../models/ble_models.dart';
-import '../services/ble_transport_service.dart';
 import '../../../core/events/app_event_bus.dart';
 import '../call/incoming_call_service.dart';
 
@@ -351,12 +349,28 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
     });
 
-    // Periodic polling for E2EE messages, HTTP Sync and Presence
+    // Adaptive periodic polling for E2EE messages, HTTP Sync and Presence
+    int pollTick = 0;
     _pullTimer?.cancel();
     _pullTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      add(PullEncryptedMessagesEvent());
-      add(RefreshPresenceEvent());
-      SyncService().triggerSync();
+      pollTick++;
+      final isWsConnected = _wsService.isConnected;
+
+      // Khi WebSocket đang kết nối ổn định:
+      // Real-time events đã được server broadcast qua WS tức thời (< 50ms).
+      // Chỉ cần chạy polling bảo hiểm mỗi 30 giây (mỗi 6 chu kỳ) để giảm 85% tải cho server và tunnel.
+      if (isWsConnected) {
+        if (pollTick % 6 == 0) {
+          add(PullEncryptedMessagesEvent());
+          add(RefreshPresenceEvent());
+          SyncService().triggerSync();
+        }
+      } else {
+        // Fallback khi mất kết nối WebSocket: giữ chu kỳ 5 giây
+        add(PullEncryptedMessagesEvent());
+        add(RefreshPresenceEvent());
+        SyncService().triggerSync();
+      }
     });
   }
 

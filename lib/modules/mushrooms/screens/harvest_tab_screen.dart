@@ -432,7 +432,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       Icon(Icons.warning, color: widget.isDark ? Colors.white : Colors.red),
                       const SizedBox(width: 8),
                       Text(
-                          'Warning: Worker performing Solo Picking at $soloRoom (${soloWorker})!',
+                          'Warning: Worker performing Solo Picking at $soloRoom ($soloWorker)!',
                           style: TextStyle(
                               color: widget.isDark ? Colors.white : Colors.red,
                               fontWeight: FontWeight.bold)),
@@ -544,7 +544,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             decoration: const InputDecoration(labelText: 'Grow Room'),
-            value: _roomSelected,
+            initialValue: _roomSelected,
             items: widget.localRooms.keys
                 .where((k) => widget.localRooms[k]!['plant'] == widget.activePlant)
                 .map((r) => DropdownMenuItem(
@@ -710,7 +710,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                                     const Icon(Icons.inventory_2_rounded, size: 14, color: FarmColors.coolBlue),
                                     const SizedBox(width: 6),
                                     Text(
-                                      '${plan['roomName'].toString().replaceAll('Room', 'Grow Room')}',
+                                      plan['roomName'].toString().replaceAll('Room', 'Grow Room'),
                                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                                     ),
                                   ],
@@ -729,7 +729,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: (plan['mushroomType'] ?? 'White') == 'Brown' ? Colors.brown.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                                    color: (plan['mushroomType'] ?? 'White') == 'Brown' ? Colors.brown.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
                                     border: Border.all(color: (plan['mushroomType'] ?? 'White') == 'Brown' ? Colors.brown : Colors.grey),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
@@ -761,8 +761,8 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withValues(alpha: 0.1),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -796,16 +796,16 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
+                    const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Incoming Picking Orders',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                         ),
-                        Text(
+                        const Text(
                           'Requests from Cool Room / Sales Module',
-                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                          style: const TextStyle(fontSize: 11, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -844,7 +844,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
 
                             return Card(
                               color: isSelected
-                                  ? FarmColors.forestGreen.withOpacity(0.08)
+                                  ? FarmColors.forestGreen.withValues(alpha: 0.08)
                                   : (widget.isDark ? Colors.white10 : Colors.grey.shade50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -882,7 +882,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: (plan['mushroomType'] ?? 'White') == 'Brown' ? Colors.brown.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                                            color: (plan['mushroomType'] ?? 'White') == 'Brown' ? Colors.brown.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
                                             border: Border.all(color: (plan['mushroomType'] ?? 'White') == 'Brown' ? Colors.brown : Colors.grey),
                                             borderRadius: BorderRadius.circular(6),
                                           ),
@@ -1041,8 +1041,8 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: type == 'Brown' ? Colors.brown.withOpacity(0.05) : Colors.grey.withOpacity(0.05),
-              border: Border.all(color: type == 'Brown' ? Colors.brown.withOpacity(0.2) : Colors.grey.withOpacity(0.2)),
+              color: type == 'Brown' ? Colors.brown.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.05),
+              border: Border.all(color: type == 'Brown' ? Colors.brown.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.2)),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -1534,8 +1534,8 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       decoration: BoxDecoration(
-                        color: teamColor.withOpacity(0.08),
-                        border: Border.all(color: teamColor.withOpacity(0.3)),
+                        color: teamColor.withValues(alpha: 0.08),
+                        border: Border.all(color: teamColor.withValues(alpha: 0.3)),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
@@ -1753,7 +1753,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -2109,9 +2109,9 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                                                     ),
                                                     onPressed: () => _showPickerAssignmentDialog(roomName, slot),
-                                                    child: Row(
+                                                    child: const Row(
                                                       mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: const [
+                                                      children: [
                                                         Icon(Icons.add, size: 10),
                                                         SizedBox(width: 2),
                                                         Text('Assign', style: TextStyle(fontSize: 8)),
@@ -2285,7 +2285,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
             color: WidgetStateProperty.resolveWith<Color?>((states) {
               if (isSolo) {
                 return widget.isDark
-                    ? FarmColors.forestGreen.withOpacity(0.35)
+                    ? FarmColors.forestGreen.withValues(alpha: 0.35)
                     : Colors.red.shade50;
               }
               return null;
@@ -2513,7 +2513,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                       Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: teamColor.withOpacity(0.2),
+                            backgroundColor: teamColor.withValues(alpha: 0.2),
                             radius: 20,
                             child: Icon(Icons.groups_rounded, color: teamColor, size: 22),
                           ),
@@ -2574,9 +2574,9 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                               return Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: teamColor.withOpacity(0.1),
+                                  color: teamColor.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: teamColor.withOpacity(0.3)),
+                                  border: Border.all(color: teamColor.withValues(alpha: 0.3)),
                                 ),
                                 child: Text(
                                   '${m['name']} (${m['id']})',
@@ -2656,7 +2656,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Team Leader'),
-                value: teamLeaderId,
+                initialValue: teamLeaderId,
                 items: [
                   const DropdownMenuItem(value: null, child: Text('No Leader Assigned')),
                   ...harvestEmps.map((e) => DropdownMenuItem<String>(
@@ -2729,7 +2729,7 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Team Leader'),
-                value: harvestEmps.any((e) => e['id'] == teamLeaderId) ? teamLeaderId : null,
+                initialValue: harvestEmps.any((e) => e['id'] == teamLeaderId) ? teamLeaderId : null,
                 items: [
                   const DropdownMenuItem(value: null, child: Text('No Leader Assigned')),
                   ...harvestEmps.map((e) => DropdownMenuItem<String>(
@@ -2898,7 +2898,7 @@ class _BorderPainter extends CustomPainter {
 
     // Draw scanning laser
     final laserPaint = Paint()
-      ..color = Colors.green.withOpacity(0.5)
+      ..color = Colors.green.withValues(alpha: 0.5)
       ..strokeWidth = 1.5;
     canvas.drawLine(Offset(0, size.height / 2),
         Offset(size.width, size.height / 2), laserPaint);

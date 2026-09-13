@@ -600,7 +600,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                               Expanded(
                                 flex: 2,
                                 child: DropdownButtonFormField<int>(
-                                  value: selectedFlush,
+                                  initialValue: selectedFlush,
                                   decoration: const InputDecoration(labelText: 'Flush', isDense: true),
                                   items: const [
                                     DropdownMenuItem(value: 1, child: Text('Flush 1')),
@@ -635,7 +635,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                               const SizedBox(width: 8),
                               Expanded(
                                 child: DropdownButtonFormField<String>(
-                                  value: selectedTeam,
+                                  initialValue: selectedTeam,
                                   decoration: const InputDecoration(labelText: 'Đội Hái', isDense: true),
                                   items: const [
                                     DropdownMenuItem(value: 'PURPLE', child: Text('PURPLE')),
@@ -900,7 +900,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                       border: Border.all(color: isDark ? Colors.white12 : Colors.grey.shade200),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                          color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         )
@@ -927,9 +927,9 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
     final isActive = _activeTabIndex == index;
     final isDark = widget.isDark;
 
-    final activeBg = FarmColors.forestGreen;
+    const activeBg = FarmColors.forestGreen;
     final inactiveBg = isDark ? Colors.white10 : Colors.grey.shade100;
-    final activeText = Colors.white;
+    const activeText = Colors.white;
     final inactiveText = isDark ? Colors.grey.shade400 : Colors.grey.shade700;
 
     return GestureDetector(
@@ -1277,7 +1277,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF332A15) : FarmColors.maintenanceOrangeLight,
-            border: Border.all(color: FarmColors.maintenanceOrange.withOpacity(0.5)),
+            border: Border.all(color: FarmColors.maintenanceOrange.withValues(alpha: 0.5)),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -1503,7 +1503,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF332A15) : FarmColors.maintenanceOrangeLight,
-            border: Border.all(color: FarmColors.maintenanceOrange.withOpacity(0.5)),
+            border: Border.all(color: FarmColors.maintenanceOrange.withValues(alpha: 0.5)),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -1790,7 +1790,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
     final hours = twoDigits(d.inHours);
     final minutes = twoDigits(d.inMinutes.remainder(60));
     final seconds = twoDigits(d.inSeconds.remainder(60));
-    return "$hours:$minutes:$seconds";
+    return '$hours:$minutes:$seconds';
   }
 }
 
@@ -1880,7 +1880,7 @@ class _ScanningLaserLineState extends State<_ScanningLaserLine>
                 color: FarmColors.forestGreen,
                 boxShadow: [
                   BoxShadow(
-                    color: FarmColors.forestGreen.withOpacity(0.5),
+                    color: FarmColors.forestGreen.withValues(alpha: 0.5),
                     blurRadius: 10,
                     spreadRadius: 2,
                   )

@@ -105,7 +105,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
           j['name'].toString().toLowerCase().contains(query);
     }).toList();
 
-    Widget content = Column(
+    final Widget content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Desktop / Non-pushed Header (only if not full-page mobile Scaffold)
@@ -189,7 +189,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.layers_clear_outlined, size: 52, color: ink2.withOpacity(0.5)),
+                          Icon(Icons.layers_clear_outlined, size: 52, color: ink2.withValues(alpha: 0.5)),
                           const SizedBox(height: 10),
                           Text(
                             _searchQuery.isEmpty ? 'No job types configured.' : 'No matching job types found.',
@@ -288,14 +288,14 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
             color: surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isActive ? border : border.withOpacity(0.5),
+              color: isActive ? border : border.withValues(alpha: 0.5),
               width: 1,
             ),
             boxShadow: isDark
                 ? null
                 : [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -343,7 +343,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                           scale: 0.8,
                           child: Switch(
                             value: isActive,
-                            activeColor: IZiiColors.success,
+                            activeThumbColor: IZiiColors.success,
                             onChanged: (val) async {
                               await _repo.updateJobType(
                                 id: id,
@@ -373,19 +373,19 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                               value: 'edit',
                               child: Row(
                                 children: [
-                                  Icon(Icons.edit_outlined, size: 18, color: IZiiColors.primary),
+                                  const Icon(Icons.edit_outlined, size: 18, color: IZiiColors.primary),
                                   const SizedBox(width: 8),
                                   Text('Edit', style: TextStyle(color: ink)),
                                 ],
                               ),
                             ),
-                            PopupMenuItem(
+                            const PopupMenuItem(
                               value: 'delete',
                               child: Row(
                                 children: [
-                                  Icon(Icons.delete_outline, size: 18, color: IZiiColors.error),
-                                  const SizedBox(width: 8),
-                                  Text('Delete', style: TextStyle(color: IZiiColors.error)),
+                                  const Icon(Icons.delete_outline, size: 18, color: IZiiColors.error),
+                                  SizedBox(width: 8),
+                                  const Text('Delete', style: const TextStyle(color: IZiiColors.error)),
                                 ],
                               ),
                             ),
@@ -438,18 +438,18 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: IZiiColors.error.withOpacity(0.12),
+                              color: IZiiColors.error.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: IZiiColors.error.withOpacity(0.5)),
+                              border: Border.all(color: IZiiColors.error.withValues(alpha: 0.5)),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.shield_rounded, size: 12, color: IZiiColors.error),
-                                const SizedBox(width: 4),
-                                Text(
+                                const Icon(Icons.shield_rounded, size: 12, color: IZiiColors.error),
+                                SizedBox(width: 4),
+                                const Text(
                                   'Solo Safety Flow',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                     color: IZiiColors.error,
@@ -570,9 +570,9 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                                 ),
                               ),
                               if (isSolo)
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 4),
-                                  child: Icon(
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 4),
+                                  child: const Icon(
                                     Icons.shield_rounded,
                                     size: 14,
                                     color: IZiiColors.error,
@@ -615,14 +615,14 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                           child: Row(
                             children: [
                               IconButton(
-                                icon: Icon(Icons.edit_rounded, size: 18, color: IZiiColors.primary),
+                                icon: const Icon(Icons.edit_rounded, size: 18, color: IZiiColors.primary),
                                 onPressed: () => _showEditJobTypeDialog(jt),
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
                               ),
                               const SizedBox(width: 14),
                               IconButton(
-                                icon: Icon(Icons.delete_forever_rounded, size: 18, color: IZiiColors.error),
+                                icon: const Icon(Icons.delete_forever_rounded, size: 18, color: IZiiColors.error),
                                 onPressed: () => _confirmDeleteJobType(jt),
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
@@ -655,9 +655,9 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(isDark ? 0.2 : 0.1),
+        color: color.withValues(alpha: isDark ? 0.2 : 0.1),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
         text,
@@ -683,7 +683,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.lock_person_rounded, size: 48, color: IZiiColors.accent),
+            const Icon(Icons.lock_person_rounded, size: 48, color: IZiiColors.accent),
             const SizedBox(height: 14),
             Text(
               'Access Restricted',
@@ -797,7 +797,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                     const SizedBox(height: 10),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      activeColor: IZiiColors.primary,
+                      activeThumbColor: IZiiColors.primary,
                       title: Text(
                         'Alone Worker (Solo) job',
                         style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink),
@@ -894,7 +894,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                   children: [
                     TextFormField(
                       initialValue: id,
-                      style: TextStyle(color: ink.withOpacity(0.6), fontFamily: 'monospace'),
+                      style: TextStyle(color: ink.withValues(alpha: 0.6), fontFamily: 'monospace'),
                       decoration: _dialogInputDecoration('Job Type ID (fixed)', border, enabled: false),
                     ),
                     const SizedBox(height: 12),
@@ -931,7 +931,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                     const SizedBox(height: 10),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      activeColor: IZiiColors.primary,
+                      activeThumbColor: IZiiColors.primary,
                       title: Text(
                         'Alone Worker (Solo) job',
                         style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink),
@@ -945,7 +945,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                     ),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      activeColor: IZiiColors.success,
+                      activeThumbColor: IZiiColors.success,
                       title: Text(
                         'Active',
                         style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink),

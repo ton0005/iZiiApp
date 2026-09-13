@@ -166,7 +166,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     'Room 15'
   ];
 
-  bool _isAscending = true;
+  final bool _isAscending = true;
   Timer? _countdownTimer;
   bool _isMapMaximized = false;
   final ScrollController _horizontalScrollController = ScrollController();
@@ -344,9 +344,9 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               const SizedBox(height: 16),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.08),
+                  color: Colors.red.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 padding: const EdgeInsets.all(12),
                 child: Column(
@@ -482,7 +482,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                 boxShadow: [
                   BoxShadow(
                     color: (isSnoozed ? Colors.orange : Colors.red)
-                        .withOpacity(0.3),
+                        .withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -777,7 +777,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           CustomPaint(
             size: Size(corridorWidth, 2),
             painter: DashedLinePainter(
-              color: Colors.amber.withOpacity(0.5),
+              color: Colors.amber.withValues(alpha: 0.5),
             ),
           ),
           // Logistics walkway text label
@@ -878,7 +878,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
       orElse: () => {},
     );
 
-    bool isAloneWorker = stageIsAlone || stageIsTimeout;
+    final bool isAloneWorker = stageIsAlone || stageIsTimeout;
     bool isSoloTimedOut = stageIsTimeout;
     String displayStage = stage;
 
@@ -933,11 +933,11 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               decoration: BoxDecoration(
                 color: isSoloTimedOut
                     ? (widget.isDark
-                        ? Colors.red.withOpacity(0.15)
+                        ? Colors.red.withValues(alpha: 0.15)
                         : Colors.red.shade50)
                     : (isAloneWorker
                         ? (widget.isDark
-                            ? Colors.orange.withOpacity(0.1)
+                            ? Colors.orange.withValues(alpha: 0.1)
                             : Colors.orange.shade50)
                         : (isSelected
                             ? (widget.isDark
@@ -966,7 +966,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                                     : (isAloneWorker
                                         ? Colors.orange
                                         : FarmColors.forestGreen))
-                                .withOpacity(0.3),
+                                .withValues(alpha: 0.3),
                             blurRadius: 8,
                             spreadRadius: 1)
                       ]
@@ -1030,7 +1030,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                     padding:
                         const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                     decoration: BoxDecoration(
-                      color: stageColor.withOpacity(0.15),
+                      color: stageColor.withValues(alpha: 0.15),
                       border: Border.all(color: stageColor, width: 1),
                       borderRadius: BorderRadius.circular(6),
                     ),
@@ -1225,7 +1225,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
 
   Widget _buildStageBadge(String stage) {
     Color bg = Colors.grey;
-    Color fg = Colors.white;
+    final Color fg = Colors.white;
     String name = stage.toUpperCase();
     if (stage == 'filling') {
       bg = Colors.blue;
@@ -1351,7 +1351,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 6,
-            backgroundColor: Colors.grey.withOpacity(0.2),
+            backgroundColor: Colors.grey.withValues(alpha: 0.2),
             valueColor:
                 const AlwaysStoppedAnimation<Color>(FarmColors.forestGreen),
           ),
@@ -1375,7 +1375,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDF4),
-              border: Border.all(color: FarmColors.forestGreen.withOpacity(0.4)),
+              border: Border.all(color: FarmColors.forestGreen.withValues(alpha: 0.4)),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
@@ -1384,11 +1384,11 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
+                    const Row(
                       children: [
-                        const Icon(Icons.analytics_rounded, color: FarmColors.forestGreen, size: 16),
-                        const SizedBox(width: 6),
-                        const Text(
+                        Icon(Icons.analytics_rounded, color: FarmColors.forestGreen, size: 16),
+                        SizedBox(width: 6),
+                        Text(
                           'HARVEST PLAN (24/07/2026)',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: FarmColors.forestGreenText),
                         ),
@@ -1583,7 +1583,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                                           horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(
                                         color: isExpired
-                                            ? Colors.red.withOpacity(0.1)
+                                            ? Colors.red.withValues(alpha: 0.1)
                                             : FarmColors.forestGreenLight,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
@@ -1650,7 +1650,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           color: isDanger ? const Color(0xFFFEE2E2) : Colors.white,
           border: Border.all(
               color: isDanger
-                  ? Colors.redAccent.withOpacity(0.5)
+                  ? Colors.redAccent.withValues(alpha: 0.5)
                   : FarmColors.borderLight),
           borderRadius: BorderRadius.circular(12),
         ),
@@ -1792,7 +1792,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       DropdownButtonFormField<String>(
                         decoration:
                             const InputDecoration(labelText: 'GrowRoom'),
-                        value: availableRooms.contains(roomSelected)
+                        initialValue: availableRooms.contains(roomSelected)
                             ? roomSelected
                             : (availableRooms.isNotEmpty
                                 ? availableRooms.first
@@ -1812,7 +1812,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       DropdownButtonFormField<String>(
                         decoration:
                             const InputDecoration(labelText: 'Job Type'),
-                        value: allJobTypes.isEmpty
+                        initialValue: allJobTypes.isEmpty
                             ? null
                             : (validJobTypeIds.contains(jobType)
                                 ? jobType
@@ -1853,7 +1853,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         DropdownButtonFormField<String>(
                           decoration:
                               const InputDecoration(labelText: 'Watering Plan'),
-                          value: wateringPlan,
+                          initialValue: wateringPlan,
                           items: const [
                             DropdownMenuItem(
                                 value: '2side', child: Text('2 Side Watering')),
@@ -2042,7 +2042,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                       DropdownButtonFormField<String>(
                         decoration:
                             const InputDecoration(labelText: 'Assignee'),
-                        value: uniqueEmployees.containsKey(assignee)
+                        initialValue: uniqueEmployees.containsKey(assignee)
                             ? assignee
                             : (uniqueEmployees.isNotEmpty
                                 ? uniqueEmployees.keys.first

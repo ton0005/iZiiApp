@@ -2120,7 +2120,7 @@ class MushroomsRepository {
       final Map<String, String> contactIds = {};
       for (final c in contactsToSeed) {
         final name = c['name'] as String;
-        var existingContact = await (_db.select(_db.contacts)..where((tbl) => tbl.name.equals(name))).getSingleOrNull();
+        final existingContact = await (_db.select(_db.contacts)..where((tbl) => tbl.name.equals(name))).getSingleOrNull();
         if (existingContact == null) {
           final contactId = const Uuid().v4();
           await _db.into(_db.contacts).insert(ContactsCompanion.insert(
@@ -2414,7 +2414,7 @@ class MushroomsRepository {
             assignee: t['assignee'] as String,
             priority: t['priority'] as String,
             status: Value(t['status'] as String),
-            notes: Value(t['notes'] as String?),
+            notes: Value(t['notes']),
           ));
         }
         return defaultTickets;

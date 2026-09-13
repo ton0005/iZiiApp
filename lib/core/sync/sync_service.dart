@@ -64,7 +64,11 @@ class SyncService {
 
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool _isSyncing = false;
+  bool _isPushing = false;
+  bool _syncQueued = false;
+  bool _pushQueued = false;
   Timer? _periodicTimer;
+  Timer? _debounceFlushTimer;
 
   // Real-time synchronization log stream for UI feedback
   final _syncLogController = StreamController<String>.broadcast();
@@ -176,6 +180,8 @@ class SyncService {
   void dispose() {
     _connectivitySubscription?.cancel();
     _periodicTimer?.cancel();
+    _debounceFlushTimer?.cancel();
+    _debounceSyncTimer?.cancel();
     _syncLogController.close();
     _syncEventController.close();
   }
@@ -187,8 +193,90 @@ class SyncService {
     }
   }
 
+  /// Đẩy nhanh các thay đổi trong Outbox lên server ngay lập tức mà KHÔNG kéo
+  /// delta hay quét file đính kèm. Dùng sau khi người dùng thực hiện thao tác
+  /// (tạo/sửa job, check-in, đổi trạng thái) để giảm độ trễ từ 43s xuống < 1s.
+  Future<bool> flushOutbox() async {
+    if (_isPushing) {
+      _pushQueued = true;
+      return false;
+    }
+    _isPushing = true;
+
+    try {
+      final mutations = await _outbox.getPendingMutations();
+      if (mutations.isEmpty) {
+        return true;
+      }
+
+      final url = await _settingsService.getSyncServerUrl();
+      final token = await _settingsService.getSyncToken();
+      final userId = await _getActiveUserId();
+      final actorDeviceId = await _getActiveDeviceId();
+
+      final payload = mutations.map((m) => {
+        'id': m['id'],
+        'table': m['table'],
+        'operation': m['operation'],
+        'data': m['data'],
+        'timestamp': m['timestamp'],
+        'schema_version': 1,
+      }).toList();
+
+      _log('🚀 [Outbox] Đang đẩy nhanh ${payload.length} thay đổi lên server...');
+
+      final response = await _dio.post(
+        '$url/sync/push',
+        data: {
+          'mutations': payload,
+          'actor_user_id': userId,
+          if (actorDeviceId != null) 'actor_device_id': actorDeviceId,
+        },
+        options: Options(
+          headers: {
+            if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+            ...await _deviceTokenHeader(url),
+            'Content-Type': 'application/json',
+          },
+          validateStatus: (code) => code != null && code < 500,
+        ),
+      );
+
+      final code = response.statusCode ?? 0;
+      if (code == 200 || code == 201) {
+        _log('✅ [Outbox] Đẩy thành công ${mutations.length} thay đổi lên server.');
+        for (var mutation in mutations) {
+          await _outbox.markAsSynced(mutation['id']);
+        }
+        await _outbox.clearSynced();
+        return true;
+      } else if (code == 409) {
+        await _quarantineRejected(mutations, response.data);
+        return false;
+      } else {
+        _log('❌ [Outbox] Server phản hồi lỗi: HTTP $code');
+        return false;
+      }
+    } on DioException catch (e) {
+      _log('⚠️ [Outbox] Lỗi mạng khi đẩy outbox: ${e.message}');
+      return false;
+    } catch (e) {
+      _log('⚠️ [Outbox] Lỗi không xác định: $e');
+      return false;
+    } finally {
+      _isPushing = false;
+      if (_pushQueued) {
+        _pushQueued = false;
+        scheduleMicrotask(() => flushOutbox());
+      }
+    }
+  }
+
   Future<bool> triggerSync({bool isManual = false}) async {
-    if (_isSyncing) return false;
+    if (_isSyncing) {
+      _syncQueued = true;
+      return false;
+    }
     _isSyncing = true;
 
     try {
@@ -332,6 +420,10 @@ class SyncService {
       return false;
     } finally {
       _isSyncing = false;
+      if (_syncQueued) {
+        _syncQueued = false;
+        scheduleMicrotask(() => triggerSync(isManual: isManual));
+      }
     }
   }
 
@@ -398,9 +490,12 @@ class SyncService {
 
   Future<void> _uploadPendingAttachments() async {
     try {
-      final allMessages = await _db.select(_db.chatMessages).get();
-      for (var msg in allMessages) {
-        if (msg.type != 'file') continue;
+      final pendingMessages = await (_db.select(_db.chatMessages)
+        ..where((tbl) => tbl.type.equals('file') & tbl.content.contains('pending')))
+        .get();
+      if (pendingMessages.isEmpty) return;
+
+      for (var msg in pendingMessages) {
         
         try {
           final contentMap = Map<String, dynamic>.from(jsonDecode(msg.content) as Map);
@@ -1369,10 +1464,10 @@ class SyncService {
     await _outbox.addMutation(table, operation, data);
     _log('📝 Đã lưu ngoại tuyến thay đổi: $table -> $operation');
 
-    // Trigger instant HTTP server sync with short 300ms debounce to batch rapid changes
-    _debounceSyncTimer?.cancel();
-    _debounceSyncTimer = Timer(const Duration(milliseconds: 300), () {
-      triggerSync(isManual: false);
+    // Fast path: Đẩy ngay outbox lên server mà không bị nghẽn bởi full pull (< 100ms)
+    _debounceFlushTimer?.cancel();
+    _debounceFlushTimer = Timer(const Duration(milliseconds: 100), () {
+      flushOutbox();
     });
 
     // Trigger instant BLE sync for any connected peers

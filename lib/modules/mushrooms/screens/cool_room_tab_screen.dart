@@ -286,7 +286,7 @@ class _CoolRoomTabScreenState extends State<CoolRoomTabScreen> {
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
           decoration: const InputDecoration(labelText: 'Mushroom Type'),
-          value: _mushroomType,
+          initialValue: _mushroomType,
           items: const [
             DropdownMenuItem(value: 'White', child: Text('White (Button/Cup/Flat)')),
             DropdownMenuItem(value: 'Brown', child: Text('Brown (Swiss Brown/Portobello)')),

@@ -14,6 +14,8 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Tuple, Any
 from datetime import datetime, timezone
 
+from starlette.concurrency import run_in_threadpool
+
 from dependencies import get_sync_repo, open_connection
 from repository.interface import ISyncRepository
 from security_auth import DeviceIdentity, optional_device
@@ -247,7 +249,13 @@ def _filter_valid_mutations(
         # Mutation hợp lệ
         valid.append(m)
 
-    return valid, rejected
+def _filter_and_validate(
+    repo: ISyncRepository,
+    mutations: List[MutationModel],
+    device: Optional[DeviceIdentity],
+) -> tuple[List[MutationModel], List[Dict[str, Any]]]:
+    with open_connection() as _session_conn:
+        return _filter_valid_mutations(_session_conn, repo, mutations, device)
 
 
 @router.post("/push")
@@ -259,15 +267,10 @@ async def sync_push(
 ):
     now = datetime.now(timezone.utc).isoformat()
 
-    print(f"\n{'='*50}")
-    print(f"📥 [PUSH] Received {len(payload.mutations)} changes at {now}")
-    print(f"{'='*50}")
-
     # Partial commit: Lọc riêng các mutation hợp lệ và các mutation bị từ chối
-    with open_connection() as _session_conn:
-        valid_mutations, rejected_mutations = _filter_valid_mutations(
-            _session_conn, repo, payload.mutations, device
-        )
+    valid_mutations, rejected_mutations = await run_in_threadpool(
+        _filter_and_validate, repo, payload.mutations, device
+    )
 
     # Nếu tất cả các item đều bị từ chối và không có item hợp lệ nào
     if not valid_mutations and rejected_mutations:
@@ -285,14 +288,15 @@ async def sync_push(
     try:
         if valid_mutations:
             mutations_dicts = []
-            for i, m in enumerate(valid_mutations):
-                print(f"   [{i+1}] 🔹 Table: {m.table} | Operation: {m.operation}")
-                for key, val in m.data.items():
-                    val_str = str(val)[:80]
-                    print(f"       - {key}: {val_str}")
+            tables_summary = set()
+            for m in valid_mutations:
+                tables_summary.add(m.table)
                 mutations_dicts.append(m.model_dump())
 
-            count = repo.push_mutations(
+            print(f"📥 [PUSH] Processing {len(valid_mutations)} mutations ({', '.join(tables_summary)}) at {now}")
+
+            count = await run_in_threadpool(
+                repo.push_mutations,
                 mutations_dicts,
                 now,
                 default_origin_server_id=CONFIG.server_id,
@@ -303,7 +307,9 @@ async def sync_push(
             # Broadcast real-time domain events & Webhooks cho các mutation hợp lệ
             ws_manager = getattr(request.app.state, "ws_manager", None)
             engine = iZiiEventEngine()
-            webhook_rows = engine.fetch_webhook_rows(getattr(repo, "conn", None))
+            webhook_rows = await run_in_threadpool(
+                engine.fetch_webhook_rows, getattr(repo, "conn", None)
+            )
 
             for m in valid_mutations:
                 event_type = engine.map_mutation_to_domain_event(m.table, m.operation, m.data)
@@ -323,7 +329,7 @@ async def sync_push(
                 t.add_done_callback(_background_tasks.discard)
 
             if ws_manager:
-                tables = list(set(m.table for m in valid_mutations))
+                tables = list(tables_summary)
                 event_data = {
                     "event": "sync_trigger",
                     "data": {
@@ -334,7 +340,6 @@ async def sync_push(
                 t_ws = asyncio.create_task(ws_manager.broadcast(json.dumps(event_data), exclude=None))
                 _background_tasks.add(t_ws)
                 t_ws.add_done_callback(_background_tasks.discard)
-                print(f"📡 [WS] Broadcasted sync_trigger for tables: {tables}")
 
     except HTTPException:
         raise
@@ -351,11 +356,11 @@ async def sync_push(
 
 
 @router.get("/pull")
-async def sync_pull(since: Optional[str] = None,
-                    after_seq: Optional[int] = None,
-                    limit: Optional[int] = None,
-                    repo: ISyncRepository = Depends(get_sync_repo),
-                    device: Optional[DeviceIdentity] = Depends(optional_device)):
+def sync_pull(since: Optional[str] = None,
+              after_seq: Optional[int] = None,
+              limit: Optional[int] = None,
+              repo: ISyncRepository = Depends(get_sync_repo),
+              device: Optional[DeviceIdentity] = Depends(optional_device)):
     """
     Hai chế độ con trỏ, chọn theo tham số client gửi lên:
 
@@ -370,15 +375,8 @@ async def sync_pull(since: Optional[str] = None,
     """
     now = datetime.now(timezone.utc).isoformat()
 
-    print(f"\n📤 [PULL] The device is downloading new updates...")
-    if after_seq is not None:
-        print(f"   🔢 Filtered after_seq: {after_seq}")
-    elif since:
-        print(f"   🕐 Filtered since: {since} (che do cu — nen chuyen sang after_seq)")
-
     try:
         page = repo.pull_mutations(since=since, after_seq=after_seq, limit=limit)
-        print(f"   📦 Sending {page['count']} records (has_more={page['has_more']})")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -398,7 +396,7 @@ async def sync_pull(since: Optional[str] = None,
 
 
 @router.get("/status")
-async def sync_status(repo: ISyncRepository = Depends(get_sync_repo)):
+def sync_status(repo: ISyncRepository = Depends(get_sync_repo)):
     try:
         status = repo.get_status()
         # max_seq cho phép client/adapter biết mình còn cách đuôi log bao xa.
@@ -410,7 +408,7 @@ async def sync_status(repo: ISyncRepository = Depends(get_sync_repo)):
 
 
 @router.get("/record/{table}/{record_id}")
-async def get_record_by_id(
+def get_record_by_id(
     table: str,
     record_id: str,
     repo: ISyncRepository = Depends(get_sync_repo),

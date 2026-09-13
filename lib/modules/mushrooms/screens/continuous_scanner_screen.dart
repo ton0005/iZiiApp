@@ -243,7 +243,7 @@ class _ContinuousScannerScreenState extends State<ContinuousScannerScreen>
                             labelText: 'Target Grow Room',
                             border: OutlineInputBorder(),
                           ),
-                          value: _roomSelected,
+                          initialValue: _roomSelected,
                           items: widget.localRooms.keys
                               .where((k) => widget.localRooms[k]!['plant'] == _plantSelected)
                               .map((r) => DropdownMenuItem(

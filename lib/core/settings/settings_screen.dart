@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'settings_service.dart';
-import '../bloc/app_bloc.dart';
 import '../localization/app_localizations.dart';
 import '../device_identity/ble_device_discovery_service.dart';
 import '../../modules/communication/screens/notification_settings_screen.dart';
