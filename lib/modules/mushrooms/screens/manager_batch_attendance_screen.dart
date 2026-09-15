@@ -57,7 +57,7 @@ class _ManagerBatchAttendanceScreenState
       if (mounted) {
         setState(() {
           _allRecords = records;
-          // Loại bỏ các ID đã chọn nếu không còn trong danh sách
+          // Remove selected IDs if they are no longer in the list
           _selectedEmpIds.removeWhere(
             (id) => !records.any((r) => r.id == id),
           );
@@ -67,7 +67,7 @@ class _ManagerBatchAttendanceScreenState
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        _showSnackBar('Lỗi tải dữ liệu chấm công: $e', isError: true);
+        _showSnackBar('Failed to load attendance records: $e', isError: true);
       }
     }
   }
@@ -150,7 +150,7 @@ class _ManagerBatchAttendanceScreenState
   // --- Batch Execution Dialog & Logic ---
   Future<void> _triggerBatchAction(String actionKey) async {
     if (_selectedEmpIds.isEmpty) {
-      _showSnackBar('Vui lòng chọn ít nhất 1 nhân viên để thực hiện!', isError: true);
+      _showSnackBar('Please select at least 1 employee to proceed!', isError: true);
       return;
     }
 
@@ -161,22 +161,22 @@ class _ManagerBatchAttendanceScreenState
 
     switch (actionKey) {
       case 'CHECK_IN':
-        actionTitle = 'Check In (Vào ca)';
+        actionTitle = 'Check In';
         actionColor = Colors.green.shade600;
         actionIcon = Icons.login_rounded;
         break;
       case 'START_BREAK':
-        actionTitle = 'Start Break (Bắt đầu nghỉ)';
+        actionTitle = 'Start Break';
         actionColor = Colors.orange.shade700;
         actionIcon = Icons.coffee_rounded;
         break;
       case 'END_BREAK':
-        actionTitle = 'End Break (Kết thúc nghỉ)';
+        actionTitle = 'End Break';
         actionColor = Colors.teal.shade600;
         actionIcon = Icons.timer_off_rounded;
         break;
       case 'CHECK_OUT':
-        actionTitle = 'Check Out (Tan ca)';
+        actionTitle = 'Check Out';
         actionColor = Colors.red.shade700;
         actionIcon = Icons.logout_rounded;
         break;
@@ -206,7 +206,7 @@ class _ManagerBatchAttendanceScreenState
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Xác nhận $actionTitle',
+                    'Confirm $actionTitle',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -221,7 +221,7 @@ class _ManagerBatchAttendanceScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Bạn chuẩn bị thực hiện $actionTitle cho:',
+                  'You are about to perform $actionTitle for:',
                   style: TextStyle(
                     color: isDark ? Colors.grey.shade300 : Colors.black87,
                     fontSize: 14,
@@ -239,14 +239,14 @@ class _ManagerBatchAttendanceScreenState
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Số lượng nhân viên:',
+                        'Employee count:',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
                       Text(
-                        '$selectedCount nhân sự',
+                        '$selectedCount personnel',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -262,7 +262,7 @@ class _ManagerBatchAttendanceScreenState
                     const Icon(Icons.schedule_rounded, size: 20, color: Colors.grey),
                     const SizedBox(width: 8),
                     Text(
-                      'Mốc thời gian áp dụng: ',
+                      'Effective time: ',
                       style: TextStyle(
                         fontSize: 13,
                         color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
@@ -308,7 +308,7 @@ class _ManagerBatchAttendanceScreenState
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
                 child: Text(
-                  'Hủy',
+                  'Cancel',
                   style: TextStyle(
                     color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                   ),
@@ -325,7 +325,7 @@ class _ManagerBatchAttendanceScreenState
                 onPressed: () => Navigator.pop(ctx, true),
                 icon: const Icon(Icons.check_circle_rounded, size: 18),
                 label: const Text(
-                  'Xác nhận áp dụng',
+                  'Confirm & Apply',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -383,7 +383,7 @@ class _ManagerBatchAttendanceScreenState
       _selectedEmpIds.clear();
       await _loadData();
     } catch (e) {
-      _showSnackBar('Lỗi khi thực hiện: $e', isError: true);
+      _showSnackBar('Error performing action: $e', isError: true);
       setState(() => _isLoading = false);
     }
   }
@@ -418,7 +418,7 @@ class _ManagerBatchAttendanceScreenState
   Future<void> _seedDemoCrew() async {
     setState(() => _isLoading = true);
     final count = await _service.generateLargeHarvestCrewIfFew();
-    _showSnackBar('Đã chuẩn bị $count nhân sự phân bố theo các tổ màu để test!', isSuccess: true);
+    _showSnackBar('Prepared $count demo personnel across color teams for testing!', isSuccess: true);
     await _loadData();
   }
 
@@ -437,7 +437,7 @@ class _ManagerBatchAttendanceScreenState
             const Icon(Icons.history_rounded, color: Colors.blue),
             const SizedBox(width: 8),
             Text(
-              'Lịch sử thao tác Batch',
+              'Batch Action History',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: isDark ? Colors.white : Colors.black87,
@@ -451,7 +451,7 @@ class _ManagerBatchAttendanceScreenState
               ? const Padding(
                   padding: EdgeInsets.all(24.0),
                   child: Text(
-                    'Chưa có thao tác nào được thực hiện trong phiên làm việc này.',
+                    'No batch operations recorded in this session yet.',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey),
                   ),
@@ -496,7 +496,7 @@ class _ManagerBatchAttendanceScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Đóng'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -508,7 +508,7 @@ class _ManagerBatchAttendanceScreenState
     final isDark = widget.isDark;
     final filtered = _filteredRecords;
 
-    // Tính toán KPI số liệu tức thời
+    // Compute instant KPI metrics
     final totalCount = _allRecords.length;
     final workingCount = _allRecords
         .where((r) => r.state == AttendanceWorkState.working)
@@ -523,7 +523,7 @@ class _ManagerBatchAttendanceScreenState
         .where((r) => r.state == AttendanceWorkState.notCheckedIn)
         .length;
 
-    // Danh sách các tổ màu hiện có
+    // List of available team colors
     final availableTeams = {'ALL', ..._allRecords.map((r) => r.teamColor)}.toList();
 
     return Scaffold(
@@ -536,11 +536,11 @@ class _ManagerBatchAttendanceScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Chấm công nhóm hàng loạt',
+              'Batch Team Attendance',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(
-              'Dành cho Manager • ${DateFormat('dd/MM/yyyy').format(_selectedDate)}',
+              'Manager Portal • ${DateFormat('dd/MM/yyyy').format(_selectedDate)}',
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -549,9 +549,9 @@ class _ManagerBatchAttendanceScreenState
           ],
         ),
         actions: [
-          // Nút đổi ngày
+          // Date selection button
           IconButton(
-            tooltip: 'Chọn ngày',
+            tooltip: 'Select date',
             icon: const Icon(Icons.calendar_today_rounded, size: 20),
             onPressed: () async {
               final picked = await showDatePicker(
@@ -566,22 +566,22 @@ class _ManagerBatchAttendanceScreenState
               }
             },
           ),
-          // Nút xem lịch sử
+          // History button
           IconButton(
-            tooltip: 'Lịch sử thao tác',
+            tooltip: 'Action history',
             icon: const Icon(Icons.history_rounded),
             onPressed: _showHistoryDialog,
           ),
-          // Nút nạp thêm dữ liệu mẫu nếu ít
+          // Seed demo crew button
           if (_allRecords.length < 50)
             IconButton(
-              tooltip: 'Tạo nhanh 120+ nhân viên mẫu (Harvest)',
+              tooltip: 'Quickly seed 120+ demo crew (Harvest)',
               icon: const Icon(Icons.group_add_rounded, color: Colors.green),
               onPressed: _seedDemoCrew,
             ),
-          // Nút Refresh
+          // Refresh button
           IconButton(
-            tooltip: 'Làm mới',
+            tooltip: 'Refresh',
             icon: const Icon(Icons.refresh_rounded),
             onPressed: _loadData,
           ),
@@ -650,7 +650,7 @@ class _ManagerBatchAttendanceScreenState
         child: Row(
           children: [
             _buildKpiChip(
-              title: 'Tổng số',
+              title: 'Total',
               count: total,
               color: Colors.blueGrey,
               isActive: _selectedStateFilter == null,
@@ -659,7 +659,7 @@ class _ManagerBatchAttendanceScreenState
             ),
             const SizedBox(width: 8),
             _buildKpiChip(
-              title: 'Đang làm việc',
+              title: 'Working',
               count: working,
               color: Colors.green.shade600,
               isActive: _selectedStateFilter == AttendanceWorkState.working,
@@ -669,7 +669,7 @@ class _ManagerBatchAttendanceScreenState
             ),
             const SizedBox(width: 8),
             _buildKpiChip(
-              title: 'Đang nghỉ (Break)',
+              title: 'On Break',
               count: onBreak,
               color: Colors.orange.shade700,
               isActive: _selectedStateFilter == AttendanceWorkState.onBreak,
@@ -679,7 +679,7 @@ class _ManagerBatchAttendanceScreenState
             ),
             const SizedBox(width: 8),
             _buildKpiChip(
-              title: 'Đã về (Out)',
+              title: 'Checked Out',
               count: checkedOut,
               color: Colors.blue.shade700,
               isActive: _selectedStateFilter == AttendanceWorkState.checkedOut,
@@ -689,7 +689,7 @@ class _ManagerBatchAttendanceScreenState
             ),
             const SizedBox(width: 8),
             _buildKpiChip(
-              title: 'Chưa vào ca',
+              title: 'Not Checked In',
               count: notCheckedIn,
               color: Colors.grey.shade500,
               isActive: _selectedStateFilter == AttendanceWorkState.notCheckedIn,
@@ -808,7 +808,7 @@ class _ManagerBatchAttendanceScreenState
                       color: isDark ? Colors.white : Colors.black87,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Tìm theo tên, mã NV (EMP...)',
+                      hintText: 'Search by name, employee ID (EMP...)',
                       hintStyle: TextStyle(
                         fontSize: 13,
                         color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
@@ -864,7 +864,7 @@ class _ManagerBatchAttendanceScreenState
                               ),
                               const SizedBox(width: 6),
                             ],
-                            Text(t == 'ALL' ? 'Tất cả tổ đội' : 'Team $t'),
+                            Text(t == 'ALL' ? 'All Teams' : 'Team $t'),
                           ],
                         ),
                       );
@@ -905,8 +905,8 @@ class _ManagerBatchAttendanceScreenState
                   ),
                   Text(
                     allFilteredSelected
-                        ? 'Bỏ chọn tất cả'
-                        : 'Chọn tất cả ($filteredCount NV lọc)',
+                        ? 'Deselect All'
+                        : 'Select All ($filteredCount filtered)',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -918,7 +918,7 @@ class _ManagerBatchAttendanceScreenState
               if (_selectedEmpIds.isNotEmpty)
                 TextButton(
                   onPressed: () => setState(() => _selectedEmpIds.clear()),
-                  child: const Text('Bỏ chọn', style: TextStyle(fontSize: 12)),
+                  child: const Text('Clear', style: TextStyle(fontSize: 12)),
                 ),
             ],
           ),
@@ -936,26 +936,26 @@ class _ManagerBatchAttendanceScreenState
     final teamColor = _getTeamColor(record.teamColor);
 
     // State badge details
-    String stateLabel = 'Chưa vào ca';
+    String stateLabel = 'Not In';
     Color stateBg = Colors.grey.shade300;
     Color stateFg = Colors.grey.shade800;
     IconData stateIcon = Icons.hourglass_empty_rounded;
 
     switch (record.state) {
       case AttendanceWorkState.working:
-        stateLabel = 'Đang làm việc';
+        stateLabel = 'Working';
         stateBg = Colors.green.shade100;
         stateFg = Colors.green.shade800;
         stateIcon = Icons.work_rounded;
         break;
       case AttendanceWorkState.onBreak:
-        stateLabel = 'Đang giải lao';
+        stateLabel = 'On Break';
         stateBg = Colors.orange.shade100;
         stateFg = Colors.orange.shade900;
         stateIcon = Icons.coffee_rounded;
         break;
       case AttendanceWorkState.checkedOut:
-        stateLabel = 'Đã về';
+        stateLabel = 'Checked Out';
         stateBg = Colors.blue.shade100;
         stateFg = Colors.blue.shade800;
         stateIcon = Icons.check_circle_rounded;
@@ -1117,18 +1117,18 @@ class _ManagerBatchAttendanceScreenState
                         const Spacer(),
                         if (record.checkInTime != null)
                           Text(
-                            'Vào: ${timeFormat.format(record.checkInTime!)}',
+                            'In: ${timeFormat.format(record.checkInTime!)}',
                             style: TextStyle(
                               fontSize: 11,
                               color: isDark
-                                  ? Colors.grey.shade400
+                                   ? Colors.grey.shade400
                                   : Colors.grey.shade600,
                             ),
                           ),
                         if (record.checkOutTime != null) ...[
                           const SizedBox(width: 6),
                           Text(
-                            'Ra: ${timeFormat.format(record.checkOutTime!)}',
+                            'Out: ${timeFormat.format(record.checkOutTime!)}',
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -1158,7 +1158,7 @@ class _ManagerBatchAttendanceScreenState
               size: 56, color: isDark ? Colors.grey.shade700 : Colors.grey.shade400),
           const SizedBox(height: 12),
           Text(
-            'Không tìm thấy nhân viên nào phù hợp bộ lọc.',
+            'No employees match the current filters.',
             style: TextStyle(
               fontSize: 14,
               color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -1203,7 +1203,7 @@ class _ManagerBatchAttendanceScreenState
                     const Icon(Icons.checklist_rounded, size: 18, color: Colors.blue),
                     const SizedBox(width: 6),
                     Text(
-                      'Đã chọn: $count nhân viên',
+                      'Selected: $count employees',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -1215,7 +1215,7 @@ class _ManagerBatchAttendanceScreenState
                   ],
                 ),
                 Text(
-                  'Mốc: ${DateFormat('HH:mm').format(_effectiveTime)}',
+                  'Time: ${DateFormat('HH:mm').format(_effectiveTime)}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -1224,7 +1224,7 @@ class _ManagerBatchAttendanceScreenState
               ],
             ),
             const SizedBox(height: 8),
-            // 4 Nút hành động chính
+            // 4 Primary action buttons
             Row(
               children: [
                 // 1. Check In

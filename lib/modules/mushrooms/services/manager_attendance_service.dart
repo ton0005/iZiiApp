@@ -271,7 +271,7 @@ class ManagerAttendanceService {
       successCount: count,
       actionName: 'Check In',
       timestamp: now,
-      summary: 'Đã check-in thành công cho $count/${employeeIds.length} nhân viên.',
+      summary: 'Successfully checked in $count/${employeeIds.length} employees.',
     );
     _history.insert(0, result);
     return result;
@@ -311,7 +311,7 @@ class ManagerAttendanceService {
       successCount: count,
       actionName: 'Start Break',
       timestamp: now,
-      summary: 'Đã bắt đầu giải lao cho $count/${employeeIds.length} nhân viên.',
+      summary: 'Started break for $count/${employeeIds.length} employees.',
     );
     _history.insert(0, result);
     return result;
@@ -388,7 +388,7 @@ class ManagerAttendanceService {
       successCount: count,
       actionName: 'End Break',
       timestamp: now,
-      summary: 'Đã kết thúc giải lao cho $count/${employeeIds.length} nhân viên.',
+      summary: 'Ended break for $count/${employeeIds.length} employees.',
     );
     _history.insert(0, result);
     return result;
@@ -475,7 +475,7 @@ class ManagerAttendanceService {
       successCount: count,
       actionName: 'Check Out',
       timestamp: now,
-      summary: 'Đã check-out thành công cho $count/${employeeIds.length} nhân viên.',
+      summary: 'Successfully checked out $count/${employeeIds.length} employees.',
     );
     _history.insert(0, result);
     return result;

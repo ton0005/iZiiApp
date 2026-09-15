@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:izii_app/core/sync/sync_service.dart';
+import 'package:izii_app/core/theme/izii_colors.dart';
 import '../repository.dart';
 import '../services/harvest_plan_excel_service.dart';
 import 'mushboom_monarto_screen.dart'; // For FarmColors
@@ -118,6 +120,50 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
     }
   }
 
+  Future<void> _exportEmployeesToCsv() async {
+    try {
+      final StringBuffer sb = StringBuffer();
+      sb.writeln('Employee ID,Name,Role,Department,Team Color,Status,Created At');
+      for (final emp in widget.employees) {
+        final id = emp['id'] ?? '';
+        final name = (emp['name'] ?? '').toString().replaceAll('"', '""');
+        final role = (emp['role'] ?? '').toString().replaceAll('"', '""');
+        final dept = (emp['department'] ?? '').toString().replaceAll('"', '""');
+        final team = (emp['pickerTeamColor'] ?? '').toString().replaceAll('"', '""');
+        final status = emp['status'] ?? 'active';
+        final createdAt = emp['createdAt']?.toString() ?? '';
+        sb.writeln('"$id","$name","$role","$dept","$team","$status","$createdAt"');
+      }
+
+      final tempDir = await getTemporaryDirectory();
+      final dateStr = DateTime.now().toIso8601String().substring(0, 10).replaceAll('-', '');
+      final file = File('${tempDir.path}/Employees_Registry_$dateStr.csv');
+      await file.writeAsString(sb.toString());
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Employees exported: ${file.path}'),
+            backgroundColor: IZiiColors.primary,
+            action: SnackBarAction(
+              label: 'Share/Open',
+              textColor: Colors.white,
+              onPressed: () {
+                Share.shareXFiles([XFile(file.path)], text: 'EMPLOYEE REGISTRY CSV');
+              },
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error exporting employees: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   StreamSubscription<SyncEvent>? _syncSubscription;
 
   @override
@@ -184,81 +230,102 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Actions
+          // OneDrive-style Header & Responsive Command Bar
           LayoutBuilder(
             builder: (context, constraints) {
-              final isWide = constraints.maxWidth >= 650;
+              final isWide = constraints.maxWidth >= 768;
+
+              final headerTitle = Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Employee Registry',
+                    style: TextStyle(
+                      fontSize: isWide ? 22 : 18,
+                      fontWeight: FontWeight.bold,
+                      color: widget.isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: IZiiColors.primary.withValues(alpha: widget.isDark ? 0.25 : 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${widget.employees.length} registered',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: IZiiColors.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+
+              final headerSubtitle = Text(
+                'Manage pickers, box movers and specialists across color teams',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: widget.isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                ),
+              );
+
               if (isWide) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Employee Registry',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          'Manage pickers, box movers and specialists (${widget.employees.length} registered)',
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
+                        headerTitle,
+                        const SizedBox(height: 2),
+                        headerSubtitle,
                       ],
                     ),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _buildScanButton(),
-                        _buildImportButton(),
-                        _buildImportTeamsButton(),
-                        _buildExportTeamsButton(),
-                        _buildManageRolesButton(),
-                        _buildAddEmployeeButton(),
-                      ],
-                    ),
+                    _buildCommandBar(widget.isDark),
                   ],
                 );
               } else {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Employee Registry',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'Manage pickers, box movers and specialists (${widget.employees.length} registered)',
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
+                    headerTitle,
+                    const SizedBox(height: 2),
+                    headerSubtitle,
                     const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _buildScanButton(),
-                        _buildImportButton(),
-                        _buildImportTeamsButton(),
-                        _buildExportTeamsButton(),
-                        _buildManageRolesButton(),
-                        _buildAddEmployeeButton(),
-                      ],
+                    // Single horizontally scrollable row: never wraps vertically or clips on iPhone!
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      child: _buildCommandBar(widget.isDark),
                     ),
                   ],
                 );
               }
             },
           ),
-          const SizedBox(height: 20),
-          // Search Box
+          const SizedBox(height: 16),
+          // Search Box (OneDrive Pill Style)
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
               hintText: 'Search by ID, name or role...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              hintStyle: TextStyle(
+                fontSize: 13,
+                color: widget.isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+              ),
+              prefixIcon: Icon(
+                Icons.search_rounded,
+                size: 20,
+                color: widget.isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+              ),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear),
+                      icon: const Icon(Icons.clear_rounded, size: 18),
                       onPressed: () {
                         setState(() {
                           _searchController.clear();
@@ -267,10 +334,25 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                       },
                     )
                   : null,
+              filled: true,
+              fillColor: widget.isDark ? const Color(0xFF1E293B) : Colors.white,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(
+                  color: widget.isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 0),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(
+                  color: widget.isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: const BorderSide(color: IZiiColors.primary, width: 1.5),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
             ),
             onChanged: (val) {
               setState(() {
@@ -785,7 +867,11 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
             actions: [
               TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: IZiiColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     formKey.currentState!.save();
@@ -851,8 +937,9 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                     const SizedBox(width: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: FarmColors.forestGreen,
+                        backgroundColor: IZiiColors.primary,
                         foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () async {
                         final val = textController.text.trim();
@@ -1066,7 +1153,11 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
             actions: [
               TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: IZiiColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     formKey.currentState!.save();
@@ -1116,7 +1207,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.file_upload_outlined, size: 36, color: FarmColors.forestGreen),
+                    Icon(Icons.file_upload_outlined, size: 36, color: IZiiColors.primary),
                     SizedBox(height: 8),
                     Text('Click to Upload File', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                     Text('Drag and drop files here', style: TextStyle(fontSize: 10, color: Colors.grey)),
@@ -1150,7 +1241,11 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: IZiiColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
             onPressed: () {
               widget.onImportEmployees([
                 {'id': 'EMP007', 'name': 'Kevin P.', 'role': 'Harvest Picker', 'department': 'Harvest'},
@@ -1262,73 +1357,295 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
     );
   }
 
-  Widget _buildScanButton() {
-    return ElevatedButton.icon(
-      icon: const Icon(Icons.qr_code_scanner, size: 16),
-      label: const Text('Scan Card'),
-      onPressed: _showScanCardDialog,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue.shade700,
-        foregroundColor: Colors.white,
-      ),
+  // ==========================================
+  // OneDrive Style Command Bar & Pill Buttons
+  // ==========================================
+
+  Widget _buildCommandBar(bool isDark) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Primary Call-To-Action (OneDrive "+ New / Add" Pill)
+        _buildAddEmployeeButton(),
+        const SizedBox(width: 8),
+
+        // Quick Scan Card Pill
+        _buildScanButton(isDark),
+        const SizedBox(width: 8),
+
+        // Import Menu Pill (Employees & Teams)
+        _buildImportMenuButton(isDark),
+        const SizedBox(width: 8),
+
+        // Export Menu Pill (Employees & Teams)
+        _buildExportMenuButton(isDark),
+        const SizedBox(width: 8),
+
+        // Manage Roles Pill
+        _buildManageRolesButton(isDark),
+      ],
     );
   }
 
-  Widget _buildImportButton() {
-    return ElevatedButton.icon(
-      icon: const Icon(Icons.upload_file_rounded, size: 16),
-      label: const Text('Import Employees'),
-      onPressed: _showImportExcelDialog,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: FarmColors.forestGreen,
-        foregroundColor: Colors.white,
-      ),
-    );
-  }
-
-  Widget _buildImportTeamsButton() {
-    return ElevatedButton.icon(
-      icon: const Icon(Icons.file_upload_rounded, size: 16),
-      label: const Text('Import Teams (CSV/XLSX)'),
-      onPressed: _importTeamsFromExcel,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.teal.shade700,
-        foregroundColor: Colors.white,
-      ),
-    );
-  }
-
-  Widget _buildExportTeamsButton() {
-    return OutlinedButton.icon(
-      icon: const Icon(Icons.file_download_rounded, size: 16, color: FarmColors.forestGreen),
-      label: const Text('Export Teams (CSV)', style: TextStyle(color: FarmColors.forestGreenText, fontWeight: FontWeight.bold)),
-      onPressed: _exportTeamsToExcel,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      ),
-    );
-  }
-
-  Widget _buildManageRolesButton() {
-    return ElevatedButton.icon(
-      icon: const Icon(Icons.supervised_user_circle_rounded, size: 16),
-      label: const Text('Manage Roles'),
-      onPressed: _showManageRolesDialog,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blueGrey,
-        foregroundColor: Colors.white,
-      ),
-    );
-  }
-
+  /// Primary OneDrive "+ Add Employee" Pill Button
   Widget _buildAddEmployeeButton() {
     return ElevatedButton.icon(
-      icon: const Icon(Icons.person_add_alt_1_rounded, size: 16),
-      label: const Text('Add Employee'),
+      icon: const Icon(Icons.add_rounded, size: 18, color: Colors.white),
+      label: const Text(
+        'Add Employee',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
+          color: Colors.white,
+          letterSpacing: 0.2,
+        ),
+      ),
       onPressed: _showAddEmployeeDialog,
       style: ElevatedButton.styleFrom(
-        backgroundColor: FarmColors.forestGreenText,
+        backgroundColor: IZiiColors.primary,
         foregroundColor: Colors.white,
+        elevation: 1,
+        shadowColor: IZiiColors.primary.withValues(alpha: 0.4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
+
+  /// Scan Employee Badge Pill Button
+  Widget _buildScanButton(bool isDark) {
+    return _buildPillOutlineButton(
+      isDark: isDark,
+      icon: Icons.qr_code_scanner_rounded,
+      label: 'Scan Card',
+      onPressed: _showScanCardDialog,
+    );
+  }
+
+  /// Import Menu Pill (Employees or Teams)
+  Widget _buildImportMenuButton(bool isDark) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        popupMenuTheme: PopupMenuThemeData(
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: isDark ? Colors.white12 : const Color(0xFFE2E8F0)),
+          ),
+          elevation: 4,
+        ),
+      ),
+      child: PopupMenuButton<String>(
+        tooltip: 'Import Options',
+        offset: const Offset(0, 42),
+        onSelected: (val) {
+          if (val == 'employees') {
+            _showImportExcelDialog();
+          } else if (val == 'teams') {
+            _importTeamsFromExcel();
+          }
+        },
+        itemBuilder: (ctx) => [
+          PopupMenuItem(
+            value: 'employees',
+            child: Row(
+              children: [
+                const Icon(Icons.person_add_alt_1_rounded, size: 18, color: IZiiColors.primary),
+                const SizedBox(width: 10),
+                Text(
+                  'Import Employees (Excel)',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const PopupMenuDivider(height: 1),
+          PopupMenuItem(
+            value: 'teams',
+            child: Row(
+              children: [
+                const Icon(Icons.groups_rounded, size: 18, color: IZiiColors.secondary),
+                const SizedBox(width: 10),
+                Text(
+                  'Import Teams (CSV/XLSX)',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        child: _buildPillOutlineContainer(
+          isDark: isDark,
+          icon: Icons.upload_file_rounded,
+          label: 'Import',
+          showDropdownArrow: true,
+        ),
+      ),
+    );
+  }
+
+  /// Export Menu Pill (Employees or Teams)
+  Widget _buildExportMenuButton(bool isDark) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        popupMenuTheme: PopupMenuThemeData(
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: isDark ? Colors.white12 : const Color(0xFFE2E8F0)),
+          ),
+          elevation: 4,
+        ),
+      ),
+      child: PopupMenuButton<String>(
+        tooltip: 'Export Options',
+        offset: const Offset(0, 42),
+        onSelected: (val) {
+          if (val == 'employees') {
+            _exportEmployeesToCsv();
+          } else if (val == 'teams') {
+            _exportTeamsToExcel();
+          }
+        },
+        itemBuilder: (ctx) => [
+          PopupMenuItem(
+            value: 'employees',
+            child: Row(
+              children: [
+                const Icon(Icons.badge_rounded, size: 18, color: IZiiColors.primary),
+                const SizedBox(width: 10),
+                Text(
+                  'Export Employees (CSV)',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const PopupMenuDivider(height: 1),
+          PopupMenuItem(
+            value: 'teams',
+            child: Row(
+              children: [
+                const Icon(Icons.groups_rounded, size: 18, color: IZiiColors.secondary),
+                const SizedBox(width: 10),
+                Text(
+                  'Export Teams (CSV)',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        child: _buildPillOutlineContainer(
+          isDark: isDark,
+          icon: Icons.download_rounded,
+          label: 'Export',
+          showDropdownArrow: true,
+        ),
+      ),
+    );
+  }
+
+  /// Manage Roles Pill Button
+  Widget _buildManageRolesButton(bool isDark) {
+    return _buildPillOutlineButton(
+      isDark: isDark,
+      icon: Icons.admin_panel_settings_outlined,
+      label: 'Manage Roles',
+      onPressed: _showManageRolesDialog,
+    );
+  }
+
+  /// Reusable OneDrive Outlined Pill Button (Action)
+  Widget _buildPillOutlineButton({
+    required bool isDark,
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return OutlinedButton.icon(
+      icon: Icon(icon, size: 16, color: IZiiColors.primary),
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: isDark ? Colors.white : const Color(0xFF1E293B),
+        ),
+      ),
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        foregroundColor: isDark ? Colors.white : const Color(0xFF1E293B),
+        side: BorderSide(
+          color: isDark ? Colors.white24 : const Color(0xFFCBD5E1),
+          width: 1,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
+
+  /// Reusable OneDrive Outlined Pill Container (for PopupMenuButton anchor)
+  Widget _buildPillOutlineContainer({
+    required bool isDark,
+    required IconData icon,
+    required String label,
+    bool showDropdownArrow = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8.5),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? Colors.white24 : const Color(0xFFCBD5E1),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: IZiiColors.primary),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : const Color(0xFF1E293B),
+            ),
+          ),
+          if (showDropdownArrow) ...[
+            const SizedBox(width: 4),
+            Icon(
+              Icons.arrow_drop_down_rounded,
+              size: 18,
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+            ),
+          ],
+        ],
       ),
     );
   }

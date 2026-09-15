@@ -26,7 +26,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
   final EmployeeService _employeeService = EmployeeServiceImpl();
 
   // Tab navigation index matching mockup:
-  // 0: Quét QR, 1: Xác nhận Room, 2: Đang làm việc, 3: Check-out, 4: Manager duyệt
+  // 0: QR Scan, 1: Room Targets, 2: Active Shift, 3: Check-out, 4: Manager Review
   int _activeTabIndex = 0;
 
   // Active Picker Session State (Simulated/Tracked)
@@ -558,7 +558,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               children: [
                 Icon(Icons.edit_calendar_rounded, color: FarmColors.forestGreen),
                 SizedBox(width: 8),
-                Text('Lập Plan Thu Hoạch Chi Tiết (Manager)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                Text('Harvest Plan Builder (Manager)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               ],
             ),
             content: SizedBox(
@@ -569,7 +569,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Cấu hình danh sách Room & chỉ tiêu hái trong ngày (24/07/2026)',
+                      'Configure daily picking rooms and targets (24/07/2026)',
                       style: TextStyle(fontSize: 11, color: Colors.grey),
                     ),
                     const SizedBox(height: 12),
@@ -585,7 +585,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('THÊM ROOM VÀO PLAN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: FarmColors.forestGreenText)),
+                          const Text('ADD ROOM TO PLAN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: FarmColors.forestGreenText)),
                           const SizedBox(height: 8),
                           Row(
                             children: [
@@ -593,7 +593,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                                 flex: 3,
                                 child: TextField(
                                   controller: roomCtrl,
-                                  decoration: const InputDecoration(labelText: 'Tên Room (e.g. Room 50)', isDense: true),
+                                  decoration: const InputDecoration(labelText: 'Room Name (e.g. Room 50)', isDense: true),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -629,14 +629,14 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                                 child: TextField(
                                   controller: trolleyCtrl,
                                   keyboardType: TextInputType.number,
-                                  decoration: const InputDecoration(labelText: 'Số Trolley', isDense: true),
+                                  decoration: const InputDecoration(labelText: 'Trolleys', isDense: true),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   initialValue: selectedTeam,
-                                  decoration: const InputDecoration(labelText: 'Đội Hái', isDense: true),
+                                  decoration: const InputDecoration(labelText: 'Picker Team', isDense: true),
                                   items: const [
                                     DropdownMenuItem(value: 'PURPLE', child: Text('PURPLE')),
                                     DropdownMenuItem(value: 'PEARL', child: Text('PEARL')),
@@ -657,7 +657,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                           const SizedBox(height: 8),
                           TextField(
                             controller: instructionsCtrl,
-                            decoration: const InputDecoration(labelText: 'Hướng dẫn hái (Ghi chú)', isDense: true),
+                            decoration: const InputDecoration(labelText: 'Picking Instructions / Notes', isDense: true),
                           ),
                           const SizedBox(height: 8),
                           Align(
@@ -687,14 +687,14 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                                 }
                               },
                               icon: const Icon(Icons.add, size: 14),
-                              label: const Text('Thêm Room vào Plan', style: TextStyle(fontSize: 11)),
+                              label: const Text('Add Room to Plan', style: TextStyle(fontSize: 11)),
                             ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text('DANH SÁCH ROOMS (${draftAssignments.length} Rooms)', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                    Text('ROOM ASSIGNMENTS (${draftAssignments.length} Rooms)', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     Container(
                       height: 160,
@@ -730,7 +730,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogCtx),
-                child: const Text('Hủy'),
+                child: const Text('Cancel'),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: FarmColors.forestGreen),
@@ -773,9 +773,9 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
 
                   await _loadDailyPlanData();
                   if (dialogCtx.mounted) Navigator.pop(dialogCtx);
-                  _showSuccessSnackBar('Đã lưu & xuất bản Harvest Plan ($totalBoxes boxes) thành công vào SQLite!');
+                  _showSuccessSnackBar('Harvest Plan ($totalBoxes boxes) successfully saved and published!');
                 },
-                child: const Text('Lưu & Xuất Bản Plan', style: TextStyle(color: Colors.white)),
+                child: const Text('Save & Publish Plan', style: TextStyle(color: Colors.white)),
               ),
             ],
           );
@@ -861,7 +861,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               ).then((_) => _loadPendingTimesheets());
             },
             icon: const Icon(Icons.checklist_rounded, size: 14),
-            label: const Text('Chấm công nhóm (100+ NV)', style: TextStyle(fontSize: 11)),
+            label: const Text('Batch Attendance (100+)', style: TextStyle(fontSize: 11)),
           ),
           const SizedBox(width: 8),
           ElevatedButton.icon(
@@ -873,7 +873,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
             ),
             onPressed: () => _showHarvestPlanBuilderDialog(context),
             icon: const Icon(Icons.edit_calendar_rounded, size: 14),
-            label: const Text('Lập Plan (Manager)', style: TextStyle(fontSize: 11)),
+            label: const Text('Harvest Plan Builder', style: TextStyle(fontSize: 11)),
           ),
           const SizedBox(width: 12),
         ],
@@ -893,15 +893,15 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildTabButton(0, '1 · Quét QR'),
+                    _buildTabButton(0, '1 · QR Scan'),
                     const SizedBox(width: 8),
-                    _buildTabButton(1, '2 · Room Target'),
+                    _buildTabButton(1, '2 · Room Targets'),
                     const SizedBox(width: 8),
-                    _buildTabButton(2, '3 · Ca đang chạy'),
+                    _buildTabButton(2, '3 · Active Shift'),
                     const SizedBox(width: 8),
                     _buildTabButton(3, '4 · Check-out'),
                     const SizedBox(width: 8),
-                    _buildTabButton(4, '5 · Manager duyệt'),
+                    _buildTabButton(4, '5 · Manager Review'),
                   ],
                 ),
               ),
@@ -1011,7 +1011,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'HÔM NAY · CA SÁNG',
+                  'TODAY · MORNING SHIFT',
                   style: TextStyle(
                     fontSize: 11,
                     color: FarmColors.forestGreen,
@@ -1021,7 +1021,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Quét mã QR Check-in',
+                  'Scan QR Code Check-in',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -1080,7 +1080,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
         const SizedBox(height: 14),
         Center(
           child: Text(
-            'Đưa mã QR nhân viên vào giữa khung hình',
+            'Align employee QR badge inside the frame',
             style: TextStyle(
               color: Colors.grey.shade500,
               fontSize: 12,
@@ -1093,7 +1093,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
         TextField(
           controller: _manualIdController,
           decoration: InputDecoration(
-            labelText: 'Nhập ID Nhân viên (Ví dụ: EMP004 hoặc 305629)',
+            labelText: 'Enter Employee ID (e.g. EMP004 or 305629)',
             labelStyle: const TextStyle(fontSize: 13),
             hintText: 'e.g. EMP004',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -1124,7 +1124,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               _processCheckIn('EMP004'); // default demo picker
             }
           },
-          child: const Text('Xác nhận Check-in ID', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          child: const Text('Confirm Check-in ID', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         ),
       ],
     );
@@ -1216,7 +1216,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'PHÂN BỔ ĐỘI HÁI (TEAM)',
+                'ASSIGNED PICKER TEAM',
                 style: TextStyle(fontSize: 11, color: Colors.white70, fontWeight: FontWeight.w600, letterSpacing: 0.5),
               ),
               const SizedBox(height: 4),
@@ -1229,7 +1229,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
         ),
         const SizedBox(height: 18),
         Text(
-          'DANH SÁCH ROOM HÁI HÔM NAY',
+          'TODAY\'S ASSIGNED PICKING ROOMS',
           style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey.shade500, letterSpacing: 0.5),
         ),
         const SizedBox(height: 8),
@@ -1239,7 +1239,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
             ? Container(
                 padding: const EdgeInsets.all(20),
                 alignment: Alignment.center,
-                child: const Text('Không có room nào được phân bổ hôm nay'),
+                child: const Text('No rooms assigned for today yet'),
               )
             : Column(
                 children: _assignedRooms.map((r) {
@@ -1306,7 +1306,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Lưu ý: Nếu Manager điều chỉnh plan giữa ca, danh sách Room sẽ tự động cập nhật.',
+                  'Notice: If Manager adjusts the plan mid-shift, room assignments will update automatically.',
                   style: TextStyle(fontSize: 12, color: isDark ? Colors.amber.shade200 : const Color(0xFF7A5A17), height: 1.4),
                 ),
               ),
@@ -1323,7 +1323,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           onPressed: _startShiftClock,
-          child: const Text('Xác nhận & Bắt đầu ca hái', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          child: const Text('Confirm & Start Picking Shift', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         ),
       ],
     );
@@ -1349,7 +1349,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Ca làm việc đang chạy',
+                  'Active Work Shift',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
                 ),
               ],
@@ -1366,9 +1366,9 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                   CircleAvatar(radius: 4, backgroundColor: _isOnBreak ? FarmColors.maintenanceOrange : FarmColors.forestGreen),
                   const SizedBox(width: 6),
                   Text(
-                    _isOnBreak ? 'Đang Break' : 'Đang Hái',
+                    _isOnBreak ? 'On Break' : 'Picking',
                     style: TextStyle(
-                      fontSize: 11,
+                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: _isOnBreak ? FarmColors.maintenanceOrange : FarmColors.forestGreenText,
                     ),
@@ -1391,7 +1391,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
           child: Column(
             children: [
               const Text(
-                'THỜI GIAN LÀM VIỆC THỰC TẾ',
+                'ACTUAL WORKING TIME',
                 style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600, letterSpacing: 0.5),
               ),
               const SizedBox(height: 6),
@@ -1407,7 +1407,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               ),
               const SizedBox(height: 6),
               Text(
-                'Bắt đầu check-in lúc ${_checkInTime?.toIso8601String().substring(11, 16) ?? "07:42"}',
+                'Checked in at ${_checkInTime?.toIso8601String().substring(11, 16) ?? "07:42"}',
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
               ),
             ],
@@ -1416,12 +1416,12 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
         const SizedBox(height: 20),
 
         Text(
-          'THỜI GIAN BREAK HÔM NAY',
+          'BREAK DURATION TODAY',
           style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey.shade500, letterSpacing: 0.5),
         ),
         const SizedBox(height: 8),
-        _buildSummaryLine('Định mức break cho phép', '25 phút'),
-        _buildSummaryLine('Tổng thời gian đã dùng', '$_accumulatedBreakMinutes phút'),
+        _buildSummaryLine('Standard break allowed', '25 mins'),
+        _buildSummaryLine('Total break taken', '$_accumulatedBreakMinutes mins'),
         const SizedBox(height: 24),
 
         // Toggle Break Button
@@ -1435,7 +1435,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
           onPressed: _toggleBreak,
           icon: Icon(_isOnBreak ? Icons.play_arrow_rounded : Icons.coffee_rounded, size: 20),
           label: Text(
-            _isOnBreak ? 'Kết thúc giờ Break' : 'Bắt đầu giờ Break',
+            _isOnBreak ? 'End Break' : 'Start Break',
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
           ),
         ),
@@ -1451,7 +1451,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
           ),
           onPressed: _processCheckOut,
           icon: const Icon(Icons.logout_rounded, size: 20),
-          label: const Text('Check-out Kết thúc Ca', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          label: const Text('Check-out & End Shift', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         ),
       ],
     );
@@ -1482,7 +1482,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Tổng kết ca làm việc',
+                  'Shift Summary',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
                 ),
               ],
@@ -1492,13 +1492,13 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
         ),
         const SizedBox(height: 18),
 
-        _buildSummaryLine('Giờ Check-in', _checkInTime?.toIso8601String().substring(11, 16) ?? '07:42'),
-        _buildSummaryLine('Giờ Check-out', _checkOutTime?.toIso8601String().substring(11, 16) ?? '16:10'),
-        _buildSummaryLine('Tổng giờ có mặt tại xưởng', '${gross ~/ 60}h ${gross % 60}p'),
-        _buildSummaryLine('Break chuẩn (đã trừ)', '−${std}p'),
+        _buildSummaryLine('Check-in Time', _checkInTime?.toIso8601String().substring(11, 16) ?? '07:42'),
+        _buildSummaryLine('Check-out Time', _checkOutTime?.toIso8601String().substring(11, 16) ?? '16:10'),
+        _buildSummaryLine('Total On-site Time', '${gross ~/ 60}h ${gross % 60}m'),
+        _buildSummaryLine('Standard break (deducted)', '−${std}m'),
         _buildSummaryLine(
-          'Extra break (chờ duyệt)',
-          '−${extra}p ${extra > 0 ? "⚠" : ""}',
+          'Extra break (pending review)',
+          '−${extra}m ${extra > 0 ? "⚠" : ""}',
           color: extra > 0 ? FarmColors.maintenanceOrange : textColor,
         ),
         const SizedBox(height: 12),
@@ -1508,9 +1508,9 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Giờ công tính lương tạm tính', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            const Text('Estimated Payable Hours', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             Text(
-              '${paid ~/ 60}h ${paid % 60}p',
+              '${paid ~/ 60}h ${paid % 60}m',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: FarmColors.forestGreen),
             ),
           ],
@@ -1532,7 +1532,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Bảng chấm công đang chờ Manager phê duyệt phần Extra Break trước khi chốt vào bảng lương.',
+                  'Timesheet is pending Manager review for extra break before final payroll approval.',
                   style: TextStyle(fontSize: 12, color: isDark ? Colors.amber.shade200 : const Color(0xFF7A5A17), height: 1.4),
                 ),
               ),
@@ -1561,7 +1561,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               _activeTabIndex = 0;
             });
           },
-          child: const Text('Hoàn tất Check-out', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          child: const Text('Finish Check-out', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         ),
       ],
     );
@@ -1585,12 +1585,12 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'PHE DUYỆT BẢNG CHẤM CÔNG',
+                  'TIMESHEET APPROVAL',
                   style: TextStyle(fontSize: 11, color: FarmColors.forestGreen, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${needsReview.length} Timesheets cần duyệt',
+                  '${needsReview.length} Timesheets Pending Review',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
                 ),
               ],
@@ -1605,7 +1605,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                   ),
                   onPressed: () => _showHarvestPlanBuilderDialog(context),
                   icon: const Icon(Icons.edit_calendar_rounded, size: 14),
-                  label: const Text('Lập Plan Thu Hoạch', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                  label: const Text('Harvest Plan Builder', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
@@ -1622,14 +1622,14 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
             ? Container(
                 padding: const EdgeInsets.all(32),
                 alignment: Alignment.center,
-                child: const Text('Không có bảng chấm công nào hôm nay'),
+                child: const Text('No timesheets recorded for today'),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (needsReview.isNotEmpty) ...[
                     Text(
-                      'CẦN XỬ LÝ EXTRA BREAK (${needsReview.length})',
+                      'PENDING EXTRA BREAK REVIEW (${needsReview.length})',
                       style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey.shade500, letterSpacing: 0.5),
                     ),
                     const SizedBox(height: 8),
@@ -1638,7 +1638,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                   ],
                   if (approvedList.isNotEmpty) ...[
                     Text(
-                      'ĐÃ DUYỆT / HỢP LỆ (${approvedList.length})',
+                      'APPROVED / REGULAR (${approvedList.length})',
                       style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: FarmColors.forestGreen, letterSpacing: 0.5),
                     ),
                     const SizedBox(height: 8),
@@ -1706,10 +1706,10 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
               mainAxisSpacing: 8,
             ),
             children: [
-              _buildMiniStat('Break chuẩn', '$std phút'),
-              _buildMiniStat('Extra break', '$extra phút', isWarn: extra > 0),
-              _buildMiniStat('Tổng giờ công', '${paidMin ~/ 60}h ${paidMin % 60}p'),
-              _buildMiniStat('Phòng hái', (ts['rooms'] as List).join(', ')),
+              _buildMiniStat('Std Break', '$std mins'),
+              _buildMiniStat('Extra Break', '$extra mins', isWarn: extra > 0),
+              _buildMiniStat('Payable Hours', '${paidMin ~/ 60}h ${paidMin % 60}m'),
+              _buildMiniStat('Picking Rooms', (ts['rooms'] as List).join(', ')),
             ],
           ),
           if (isPending) ...[
@@ -1725,7 +1725,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                     onPressed: () => _approveTimesheet(ts['id'] as String, extra, gross, std, 28.5),
-                    child: const Text('Duyệt trừ lương', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    child: const Text('Approve Timesheet', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -1738,7 +1738,7 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                     onPressed: () => _adjustTimesheetManually(ts),
-                    child: const Text('Điều chỉnh tay', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    child: const Text('Manual Adjust', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
