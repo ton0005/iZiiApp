@@ -31,7 +31,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   List<Map<String, dynamic>> _departments = [];
 
   // Filter for Sup/Lead Tab
-  String _leadStatusFilter = 'all'; // all, unassigned, assigned, in_progress, completed
+  String _leadStatusFilter =
+      'all'; // all, unassigned, assigned, in_progress, completed
   final String _leadRoomFilter = 'all';
 
   @override
@@ -131,8 +132,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   }
 
   Map<String, dynamic>? _getJobTypeInfo(String jobTypeId) {
-    final match = _jobTypes.where((jt) =>
-        (jt['id'] as String).toLowerCase() == jobTypeId.toLowerCase());
+    final match = _jobTypes.where(
+        (jt) => (jt['id'] as String).toLowerCase() == jobTypeId.toLowerCase());
     if (match.isNotEmpty) return match.first;
     return null;
   }
@@ -230,7 +231,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                             ),
                           ),
                           Text(
-                            DateFormat('EEEE, dd/MM/yyyy').format(_selectedDate),
+                            DateFormat('EEEE, dd/MM/yyyy')
+                                .format(_selectedDate),
                             style: TextStyle(fontSize: 13, color: ink2),
                           ),
                         ],
@@ -262,13 +264,15 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                   if (selectedRoomIds.length == _rooms.length) {
                                     selectedRoomIds.clear();
                                   } else {
-                                    selectedRoomIds.addAll(_rooms.map((r) => r.id));
+                                    selectedRoomIds
+                                        .addAll(_rooms.map((r) => r.id));
                                   }
                                 });
                               },
-                              child: Text(selectedRoomIds.length == _rooms.length
-                                  ? 'Deselect All'
-                                  : 'Select All'),
+                              child: Text(
+                                  selectedRoomIds.length == _rooms.length
+                                      ? 'Deselect All'
+                                      : 'Select All'),
                             ),
                           ],
                         ),
@@ -281,14 +285,13 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                             return FilterChip(
                               label: Text(r.name),
                               selected: isSel,
-                              selectedColor:
-                                  const Color(0xFF2A78D6).withValues(alpha: 0.2),
+                              selectedColor: const Color(0xFF2A78D6)
+                                  .withValues(alpha: 0.2),
                               checkmarkColor: const Color(0xFF2A78D6),
                               labelStyle: TextStyle(
                                 fontSize: 12,
-                                fontWeight: isSel
-                                    ? FontWeight.w700
-                                    : FontWeight.normal,
+                                fontWeight:
+                                    isSel ? FontWeight.w700 : FontWeight.normal,
                                 color: isSel ? const Color(0xFF2A78D6) : ink,
                               ),
                               onSelected: (val) {
@@ -325,8 +328,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                           items: _jobTypes.map((jt) {
                             final id = jt['id'] as String;
                             final name = (jt['name'] as String?) ?? id;
-                            final color =
-                                _colorFromHex(jt['color'] as String?);
+                            final color = _colorFromHex(jt['color'] as String?);
                             return DropdownMenuItem(
                               value: id,
                               child: Row(
@@ -505,12 +507,14 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                 setSheetState(() => isSoloJob = val ?? false);
                               },
                             ),
-                            const Text('Alone Worker (Requires Safety Alarm flow)'),
+                            const Text(
+                                'Alone Worker (Requires Safety Alarm flow)'),
                           ],
                         ),
                         if (isSoloJob) ...[
                           Padding(
-                            padding: const EdgeInsets.only(left: 12, bottom: 12),
+                            padding:
+                                const EdgeInsets.only(left: 12, bottom: 12),
                             child: TextFormField(
                               initialValue: '$soloTimeLimit',
                               keyboardType: TextInputType.number,
@@ -575,8 +579,9 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                     isSoloJob: isSoloJob,
                                     timeLimit: soloTimeLimit,
                                     wateringSide: wateringSide,
-                                    wateringVol:
-                                        double.tryParse(wateringVolController.text) ?? 1.5,
+                                    wateringVol: double.tryParse(
+                                            wateringVolController.text) ??
+                                        1.5,
                                     prochlorazRate:
                                         prochlorazRateController.text.trim(),
                                     notes: notesController.text.trim(),
@@ -680,7 +685,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
             final filteredEmps = _employees.where((e) {
               final name = (e['name'] as String? ?? '').toLowerCase();
               final dept = (e['department'] as String? ?? '').toLowerCase();
-              if (deptFilter != 'all' && !dept.contains(deptFilter.toLowerCase())) {
+              if (deptFilter != 'all' &&
+                  !dept.contains(deptFilter.toLowerCase())) {
                 return false;
               }
               if (search.isNotEmpty && !name.contains(search.toLowerCase())) {
@@ -945,9 +951,12 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Planned Job?'),
-        content: Text('Are you sure you want to remove "${job.name}" for ${_getRoomName(job.roomId)}?'),
+        content: Text(
+            'Are you sure you want to remove "${job.name}" for ${_getRoomName(job.roomId)}?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true),
@@ -986,9 +995,17 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
 
     // KPI counts
     final totalJobs = _allJobs.length;
-    final unassignedJobs = _allJobs.where((j) => j.assignee == null || j.assignee!.trim().isEmpty).length;
-    final assignedJobs = _allJobs.where((j) => (j.assignee != null && j.assignee!.trim().isNotEmpty) && j.status != 'completed' && j.status != 'in_progress').length;
-    final inProgressJobs = _allJobs.where((j) => j.status == 'in_progress').length;
+    final unassignedJobs = _allJobs
+        .where((j) => j.assignee == null || j.assignee!.trim().isEmpty)
+        .length;
+    final assignedJobs = _allJobs
+        .where((j) =>
+            (j.assignee != null && j.assignee!.trim().isNotEmpty) &&
+            j.status != 'completed' &&
+            j.status != 'in_progress')
+        .length;
+    final inProgressJobs =
+        _allJobs.where((j) => j.status == 'in_progress').length;
     final completedJobs = _allJobs.where((j) => j.status == 'completed').length;
 
     return Scaffold(
@@ -1025,7 +1042,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   children: [
                     Icon(Icons.assignment_outlined, size: 18),
                     SizedBox(width: 8),
-                    Text('Manager Plan', style: TextStyle(fontWeight: FontWeight.w700)),
+                    Text('Growing Job Planning',
+                        style: TextStyle(fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
@@ -1035,7 +1053,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   children: [
                     const Icon(Icons.people_outline, size: 18),
                     const SizedBox(width: 8),
-                    Text('Sup/Lead Assign ($unassignedJobs)', style: const TextStyle(fontWeight: FontWeight.w700)),
+                    Text('Sup/Lead Assign Jobs ($unassignedJobs)',
+                        style: const TextStyle(fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
@@ -1124,7 +1143,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                 },
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today, size: 16, color: Color(0xFF2A78D6)),
+                    const Icon(Icons.calendar_today,
+                        size: 16, color: Color(0xFF2A78D6)),
                     const SizedBox(width: 8),
                     Text(
                       DateFormat('EEE, dd MMM yyyy').format(_selectedDate),
@@ -1139,8 +1159,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
               ),
               IconButton(
                 icon: const Icon(Icons.chevron_right),
-                onPressed: () => _onDateChanged(
-                    _selectedDate.add(const Duration(days: 1))),
+                onPressed: () =>
+                    _onDateChanged(_selectedDate.add(const Duration(days: 1))),
               ),
             ],
           ),
@@ -1150,7 +1170,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                 icon: const Icon(Icons.print_rounded, size: 16),
                 label: const Text('Export / Print PDF'),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 ),
                 onPressed: _exportOrPrintPdf,
               ),
@@ -1158,7 +1179,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                 const SizedBox(width: 8),
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   ),
                   onPressed: () => _onDateChanged(DateTime.now()),
                   child: const Text('Go to Today'),
@@ -1192,7 +1214,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildKpiItem('Total Planned', '$total', ink),
-          _buildKpiItem('Unassigned', '$unassigned', const Color(0xFFF59E0B), isHighlight: unassigned > 0),
+          _buildKpiItem('Unassigned', '$unassigned', const Color(0xFFF59E0B),
+              isHighlight: unassigned > 0),
           _buildKpiItem('Assigned', '$assigned', const Color(0xFF2A78D6)),
           _buildKpiItem('In Progress', '$inProgress', const Color(0xFF8B5CF6)),
           _buildKpiItem('Completed', '$completed', const Color(0xFF10B981)),
@@ -1201,7 +1224,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
     );
   }
 
-  Widget _buildKpiItem(String label, String value, Color color, {bool isHighlight = false}) {
+  Widget _buildKpiItem(String label, String value, Color color,
+      {bool isHighlight = false}) {
     return Column(
       children: [
         Container(
@@ -1226,7 +1250,10 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Color(0xFF94A3B8)),
+          style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF94A3B8)),
         ),
       ],
     );
@@ -1235,17 +1262,20 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   // ══════════════════════════════════════════════════════════════════════════
   //  TAB 1: Manager Planning View
   // ══════════════════════════════════════════════════════════════════════════
-  Widget _buildManagerPlanningTab(Color surface, Color ink, Color ink2, Color border) {
+  Widget _buildManagerPlanningTab(
+      Color surface, Color ink, Color ink2, Color border) {
     if (_allJobs.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.event_note, size: 64, color: ink2.withValues(alpha: 0.4)),
+            Icon(Icons.event_note,
+                size: 64, color: ink2.withValues(alpha: 0.4)),
             const SizedBox(height: 12),
             Text(
               'No jobs planned for ${DateFormat('dd/MM/yyyy').format(_selectedDate)}',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: ink),
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w600, color: ink),
             ),
             const SizedBox(height: 6),
             Text(
@@ -1301,26 +1331,35 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                         Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2A78D6).withValues(alpha: 0.1),
+                            color:
+                                const Color(0xFF2A78D6).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.meeting_room, size: 18, color: Color(0xFF2A78D6)),
+                          child: const Icon(Icons.meeting_room,
+                              size: 18, color: Color(0xFF2A78D6)),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           roomName,
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: ink),
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: ink),
                         ),
                       ],
                     ),
                     Text(
                       '${roomJobs.length} job(s)',
-                      style: TextStyle(fontSize: 12, color: ink2, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: ink2,
+                          fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
                 const Divider(height: 20),
-                ...roomJobs.map((j) => _buildManagerJobItem(j, ink, ink2, border)),
+                ...roomJobs
+                    .map((j) => _buildManagerJobItem(j, ink, ink2, border)),
               ],
             ),
           ),
@@ -1329,7 +1368,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
     );
   }
 
-  Widget _buildManagerJobItem(MushroomJob job, Color ink, Color ink2, Color border) {
+  Widget _buildManagerJobItem(
+      MushroomJob job, Color ink, Color ink2, Color border) {
     final jtInfo = _getJobTypeInfo(job.jobType);
     final color = _colorFromHex(jtInfo?['color'] as String?);
     final isUnassigned = job.assignee == null || job.assignee!.trim().isEmpty;
@@ -1360,25 +1400,36 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   children: [
                     Text(
                       job.name,
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: ink),
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: ink),
                     ),
                     const SizedBox(width: 8),
                     if (job.isSoloJob)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.amber.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text('SOLO', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.amber)),
+                        child: const Text('SOLO',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.amber)),
                       ),
                   ],
                 ),
                 const SizedBox(height: 2),
                 Text(
                   [
-                    if (job.planDetails != null && job.planDetails!.isNotEmpty) job.planDetails,
-                    if (job.prochlorazRate != null && job.prochlorazRate!.isNotEmpty) job.prochlorazRate,
+                    if (job.planDetails != null && job.planDetails!.isNotEmpty)
+                      job.planDetails,
+                    if (job.prochlorazRate != null &&
+                        job.prochlorazRate!.isNotEmpty)
+                      job.prochlorazRate,
                     'Priority: ${job.priority ?? "normal"}',
                   ].join(' · '),
                   style: TextStyle(fontSize: 12, color: ink2),
@@ -1392,24 +1443,32 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
             children: [
               if (isUnassigned)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Text(
                     'Unassigned',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFFD97706)),
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFFD97706)),
                   ),
                 )
               else
                 Row(
                   children: [
-                    const Icon(Icons.person, size: 14, color: Color(0xFF2A78D6)),
+                    const Icon(Icons.person,
+                        size: 14, color: Color(0xFF2A78D6)),
                     const SizedBox(width: 4),
                     Text(
                       job.assignee!,
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: ink),
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: ink),
                     ),
                   ],
                 ),
@@ -1421,7 +1480,9 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   fontWeight: FontWeight.w700,
                   color: job.status == 'completed'
                       ? const Color(0xFF10B981)
-                      : (job.status == 'in_progress' ? const Color(0xFF8B5CF6) : ink2),
+                      : (job.status == 'in_progress'
+                          ? const Color(0xFF8B5CF6)
+                          : ink2),
                 ),
               ),
             ],
@@ -1429,7 +1490,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
           if (job.status != 'completed') ...[
             const SizedBox(width: 6),
             IconButton(
-              icon: const Icon(Icons.delete_outline, size: 18, color: Colors.red),
+              icon:
+                  const Icon(Icons.delete_outline, size: 18, color: Colors.red),
               onPressed: () => _deleteJob(job),
             ),
           ],
@@ -1441,13 +1503,19 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   // ══════════════════════════════════════════════════════════════════════════
   //  TAB 2: Sup / Lead Assignment View
   // ══════════════════════════════════════════════════════════════════════════
-  Widget _buildLeadAssignmentTab(Color surface, Color ink, Color ink2, Color border) {
+  Widget _buildLeadAssignmentTab(
+      Color surface, Color ink, Color ink2, Color border) {
     final filteredJobs = _allJobs.where((j) {
       final isUnassigned = j.assignee == null || j.assignee!.trim().isEmpty;
       if (_leadStatusFilter == 'unassigned' && !isUnassigned) return false;
-      if (_leadStatusFilter == 'assigned' && (isUnassigned || j.status == 'completed' || j.status == 'in_progress')) return false;
-      if (_leadStatusFilter == 'in_progress' && j.status != 'in_progress') return false;
-      if (_leadStatusFilter == 'completed' && j.status != 'completed') return false;
+      if (_leadStatusFilter == 'assigned' &&
+          (isUnassigned ||
+              j.status == 'completed' ||
+              j.status == 'in_progress')) return false;
+      if (_leadStatusFilter == 'in_progress' && j.status != 'in_progress')
+        return false;
+      if (_leadStatusFilter == 'completed' && j.status != 'completed')
+        return false;
       if (_leadRoomFilter != 'all' && j.roomId != _leadRoomFilter) return false;
       return true;
     }).toList();
@@ -1472,25 +1540,29 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   label: const Text('Needs Worker (Unassigned)'),
                   selectedColor: const Color(0xFFF59E0B).withValues(alpha: 0.2),
                   selected: _leadStatusFilter == 'unassigned',
-                  onSelected: (s) => setState(() => _leadStatusFilter = 'unassigned'),
+                  onSelected: (s) =>
+                      setState(() => _leadStatusFilter = 'unassigned'),
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
                   label: const Text('Assigned'),
                   selected: _leadStatusFilter == 'assigned',
-                  onSelected: (s) => setState(() => _leadStatusFilter = 'assigned'),
+                  onSelected: (s) =>
+                      setState(() => _leadStatusFilter = 'assigned'),
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
                   label: const Text('In Progress'),
                   selected: _leadStatusFilter == 'in_progress',
-                  onSelected: (s) => setState(() => _leadStatusFilter = 'in_progress'),
+                  onSelected: (s) =>
+                      setState(() => _leadStatusFilter = 'in_progress'),
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
                   label: const Text('Completed'),
                   selected: _leadStatusFilter == 'completed',
-                  onSelected: (s) => setState(() => _leadStatusFilter = 'completed'),
+                  onSelected: (s) =>
+                      setState(() => _leadStatusFilter = 'completed'),
                 ),
               ],
             ),
@@ -1501,7 +1573,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         Expanded(
           child: filteredJobs.isEmpty
               ? Center(
-                  child: Text('No jobs matching filter.', style: TextStyle(color: ink2)),
+                  child: Text('No jobs matching filter.',
+                      style: TextStyle(color: ink2)),
                 )
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -1516,7 +1589,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
     );
   }
 
-  Widget _buildLeadJobCard(MushroomJob job, Color surface, Color ink, Color ink2, Color border) {
+  Widget _buildLeadJobCard(
+      MushroomJob job, Color surface, Color ink, Color ink2, Color border) {
     final jtInfo = _getJobTypeInfo(job.jobType);
     final color = _colorFromHex(jtInfo?['color'] as String?);
     final roomName = _getRoomName(job.roomId);
@@ -1544,27 +1618,38 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                     Container(
                       width: 10,
                       height: 10,
-                      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                      decoration:
+                          BoxDecoration(color: color, shape: BoxShape.circle),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       job.name,
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: ink),
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: ink),
                     ),
                     const SizedBox(width: 8),
-                    Text('·  $roomName', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink2)),
+                    Text('·  $roomName',
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: ink2)),
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: job.status == 'completed'
                         ? const Color(0xFF10B981).withValues(alpha: 0.15)
                         : (job.status == 'in_progress'
                             ? const Color(0xFF8B5CF6).withValues(alpha: 0.15)
                             : (isUnassigned
-                                ? const Color(0xFFF59E0B).withValues(alpha: 0.15)
-                                : const Color(0xFF2A78D6).withValues(alpha: 0.15))),
+                                ? const Color(0xFFF59E0B)
+                                    .withValues(alpha: 0.15)
+                                : const Color(0xFF2A78D6)
+                                    .withValues(alpha: 0.15))),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -1576,7 +1661,9 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                           ? const Color(0xFF10B981)
                           : (job.status == 'in_progress'
                               ? const Color(0xFF8B5CF6)
-                              : (isUnassigned ? const Color(0xFFD97706) : const Color(0xFF2A78D6))),
+                              : (isUnassigned
+                                  ? const Color(0xFFD97706)
+                                  : const Color(0xFF2A78D6))),
                     ),
                   ),
                 ),
@@ -1585,7 +1672,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
 
             if (job.planDetails != null && job.planDetails!.isNotEmpty) ...[
               const SizedBox(height: 6),
-              Text('Plan: ${job.planDetails}', style: TextStyle(fontSize: 12, color: ink2)),
+              Text('Plan: ${job.planDetails}',
+                  style: TextStyle(fontSize: 12, color: ink2)),
             ],
 
             const Divider(height: 20),
@@ -1598,11 +1686,15 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   children: [
                     CircleAvatar(
                       radius: 14,
-                      backgroundColor: isUnassigned ? const Color(0xFFF59E0B).withValues(alpha: 0.2) : const Color(0xFF2A78D6).withValues(alpha: 0.2),
+                      backgroundColor: isUnassigned
+                          ? const Color(0xFFF59E0B).withValues(alpha: 0.2)
+                          : const Color(0xFF2A78D6).withValues(alpha: 0.2),
                       child: Icon(
                         isUnassigned ? Icons.person_add : Icons.person,
                         size: 16,
-                        color: isUnassigned ? const Color(0xFFD97706) : const Color(0xFF2A78D6),
+                        color: isUnassigned
+                            ? const Color(0xFFD97706)
+                            : const Color(0xFF2A78D6),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -1627,7 +1719,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2A78D6),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
                         ),
                         onPressed: () => _showAssignWorkerDialog(job),
                       )
@@ -1636,16 +1729,19 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                         onPressed: () => _showAssignWorkerDialog(job),
                         child: const Text('Reassign'),
                       ),
-                      if (job.status != 'in_progress' && job.status != 'completed') ...[
+                      if (job.status != 'in_progress' &&
+                          job.status != 'completed') ...[
                         TextButton(
                           onPressed: () => _unassignJob(job.id),
-                          child: const Text('Unassign', style: TextStyle(color: Colors.red)),
+                          child: const Text('Unassign',
+                              style: TextStyle(color: Colors.red)),
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF8B5CF6),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
                           ),
                           onPressed: () => _startJob(job.id),
                           child: const Text('Start'),
@@ -1656,7 +1752,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF10B981),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
                           ),
                           onPressed: () => _completeJobWithReview(job),
                           child: const Text('Mark Done'),

@@ -417,7 +417,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 builder: (context, onlineSnapshot) {
                   final onlineDevices = onlineSnapshot.data ?? [];
                   final isServerOnline =
-                      onlineDevices.any((d) => d.userId == companion.id);
+                      onlineDevices.any((d) => d.userId == companion.id || d.deviceId == companion.id);
                   final isE2ee = isServerOnline;
 
                   return BlocBuilder<ChatBloc, ChatState>(

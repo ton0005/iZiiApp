@@ -142,7 +142,7 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                     radius: 28,
                                     backgroundColor:
                                         primaryColor.withValues(alpha: 0.15),
-                                    child: Icon(Icons.person_rounded,
+                                    child: const Icon(Icons.person_rounded,
                                         size: 32, color: primaryColor),
                                   ),
                                   const SizedBox(width: 16),
@@ -210,7 +210,7 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.lock_reset_rounded,
+                                    const Icon(Icons.lock_reset_rounded,
                                         color: primaryColor),
                                     const SizedBox(width: 8),
                                     Text(
@@ -233,7 +233,7 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                   decoration: InputDecoration(
                                     labelText: 'Current Password',
                                     labelStyle: TextStyle(color: subTextColor),
-                                    prefixIcon: Icon(Icons.lock_outline_rounded,
+                                    prefixIcon: const Icon(Icons.lock_outline_rounded,
                                         color: primaryColor),
                                     suffixIcon: IconButton(
                                       icon: Icon(
@@ -263,7 +263,7 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                   decoration: InputDecoration(
                                     labelText: 'New Password',
                                     labelStyle: TextStyle(color: subTextColor),
-                                    prefixIcon: Icon(Icons.vpn_key_outlined,
+                                    prefixIcon: const Icon(Icons.vpn_key_outlined,
                                         color: primaryColor),
                                     suffixIcon: IconButton(
                                       icon: Icon(
@@ -299,7 +299,7 @@ class _MushroomsProfileScreenState extends State<MushroomsProfileScreen> {
                                   decoration: InputDecoration(
                                     labelText: 'Confirm New Password',
                                     labelStyle: TextStyle(color: subTextColor),
-                                    prefixIcon: Icon(
+                                    prefixIcon: const Icon(
                                         Icons.check_circle_outline_rounded,
                                         color: primaryColor),
                                     suffixIcon: IconButton(

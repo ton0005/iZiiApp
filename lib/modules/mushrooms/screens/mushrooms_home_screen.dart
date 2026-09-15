@@ -23,6 +23,7 @@ import 'mushrooms_profile_screen.dart';
 import 'harvest_attendance_screen.dart';
 import 'growing_performance_board_screen.dart';
 import 'growing_daily_job_plan_screen.dart';
+import 'manager_batch_attendance_screen.dart';
 import '../../communication/bloc/chat_bloc.dart';
 
 class MushroomsHomeScreen extends StatefulWidget {
@@ -432,6 +433,20 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     });
   }
 
+  void _navigateToBatchAttendance(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ManagerBatchAttendanceScreen(isDark: isDark),
+      ),
+    ).then((_) {
+      if (!mounted) return;
+      context.read<MushroomsBloc>().add(LoadRoomsEvent());
+      _loadMushroomData();
+    });
+  }
+
   void _navigateToPerformanceBoard(BuildContext context) {
     Navigator.push(
       context,
@@ -618,6 +633,15 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           ),
           const SizedBox(height: 12),
           QuickAccessCard(
+            title: 'Batch Team Attendance',
+            subtitle: 'Manager batch check-in/out & break for 100+ crew',
+            icon: Icons.checklist_rounded,
+            color: const Color(0xFF0284C7),
+            isDark: isDark,
+            onTap: () => _navigateToBatchAttendance(context),
+          ),
+          const SizedBox(height: 12),
+          QuickAccessCard(
             title: 'Daily Job Planning',
             subtitle:
                 'Manager job planning across rooms & Sup/Lead assignment',
@@ -716,6 +740,14 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 color: const Color(0xFFC97A3D),
                 isDark: isDark,
                 onTap: () => _navigateToHarvestAttendance(context),
+              ),
+              QuickAccessCard(
+                title: 'Batch Team Attendance',
+                subtitle: 'Manager batch check-in/out & break for 100+ crew',
+                icon: Icons.checklist_rounded,
+                color: const Color(0xFF0284C7),
+                isDark: isDark,
+                onTap: () => _navigateToBatchAttendance(context),
               ),
               QuickAccessCard(
                 title: 'Daily Job Planning',

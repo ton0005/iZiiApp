@@ -147,10 +147,14 @@ class DeviceDiscoveryService {
 
       if (response.statusCode == 200 && response.data != null) {
         final list = response.data['devices'] as List<dynamic>? ?? [];
-        return list
+        final devices = list
             .map((d) =>
                 RemoteDevice.fromMap(Map<String, dynamic>.from(d as Map)))
             .toList();
+        for (final dev in devices) {
+          _deviceKeyCache[dev.deviceId] = dev;
+        }
+        return devices;
       }
       return [];
     } on DioException catch (e) {

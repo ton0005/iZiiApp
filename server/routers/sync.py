@@ -249,6 +249,8 @@ def _filter_valid_mutations(
         # Mutation hợp lệ
         valid.append(m)
 
+    return valid, rejected
+
 def _filter_and_validate(
     repo: ISyncRepository,
     mutations: List[MutationModel],

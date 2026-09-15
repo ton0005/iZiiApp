@@ -1,0 +1,957 @@
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> insert
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> insert
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: grow_rooms -> update
+I/flutter (30358): [SyncService] 🚀 [Outbox] Đang đẩy nhanh 3 thay đổi lên server...
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: cd511418-cc80-40b6-943b-8654a823a22a, project_id: 87639459-fe26-4070-b58d-d4dabea6ed1a, title: Watering (Room 60), description: , status: todo, priority: medium, due_date: 2026-09-14T07:00:00.000, created_at: 2026-09-14T13:38:19.260451}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: aeb2872a-d58b-48f7-8358-76b7671bdf17, room_id: room_60, job_type: watering, name: Watering, status: in_progress, assignee: Fajar, priority: normal, scheduled_at: 2026-09-14T07:00:00.000, plan_details: 1side — 2.0 L/m², prochloraz_rate: null, linked_task_id: cd511418-cc80-40b6-943b-8654a823a22a, started_at: 2026-09-14T13:38:19.269978, created_at: 2026-09-14T13:38:19.269986}
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_60, status: active, current_stage: watering, updated_at: 2026-09-14T13:38:19.277112}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] ✅ [Outbox] Đẩy thành công 3 thay đổi lên server.
+I/flutter (30358): [SyncService] Đang gửi 1 thay đổi lên server...
+I/flutter (30358): [SyncService]    📦 grow_rooms → update
+I/flutter (30358): [SyncService] ✅ PUSH thành công! Server đã nhận 1 thay đổi.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_60, status: active, current_stage: watering, updated_at: 2026-09-14T13:38:19.277112}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService]    🔄 tasks → insert: id=cd511418-cc80-40b6-943b-8654a823a22a
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → insert: id=aeb2872a-d58b-48f7-8358-76b7671bdf17
+I/flutter (30358): [SyncService]    🔄 grow_rooms → update: id=room_60
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 3 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: a3c26843-6401-4734-a687-fffce4d2fb44, status: completed, completed_at: 2026-09-14T13:38:31.192828, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: db5a4876-07b1-47b6-8963-36b874aa113e, status: done}
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_65, status: idle, current_stage: idle, updated_at: 2026-09-14T13:38:31.219869}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=a3c26843-6401-4734-a687-fffce4d2fb44
+I/flutter (30358): [SyncService] ! Bỏ qua tạo MushroomJob stub rỗng cho id a3c26843-6401-4734-a687-fffce4d2fb44 (thiếu job_type hoặc room_id)
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=db5a4876-07b1-47b6-8963-36b874aa113e
+I/flutter (30358): [SyncService]    🔄 grow_rooms → update: id=room_65
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 2 bản ghi vào database local (bỏ qua/lọc 1).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: aeb2872a-d58b-48f7-8358-76b7671bdf17, status: completed, completed_at: 2026-09-14T13:38:39.191942, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: cd511418-cc80-40b6-943b-8654a823a22a, status: done}
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_60, status: idle, current_stage: idle, updated_at: 2026-09-14T13:38:39.219923}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=aeb2872a-d58b-48f7-8358-76b7671bdf17
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=cd511418-cc80-40b6-943b-8654a823a22a
+I/flutter (30358): [SyncService]    🔄 grow_rooms → update: id=room_60
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 3 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 7de432ce-046d-4f7a-80ca-c356aa4df896, room_id: room_33, job_type: watering, name: WATERING, status: in_progress, assignee: Andrew, priority: normal, scheduled_at: 2026-09-14T13:39:10.639401, plan_details: 1 Side 1.0 L/m², prochloraz_rate: , linked_task_id: e8c62b4d-e883-4dc9-8ec4-67e286ddbe3a, started_at: 2026-09-14T13:39:10.716599, created_at: 2026-09-14T13:39:10.716599}
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_33, status: active, current_stage: watering, updated_at: 2026-09-14T13:39:10.740742}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → insert: id=7de432ce-046d-4f7a-80ca-c356aa4df896
+I/flutter (30358): [SyncService]    🔄 grow_rooms → update: id=room_33
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 2 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 2 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 748609d2-e5cb-4bf0-bc76-756449526403, project_id: 7ab9b49a-24b6-4cd1-b7c3-61d253d9771b, title: AIRING (Room 61), description: , status: todo, priority: medium, due_date: 2026-09-14T13:39:57.018410, created_at: 2026-09-14T13:39:57.032410}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: ac9fe533-de3d-4140-9261-e6298aaff6e4, room_id: room_61, job_type: airing, name: AIRING, status: in_progress, assignee: Fajar, priority: normal, scheduled_at: 2026-09-14T13:39:57.018410, plan_details: , prochloraz_rate: , linked_task_id: 748609d2-e5cb-4bf0-bc76-756449526403, started_at: 2026-09-14T13:39:57.042083, created_at: 2026-09-14T13:39:57.042083}
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_61, status: active, current_stage: airing, updated_at: 2026-09-14T13:39:57.060121}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [SyncService]    🔄 tasks → insert: id=748609d2-e5cb-4bf0-bc76-756449526403
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → insert: id=ac9fe533-de3d-4140-9261-e6298aaff6e4
+I/flutter (30358): [SyncService]    🔄 grow_rooms → update: id=room_61
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 3 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: airing, name: Airing, plan_minutes: 20, is_solo_job: true, is_active: true}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService]    🔄 mushroom_job_types → update: id=airing
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 1 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 1 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: ac9fe533-de3d-4140-9261-e6298aaff6e4, status: completed, completed_at: 2026-09-14T13:40:16.848914, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 748609d2-e5cb-4bf0-bc76-756449526403, status: done}
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_61, status: idle, current_stage: idle, updated_at: 2026-09-14T13:40:16.873920}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=ac9fe533-de3d-4140-9261-e6298aaff6e4
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=748609d2-e5cb-4bf0-bc76-756449526403
+I/flutter (30358): [SyncService]    🔄 grow_rooms → update: id=room_61
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 3 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Connection closed.
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [DeviceDiscovery] ! Heartbeat failed: Connection error – is the server running?
+I/flutter (30358): [ChatWS] Retrying connection (attempt 1 after 2s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [ChatWS] Retrying connection (attempt 2 after 4s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 3 after 6s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService]    🔄 tasks → insert: id=ce5b63bd-b4a2-442e-9c03-b87799c019aa
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → insert: id=e4c27e92-3e29-4868-a7f5-3f771ccf0600
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService]    🔄 mushroom_job_safety_configs → insert: id=5bebbef0-b02c-4f12-a51f-9694bd8a9795
+I/flutter (30358): [SyncService]    🔄 mushroom_safety_checkin_logs → insert: id=9acfda7c-e976-49fe-99c5-147e5f7ac157
+I/flutter (30358): [SyncService]    🔄 grow_rooms → update: id=room_61
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 5 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 5 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 4 after 8s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Connected successfully.
+I/flutter (30358): [ChatWS] Sent event: presence_update
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: msg_read
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: typing_state
+I/flutter (30358): [ChatWS] Connection closed.
+I/flutter (30358): [ChatWS] Retrying connection (attempt 1 after 2s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 2 after 4s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 3 after 6s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Connected successfully.
+I/flutter (30358): [ChatWS] Sent event: presence_update
+I/flutter (30358): [ChatWS] Received event: e2ee_message
+I/flutter (30358): [E2EE Debug] decryptPayload:
+I/flutter (30358):    - senderDeviceId: izii-d-c4a94f0f
+I/flutter (30358):    - ciphertextBytes length: 28
+I/flutter (30358):    - signatureBytes length: 64
+I/flutter (30358):    - senderX25519PubKey length: 32
+I/flutter (30358):    - senderEd25519PubKey length: 32
+I/flutter (30358): [E2EE] Decrypted message from izii-d-c4a94f0f: 10 chars
+I/flutter (30358): [DeviceDiscovery] ✅ Ack 1 tin
+I/flutter (30358): [E2EE] Ack 1 tin
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: e2ee_message
+I/flutter (30358): [E2EE Debug] decryptPayload:
+I/flutter (30358):    - senderDeviceId: izii-d-2a129af8
+I/flutter (30358):    - ciphertextBytes length: 28
+I/flutter (30358):    - signatureBytes length: 64
+I/flutter (30358):    - senderX25519PubKey length: 32
+I/flutter (30358):    - senderEd25519PubKey length: 32
+I/flutter (30358): [E2EE] Decrypted message from izii-d-2a129af8: 10 chars
+I/flutter (30358): [DeviceDiscovery] ✅ Ack 1 tin
+I/flutter (30358): [E2EE] Ack 1 tin
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: msg_read
+I/flutter (30358): [ChatWS] Connection closed.
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 1 after 2s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (30358): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 2 after 4s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [ChatWS] Cannot send event, WebSocket disconnected.
+I/flutter (30358): [ChatWS] Cannot send event, WebSocket disconnected.
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 3 after 6s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Connected successfully.
+I/flutter (30358): [ChatWS] Sent event: presence_update
+I/flutter (30358): [E2EE Debug] encryptForDevice:
+I/flutter (30358):    - recipientDeviceId: izii-d-2a129af8
+I/flutter (30358):    - ciphertext length: 29
+I/flutter (30358):    - signature length: 64
+I/flutter (30358): [DeviceDiscovery] 📤 Sending E2EE to https://tampa-circular-knew-timeline.trycloudflare.com/api/v1/messages/send
+I/flutter (30358): [DeviceDiscovery]    conversation_id: direct_izii-d-2a129af8_izii-d-dd43cd39
+I/flutter (30358): [DeviceDiscovery]    sender_device_id: izii-d-dd43cd39
+I/flutter (30358): [DeviceDiscovery]    recipients: 1
+I/flutter (30358): [DeviceDiscovery]    payload keys for izii-d-2a129af8: [ciphertext, nonce, sender_device_id, signature, sent_at]
+I/flutter (30358): [DeviceDiscovery] ✅ Encrypted message sent to 1 device(s)
+I/flutter (30358): [ChatWS] Sent event: e2ee_message
+I/flutter (30358): [E2EE] Sent encrypted message to 1 devices
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: msg_read
+I/flutter (30358): [ChatWS] Sent event: msg_read
+I/flutter (30358): [E2EE Debug] encryptForDevice:
+I/flutter (30358):    - recipientDeviceId: izii-d-c4a94f0f
+I/flutter (30358):    - ciphertext length: 28
+I/flutter (30358):    - signature length: 64
+I/flutter (30358): [DeviceDiscovery] 📤 Sending E2EE to https://tampa-circular-knew-timeline.trycloudflare.com/api/v1/messages/send
+I/flutter (30358): [DeviceDiscovery]    conversation_id: direct_izii-d-c4a94f0f_izii-d-dd43cd39
+I/flutter (30358): [DeviceDiscovery]    sender_device_id: izii-d-dd43cd39
+I/flutter (30358): [DeviceDiscovery]    recipients: 1
+I/flutter (30358): [DeviceDiscovery]    payload keys for izii-d-c4a94f0f: [ciphertext, nonce, sender_device_id, signature, sent_at]
+I/flutter (30358): [DeviceDiscovery] ✅ Encrypted message sent to 1 device(s)
+I/flutter (30358): [ChatWS] Sent event: e2ee_message
+I/flutter (30358): [E2EE] Sent encrypted message to 1 devices
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: msg_read
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: presence_update
+I/flutter (30358): [Presence] presence_update  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+
+
+
+
+
+
+I/flutter (30358): [ChatWS] Connection closed.
+I/flutter (30358): [ChatWS] Retrying connection (attempt 1 after 2s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Connected successfully.
+I/flutter (30358): [ChatWS] Sent event: presence_update
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: msg_read
+I/flutter (30358): [ChatWS] Received event: msg_read
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: typing_state
+I/flutter (30358): [ChatWS] Received event: typing_state
+I/flutter (30358): [ChatWS] Received event: e2ee_message
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: msg_read
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Connection closed.
+I/flutter (30358): [ChatWS] Retrying connection (attempt 1 after 2s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 2 after 4s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 3 after 6s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (30358): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] ! Không thể kéo dữ liệu từ Server: The connection errored: Failed host lookup: 'tampa-circular-knew-timeline.trycloudflare.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Retrying connection (attempt 4 after 8s)...
+I/flutter (30358): [ChatWS] Connecting to wss://tampa-circular-knew-timeline.trycloudflare.com/chat?token=iZii... ...
+I/flutter (30358): [ChatWS] Connected successfully.
+I/flutter (30358): [ChatWS] Sent event: presence_update
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [DeviceUser] name no change izii-d-dd43cd39, display name → "Vinh Phan (305629) · iZii-android-mrrx5uiz"
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [DeviceUser] Old token is no longer valid (server has been reset?) — token has been cleared. Device needs to scan new enrollment code.
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: e4c27e92-3e29-4868-a7f5-3f771ccf0600, status: completed, completed_at: 2026-09-14T13:45:59.881925, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: ce5b63bd-b4a2-442e-9c03-b87799c019aa, status: done}
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_61, status: idle, current_stage: idle, updated_at: 2026-09-14T13:45:59.907909}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Settings] The device token has been transferred from "http://172.22.170.2:8080" to "https://tampa-circular-knew-timeline.trycloudflare.com".I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: e4c27e92-3e29-4868-a7f5-3f771ccf0600, status: completed, completed_at: 2026-09-14T13:45:59.881925, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: ce5b63bd-b4a2-442e-9c03-b87799c019aa, status: done}
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_61, status: idle, current_stage: idle, updated_at: 2026-09-14T13:45:59.907909}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=e4c27e92-3e29-4868-a7f5-3f771ccf0600
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=ce5b63bd-b4a2-442e-9c03-b87799c019aa
+I/flutter (30358): [SyncService]    🔄 grow_rooms → update: id=room_61
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 3 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 3 bản ghi vào database local (bỏ qua/lọc 0).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: grow_rooms -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: mushroom_jobs -> update
+I/flutter (30358): [SyncService] 📝 Đã lưu ngoại tuyến thay đổi: tasks -> update
+I/flutter (30358): [SyncService] 🚀 [Outbox] Đang đẩy nhanh 27 thay đổi lên server...
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: room_33, status: idle, current_stage: idle, day_in_cycle: 1, updated_at: 2026-09-14T13:46:16.627686}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: c468272e-9d57-40bc-8dfd-bd635e89c8cd, status: completed, completed_at: 2026-09-14T13:46:16.634499, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: b10032ff-22db-413d-b622-00ecfbda6132, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 72cfc16b-700e-4398-b28f-614234384898, status: completed, completed_at: 2026-09-14T13:46:16.647307, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: ed9e0349-c272-465a-b312-fa0c1e1e893d, status: done}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 0d69c11f-b641-4372-b3bc-cf5c98143972, status: completed, completed_at: 2026-09-14T13:46:16.657511, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: c4d9dbfd-8982-40dc-9b71-d87173f9c531, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 41175578-0612-47b3-b2ca-7f062dc7f487, status: completed, completed_at: 2026-09-14T13:46:16.668096, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: bcd2e6a0-cda8-43f7-8802-2a11f5c7bd00, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: ad5b9386-5079-4bad-be00-50174b6573c4, status: completed, completed_at: 2026-09-14T13:46:16.678304, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 4fe23ae5-68ca-4f77-8292-12366fe9d6a0, status: done}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: f30daa60-3ef2-48f1-98af-c365a6c0f15c, status: completed, completed_at: 2026-09-14T13:46:16.686551, alarm_triggered: false}
+I/flutter (30358): [SyncService] ✅ [Outbox] Đẩy thành công 27 thay đổi lên server.
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 20a55df6-a15c-4ca8-84c8-840ba018e009, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 3d2887b4-d57c-4562-aadd-2d488c4eca0c, status: completed, completed_at: 2026-09-14T13:46:16.697670, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: f0ca1a26-f2e9-4b38-a3a5-d232696e5504, status: done}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 138fe03d-3cf6-4712-88d0-6e09140f9ef1, status: completed, completed_at: 2026-09-14T13:46:16.709339, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: b23032da-5534-4d43-9c65-bd490a1ed17c, status: done}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 18cc85bc-3e59-4622-a43d-05ed5fa554ae, status: completed, completed_at: 2026-09-14T13:46:16.723284, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 3aa76004-eeea-46e7-85ed-7cb18365ab25, status: done}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: bb44c47b-415b-4e6f-894e-5b840c6b8b97, status: completed, completed_at: 2026-09-14T13:46:16.732065, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: f9e8098a-8404-46b2-ac7d-6543db19c77e, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 60bbbfdb-e7fe-47eb-a2f1-06c13e2a88ee, status: completed, completed_at: 2026-09-14T13:46:16.742432, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 417d83c5-0bcd-4e96-bca2-200532acebfb, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 3d20576f-e38c-4322-8a6b-65dcc6dfaf92, status: completed, completed_at: 2026-09-14T13:46:16.752994, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: bb60028e-6392-4ae0-9127-782ebda7223f, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 7de432ce-046d-4f7a-80ca-c356aa4df896, status: completed, completed_at: 2026-09-14T13:46:16.766347, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: e8c62b4d-e883-4dc9-8ec4-67e286ddbe3a, status: done}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Đang gửi 15 thay đổi lên server...
+I/flutter (30358): [SyncService]    📦 tasks → update
+I/flutter (30358): [SyncService]    📦 mushroom_jobs → update
+I/flutter (30358): [SyncService]    📦 tasks → update
+I/flutter (30358): [SyncService]    📦 mushroom_jobs → update
+I/flutter (30358): [SyncService]    📦 tasks → update
+I/flutter (30358): [SyncService]    📦 mushroom_jobs → update
+I/flutter (30358): [SyncService]    📦 tasks → update
+I/flutter (30358): [SyncService]    📦 mushroom_jobs → update
+I/flutter (30358): [SyncService]    📦 tasks → update
+I/flutter (30358): [SyncService]    📦 mushroom_jobs → update
+I/flutter (30358): [SyncService]    📦 tasks → update
+I/flutter (30358): [SyncService]    📦 mushroom_jobs → update
+I/flutter (30358): [SyncService]    📦 tasks → update
+I/flutter (30358): [SyncService]    📦 mushroom_jobs → update
+I/flutter (30358): [SyncService]    📦 tasks → update
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 20a55df6-a15c-4ca8-84c8-840ba018e009, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 3d2887b4-d57c-4562-aadd-2d488c4eca0c, status: completed, completed_at: 2026-09-14T13:46:16.697670, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: f0ca1a26-f2e9-4b38-a3a5-d232696e5504, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 138fe03d-3cf6-4712-88d0-6e09140f9ef1, status: completed, completed_at: 2026-09-14T13:46:16.709339, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: b23032da-5534-4d43-9c65-bd490a1ed17c, status: done}
+I/flutter (30358): [SyncService] ✅ PUSH thành công! Server đã nhận 15 thay đổi.
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 18cc85bc-3e59-4622-a43d-05ed5fa554ae, status: completed, completed_at: 2026-09-14T13:46:16.723284, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 3aa76004-eeea-46e7-85ed-7cb18365ab25, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: bb44c47b-415b-4e6f-894e-5b840c6b8b97, status: completed, completed_at: 2026-09-14T13:46:16.732065, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: f9e8098a-8404-46b2-ac7d-6543db19c77e, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 60bbbfdb-e7fe-47eb-a2f1-06c13e2a88ee, status: completed, completed_at: 2026-09-14T13:46:16.742432, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 417d83c5-0bcd-4e96-bca2-200532acebfb, status: done}
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 3d20576f-e38c-4322-8a6b-65dcc6dfaf92, status: completed, completed_at: 2026-09-14T13:46:16.752994, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: bb60028e-6392-4ae0-9127-782ebda7223f, status: done}
+I/flutter (30358): [ChatWS] Received event: event_reaction
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: 7de432ce-046d-4f7a-80ca-c356aa4df896, status: completed, completed_at: 2026-09-14T13:46:16.766347, alarm_triggered: false}
+I/flutter (30358): [ChatWS] Received event: sync_trigger
+I/flutter (30358): [ChatWS] Real-time event reaction received: {id: e8c62b4d-e883-4dc9-8ec4-67e286ddbe3a, status: done}
+I/flutter (30358): [ChatWS] Sync trigger received from WebSocket. Pulling updates...
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService]    🔄 grow_rooms → update: id=room_33
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=c468272e-9d57-40bc-8dfd-bd635e89c8cd
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=b10032ff-22db-413d-b622-00ecfbda6132
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=72cfc16b-700e-4398-b28f-614234384898
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=ed9e0349-c272-465a-b312-fa0c1e1e893d
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=0d69c11f-b641-4372-b3bc-cf5c98143972
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=c4d9dbfd-8982-40dc-9b71-d87173f9c531
+I/flutter (30358): [SyncService] ! Bỏ qua tạo Task stub rỗng cho id c4d9dbfd-8982-40dc-9b71-d87173f9c531 (thiếu title hợp lệ)
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=41175578-0612-47b3-b2ca-7f062dc7f487
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=bcd2e6a0-cda8-43f7-8802-2a11f5c7bd00
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=ad5b9386-5079-4bad-be00-50174b6573c4
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=4fe23ae5-68ca-4f77-8292-12366fe9d6a0
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=f30daa60-3ef2-48f1-98af-c365a6c0f15c
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=20a55df6-a15c-4ca8-84c8-840ba018e009
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=3d2887b4-d57c-4562-aadd-2d488c4eca0c
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=f0ca1a26-f2e9-4b38-a3a5-d232696e5504
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=138fe03d-3cf6-4712-88d0-6e09140f9ef1
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=b23032da-5534-4d43-9c65-bd490a1ed17c
+I/flutter (30358): [SyncService] ! Bỏ qua tạo Task stub rỗng cho id b23032da-5534-4d43-9c65-bd490a1ed17c (thiếu title hợp lệ)
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=18cc85bc-3e59-4622-a43d-05ed5fa554ae
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=3aa76004-eeea-46e7-85ed-7cb18365ab25
+I/flutter (30358): [SyncService] ! Bỏ qua tạo Task stub rỗng cho id 3aa76004-eeea-46e7-85ed-7cb18365ab25 (thiếu title hợp lệ)
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=bb44c47b-415b-4e6f-894e-5b840c6b8b97
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=f9e8098a-8404-46b2-ac7d-6543db19c77e
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] ! Bỏ qua tạo Task stub rỗng cho id f9e8098a-8404-46b2-ac7d-6543db19c77e (thiếu title hợp lệ)
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=60bbbfdb-e7fe-47eb-a2f1-06c13e2a88ee
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=417d83c5-0bcd-4e96-bca2-200532acebfb
+I/flutter (30358): [SyncService] ! Bỏ qua tạo Task stub rỗng cho id 417d83c5-0bcd-4e96-bca2-200532acebfb (thiếu title hợp lệ)
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=3d20576f-e38c-4322-8a6b-65dcc6dfaf92
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=bb60028e-6392-4ae0-9127-782ebda7223f
+I/flutter (30358): [SyncService] ! Bỏ qua tạo Task stub rỗng cho id bb60028e-6392-4ae0-9127-782ebda7223f (thiếu title hợp lệ)
+I/flutter (30358): [SyncService]    🔄 mushroom_jobs → update: id=7de432ce-046d-4f7a-80ca-c356aa4df896
+I/flutter (30358): [SyncService]    🔄 tasks → update: id=e8c62b4d-e883-4dc9-8ec4-67e286ddbe3a
+I/flutter (30358): [SyncService] ! Bỏ qua tạo Task stub rỗng cho id e8c62b4d-e883-4dc9-8ec4-67e286ddbe3a (thiếu title hợp lệ)
+I/flutter (30358): [SyncService] 📥 Trang 1: nhận 27 cập nhật
+I/flutter (30358): [SyncService] ✅ Đã ghi 20 bản ghi vào database local (bỏ qua/lọc 7).
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+
+I/flutter (30358): [ChatWS] Sent event: heartbeat
+I/flutter (30358): [ChatWS] Error parsing WebSocket message: type 'Null' is not a subtype of type 'Map<dynamic, dynamic>' in type cast
+
+
+
+
+
+
+
+I/flutter (30358): [SyncService] Đang kết nối tới server: https://tampa-circular-knew-timeline.trycloudflare.com ...
+I/flutter (30358): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (30358): [SyncService] Đang kiểm tra cập nhật mới từ Server...
+I/flutter (30358): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (30358): [Presence]    · device_id=izii-d-c4a94f0f user_id=izii-d-c4a94f0f
+I/flutter (30358): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (30358): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [SyncService] Không có cập nhật mới từ Server.
+I/flutter (30358): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-2a129af8 → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Received event: heartbeat
+I/flutter (30358): [Presence] heartbeat  izii-d-c4a94f0f → onlineSynced
+I/flutter (30358): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-c4a94f0f=onlineSynced
+I/flutter (30358): [ChatWS] Sent event: heartbeat

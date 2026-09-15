@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:izii_app/core/bloc/app_bloc.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
 
@@ -20,6 +19,7 @@ import 'departments_tab_screen.dart';
 import 'job_types_management_screen.dart';
 import 'settings_tab_screen.dart';
 import 'growing_performance_board_screen.dart';
+import 'manager_batch_attendance_screen.dart';
 import 'mushrooms_profile_screen.dart';
 import '../services/employee_service.dart';
 import 'package:izii_app/core/database/app_database.dart';
@@ -979,6 +979,14 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                             : 'Departments',
                         Colors.indigo,
                         effectiveExpanded),
+                    _buildSidebarItem(
+                        'batch_attendance',
+                        Icons.checklist_rounded,
+                        _language == 'vi'
+                            ? 'Chấm công nhóm (Batch Attendance)'
+                            : 'Batch Attendance',
+                        const Color(0xFF0284C7),
+                        effectiveExpanded),
                     // Level 2+ (Lead/Supervisor/Manager) only — see
                     // _canManageJobTypes.
                     if (_canManageJobTypes)
@@ -1272,6 +1280,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     }
     if (_activeTab == 'departments') {
       return DepartmentsTabScreen(
+        isDark: isDark,
+      );
+    }
+    if (_activeTab == 'batch_attendance') {
+      return ManagerBatchAttendanceScreen(
         isDark: isDark,
       );
     }

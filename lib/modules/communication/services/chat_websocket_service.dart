@@ -88,8 +88,14 @@ class ChatWebSocketService {
   }
 
   void _onMessageReceived(String rawMessage) {
+    if (rawMessage.trim() == 'pong') {
+      return;
+    }
     try {
       final event = ChatWebSocketEvent.fromJson(rawMessage);
+      if (event.event == 'pong') {
+        return;
+      }
       print('[ChatWS] Received event: ${event.event}');
       if (!_eventStreamController.isClosed) {
         _eventStreamController.add(event);

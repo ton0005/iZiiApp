@@ -172,8 +172,10 @@ class ChatWebSocketEvent {
 
   factory ChatWebSocketEvent.fromMap(Map<String, dynamic> map) {
     return ChatWebSocketEvent(
-      event: map['event'] as String,
-      data: Map<String, dynamic>.from(map['data'] as Map),
+      event: (map['event'] as String?) ?? '',
+      data: map['data'] != null && map['data'] is Map
+          ? Map<String, dynamic>.from(map['data'] as Map)
+          : const <String, dynamic>{},
     );
   }
 

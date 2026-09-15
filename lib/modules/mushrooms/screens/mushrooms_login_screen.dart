@@ -533,18 +533,18 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.lock_person_outlined, size: 16, color: accentColor),
+                          Icon(Icons.lock_person_outlined, size: 16, color: accentColor),
                           SizedBox(width: 8),
-                          const Text(
+                          Text(
                             'Quick Demo Accounts (Shift Profiles)',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: accentColor,
                             ),
                           ),
                           SizedBox(width: 4),
-                          const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: accentColor),
+                          Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: accentColor),
                         ],
                       ),
                     ),

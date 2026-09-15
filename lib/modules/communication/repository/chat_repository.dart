@@ -57,7 +57,21 @@ class ChatRepository {
 
     final query = _db.select(_db.users)
       ..where((u) => u.id.equals(companionUserId!));
-    return query.getSingleOrNull();
+    final existingUser = await query.getSingleOrNull();
+    if (existingUser != null) return existingUser;
+
+    // Fallback: If not found in users table yet, create a placeholder user from companionUserId
+    final fallbackUser = User(
+      id: companionUserId!,
+      name: companionUserId!,
+      type: 'both',
+      kycStatus: 'verified',
+      createdAt: DateTime.now(),
+    );
+    try {
+      await _db.into(_db.users).insertOnConflictUpdate(fallbackUser);
+    } catch (_) {}
+    return fallbackUser;
   }
 
   Future<ChatConversation> getOrCreateDirectConversation(

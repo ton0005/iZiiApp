@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:drift/drift.dart' as d;
-import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:izii_app/core/theme/izii_colors.dart';
 import '../../../core/database/app_database.dart';
 import '../repository.dart';
 import '../services/employee_service.dart';
 import 'mushboom_monarto_screen.dart'; // For FarmColors
+import 'manager_batch_attendance_screen.dart';
 
 class HarvestAttendanceScreen extends StatefulWidget {
   final bool isDark;
@@ -845,6 +845,25 @@ class _HarvestAttendanceScreenState extends State<HarvestAttendanceScreen>
           ],
         ),
         actions: [
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0284C7),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              elevation: 0,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ManagerBatchAttendanceScreen(isDark: isDark),
+                ),
+              ).then((_) => _loadPendingTimesheets());
+            },
+            icon: const Icon(Icons.checklist_rounded, size: 14),
+            label: const Text('Chấm công nhóm (100+ NV)', style: TextStyle(fontSize: 11)),
+          ),
+          const SizedBox(width: 8),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               backgroundColor: FarmColors.forestGreen,

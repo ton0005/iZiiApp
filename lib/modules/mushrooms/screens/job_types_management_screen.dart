@@ -383,9 +383,9 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                               value: 'delete',
                               child: Row(
                                 children: [
-                                  const Icon(Icons.delete_outline, size: 18, color: IZiiColors.error),
+                                  Icon(Icons.delete_outline, size: 18, color: IZiiColors.error),
                                   SizedBox(width: 8),
-                                  const Text('Delete', style: const TextStyle(color: IZiiColors.error)),
+                                  Text('Delete', style: TextStyle(color: IZiiColors.error)),
                                 ],
                               ),
                             ),
@@ -445,11 +445,11 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.shield_rounded, size: 12, color: IZiiColors.error),
+                                Icon(Icons.shield_rounded, size: 12, color: IZiiColors.error),
                                 SizedBox(width: 4),
-                                const Text(
+                                Text(
                                   'Solo Safety Flow',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                     color: IZiiColors.error,
@@ -572,7 +572,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                               if (isSolo)
                                 const Padding(
                                   padding: EdgeInsets.only(left: 4),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.shield_rounded,
                                     size: 14,
                                     color: IZiiColors.error,

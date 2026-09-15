@@ -803,9 +803,9 @@ class _HarvestTabScreenState extends State<HarvestTabScreen> {
                           'Incoming Picking Orders',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                         ),
-                        const Text(
+                        Text(
                           'Requests from Cool Room / Sales Module',
-                          style: const TextStyle(fontSize: 11, color: Colors.grey),
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
                         ),
                       ],
                     ),

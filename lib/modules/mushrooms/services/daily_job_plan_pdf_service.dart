@@ -69,7 +69,8 @@ class DailyJobPlanPdfService {
 
     final empNameById = <String, String>{};
     for (final e in employees) {
-      empNameById[e['id'].toString()] = e['name']?.toString() ?? e['id'].toString();
+      empNameById[e['id'].toString()] =
+          e['name']?.toString() ?? e['id'].toString();
     }
 
     // Sort jobs by room, then by scheduled time / name
@@ -79,16 +80,22 @@ class DailyJobPlanPdfService {
       final roomB = roomNameById[b.roomId] ?? b.roomId;
       final cRoom = roomA.compareTo(roomB);
       if (cRoom != 0) return cRoom;
-      return (a.scheduledAt ?? a.createdAt).compareTo(b.scheduledAt ?? b.createdAt);
+      return (a.scheduledAt ?? a.createdAt)
+          .compareTo(b.scheduledAt ?? b.createdAt);
     });
 
     final formattedDate = DateFormat('EEEE, dd MMMM yyyy').format(date);
-    final printTimestamp = DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now());
+    final printTimestamp =
+        DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now());
 
     final totalJobs = sortedJobs.length;
-    final assignedCount = sortedJobs.where((j) => j.assignee != null && j.assignee!.trim().isNotEmpty).length;
+    final assignedCount = sortedJobs
+        .where((j) => j.assignee != null && j.assignee!.trim().isNotEmpty)
+        .length;
     final unassignedCount = totalJobs - assignedCount;
-    final soloCount = sortedJobs.where((j) => j.isSoloJob == true || j.jobType == 'alone_worker').length;
+    final soloCount = sortedJobs
+        .where((j) => j.isSoloJob == true || j.jobType == 'alone_worker')
+        .length;
 
     // Build PDF Document
     pdf.addPage(
@@ -144,7 +151,8 @@ class DailyJobPlanPdfService {
   }) {
     return pw.Container(
       decoration: const pw.BoxDecoration(
-        border: pw.Border(bottom: pw.BorderSide(color: PdfColors.blueGrey800, width: 1.5)),
+        border: pw.Border(
+            bottom: pw.BorderSide(color: PdfColors.blueGrey800, width: 1.5)),
       ),
       padding: const pw.EdgeInsets.only(bottom: 8),
       margin: const pw.EdgeInsets.only(bottom: 10),
@@ -156,26 +164,32 @@ class DailyJobPlanPdfService {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
-                'MUSHBOOM MONARTO - GROWING DAILY JOB PLAN',
-                style: pw.TextStyle(font: fontBold, fontSize: 14, color: PdfColors.blueGrey900),
+                'COSTA MUSHROOM MONARTO - GROWING DAILY JOB PLAN',
+                style: pw.TextStyle(
+                    font: fontBold, fontSize: 14, color: PdfColors.blueGrey900),
               ),
               pw.SizedBox(height: 2),
               pw.Text(
                 'Date: $formattedDate',
-                style: pw.TextStyle(font: fontBold, fontSize: 11, color: PdfColors.indigo900),
+                style: pw.TextStyle(
+                    font: fontBold, fontSize: 11, color: PdfColors.indigo900),
               ),
             ],
           ),
           pw.Row(
             children: [
-              _buildMetricChip('Total Jobs', '$totalJobs', PdfColors.blueGrey700, fontRegular, fontBold),
+              _buildMetricChip('Total Jobs', '$totalJobs',
+                  PdfColors.blueGrey700, fontRegular, fontBold),
               pw.SizedBox(width: 6),
-              _buildMetricChip('Assigned', '$assignedCount', PdfColors.green800, fontRegular, fontBold),
+              _buildMetricChip('Assigned', '$assignedCount', PdfColors.green800,
+                  fontRegular, fontBold),
               pw.SizedBox(width: 6),
-              _buildMetricChip('Unassigned', '$unassignedCount', PdfColors.orange800, fontRegular, fontBold),
+              _buildMetricChip('Unassigned', '$unassignedCount',
+                  PdfColors.orange800, fontRegular, fontBold),
               if (soloCount > 0) ...[
                 pw.SizedBox(width: 6),
-                _buildMetricChip('Solo Jobs', '$soloCount', PdfColors.red800, fontRegular, fontBold),
+                _buildMetricChip('Solo Jobs', '$soloCount', PdfColors.red800,
+                    fontRegular, fontBold),
               ],
             ],
           ),
@@ -184,7 +198,8 @@ class DailyJobPlanPdfService {
     );
   }
 
-  static pw.Widget _buildMetricChip(String label, String value, PdfColor color, pw.Font regular, pw.Font bold) {
+  static pw.Widget _buildMetricChip(String label, String value, PdfColor color,
+      pw.Font regular, pw.Font bold) {
     return pw.Container(
       padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: pw.BoxDecoration(
@@ -195,8 +210,12 @@ class DailyJobPlanPdfService {
       child: pw.Row(
         mainAxisSize: pw.MainAxisSize.min,
         children: [
-          pw.Text('$label: ', style: pw.TextStyle(font: regular, fontSize: 8.5, color: PdfColors.white)),
-          pw.Text(value, style: pw.TextStyle(font: bold, fontSize: 9, color: PdfColors.white)),
+          pw.Text('$label: ',
+              style: pw.TextStyle(
+                  font: regular, fontSize: 8.5, color: PdfColors.white)),
+          pw.Text(value,
+              style: pw.TextStyle(
+                  font: bold, fontSize: 9, color: PdfColors.white)),
         ],
       ),
     );
@@ -216,7 +235,8 @@ class DailyJobPlanPdfService {
           padding: const pw.EdgeInsets.all(32),
           child: pw.Text(
             'No jobs planned for this date.',
-            style: pw.TextStyle(font: fontRegular, fontSize: 12, color: PdfColors.grey700),
+            style: pw.TextStyle(
+                font: fontRegular, fontSize: 12, color: PdfColors.grey700),
           ),
         ),
       );
@@ -253,13 +273,18 @@ class DailyJobPlanPdfService {
           decoration: const pw.BoxDecoration(color: PdfColors.blueGrey100),
           children: headers.map((h) {
             return pw.Padding(
-              padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+              padding:
+                  const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 5),
               child: pw.Text(
                 h,
-                style: pw.TextStyle(font: fontBold, fontSize: 8.5, color: PdfColors.blueGrey900),
-                textAlign: h == '#' || h == 'Std (m)' || h == 'Solo' || h == 'Done [ ]'
-                    ? pw.TextAlign.center
-                    : pw.TextAlign.left,
+                style: pw.TextStyle(
+                    font: fontBold,
+                    fontSize: 8.5,
+                    color: PdfColors.blueGrey900),
+                textAlign:
+                    h == '#' || h == 'Std (m)' || h == 'Solo' || h == 'Done [ ]'
+                        ? pw.TextAlign.center
+                        : pw.TextAlign.left,
               ),
             );
           }).toList(),
@@ -271,15 +296,20 @@ class DailyJobPlanPdfService {
           final j = entry.value;
           final room = roomNameById[j.roomId] ?? j.roomId;
           final jt = jobTypeById[j.jobType.toLowerCase()];
-          final jtName = jt != null ? (jt['name']?.toString() ?? j.jobType) : j.jobType;
-          final stdMin = j.timeLimitMinutes ?? (jt != null ? jt['plan_minutes'] : 30);
+          final jtName =
+              jt != null ? (jt['name']?.toString() ?? j.jobType) : j.jobType;
+          final stdMin =
+              j.timeLimitMinutes ?? (jt != null ? jt['plan_minutes'] : 30);
           final isSolo = j.isSoloJob == true || j.jobType == 'alone_worker';
-          final assigneeName = (j.assignee != null && j.assignee!.trim().isNotEmpty)
-              ? (empNameById[j.assignee!] ?? j.assignee!)
-              : '________________';
+          final assigneeName =
+              (j.assignee != null && j.assignee!.trim().isNotEmpty)
+                  ? (empNameById[j.assignee!] ?? j.assignee!)
+                  : '________________';
           final notes = [
-            if (j.planDetails != null && j.planDetails!.trim().isNotEmpty) j.planDetails!.trim(),
-            if (j.prochlorazRate != null && j.prochlorazRate!.trim().isNotEmpty) j.prochlorazRate!.trim(),
+            if (j.planDetails != null && j.planDetails!.trim().isNotEmpty)
+              j.planDetails!.trim(),
+            if (j.prochlorazRate != null && j.prochlorazRate!.trim().isNotEmpty)
+              j.prochlorazRate!.trim(),
           ].join(' · ');
 
           final isEven = entry.key % 2 == 0;
@@ -289,31 +319,46 @@ class DailyJobPlanPdfService {
             ),
             children: [
               pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 3, vertical: 4),
-                child: pw.Text('$idx', style: pw.TextStyle(font: fontRegular, fontSize: 8), textAlign: pw.TextAlign.center),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 3, vertical: 4),
+                child: pw.Text('$idx',
+                    style: pw.TextStyle(font: fontRegular, fontSize: 8),
+                    textAlign: pw.TextAlign.center),
               ),
               pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: pw.Text(room, style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                child: pw.Text(room,
+                    style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
               ),
               pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: pw.Text(j.name, style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                child: pw.Text(j.name,
+                    style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
               ),
               pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: pw.Text(jtName, style: pw.TextStyle(font: fontRegular, fontSize: 8)),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                child: pw.Text(jtName,
+                    style: pw.TextStyle(font: fontRegular, fontSize: 8)),
               ),
               pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: pw.Text('$stdMin', style: pw.TextStyle(font: fontRegular, fontSize: 8), textAlign: pw.TextAlign.center),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                child: pw.Text('$stdMin',
+                    style: pw.TextStyle(font: fontRegular, fontSize: 8),
+                    textAlign: pw.TextAlign.center),
               ),
               pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: pw.Text(assigneeName, style: pw.TextStyle(font: fontRegular, fontSize: 8)),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                child: pw.Text(assigneeName,
+                    style: pw.TextStyle(font: fontRegular, fontSize: 8)),
               ),
               pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                 child: pw.Text(
                   isSolo ? 'YES' : '-',
                   style: pw.TextStyle(
@@ -325,18 +370,25 @@ class DailyJobPlanPdfService {
                 ),
               ),
               pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: pw.Text(notes, style: pw.TextStyle(font: fontRegular, fontSize: 7.5, color: PdfColors.grey800)),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                child: pw.Text(notes,
+                    style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 7.5,
+                        color: PdfColors.grey800)),
               ),
               pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                 child: pw.Container(
                   alignment: pw.Alignment.center,
                   child: pw.Container(
                     width: 10,
                     height: 10,
                     decoration: pw.BoxDecoration(
-                      border: pw.Border.all(color: PdfColors.grey700, width: 0.8),
+                      border:
+                          pw.Border.all(color: PdfColors.grey700, width: 0.8),
                     ),
                   ),
                 ),
@@ -361,25 +413,31 @@ class DailyJobPlanPdfService {
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('Plan Prepared By (Manager):', style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
+              pw.Text('Plan Prepared By (Manager):',
+                  style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
               pw.SizedBox(height: 18),
-              pw.Text('Signature: ______________________', style: pw.TextStyle(font: fontRegular, fontSize: 8)),
+              pw.Text('Signature: ______________________',
+                  style: pw.TextStyle(font: fontRegular, fontSize: 8)),
             ],
           ),
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('Supervisor / Lead Dispatch:', style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
+              pw.Text('Supervisor / Lead Dispatch:',
+                  style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
               pw.SizedBox(height: 18),
-              pw.Text('Signature: ______________________', style: pw.TextStyle(font: fontRegular, fontSize: 8)),
+              pw.Text('Signature: ______________________',
+                  style: pw.TextStyle(font: fontRegular, fontSize: 8)),
             ],
           ),
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('Safety / Gas Audit Sign-off:', style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
+              pw.Text('Safety / Gas Audit Sign-off:',
+                  style: pw.TextStyle(font: fontBold, fontSize: 8.5)),
               pw.SizedBox(height: 18),
-              pw.Text('Signature: ______________________', style: pw.TextStyle(font: fontRegular, fontSize: 8)),
+              pw.Text('Signature: ______________________',
+                  style: pw.TextStyle(font: fontRegular, fontSize: 8)),
             ],
           ),
         ],
@@ -397,18 +455,21 @@ class DailyJobPlanPdfService {
       margin: const pw.EdgeInsets.only(top: 8),
       padding: const pw.EdgeInsets.only(top: 4),
       decoration: const pw.BoxDecoration(
-        border: pw.Border(top: pw.BorderSide(color: PdfColors.grey300, width: 0.5)),
+        border:
+            pw.Border(top: pw.BorderSide(color: PdfColors.grey300, width: 0.5)),
       ),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text(
-            'iZiiApp Growing Management • Printed: $printTimestamp',
-            style: pw.TextStyle(font: fontRegular, fontSize: 7.5, color: PdfColors.grey600),
+            'Growing Management • Printed: $printTimestamp',
+            style: pw.TextStyle(
+                font: fontRegular, fontSize: 7.5, color: PdfColors.grey600),
           ),
           pw.Text(
             'Page ${pageCtx.pageNumber} of ${pageCtx.pagesCount}',
-            style: pw.TextStyle(font: fontBold, fontSize: 7.5, color: PdfColors.grey700),
+            style: pw.TextStyle(
+                font: fontBold, fontSize: 7.5, color: PdfColors.grey700),
           ),
         ],
       ),

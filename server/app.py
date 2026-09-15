@@ -567,7 +567,7 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(
         while True:
             data = await websocket.receive_text()
             if data == "ping":
-                await websocket.send_text("pong")
+                await websocket.send_text(json.dumps({"event": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}))
                 continue
 
             try:

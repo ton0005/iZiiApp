@@ -1032,9 +1032,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           final senderDevice =
               await discoveryService.getDeviceInfo(senderDeviceId);
           if (senderDevice == null) {
-            print('[E2EE] Unknown sender device: $senderDeviceId');
-            messageIdsFailed.add(msgId);
-            firstFailureReason ??= 'unknown_sender_device';
+            print('[E2EE] Sender device info not available yet (network timeout or offline): $senderDeviceId');
+            // Không đưa vào messageIdsFailed để tránh làm server dead-letter/xoá mất tin.
+            // Tin sẽ được giữ trong hàng đợi server và giải mã khi có khoá ở vòng sau.
             continue;
           }
 
@@ -1160,10 +1160,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           _presenceLastSeen[dev.deviceId] = now;
           updatedMap[dev.deviceId] = ChatPresenceState.onlineSynced;
           marked++;
+
+          // Tự động đảm bảo thiết bị trực tuyến này có trong bảng users local
+          if (dev.deviceName.isNotEmpty) {
+            try {
+              _db.into(_db.users).insertOnConflictUpdate(
+                User(
+                  id: dev.deviceId,
+                  name: dev.deviceName,
+                  type: 'both',
+                  kycStatus: 'verified',
+                  createdAt: now,
+                ),
+              );
+            } catch (_) {}
+          }
         }
-        if (dev.userId.isNotEmpty &&
-            dev.userId != _currentUserId &&
-            dev.userId != dev.deviceId) {
+        if (dev.userId.isNotEmpty && dev.userId != _currentUserId) {
           _presenceLastSeen[dev.userId] = now;
           updatedMap[dev.userId] = ChatPresenceState.onlineSynced;
         }

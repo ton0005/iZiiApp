@@ -1225,7 +1225,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
 
   Widget _buildStageBadge(String stage) {
     Color bg = Colors.grey;
-    final Color fg = Colors.white;
+    const Color fg = Colors.white;
     String name = stage.toUpperCase();
     if (stage == 'filling') {
       bg = Colors.blue;
