@@ -98,6 +98,9 @@ TABLES = [
     ("tenant_modules",                "tenant_id, module_name"),
     ("model_registry",                "tenant_id, model_name"),
     ("field_registry",                "tenant_id, model_name, field_name"),
+    # Phase 3: Settings & Record Rules (2 tables)
+    ("settings",                      "scope, scope_id, key"),
+    ("record_rules",                  "tenant_id, rule_name"),
 ]
 
 BATCH = 500
@@ -107,7 +110,9 @@ BATCH = 500
 #                  không cần bảng này. Xem §Rollback trong plan/extend.md để biết
 #                  hệ quả khi cần quay ngược về SQLite.
 #   schema_migration_lock: bảng khoá migration của PostgreSQL runner.
-NOT_MIGRATED = {"sync_sequence", "schema_migration_lock"}
+#   projection_checkpoint: checkpoint seq của Projector PostgreSQL (P4.3).
+NOT_MIGRATED = {"sync_sequence", "schema_migration_lock", "projection_checkpoint"}
+
 
 
 def _check_server_running(port: int = 8080) -> bool:

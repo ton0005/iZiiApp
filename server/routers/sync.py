@@ -9,7 +9,7 @@ Handles data synchronization between client devices and the server:
 """
 import asyncio
 import json
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Tuple, Any
 from datetime import datetime, timezone
@@ -348,12 +348,18 @@ async def sync_push(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+    applied_ids = getattr(repo, "last_applied_ids", [])
+    repo_rejected = getattr(repo, "last_push_rejected", [])
+    all_rejected = list(rejected_mutations) + list(repo_rejected)
+
     return {
-        "status": "success" if not rejected_mutations else "partial_success",
-        "message": f"Processed {count} mutations ({len(rejected_mutations)} rejected)",
+        "status": "success" if not all_rejected else "partial_success",
+        "message": f"Processed {count} mutations ({len(all_rejected)} rejected)",
         "accepted_count": count,
-        "rejected_count": len(rejected_mutations),
-        "rejected": rejected_mutations,
+        "applied": count,
+        "applied_ids": applied_ids,
+        "rejected_count": len(all_rejected),
+        "rejected": all_rejected,
     }
 
 
@@ -432,4 +438,45 @@ def get_record_by_id(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/snapshot/{table}")
+def get_table_snapshot_endpoint(
+    table: str,
+    limit: int = Query(1000, ge=1, le=10000),
+    tenant_id: Optional[str] = Query(None),
+    after_id: Optional[str] = Query(None),
+    repo: ISyncRepository = Depends(get_sync_repo),
+):
+    """
+    Endpoint P4.5: Trả về snapshot đầy đủ của bảng cùng snapshot_seq hiện thời.
+    Cho phép client/thiết bị mới bootstrap trạng thái mà không cần replay hàng vạn mutation.
+    Hỗ trợ Keyset pagination qua after_id.
+    """
+    try:
+        return repo.get_table_snapshot(table, limit=limit, tenant_id=tenant_id, after_id=after_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/records/{table}/{record_id}/history")
+def get_record_history_endpoint(
+    table: str,
+    record_id: str,
+    repo: ISyncRepository = Depends(get_sync_repo),
+):
+    """
+    Endpoint P4.7: Truy vết toàn bộ lịch sử thay đổi của một entity từ sync_mutations.
+    """
+    try:
+        history = repo.get_record_history(table, record_id)
+        return {
+            "table": table,
+            "record_id": record_id,
+            "count": len(history),
+            "history": history,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 

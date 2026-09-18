@@ -5,6 +5,7 @@ import '../settings/settings_service.dart';
 import '../localization/app_localizations.dart';
 import '../localization/translations/vi.dart';
 import '../localization/translations/en.dart';
+import '../../modules/mushrooms/repository.dart';
 
 // Events
 abstract class AppEvent extends Equatable {
@@ -68,6 +69,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<LoadSettingsEvent>((event, emit) async {
       final lang = await _settingsService.getLanguage();
       emit(state.copyWith(locale: Locale(lang)));
+      try {
+        await MushroomsRepository().seedRoomsIfEmpty();
+      } catch (_) {}
     });
 
     on<ChangeLocaleEvent>((event, emit) async {

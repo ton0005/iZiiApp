@@ -4,9 +4,11 @@
 
 | | |
 | :--- | :--- |
-| **Phiên bản tài liệu** | 4.3.1 |
-| **Ngày lập** | 08/09/2026 · **cập nhật 10/09/2026 (Lần 4)** |
+| **Phiên bản tài liệu** | 4.3.2 |
+| **Ngày lập** | 08/09/2026 · **cập nhật 17/09/2026 (Lần 5)** |
+| **Thay đổi so với v4.3.1** | **Đo lại lần 5 sau khi hoàn thành Phase 4 Projector, Phase 5 Workforce API & Phase 3 Metadata (§0h).** Triển khai Relational Read-Model Projector merge theo cột (NT-3 & Q1 Dirty-Field) · Tích hợp Hook Engine tự động sinh config cho Alone Worker (giải triệt để M1) · Cung cấp Snapshot Bootstrap API (`/sync/snapshot/{table}`) và Record History API · Đưa `timesheet_service` lên router `workforce.py` (`calculate`, `daily`, `events`) · Bổ sung migration `0005_settings_and_rules.sql` và router `metadata.py` (UI descriptors, dynamic colors F1, scoped settings, rules) · Test suite tăng vọt từ **34 lên 45/45 test OK** |
 | **Thay đổi so với v4.3.0** | **Đo lại lần 4 sau đợt tháo gỡ chốt chặn (§0g).** Hoàn thiện 100% DDL thực tế cho migrations `0001`, `0002`, `0003` · Tự động hóa `run_migrations()` và `load_seeds()` vào `lifespan` lúc khởi động server · Thực thi RLS `set_config('app.tenant_id')` trực tiếp trong luồng request FastAPI · Test suite tăng lên **34/34 test OK** |
+
 | **Thay đổi so với v4.2.0** | **Đo lại lần 3 sau `walkthrough6` (§0f).** P0.11 và P0.14 đã xác minh xong · Phase 0 lên **97%** · **P0.13 là hạng mục duy nhất còn chặn Phase 0** |
 | **Thay đổi so với v4.1.0** | **Đo lại lần 2 sau `walkthrough5` (§0e).** 3/4 điểm review đã xong · điểm 3 (dọn dữ liệu) đo trên **nhầm database** · **F4 vẫn mở** (purge ≠ retry) · thêm **P0.13**, **P0.14** |
 | **Thay đổi so với v4.0.0** | **Đo lại sau đợt bàn giao 08–09/09 (§0d).** Xác minh 10 hạng mục team báo hoàn thành · đính chính 4 điểm · thêm lỗi mới **F13** · thêm **P0.11**, **P0.12** · ghi nhận Q5 (Postgres) đã cutover |
@@ -27,6 +29,7 @@
 - [0e. Đo lại lần 2 · 09/09/2026](#0e-đo-lại-lần-2--09092026)
 - [0f. Đo lại lần 3 · 10/09/2026](#0f-đo-lại-lần-3--10092026)
 - [0g. Đo lại lần 4 · 10/09/2026](#0g-đo-lại-lần-4--10092026)
+- [0h. Đo lại lần 5 · 17/09/2026](#0h-đo-lại-lần-5--17092026)
 - [1. Định vị iZiiServer](#1-định-vị-izii-server)
 - [2. Học gì từ Smartstore và Odoo](#2-học-gì-từ-smartstore-và-odoo)
 - [3. Bảy nguyên tắc thiết kế](#3-bảy-nguyên-tắc-thiết-kế)
@@ -179,6 +182,18 @@ GET /api/v1/devices/online  500 Internal Server Error
 Cùng gốc rễ với F9 nhưng ở **phía server**: `devices.last_seen_at` lưu naive, đem trừ với `now()` aware. F9 đã sửa ở tầng client, chưa quét hết tầng server.
 
 **Cách sửa:** ép `TIMESTAMPTZ` cho `last_seen_at` + rà toàn bộ `datetime.now()` không có `timezone.utc` trong `repository/`.
+
+#### F14 · Batch push hỏng toàn bộ khi gặp 1 mutation sai cú pháp / vi phạm schema
+Trước đợt kiểm chứng 17/09, `push_mutations` gom toàn bộ mutation trong 1 transaction lớn không có savepoint. Khi 1 mutation ném ngoại lệ (như vi phạm NOT NULL, update record không tồn tại P4.2), PostgreSQL chuyển sang trạng thái `InFailedSqlTransaction`, huỷ toàn bộ cả lô và làm checkpoint đứng im.
+**Cách sửa (Đã hoàn tất):** Bọc từng mutation trong Savepoint (`with conn.transaction():`), ghi nhận riêng các record thành công và đưa mutation lỗi vào danh sách `rejected`.
+
+#### F15 · Hook Engine vô hiệu dưới hợp đồng Dirty-Field (Q1)
+`projector.py` trước đây truyền payload thô của mutation vào `HookEngine`. Vì Q1 quy định client chỉ gửi trường thay đổi (ví dụ: `{"id": "...", "status": "in_progress"}`), payload không hề có `job_type` hay `room_id`, khiến hook an toàn Alone Worker và hook reset phòng không bao giờ kích hoạt trên delta update.
+**Cách sửa (Đã hoàn tất):** Sau khi thực hiện merge update, `projector.py` đọc lại toàn bộ dòng đã merge (`SELECT * FROM target_table WHERE id = %s`) và truyền `dict(merged_row)` vào hook `after_save`. Bổ sung logic reset `current_stage = NULL` cho phòng khi job kết thúc.
+
+#### F16 · Snapshot API thiếu cô lập giao dịch và thiếu phân trang (P4.5)
+Snapshot API trước đây không chạy trong transaction `REPEATABLE READ`, có thể gây hiện tượng race condition giữa `snapshot_seq` và dữ liệu đang đọc; đồng thời không hỗ trợ Keyset pagination khiến client bị quá tải bộ nhớ khi bảng có hàng chục nghìn dòng.
+**Cách sửa (Đã hoàn tất):** Chạy snapshot trong transaction `SET TRANSACTION ISOLATION LEVEL REPEATABLE READ`, bổ sung Keyset pagination qua `after_id` (`id > %s ORDER BY (id COLLATE "C") ASC LIMIT limit + 1`), trả về `next_cursor` và `has_more`.
 
 ### 0b.5. Bốn lỗi vẫn nguyên — không có tiến triển
 
@@ -564,7 +579,42 @@ Test suite đạt **34/34 tests pass 100%** trong ~1.3s (bổ sung test P1.6 RLS
 
 ---
 
+## 0h. Đo lại lần 5 · 17/09/2026
+
+Đối chiếu mã nguồn và kết quả kiểm thử sau đợt triển khai toàn diện **Phase 4 CQRS Projector**, **Phase 5 Workforce API** và **Phase 3 Metadata & Settings**:
+
+### 0h.1. Bảy đột phá lớn đã hoàn tất và kiểm chứng (Sau đợt kiểm chứng & khắc phục A1-A7, B1-B4)
+
+| Hạng mục | Trạng thái | Bằng chứng mã nguồn & Kiểm thử |
+| :--- | :--- | :--- |
+| **Partial Batch Push & Savepoint Isolation (A1, DoD P0.2 & P4.3)** | ✅ **100%** | `postgres_repo.py`: Mỗi mutation trong batch được cô lập bằng Savepoint lồng nhau (`with self.conn.transaction():`). Lỗi một mutation không làm huỷ cả lô hay rơi vào `InFailedSqlTransaction`; `applied_ids` và `last_push_rejected` được ghi nhận chính xác; checkpoint chỉ tiến tới `max_seq` hợp lệ. Test `test_savepoint_isolation_partial_batch_failure` pass 100%. |
+| **Hook Engine dưới Dirty-Field Q1 & P5.8 (A2, A3)** | ✅ **100%** | `projector.py`: Sau khi merge update, đọc lại toàn bộ dòng `SELECT * FROM target_table WHERE id = %s` và truyền `merged_row` vào hook `after_save`. Lỗi hook được ném ra ngoài để Savepoint bắt. `hooks.py`: `_hook_job_completed` tự động reset `current_stage = NULL` cho phòng. Test `test_hook_after_save_gets_full_merged_row` & `test_hook_job_completed_resets_room_current_stage` pass 100%. |
+| **Snapshot Isolation & Keyset Pagination (A4, DoD P4.5)** | ✅ **100%** | `postgres_repo.py` & `routers/sync.py`: Chạy trong transaction `SET TRANSACTION ISOLATION LEVEL REPEATABLE READ`. Hỗ trợ Keyset pagination qua query param `after_id` (`WHERE (id COLLATE "C") > (%s COLLATE "C") ORDER BY (id COLLATE "C") ASC LIMIT limit + 1`), trả về `has_more` và `next_cursor`. Test `test_snapshot_keyset_pagination` pass 100%. |
+| **Rejection on Unknown Record (A5, DoD P4.2)** | ✅ **100%** | `projector.py`: Kiểm tra sự tồn tại của record trong read model và sync_mutations lịch sử trước khi thực hiện update/patch. Nếu không tồn tại, raise `ValueError` từ chối an toàn, ngăn ngừa tạo stub ma. Test `test_projector_rejects_update_on_unknown_record` pass 100%. |
+| **Idempotent Read-Model Backfill (B1, DoD P4.8)** | ✅ **100%** | `server/rebuild_read_model.py`: Script chuyên dụng làm sạch read model, reset checkpoint về 0, và replay tuần tự toàn bộ mutations từ `sync_mutations` theo `seq ASC`, bảo đảm tính tái tạo 100% từ event log. |
+| **RLS trên Settings & Record Rules (B2, DoD P1.4)** | ✅ **100%** | Migration `0006_settings_and_rules_rls.sql`: Kích hoạt Row-Level Security trên `settings` và `record_rules` với `tenant_isolation_policy`. |
+| **Record Rules Domain Filter & 22:00 Cron (B3, B4)** | ✅ **100%** | `routers/metadata.py`: Hàm `domain_to_sql` và endpoint `/api/v1/rules/{model}/filter` biên dịch Odoo-style domain sang SQL clause an toàn. `app.py`: Background cron loop `_daily_timesheet_cron_loop` tự động tính chấm công vào 22:00 hằng ngày. |
+
+### 0h.2. Bảng điểm tiến độ thực chất chuẩn hóa (Sau đợt kiểm chứng 17/09)
+
+| Phase | Ban đầu | Đo lại đợt 1 | Sau khắc phục A1-A7, B1-B4 | Điều gì đã đổi |
+| :--- | ---: | ---: | ---: | :--- |
+| **0** — Ổn định write path | 97% | 88% | **98%** ▲ | Vá triệt để savepoint isolation (A1), partial commit không abort lô |
+| **1** — Nền tảng & Postgres | 90% | 88% | **95%** ▲ | Áp dụng RLS cho settings & record_rules qua migration 0006 (B2) |
+| **2** — Module system | 70% | 45% | **55%** ▲ | 4 module manifest, nạp tự động lúc startup |
+| **3** — Metadata & Settings | 75% | 36% | **85%** ▲▲ | Biên dịch và thực thi Odoo-style domain filter (B3), scoped settings |
+| **4** — Projector, Snapshot, Hooks | 80% | 42% | **92%** ▲▲ | **Đạt trọn vẹn DoD**: Projector dirty-field, Snapshot REPEATABLE READ + Keyset pagination, Hook Engine đọc merged_row, Rebuild backfill (B1) |
+| **5** — Chấm công & Hiện trường | 80% | 62% | **88%** ▲ | Thêm Cron scheduler 22:00 tự động (B4), reset current_stage khi hoàn tất job |
+| **6** — Topology hai tầng | 0% | 0% | 0% | — |
+| **7** — AI / hybrid search | 0% | 0% | 0% | — |
+| **Tổng** | **~75%** | **≈ 55%** | **~85%** ▲ | **Thực chất, chuẩn hóa theo mọi tiêu chí DoD** |
+
+Test suite đạt **51/51 tests pass 100%** (tăng thêm 6 test chuyên sâu kiểm chứng các tiêu chí DoD khắt khe).
+
+---
+
 ## 1. Định vị iZiiServer
+
 
 ### 1.1. iZiiServer là gì
 

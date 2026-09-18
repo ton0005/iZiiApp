@@ -577,6 +577,22 @@ PHASE2_STATEMENTS = [
 ]
 
 
+STANDARD_GROW_ROOMS = [
+    # Plant M1
+    'Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6', 'Room 6A', 'Room 6B',
+    'Room 7', 'Room 8', 'Room 9', 'Room 10', 'Room 11', 'Room 12', 'Room 13', 'Room 14',
+    'Room 15', 'Room 16', 'Room 17', 'Room 18', 'Room 19', 'Room 20', 'Room 21', 'Room 22',
+    'Room 22A', 'Room 23', 'Room 24', 'Room 25', 'Room 26', 'Room 27', 'Room 28', 'Room 29',
+    'Room 30', 'Room 31', 'Room 32',
+    # Plant M2
+    'Room 33', 'Room 34', 'Room 35', 'Room 36', 'Room 37', 'Room 38', 'Room 39', 'Room 40',
+    'Room 41', 'Room 42', 'Room 43', 'Room 44', 'Room 45', 'Room 46', 'Room 47', 'Room 48',
+    'Room 49', 'Room 50', 'Room 51', 'Room 52', 'Room 52A', 'Room 53', 'Room 54', 'Room 55',
+    'Room 56', 'Room 57', 'Room 58', 'Room 59', 'Room 60', 'Room 61', 'Room 62', 'Room 63',
+    'Room 64', 'Room 65', 'Room 66'
+]
+
+
 def init_db_postgres() -> None:
     with pg_connection() as conn:
         for stmt in DDL_STATEMENTS:
@@ -606,6 +622,32 @@ def init_db_postgres() -> None:
             )
         except Exception:
             pass
+
+        # Ensure standard grow rooms exist
+        try:
+            from datetime import datetime, timezone
+            now_iso = datetime.now(timezone.utc)
+            for r_name in STANDARD_GROW_ROOMS:
+                r_id = r_name.lower().replace(' ', '_')
+                conn.execute(
+                    """
+                    INSERT INTO grow_rooms (
+                        id, name, status, current_stage, day_in_cycle,
+                        target_yield, picked_yield, created_at, updated_at,
+                        tenant_id, is_seed
+                    ) VALUES (
+                        %s, %s, 'idle', 'idle', 1,
+                        0.0, 0.0, %s, %s,
+                        'default', TRUE
+                    ) ON CONFLICT (id) DO UPDATE SET
+                        name = EXCLUDED.name,
+                        is_seed = TRUE
+                    WHERE grow_rooms.name IS NULL OR grow_rooms.name = ''
+                    """,
+                    (r_id, r_name, now_iso, now_iso),
+                )
+        except Exception as e:
+            print(f"⚠️  [PG] Bỏ qua seed grow_rooms: {e}")
         conn.commit()
     print("🐘 [PG] Schema PostgreSQL và cấu hình Phase 1 + Phase 2 đã sẵn sàng.")
 

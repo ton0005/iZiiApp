@@ -126,11 +126,24 @@ def compute_and_save_daily_timesheets(date_str: Optional[str] = None) -> int:
                 "FROM mushroom_break_policies LIMIT 1"
             )
             p_row = cur.fetchone()
-            policy = {
-                "standard_break_minutes": p_row[0] if p_row else 30,
-                "grace_minutes": p_row[1] if p_row else 5,
-                "extra_break_rule": p_row[2] if p_row else "unpaid",
-            }
+            if p_row and isinstance(p_row, dict):
+                policy = {
+                    "standard_break_minutes": p_row.get("standard_break_minutes", 30),
+                    "grace_minutes": p_row.get("grace_minutes", 5),
+                    "extra_break_rule": p_row.get("extra_break_rule", "unpaid"),
+                }
+            elif p_row:
+                policy = {
+                    "standard_break_minutes": p_row[0],
+                    "grace_minutes": p_row[1],
+                    "extra_break_rule": p_row[2],
+                }
+            else:
+                policy = {
+                    "standard_break_minutes": 30,
+                    "grace_minutes": 5,
+                    "extra_break_rule": "unpaid",
+                }
 
             # 2. Fetch events matching date
             cur = conn.execute(
@@ -143,16 +156,28 @@ def compute_and_save_daily_timesheets(date_str: Optional[str] = None) -> int:
 
             events_by_emp: Dict[str, List[Dict[str, Any]]] = {}
             for r in rows:
-                emp_id = r[1]
-                events_by_emp.setdefault(emp_id, []).append({
-                    "id": r[0],
-                    "employee_id": r[1],
-                    "plan_id": r[2],
-                    "event_type": r[3],
-                    "timestamp": r[4],
-                    "source": r[5],
-                    "location": r[6],
-                })
+                if isinstance(r, dict):
+                    emp_id = r["employee_id"]
+                    events_by_emp.setdefault(emp_id, []).append({
+                        "id": r["id"],
+                        "employee_id": r["employee_id"],
+                        "plan_id": r.get("plan_id"),
+                        "event_type": r["event_type"],
+                        "timestamp": r["timestamp"],
+                        "source": r.get("source"),
+                        "location": r.get("location"),
+                    })
+                else:
+                    emp_id = r[1]
+                    events_by_emp.setdefault(emp_id, []).append({
+                        "id": r[0],
+                        "employee_id": r[1],
+                        "plan_id": r[2],
+                        "event_type": r[3],
+                        "timestamp": r[4],
+                        "source": r[5],
+                        "location": r[6],
+                    })
 
             count = 0
             for emp_id, ev_list in events_by_emp.items():
@@ -166,7 +191,7 @@ def compute_and_save_daily_timesheets(date_str: Optional[str] = None) -> int:
                 )
                 existing = cur.fetchone()
                 if existing:
-                    ts_id = existing[0]
+                    ts_id = existing["id"] if isinstance(existing, dict) else existing[0]
                     conn.execute(
                         """
                         UPDATE mushroom_daily_timesheets SET

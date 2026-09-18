@@ -7,6 +7,7 @@ import '../../core/localization/app_localizations.dart';
 import 'bloc/mushrooms_bloc.dart';
 import 'repository.dart';
 import 'screens/mushrooms_home_screen.dart';
+import 'screens/grow_room_3d_screen.dart';
 
 const mushroomsManifest = ModuleManifest(
   id: 'izii.mushrooms',
@@ -159,6 +160,7 @@ class MushroomsModule implements IZiiModule {
               create: (context) => MushroomsBloc()..add(LoadRoomsEvent()),
               child: const MushroomsHomeScreen(),
             ),
+        '/mushrooms/3d-room': (context) => const GrowRoom3dScreen(),
       };
 
   @override

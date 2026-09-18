@@ -135,6 +135,14 @@ def run_migrations() -> List[str]:
         finally:
             conn.close()
 
+    if applied_now:
+        try:
+            from projector import ReadModelProjector
+            ReadModelProjector.clear_columns_cache()
+            print("🔄 [MIGRATION] ReadModelProjector columns cache invalidated.")
+        except Exception:
+            pass
+
     return applied_now
 
 

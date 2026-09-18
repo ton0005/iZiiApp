@@ -1,8 +1,13 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../../../core/sync/sync_service.dart';
+import '../../../core/events/app_event_bus.dart';
 import '../models/growing_performance_models.dart';
 import '../services/growing_performance_service.dart';
+import '../services/window_action_service.dart';
 import 'growing_daily_job_plan_screen.dart';
+import 'grow_room_3d_screen.dart';
 
 /// Growing Performance Board Screen
 /// Operational performance dashboard tracking daily Joblist, Break time, and Alone Worker safety.
@@ -18,6 +23,7 @@ class GrowingPerformanceBoardScreen extends StatefulWidget {
 class _GrowingPerformanceBoardScreenState
     extends State<GrowingPerformanceBoardScreen> {
   final GrowingPerformanceService _service = GrowingPerformanceService();
+  final WindowActionService _windowActionService = WindowActionService();
 
   // Dataset loaded live from the SQLite database
   List<PerformanceTaskRecord> _allTasks = [];
@@ -27,6 +33,12 @@ class _GrowingPerformanceBoardScreenState
   List<PerformanceJobType> _jobTypes = [];
   bool _isLoading = true;
   String? _loadError;
+
+  // Window Issues & Alarms state (from 3D Model)
+  List<WindowIssueReport> _windowIssues = [];
+  String _selectedIssueCategoryFilter = 'all';
+  String _selectedIssueStatusFilter = 'all';
+  StreamSubscription<List<WindowIssueReport>>? _issuesSubscription;
 
   // Filter state
   int _rangeDays = 7; // 1, 7, 30
@@ -39,10 +51,55 @@ class _GrowingPerformanceBoardScreenState
       'jobs'; // name, dept, jobs, onTime, avgMin, vsPlan, break, otH, alarms
   int _sortDir = -1; // 1 = asc, -1 = desc
 
+  StreamSubscription<SyncEvent>? _syncSubscription;
+  StreamSubscription<AppDomainEvent>? _eventBusSubscription;
+
   @override
   void initState() {
     super.initState();
     _loadData();
+    _loadWindowIssues();
+    _issuesSubscription = _windowActionService.issuesStream.listen((issues) {
+      if (mounted) {
+        setState(() {
+          _windowIssues = issues;
+        });
+      }
+    });
+
+    // Auto refresh performance dataset when new jobs or updates arrive via sync
+    _syncSubscription = SyncService().syncEventStream.listen((event) {
+      if (event.tables.contains('mushroom_jobs') ||
+          event.tables.contains('tasks') ||
+          event.tables.contains('mushroom_attendance_events') ||
+          event.tables.contains('mushroom_daily_timesheets')) {
+        _loadData();
+      }
+    });
+
+    _eventBusSubscription = AppEventBus().stream.listen((event) {
+      if (event.eventType.startsWith('mushroom.') ||
+          event.eventType.startsWith('tasks.')) {
+        _loadData();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _issuesSubscription?.cancel();
+    _syncSubscription?.cancel();
+    _eventBusSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadWindowIssues() async {
+    final issues = await _windowActionService.getIssues();
+    if (mounted) {
+      setState(() {
+        _windowIssues = issues;
+      });
+    }
   }
 
   Future<void> _loadData() async {
@@ -241,7 +298,12 @@ class _GrowingPerformanceBoardScreenState
                   filteredTasks, surface, ink, ink2, muted, border),
               const SizedBox(height: 24),
 
-              // 9. Schema & Architecture Mapping Note
+              // 9. 3D Room Window Action / Issues & Alarms Section
+              _buildWindowIssuesPanel(
+                  surface, surface2, ink, ink2, muted, border, border2, critical, warning, good, s1),
+              const SizedBox(height: 24),
+
+              // 10. Schema & Architecture Mapping Note
               _buildSchemaMappingFooter(
                   surface, surface2, ink, ink2, muted, border),
               const SizedBox(height: 40),
@@ -1857,7 +1919,690 @@ class _GrowingPerformanceBoardScreenState
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  9. Schema Mapping & Architecture Footer
+  //  9. 3D Room Window Action / Issues & Alarms Panel
+  // ══════════════════════════════════════════════════════════════════════════
+  Widget _buildWindowIssuesPanel(
+    Color surface,
+    Color surface2,
+    Color ink,
+    Color ink2,
+    Color muted,
+    Color border,
+    Color border2,
+    Color critical,
+    Color warning,
+    Color good,
+    Color s1,
+  ) {
+    final filtered = _windowIssues.where((issue) {
+      if (_selectedIssueCategoryFilter != 'all' &&
+          issue.category.name != _selectedIssueCategoryFilter) {
+        return false;
+      }
+      if (_selectedIssueStatusFilter != 'all' &&
+          issue.status != _selectedIssueStatusFilter) {
+        return false;
+      }
+      return true;
+    }).toList();
+
+    final totalCount = _windowIssues.length;
+    final openCount = _windowIssues.where((i) => i.status == 'open').length;
+    final inProgressCount =
+        _windowIssues.where((i) => i.status == 'in_progress').length;
+    final resolvedCount =
+        _windowIssues.where((i) => i.status == 'resolved').length;
+    final criticalCount =
+        _windowIssues.where((i) => i.severity == 'critical').length;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header Row with Title and Button to open 3D model
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: s1.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.view_in_ar_rounded, size: 22, color: s1),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '3D Grow Room Window Actions & Alarms',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: ink),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: critical.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color: critical.withValues(alpha: 0.5)),
+                          ),
+                          child: Text(
+                            '$openCount open',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: critical,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Monitor and coordinate disease, safety, QA, and maintenance alerts across 3D room windows.',
+                      style: TextStyle(fontSize: 12.5, color: ink2),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const GrowRoom3dScreen(
+                        initialRoomName: 'Room 33',
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.view_in_ar, size: 16),
+                label: const Text('Open 3D Model'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: s1,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  textStyle: const TextStyle(
+                      fontSize: 12.5, fontWeight: FontWeight.w700),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Quick Summary Metric Chips Row
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildIssueMetricBadge('Total Issues', '$totalCount', ink2, surface2, border),
+              _buildIssueMetricBadge('Open', '$openCount', critical,
+                  critical.withValues(alpha: 0.1), critical.withValues(alpha: 0.3)),
+              _buildIssueMetricBadge('In Progress', '$inProgressCount', warning,
+                  warning.withValues(alpha: 0.1), warning.withValues(alpha: 0.3)),
+              _buildIssueMetricBadge('Resolved', '$resolvedCount', good,
+                  good.withValues(alpha: 0.1), good.withValues(alpha: 0.3)),
+              _buildIssueMetricBadge('Critical', '$criticalCount', critical,
+                  critical.withValues(alpha: 0.15), critical.withValues(alpha: 0.5)),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+          Divider(color: border, height: 1),
+          const SizedBox(height: 14),
+
+          // Filters Row
+          Wrap(
+            spacing: 12,
+            runSpacing: 10,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Category:',
+                      style: TextStyle(
+                          fontSize: 12, fontWeight: FontWeight.w600, color: ink2)),
+                  const SizedBox(width: 6),
+                  _buildIssueFilterChip('All', 'all', _selectedIssueCategoryFilter,
+                      (val) => setState(() => _selectedIssueCategoryFilter = val),
+                      surface2, ink, s1, border),
+                  _buildIssueFilterChip('🦠 Disease', 'disease', _selectedIssueCategoryFilter,
+                      (val) => setState(() => _selectedIssueCategoryFilter = val),
+                      surface2, ink, critical, border),
+                  _buildIssueFilterChip('⚠️ Safety', 'safety', _selectedIssueCategoryFilter,
+                      (val) => setState(() => _selectedIssueCategoryFilter = val),
+                      surface2, ink, warning, border),
+                  _buildIssueFilterChip('🔍 QA', 'qa', _selectedIssueCategoryFilter,
+                      (val) => setState(() => _selectedIssueCategoryFilter = val),
+                      surface2, ink, s1, border),
+                  _buildIssueFilterChip('⏱️ Operation', 'working', _selectedIssueCategoryFilter,
+                      (val) => setState(() => _selectedIssueCategoryFilter = val),
+                      surface2, ink, const Color(0xFF9C27B0), border),
+                  _buildIssueFilterChip('🛠️ Maintenance', 'maintenance', _selectedIssueCategoryFilter,
+                      (val) => setState(() => _selectedIssueCategoryFilter = val),
+                      surface2, ink, const Color(0xFF1BAF7A), border),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Status:',
+                      style: TextStyle(
+                          fontSize: 12, fontWeight: FontWeight.w600, color: ink2)),
+                  const SizedBox(width: 6),
+                  _buildIssueFilterChip('All', 'all', _selectedIssueStatusFilter,
+                      (val) => setState(() => _selectedIssueStatusFilter = val),
+                      surface2, ink, s1, border),
+                  _buildIssueFilterChip('🔴 Open', 'open', _selectedIssueStatusFilter,
+                      (val) => setState(() => _selectedIssueStatusFilter = val),
+                      surface2, ink, critical, border),
+                  _buildIssueFilterChip('🟡 In Progress', 'in_progress', _selectedIssueStatusFilter,
+                      (val) => setState(() => _selectedIssueStatusFilter = val),
+                      surface2, ink, warning, border),
+                  _buildIssueFilterChip('🟢 Resolved', 'resolved', _selectedIssueStatusFilter,
+                      (val) => setState(() => _selectedIssueStatusFilter = val),
+                      surface2, ink, good, border),
+                ],
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Issues List / Empty State
+          if (filtered.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 16),
+              decoration: BoxDecoration(
+                color: surface2.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: border),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.check_circle_outline_rounded, size: 36, color: good),
+                  const SizedBox(height: 8),
+                  Text(
+                    'No issues or alerts matching filter.',
+                    style: TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w700, color: ink),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Alerts logged from the 3D grow room model will automatically appear here.',
+                    style: TextStyle(fontSize: 11.5, color: muted),
+                  ),
+                ],
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: filtered.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final issue = filtered[index];
+                return _buildWindowIssueCard(
+                  issue: issue,
+                  surface: surface,
+                  surface2: surface2,
+                  ink: ink,
+                  ink2: ink2,
+                  muted: muted,
+                  border: border,
+                  critical: critical,
+                  warning: warning,
+                  good: good,
+                  s1: s1,
+                );
+              },
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIssueMetricBadge(
+    String label,
+    String value,
+    Color textColor,
+    Color bg,
+    Color borderColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: borderColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+                fontSize: 11.5, fontWeight: FontWeight.w500, color: textColor),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            value,
+            style: TextStyle(
+                fontSize: 12.5, fontWeight: FontWeight.w800, color: textColor),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIssueFilterChip(
+    String label,
+    String value,
+    String currentValue,
+    ValueChanged<String> onSelected,
+    Color surface2,
+    Color ink,
+    Color activeColor,
+    Color border,
+  ) {
+    final isSelected = value == currentValue;
+    return Padding(
+      padding: const EdgeInsets.only(right: 6, bottom: 4),
+      child: InkWell(
+        onTap: () => onSelected(value),
+        borderRadius: BorderRadius.circular(6),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? activeColor.withValues(alpha: 0.15)
+                : surface2.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: isSelected ? activeColor : border,
+              width: isSelected ? 1.4 : 1.0,
+            ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: isSelected ? activeColor : ink,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWindowIssueCard({
+    required WindowIssueReport issue,
+    required Color surface,
+    required Color surface2,
+    required Color ink,
+    required Color ink2,
+    required Color muted,
+    required Color border,
+    required Color critical,
+    required Color warning,
+    required Color good,
+    required Color s1,
+  }) {
+    final (statusColor, statusLabel) =
+        _getStatusInfo(issue.status, critical, warning, good);
+    final categoryColor =
+        _getIssueCategoryColor(issue.category, critical, warning, s1);
+    final isResolved = issue.status == 'resolved';
+
+    final createdDateStr =
+        '${issue.createdAt.day.toString().padLeft(2, '0')}/${issue.createdAt.month.toString().padLeft(2, '0')} ${issue.createdAt.hour.toString().padLeft(2, '0')}:${issue.createdAt.minute.toString().padLeft(2, '0')}';
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: surface2.withValues(alpha: isResolved ? 0.3 : 0.65),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: issue.severity == 'critical' && !isResolved
+              ? critical.withValues(alpha: 0.5)
+              : border,
+          width: issue.severity == 'critical' && !isResolved ? 1.5 : 1.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top line: Location & Tags
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Room & Window location badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: s1.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: s1.withValues(alpha: 0.4)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.grid_view_rounded, size: 13, color: s1),
+                    const SizedBox(width: 5),
+                    Text(
+                      '${issue.roomName} • Window: ${issue.windowCode}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: s1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              // Category badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                decoration: BoxDecoration(
+                  color: categoryColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(5),
+                  border:
+                      Border.all(color: categoryColor.withValues(alpha: 0.4)),
+                ),
+                child: Text(
+                  '${issue.category.iconEmoji} ${issue.category.displayName}',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    color: categoryColor,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              // Severity badge
+              if (issue.severity == 'critical' || issue.severity == 'high')
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: critical.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    issue.severity.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: critical,
+                    ),
+                  ),
+                ),
+
+              const Spacer(),
+
+              // Status Dropdown / Action
+              PopupMenuButton<String>(
+                initialValue: issue.status,
+                tooltip: 'Change status',
+                onSelected: (newStatus) async {
+                  await _windowActionService.updateIssueStatus(
+                      issue.id, newStatus);
+                  final refreshed = await _windowActionService.getIssues();
+                  if (mounted) {
+                    setState(() {
+                      _windowIssues = refreshed;
+                    });
+                  }
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(
+                    value: 'open',
+                    child: Row(
+                      children: [
+                        Icon(Icons.radio_button_checked,
+                            size: 15, color: Color(0xFFD03B3B)),
+                        SizedBox(width: 8),
+                        Text('Open'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'in_progress',
+                    child: Row(
+                      children: [
+                        Icon(Icons.hourglass_top_rounded,
+                            size: 15, color: Color(0xFFFAB219)),
+                        SizedBox(width: 8),
+                        Text('In Progress'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'resolved',
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle_rounded,
+                            size: 15, color: Color(0xFF0CA30C)),
+                        SizedBox(width: 8),
+                        Text('Resolved'),
+                      ],
+                    ),
+                  ),
+                ],
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(5),
+                    border:
+                        Border.all(color: statusColor.withValues(alpha: 0.5)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        statusLabel,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: statusColor,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.arrow_drop_down,
+                          size: 16, color: statusColor),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          // Title & Description
+          Text(
+            issue.title,
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w700,
+              color: ink,
+              decoration: isResolved ? TextDecoration.lineThrough : null,
+            ),
+          ),
+          if (issue.description.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              issue.description,
+              style: TextStyle(fontSize: 12, color: ink2),
+            ),
+          ],
+
+          const SizedBox(height: 10),
+
+          // Telemetry snapshot chips row
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: surface.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: border),
+            ),
+            child: Wrap(
+              spacing: 14,
+              runSpacing: 4,
+              children: [
+                _buildTelemetryItem('🌡️ Temp',
+                    '${issue.temperature.toStringAsFixed(1)}°C', ink2),
+                _buildTelemetryItem('💧 Humidity',
+                    '${issue.humidity.toStringAsFixed(0)}% RH', ink2),
+                _buildTelemetryItem(
+                    '💨 CO₂', '${issue.co2.toStringAsFixed(0)} ppm', ink2),
+                _buildTelemetryItem('🌱 Casing',
+                    '${issue.casingTemp.toStringAsFixed(1)}°C', ink2),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // Footer: Reporter, Date and "View in 3D" button
+          Row(
+            children: [
+              Icon(Icons.person_outline, size: 14, color: muted),
+              const SizedBox(width: 4),
+              Text(
+                '${issue.reporterName} • $createdDateStr',
+                style: TextStyle(fontSize: 11.5, color: muted),
+              ),
+              const Spacer(),
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => GrowRoom3dScreen(
+                        initialRoomName: issue.roomName,
+                        initialSelectedWindowCode: issue.windowCode,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.view_in_ar, size: 14),
+                label: const Text('View in 3D'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: s1,
+                  side: BorderSide(color: s1.withValues(alpha: 0.6)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  visualDensity: VisualDensity.compact,
+                  textStyle: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTelemetryItem(String label, String val, Color ink2) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          '$label: ',
+          style: TextStyle(fontSize: 11, color: ink2),
+        ),
+        Text(
+          val,
+          style:
+              TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: ink2),
+        ),
+      ],
+    );
+  }
+
+  Color _getIssueCategoryColor(
+    WindowIssueCategory category,
+    Color critical,
+    Color warning,
+    Color s1,
+  ) {
+    switch (category) {
+      case WindowIssueCategory.disease:
+        return critical;
+      case WindowIssueCategory.safety:
+        return warning;
+      case WindowIssueCategory.qa:
+        return const Color(0xFF2A78D6);
+      case WindowIssueCategory.working:
+        return const Color(0xFF9C27B0);
+      case WindowIssueCategory.maintenance:
+        return const Color(0xFF1BAF7A);
+    }
+  }
+
+  (Color, String) _getStatusInfo(
+    String status,
+    Color critical,
+    Color warning,
+    Color good,
+  ) {
+    switch (status) {
+      case 'in_progress':
+        return (warning, 'In Progress');
+      case 'resolved':
+        return (good, 'Resolved');
+      case 'open':
+      default:
+        return (critical, 'Open');
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  10. Schema Mapping & Architecture Footer
   // ══════════════════════════════════════════════════════════════════════════
   Widget _buildSchemaMappingFooter(Color surface, Color surface2, Color ink,
       Color ink2, Color muted, Color border) {

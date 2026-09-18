@@ -180,8 +180,12 @@ class GrowRoomServiceImpl implements GrowRoomService {
       ),
     );
 
+    final room = await getRoomById(roomId);
+    final roomName = (room?['name'] as String? ?? '').trim();
+
     await SyncService().queueMutation('grow_rooms', 'update', {
       'id': roomId,
+      if (roomName.isNotEmpty) 'name': roomName,
       'current_stage': stage,
       'updated_at': DateTime.now().toIso8601String(),
     });

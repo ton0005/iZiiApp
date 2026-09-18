@@ -21,6 +21,7 @@ import 'settings_tab_screen.dart';
 import 'growing_performance_board_screen.dart';
 import 'manager_batch_attendance_screen.dart';
 import 'mushrooms_profile_screen.dart';
+import 'grow_room_3d_screen.dart';
 import '../services/employee_service.dart';
 import 'package:izii_app/core/database/app_database.dart';
 
@@ -626,6 +627,20 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
           ),
           Row(
             children: [
+              IconButton(
+                icon: const Icon(Icons.view_in_ar_rounded, size: 24, color: Color(0xFF2A78D6)),
+                tooltip: 'Mô hình 3D Phòng Trồng (3D Grow Room)',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GrowRoom3dScreen(
+                        initialRoomName: _selectedRoomName,
+                      ),
+                    ),
+                  );
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.account_circle_outlined, size: 24),
                 tooltip: 'Profile & Change Password',

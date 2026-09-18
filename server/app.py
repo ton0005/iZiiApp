@@ -118,6 +118,7 @@ from security_tls import httpx_client_kwargs, uvicorn_ssl_kwargs, describe as de
 from routers import (
     sync, devices, messages, notifications, attachments,
     peer_sync, call, webhooks, admin, enrollment, sessions,
+    workforce, metadata,
 )
 from security_auth import describe_scopes
 from event_engine import iZiiEventEngine, close_http_client
@@ -250,6 +251,40 @@ async def _peer_sync_loop() -> None:
             await asyncio.sleep(CONFIG.sync_interval_seconds)
 
 
+async def _daily_timesheet_cron_loop() -> None:
+    """
+    P5.2 / B4: Tác vụ nền chạy tự động vào 22:00 hằng ngày để tổng hợp bảng chấm công
+    (compute_and_save_daily_timesheets) cho ngày hiện tại.
+    """
+    from datetime import datetime, timezone, timedelta
+    from services.timesheet_service import compute_and_save_daily_timesheets
+
+    while True:
+        try:
+            now = datetime.now()
+            # Tính thời điểm 22:00 hôm nay
+            target = now.replace(hour=22, minute=0, second=0, microsecond=0)
+            if now >= target:
+                # Nếu đã quá 22:00 hôm nay, hẹn 22:00 ngày mai
+                target += timedelta(days=1)
+
+            wait_seconds = (target - now).total_seconds()
+            print(f"⏰ [CRON-TIMESHEET] Lên lịch tổng hợp chấm công 22:00 tiếp theo vào {target.strftime('%Y-%m-%d %H:%M:%S')} (sau {int(wait_seconds)}s)")
+            await asyncio.sleep(wait_seconds)
+
+            today_str = datetime.now().strftime("%Y-%m-%d")
+            print(f"🕒 [CRON-TIMESHEET] Bắt đầu tổng hợp bảng chấm công tự động ngày {today_str} lúc 22:00...")
+            with open_connection() as conn:
+                res = compute_and_save_daily_timesheets(conn, today_str)
+                conn.commit()
+                print(f"✅ [CRON-TIMESHEET] Hoàn tất tổng hợp ngày {today_str}: {res.get('processed_count', 0)} nhân viên.")
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            print(f"⚠️  [CRON-TIMESHEET] Lỗi trong vòng lặp chấm công 22:00: {e}")
+            await asyncio.sleep(60)
+
+
 async def _maintenance_loop() -> None:
     """Vòng lặp bảo trì chạy mỗi 24h: dọn mutation cũ và dead-letter tin nhắn kẹt."""
     while True:
@@ -360,11 +395,13 @@ async def lifespan(app: FastAPI):
 
     peer_sync_task = asyncio.create_task(_peer_sync_loop())
     maintenance_task = asyncio.create_task(_maintenance_loop())
+    timesheet_cron_task = asyncio.create_task(_daily_timesheet_cron_loop())
 
     yield
     # Shutdown
     peer_sync_task.cancel()
     maintenance_task.cancel()
+    timesheet_cron_task.cancel()
     if discovery:
         await discovery.close()
     # Đóng httpx.AsyncClient dùng chung của event engine (webhook dispatch)
@@ -421,6 +458,9 @@ app.include_router(webhooks.event_router)
 app.include_router(admin.router)       # /admin/* — cần X-iZii-Admin-Token
 app.include_router(enrollment.router)  # /devices/enroll — công khai, gác bằng vé mời
 app.include_router(sessions.router)    # /sessions/* — điểm danh đầu ca (G1)
+
+app.include_router(workforce.router)   # /api/v1/workforce/* — chấm công & timesheets (P5)
+app.include_router(metadata.router)    # /api/v1/meta/* & /api/v1/settings (P3)
 
 # Cho admin router chạm tới con trỏ sync đang nằm trong RAM, để lệnh reset xoá
 # được cả bộ nhớ chứ không chỉ bảng known_servers dưới đĩa.

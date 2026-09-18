@@ -43,6 +43,14 @@ class PostgresSyncRepository(ISyncRepository):
 
     def __init__(self, conn):
         self.conn = conn
+        self.last_applied_ids: List[str] = []
+        self.last_push_rejected: List[Dict[str, Any]] = []
+        try:
+            from projector import ReadModelProjector
+            self.projector = ReadModelProjector()
+        except Exception as e:
+            logger.warning(f"⚠️ [PROJECTOR] Không thể khởi tạo ReadModelProjector: {e}")
+            self.projector = None
 
     def push_mutations(
         self,
@@ -52,40 +60,92 @@ class PostgresSyncRepository(ISyncRepository):
         actor_user_id: Optional[str] = None,
         actor_device_id: Optional[str] = None,
     ) -> int:
-        count = 0
+        applied_ids: List[str] = []
+        rejected: List[Dict[str, Any]] = []
+        max_seq = 0
+
         for m in mutations:
-            origin = m.get("origin_server_id") or default_origin_server_id
-            # KHÔNG truyền seq — để BIGSERIAL tự cấp. Với ON CONFLICT DO UPDATE,
-            # bản ghi cũ giữ nguyên seq cũ (không cấp lại), nên mutation đã đồng
-            # bộ rồi sẽ không bị đẩy lên cuối log làm client tưởng là mới.
-            self.conn.execute(
-                """
-                INSERT INTO sync_mutations
-                    (id, client_id, "table", operation, data, server_received_at,
-                     origin_server_id, actor_user_id, actor_device_id, schema_version)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (id) DO UPDATE SET
-                    client_id          = EXCLUDED.client_id,
-                    "table"            = EXCLUDED."table",
-                    operation          = EXCLUDED.operation,
-                    data               = EXCLUDED.data,
-                    server_received_at = EXCLUDED.server_received_at,
-                    origin_server_id   = EXCLUDED.origin_server_id,
-                    actor_user_id      = EXCLUDED.actor_user_id,
-                    actor_device_id    = EXCLUDED.actor_device_id,
-                    schema_version     = EXCLUDED.schema_version
-                """,
-                (
-                    m["id"], m.get("client_id"), m["table"], m["operation"],
-                    json.dumps(m["data"]), timestamp, origin,
-                    m.get("actor_user_id") or actor_user_id,
-                    m.get("actor_device_id") or actor_device_id,
-                    int(m.get("schema_version") or 1),
-                ),
-            )
-            count += 1
+            try:
+                # A1: Mỗi mutation được bọc trong một savepoint transaction độc lập
+                with self.conn.transaction():
+                    origin = m.get("origin_server_id") or default_origin_server_id
+                    m_data = m.get("data")
+                    if isinstance(m_data, str):
+                        try:
+                            m_data = json.loads(m_data)
+                        except Exception:
+                            m_data = {}
+                    if not isinstance(m_data, dict):
+                        m_data = {}
+
+                    cur = self.conn.execute(
+                        """
+                        INSERT INTO sync_mutations
+                            (id, client_id, "table", operation, data, server_received_at,
+                             origin_server_id, actor_user_id, actor_device_id, schema_version)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (id) DO UPDATE SET
+                            client_id          = EXCLUDED.client_id,
+                            "table"            = EXCLUDED."table",
+                            operation          = EXCLUDED.operation,
+                            data               = EXCLUDED.data,
+                            server_received_at = EXCLUDED.server_received_at,
+                            origin_server_id   = EXCLUDED.origin_server_id,
+                            actor_user_id      = EXCLUDED.actor_user_id,
+                            actor_device_id    = EXCLUDED.actor_device_id,
+                            schema_version     = EXCLUDED.schema_version
+                        RETURNING seq
+                        """,
+                        (
+                            m["id"], m.get("client_id"), m["table"], m["operation"],
+                            json.dumps(m_data), timestamp, origin,
+                            m.get("actor_user_id") or actor_user_id,
+                            m.get("actor_device_id") or actor_device_id,
+                            int(m.get("schema_version") or 1),
+                        ),
+                    )
+                    row = cur.fetchone()
+                    seq = (row["seq"] if isinstance(row, dict) else row[0]) if row else 0
+
+                    # Phase 4 Projector (P4.1, P4.2, P4.6): Chiếu dữ liệu vào read model
+                    if self.projector:
+                        tenant_id = m.get("tenant_id") or m_data.get("tenant_id") or "default"
+                        actor = m.get("actor_user_id") or actor_user_id or "system"
+                        self.projector.project_mutation(
+                            conn=self.conn,
+                            table=m["table"],
+                            operation=m["operation"],
+                            data=m_data,
+                            seq=seq,
+                            mutation_id=m.get("id"),
+                            tenant_id=tenant_id,
+                            actor=actor,
+                        )
+
+                    if seq > max_seq:
+                        max_seq = seq
+                    applied_ids.append(m["id"])
+
+            except Exception as pe:
+                # Rollback savepoint của mutation này, không làm abort cả lô
+                logger.error(f"❌ [PUSH] Lỗi mutation {m.get('id')} ({m.get('table')}): {pe}")
+                rejected.append({
+                    "id": m.get("id"),
+                    "table": m.get("table"),
+                    "operation": m.get("operation"),
+                    "error": "mutation_failed",
+                    "message": str(pe),
+                })
+
+        # Cập nhật checkpoint P4.3: Chỉ tiến tới max_seq của các mutation thành công
+        if self.projector and max_seq > 0:
+            self.projector.update_checkpoint(self.conn, max_seq)
+
         self.conn.commit()
-        return count
+
+        self.last_applied_ids = applied_ids
+        self.last_push_rejected = rejected
+        return len(applied_ids)
 
     def pull_mutations(
         self,
@@ -233,9 +293,28 @@ class PostgresSyncRepository(ISyncRepository):
 
     def get_record(self, table: str, record_id: str) -> Optional[Dict[str, Any]]:
         """
-        Endpoint P0.1c: Replays all mutations for (table, record_id) in sequential order.
-        Returns None if record does not exist or was deleted.
+        Endpoint P0.1c: Lấy snapshot của record kết hợp giữa projected read-model table
+        và replay các mutations trong sync_mutations.
+        Returns None nếu record không tồn tại hoặc đã bị xóa.
         """
+        from projector import TABLE_ALIASES
+        target_table = TABLE_ALIASES.get(table.lower(), table.lower())
+
+        table_record = None
+        try:
+            cur = self.conn.execute(
+                f'SELECT * FROM "{target_table}" WHERE id = %s',
+                (record_id,)
+            )
+            row = cur.fetchone()
+            if row:
+                table_record = dict(row)
+                for k, v in table_record.items():
+                    if hasattr(v, "isoformat"):
+                        table_record[k] = v.isoformat()
+        except Exception:
+            pass
+
         rows = self.conn.execute(
             'SELECT operation, data, seq FROM sync_mutations WHERE "table" = %s AND (data::jsonb->>\'id\') = %s ORDER BY seq ASC',
             (table, record_id),
@@ -247,15 +326,28 @@ class PostgresSyncRepository(ISyncRepository):
                 (table, record_id),
             ).fetchall()
 
-        if not rows:
+        if not rows and not table_record:
             return None
 
         merged_data: Dict[str, Any] = {}
         is_deleted = False
         last_seq = 0
+
+        # Nếu có bản ghi trong read-model table, dùng làm snapshot cơ sở
+        if table_record:
+            if table_record.get("deleted_at") is not None:
+                is_deleted = True
+            else:
+                merged_data = dict(table_record)
+            if "last_seq" in table_record and table_record["last_seq"]:
+                try:
+                    last_seq = int(table_record["last_seq"])
+                except Exception:
+                    pass
+
         for r in rows:
             op = (r["operation"] or "").lower()
-            last_seq = r["seq"]
+            last_seq = max(last_seq, r["seq"])
             try:
                 data = json.loads(r["data"]) if isinstance(r["data"], str) else (r["data"] or {})
             except Exception:
@@ -275,12 +367,142 @@ class PostgresSyncRepository(ISyncRepository):
         if is_deleted or not merged_data:
             return None
 
+        if "id" not in merged_data:
+            merged_data["id"] = record_id
+
         return {
             "table": table,
             "id": record_id,
             "data": merged_data,
             "last_seq": last_seq,
         }
+
+    def get_table_snapshot(
+        self,
+        table: str,
+        limit: int = 1000,
+        tenant_id: Optional[str] = None,
+        after_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        P4.5 Snapshot API: Trả về snapshot đầy đủ của bảng cùng snapshot_seq hiện thời.
+        Hỗ trợ Keyset pagination (after_id) và REPEATABLE READ snapshot consistency.
+        """
+        from projector import TABLE_ALIASES
+        target_table = TABLE_ALIASES.get(table.lower(), table.lower())
+
+        # Đảm bảo connection ở trạng thái sạch trước khi bắt đầu REPEATABLE READ
+        try:
+            self.conn.rollback()
+        except Exception:
+            pass
+
+        # Thực thi trong transaction REPEATABLE READ để đảm bảo snapshot_seq và data khớp nhau
+        with self.conn.transaction():
+            try:
+                self.conn.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+            except Exception:
+                pass
+
+            max_seq = self.get_max_seq()
+
+            cols = set()
+            try:
+                cur = self.conn.execute(
+                    "SELECT column_name FROM information_schema.columns WHERE table_name = %s",
+                    (target_table,),
+                )
+                cols = {(r["column_name"] if isinstance(r, dict) else r[0]) for r in cur.fetchall()}
+            except Exception:
+                pass
+
+            if not cols:
+                return {
+                    "table": table,
+                    "target_table": target_table,
+                    "snapshot_seq": max_seq,
+                    "count": 0,
+                    "rows": [],
+                    "has_more": False,
+                    "next_cursor": None,
+                }
+
+            where_clauses = []
+            params: list = []
+            if "deleted_at" in cols:
+                where_clauses.append("deleted_at IS NULL")
+            if tenant_id and "tenant_id" in cols:
+                where_clauses.append("tenant_id = %s")
+                params.append(tenant_id)
+
+            if after_id is not None:
+                where_clauses.append('(id COLLATE "C") > (%s COLLATE "C")')
+                params.append(after_id)
+
+            where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
+            
+            # Luôn ORDER BY id COLLATE "C" ASC để Keyset pagination ổn định và nhất quán theo chuẩn byte-order
+            query = f'SELECT * FROM {target_table} {where_sql} ORDER BY (id COLLATE "C") ASC LIMIT %s'
+            # Fetch limit + 1 để kiểm tra has_more
+            params.append(limit + 1)
+
+            cur = self.conn.execute(query, tuple(params))
+            raw_rows = [dict(r) for r in cur.fetchall()]
+
+            has_more = len(raw_rows) > limit
+            rows = raw_rows[:limit]
+            next_cursor = rows[-1]["id"] if (has_more and rows and "id" in rows[-1]) else None
+
+            # Convert datetime/UUID objects to serializable types
+            for r in rows:
+                for k, v in r.items():
+                    if hasattr(v, "isoformat"):
+                        r[k] = v.isoformat()
+
+            return {
+                "table": table,
+                "target_table": target_table,
+                "snapshot_seq": max_seq,
+                "count": len(rows),
+                "rows": rows,
+                "has_more": has_more,
+                "next_cursor": next_cursor,
+            }
+
+    def get_record_history(self, table: str, record_id: str) -> List[Dict[str, Any]]:
+        """
+        P4.7 Record History API: Truy vết toàn bộ lịch sử thay đổi của một record từ sync_mutations.
+        """
+        cur = self.conn.execute(
+            """
+            SELECT id, client_id, "table", operation, data, server_received_at, seq, actor_user_id
+            FROM sync_mutations
+            WHERE "table" = %s AND ((data::jsonb->>'id') = %s OR id = %s)
+            ORDER BY seq ASC
+            """,
+            (table, record_id, record_id),
+        )
+        rows = cur.fetchall()
+        result = []
+        for r in rows:
+            d = r["data"]
+            if isinstance(d, str):
+                try:
+                    d = json.loads(d)
+                except Exception:
+                    pass
+            result.append({
+                "mutation_id": r["id"],
+                "client_id": r["client_id"],
+                "table": r["table"],
+                "operation": r["operation"],
+                "seq": r["seq"],
+                "server_received_at": str(r["server_received_at"]),
+                "actor_user_id": r["actor_user_id"],
+                "data": d,
+            })
+        return result
+
 
 
 

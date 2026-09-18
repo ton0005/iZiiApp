@@ -51,13 +51,14 @@ class MushroomsRepository {
         }
       }
 
-      // 2. Seed rooms if not present
+      // 2. Seed rooms if not present, and self-heal any room with empty or corrupted name
       final existingRooms = await _db.select(_db.growRooms).get();
-      final existingIds = existingRooms.map((r) => r.id).toSet();
+      final existingMap = {for (final r in existingRooms) r.id: r};
 
       for (final r in allRoomsToSeed) {
         final deterministicId = r.toLowerCase().replaceAll(' ', '_');
-        if (!existingIds.contains(deterministicId)) {
+        final existingRoom = existingMap[deterministicId];
+        if (existingRoom == null) {
           await _db.into(_db.growRooms).insertOnConflictUpdate(GrowRoom(
             id: deterministicId,
             name: r,
@@ -68,6 +69,11 @@ class MushroomsRepository {
             pickedYield: 0.0,
             createdAt: DateTime.now(),
           ));
+        } else if (existingRoom.name.trim().isEmpty || existingRoom.name != r) {
+          // Self-heal room with corrupted or empty name caused by initial partial update mutations
+          await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(deterministicId))).write(
+            GrowRoomsCompanion(name: Value(r)),
+          );
         }
       }
     } catch (e) {
@@ -977,6 +983,16 @@ class MushroomsRepository {
     }).toList();
   }
 
+  Future<String?> _getRoomNameById(String roomId) async {
+    try {
+      final room = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
+      if (room != null && room.name.trim().isNotEmpty) {
+        return room.name.trim();
+      }
+    } catch (_) {}
+    return null;
+  }
+
   Future<void> resetRoom(String roomId) async {
     // 1. Update room status to idle and stage to idle
     await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
@@ -987,9 +1003,12 @@ class MushroomsRepository {
       ),
     );
 
+    final roomName = await _getRoomNameById(roomId);
+
     // Queue grow_rooms update mutation
     await SyncService().queueMutation('grow_rooms', 'update', {
       'id': roomId,
+      if (roomName != null) 'name': roomName,
       'status': 'idle',
       'current_stage': 'idle',
       'day_in_cycle': 1,
@@ -1039,9 +1058,12 @@ class MushroomsRepository {
       ),
     );
 
+    final roomName = await _getRoomNameById(roomId);
+
     // Queue grow_rooms update
     await SyncService().queueMutation('grow_rooms', 'update', {
       'id': roomId,
+      if (roomName != null) 'name': roomName,
       'status': 'active',
       'current_stage': 'filling',
       'day_in_cycle': 1,
@@ -1242,6 +1264,7 @@ class MushroomsRepository {
 
     await SyncService().queueMutation('grow_rooms', 'update', {
       'id': roomId,
+      if (roomName.isNotEmpty) 'name': roomName,
       'status': 'active',
       'current_stage': 'alone_worker',
       'updated_at': DateTime.now().toIso8601String(),
@@ -1301,6 +1324,8 @@ class MushroomsRepository {
     }
 
     // Update room stage if it's in_progress
+    final roomName = await _getRoomNameById(job.roomId);
+
     if (newStatus == 'in_progress' && !job.isSoloJob) {
       await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
         GrowRoomsCompanion(
@@ -1312,6 +1337,7 @@ class MushroomsRepository {
       // Queue GrowRoom update mutation
       await SyncService().queueMutation('grow_rooms', 'update', {
         'id': job.roomId,
+        if (roomName != null) 'name': roomName,
         'status': 'active',
         'current_stage': job.jobType,
         'updated_at': DateTime.now().toIso8601String(),
@@ -1333,6 +1359,7 @@ class MushroomsRepository {
         );
         await SyncService().queueMutation('grow_rooms', 'update', {
           'id': job.roomId,
+          if (roomName != null) 'name': roomName,
           'status': 'active',
           'current_stage': stageStr,
           'updated_at': DateTime.now().toIso8601String(),
@@ -1348,6 +1375,7 @@ class MushroomsRepository {
         );
         await SyncService().queueMutation('grow_rooms', 'update', {
           'id': job.roomId,
+          if (roomName != null) 'name': roomName,
           'status': 'idle',
           'current_stage': 'idle',
           'updated_at': DateTime.now().toIso8601String(),
@@ -1606,6 +1634,7 @@ class MushroomsRepository {
 
     await SyncService().queueMutation('grow_rooms', 'update', {
       'id': roomId,
+      if (roomName.isNotEmpty) 'name': roomName,
       'status': 'active',
       'current_stage': stageStr,
       'updated_at': DateTime.now().toIso8601String(),
@@ -1735,6 +1764,7 @@ class MushroomsRepository {
         );
         await SyncService().queueMutation('grow_rooms', 'update', {
           'id': job.roomId,
+          if (room.name.trim().isNotEmpty) 'name': room.name.trim(),
           'status': 'active',
           'current_stage': 'alone_timeout',
           'updated_at': now.toIso8601String(),

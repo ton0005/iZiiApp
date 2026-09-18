@@ -267,8 +267,10 @@ class JobListServiceImpl implements JobListService {
             updatedAt: Value(DateTime.now()),
           ),
         );
+        final roomRecord = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
         await SyncService().queueMutation('grow_rooms', 'update', {
           'id': roomId,
+          if (roomRecord?.name != null && roomRecord!.name.trim().isNotEmpty) 'name': roomRecord.name.trim(),
           'status': 'active',
           'current_stage': stageStr,
           'updated_at': DateTime.now().toIso8601String(),

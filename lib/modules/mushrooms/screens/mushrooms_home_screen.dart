@@ -24,6 +24,7 @@ import 'harvest_attendance_screen.dart';
 import 'growing_performance_board_screen.dart';
 import 'growing_daily_job_plan_screen.dart';
 import 'manager_batch_attendance_screen.dart';
+import 'grow_room_3d_screen.dart';
 import '../../communication/bloc/chat_bloc.dart';
 
 class MushroomsHomeScreen extends StatefulWidget {
@@ -469,6 +470,17 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     });
   }
 
+  void _navigateTo3dRoom(BuildContext context, {String? roomName}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GrowRoom3dScreen(
+          initialRoomName: roomName,
+        ),
+      ),
+    );
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   //  Build
   // ══════════════════════════════════════════════════════════════════════════
@@ -660,6 +672,16 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             isDark: isDark,
             onTap: () => _navigateToPerformanceBoard(context),
           ),
+          const SizedBox(height: 12),
+          QuickAccessCard(
+            title: 'Mô hình 3D Phòng Trồng',
+            subtitle:
+                '3D Grow Room Model • Cao 6m • 4/2 Racks, 6 Tầng, 9 Windows (27m)',
+            icon: Icons.view_in_ar_rounded,
+            color: const Color(0xFF0EA5E9),
+            isDark: isDark,
+            onTap: () => _navigateTo3dRoom(context),
+          ),
         ],
       ),
     );
@@ -775,6 +797,15 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 color: const Color(0xFF0284C7),
                 isDark: isDark,
                 onTap: () => _navigateToDesktop(context),
+              ),
+              QuickAccessCard(
+                title: 'Mô hình 3D Phòng Trồng',
+                subtitle:
+                    '3D Grow Room Model • Cao 6m • 4/2 Racks, 6 Tầng, 9 Windows (27m)',
+                icon: Icons.view_in_ar_rounded,
+                color: const Color(0xFF0EA5E9),
+                isDark: isDark,
+                onTap: () => _navigateTo3dRoom(context),
               ),
             ]),
           )

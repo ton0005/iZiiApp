@@ -16,6 +16,9 @@ import '../../modules/communication/repository/chat_repository.dart';
 class SyncEvent {
   final List<String> updatedTables;
   SyncEvent(this.updatedTables);
+
+  /// Bí danh tiện dụng tương đương updatedTables
+  List<String> get tables => updatedTables;
 }
 
 /// Một thay đổi bị server từ chối vĩnh viễn (HTTP 409).
@@ -1493,6 +1496,44 @@ class SyncService {
 
   // ──────────────── UPSERT methods for Mushroom Farm module ────────────────
 
+  static String _deriveGrowRoomName(String id) {
+    final lower = id.toLowerCase().trim();
+    final roomRegex = RegExp(r'^room_(\d+)([a-zA-Z]?)$');
+    final match = roomRegex.firstMatch(lower);
+    if (match != null) {
+      final numPart = match.group(1)!;
+      final letterPart = match.group(2)?.toUpperCase() ?? '';
+      return 'Room $numPart$letterPart';
+    }
+    return id.replaceAll('_', ' ').split(' ').map((w) {
+      if (w.isEmpty) return w;
+      return '${w[0].toUpperCase()}${w.substring(1)}';
+    }).join(' ');
+  }
+
+  Future<void> _ensureGrowRoomExists(String roomId) async {
+    final existing = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
+    final derived = _deriveGrowRoomName(roomId);
+    if (existing == null) {
+      await _db.into(_db.growRooms).insertOnConflictUpdate(
+        GrowRoom(
+          id: roomId,
+          name: derived,
+          status: 'idle',
+          currentStage: 'idle',
+          dayInCycle: 1,
+          targetYield: 0.0,
+          pickedYield: 0.0,
+          createdAt: DateTime.now(),
+        ),
+      );
+    } else if (existing.name.trim().isEmpty) {
+      await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+        GrowRoomsCompanion(name: Value(derived)),
+      );
+    }
+  }
+
   Future<bool> _upsertGrowRoom(Map<String, dynamic> data) async {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) return false;
@@ -1516,10 +1557,18 @@ class SyncService {
         ? DateTime.tryParse(getVal('updatedAt', 'updated_at').toString())
         : DateTime.now();
 
+    String resolvedName = (data['name'] as String? ?? '').trim();
+    if (resolvedName.isEmpty && existing != null && existing.name.trim().isNotEmpty) {
+      resolvedName = existing.name.trim();
+    }
+    if (resolvedName.isEmpty) {
+      resolvedName = _deriveGrowRoomName(id);
+    }
+
     await _db.into(_db.growRooms).insertOnConflictUpdate(
       GrowRoom(
         id: id,
-        name: data['name'] as String? ?? existing?.name ?? '',
+        name: resolvedName,
         status: statusVal,
         currentStage: stageVal,
         dayInCycle: dayInCycleVal,
@@ -1588,6 +1637,9 @@ class SyncService {
           createdAt: hasKey('created_at', 'createdAt')
               ? Value(getVal('createdAt', 'created_at') != null ? DateTime.tryParse(getVal('createdAt', 'created_at').toString()) ?? existing.createdAt : existing.createdAt)
               : const Value.absent(),
+          onTimeOverride: hasKey('onTimeOverride', 'on_time_override')
+              ? Value(getVal('onTimeOverride', 'on_time_override') as bool?)
+              : const Value.absent(),
           updatedAt: hasKey('updated_at', 'updatedAt')
               ? Value(getVal('updatedAt', 'updated_at') != null ? DateTime.tryParse(getVal('updatedAt', 'updated_at').toString()) : null)
               : const Value.absent(),
@@ -1623,6 +1675,7 @@ class SyncService {
           co2Level: (data['co2_level'] ?? data['co2Level']) != null ? ((data['co2_level'] ?? data['co2Level']) as num).toDouble() : null,
           checkInTime: (data['check_in_time'] ?? data['checkInTime']) != null ? DateTime.tryParse((data['check_in_time'] ?? data['checkInTime']).toString()) : null,
           checkOutTime: (data['check_out_time'] ?? data['checkOutTime']) != null ? DateTime.tryParse((data['check_out_time'] ?? data['checkOutTime']).toString()) : null,
+          onTimeOverride: (data['on_time_override'] ?? data['onTimeOverride']) as bool?,
           createdAt: (data['created_at'] ?? data['createdAt']) != null ? DateTime.tryParse((data['created_at'] ?? data['createdAt']).toString()) ?? DateTime.now() : DateTime.now(),
           updatedAt: (data['updated_at'] ?? data['updatedAt']) != null ? DateTime.tryParse((data['updated_at'] ?? data['updatedAt']).toString()) : null,
         ),
@@ -1641,6 +1694,12 @@ class SyncService {
         );
       }
     } catch (_) {}
+
+    // Ensure the associated GrowRoom exists with a valid name
+    final targetRoomId = (data['roomId'] ?? data['room_id']) as String? ?? existing?.roomId;
+    if (targetRoomId != null && targetRoomId.isNotEmpty) {
+      await _ensureGrowRoomExists(targetRoomId);
+    }
 
     return true;
   }

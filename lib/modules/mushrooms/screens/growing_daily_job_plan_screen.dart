@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:drift/drift.dart' hide Column;
 import 'package:intl/intl.dart';
 import '../../../core/database/app_database.dart';
+import '../../../core/sync/sync_service.dart';
+import '../../../core/events/app_event_bus.dart';
 import '../repository.dart';
 import '../widgets/job_completion_review_dialog.dart';
 import '../services/daily_job_plan_pdf_service.dart';
@@ -35,16 +38,38 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       'all'; // all, unassigned, assigned, in_progress, completed
   final String _leadRoomFilter = 'all';
 
+  StreamSubscription<SyncEvent>? _syncSubscription;
+  StreamSubscription<AppDomainEvent>? _eventBusSubscription;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _selectedDate = widget.initialDate ?? DateTime.now();
     _loadData();
+
+    // Auto reload when background/realtime sync pulls jobs or rooms
+    _syncSubscription = SyncService().syncEventStream.listen((event) {
+      if (event.tables.contains('mushroom_jobs') ||
+          event.tables.contains('grow_rooms') ||
+          event.tables.contains('tasks')) {
+        _loadData();
+      }
+    });
+
+    // Auto reload on domain events
+    _eventBusSubscription = AppEventBus().stream.listen((event) {
+      if (event.eventType.startsWith('mushroom.') ||
+          event.eventType.startsWith('tasks.')) {
+        _loadData();
+      }
+    });
   }
 
   @override
   void dispose() {
+    _syncSubscription?.cancel();
+    _eventBusSubscription?.cancel();
     _tabController.dispose();
     super.dispose();
   }

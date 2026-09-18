@@ -130,10 +130,11 @@ CREATE TABLE IF NOT EXISTS mushroom_jobs (
     completed_at    TEXT,
     plan_details    TEXT,
     prochloraz_rate TEXT,
-    linked_task_id  TEXT,
-    is_solo_job     INT DEFAULT 0,
-    created_at      TEXT,
-    updated_at      TEXT
+    linked_task_id   TEXT,
+    is_solo_job      INT DEFAULT 0,
+    on_time_override BOOLEAN,
+    created_at       TEXT,
+    updated_at       TEXT
 );
 
 CREATE TABLE IF NOT EXISTS tasks (

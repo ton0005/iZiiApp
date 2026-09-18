@@ -74,9 +74,9 @@ def load_seeds(force_update: bool = False) -> Dict[str, Dict[str, int]]:
                                 conn.execute(f"UPDATE {table} SET {set_clause} WHERE id = %s", values)
                                 updated += 1
                     else:
-                        # Insert with is_seed = 1
+                        # Insert with is_seed = True (PostgreSQL boolean)
                         clean_item = {k: v for k, v in item.items() if k != "noupdate"}
-                        clean_item["is_seed"] = 1
+                        clean_item["is_seed"] = True
                         cols = list(clean_item.keys())
                         placeholders = ", ".join(["%s"] * len(cols))
                         col_names = ", ".join(cols)
