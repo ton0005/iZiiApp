@@ -37,7 +37,7 @@ class IncomingCallService {
   /// cái trước thành mồ côi.
   CallBloc get bloc => _bloc ??= CallBloc();
 
-  bool get isConnected => _connectedUserId != null;
+  bool get isConnected => _connectedUserId != null && _bloc?.signaling.isConnected == true;
 
   /// Mở kênh tín hiệu cho [userId]. Gọi lại nhiều lần vô hại.
   ///
@@ -45,7 +45,7 @@ class IncomingCallService {
   /// động lại kết nối chat.
   Future<void> ensureConnected(String userId) async {
     if (userId.isEmpty) return;
-    if (_connectedUserId == userId) return;
+    if (_connectedUserId == userId && _bloc?.signaling.isConnected == true) return;
 
     _connectedUserId = userId;
     final b = bloc;

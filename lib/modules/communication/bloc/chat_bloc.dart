@@ -248,6 +248,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   StreamSubscription? _wsEventSubscription;
   StreamSubscription? _wsConnSubscription;
   StreamSubscription? _bleMessageSubscription;
+  StreamSubscription? _syncSubscription;
   Timer? _pullTimer;
 
   /// Đang có một vòng kéo tin chạy dở. Xem chú thích trong
@@ -345,6 +346,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           )));
         } catch (e) {
           print('[ChatBloc] Error processing BLE message: $e');
+        }
+      }
+    });
+
+    // Listen to SyncService events to refresh conversations & messages when pulled from server
+    _syncSubscription?.cancel();
+    _syncSubscription = SyncService().syncEventStream.listen((syncEvent) {
+      final hasChat = syncEvent.tables.any((t) => t.startsWith('chat_'));
+      if (hasChat) {
+        add(LoadConversationsEvent());
+        final activeId = state.activeConversationId;
+        if (activeId != null) {
+          add(OpenConversationEvent(activeId));
         }
       }
     });
@@ -519,7 +533,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // Refresh conversation list to update snippets
     add(LoadConversationsEvent());
 
-    // Connection check
+    // 1. Luôn xếp hàng tin nhắn vào Outbox để đồng bộ bền vững lên PostgreSQL
+    // (Zero-Loss Guarantee: Dù WebSocket rớt hoặc người nhận đang tạm ngắt kết nối, tin nhắn không bao giờ bị mất).
+    await _chatRepository.queueMessageOffline(chatMsg);
+
+    // 2. Phát ngay sự kiện qua WebSocket nếu đang kết nối để người nhận online nhận tức thì (<50ms)
     if (_wsService.isConnected) {
       _wsService.sendEvent(ChatWebSocketEvent(
         event: 'send_message',
@@ -533,7 +551,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         },
       ));
     } else {
-      // Offline fallback: Check if peer is connected via BLE P2P
+      // Offline fallback: Kiểm tra nếu thiết bị đối phương có kết nối BLE P2P
       final bleDiscovery = BleDeviceDiscoveryService();
       final companionId = companion?.id;
       final bleDeviceId = companionId != null
@@ -562,13 +580,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         );
 
         await bleDiscovery.sendPacket(bleDeviceId, packet);
-      } else {
-        // Outbox fallback
-        await _chatRepository.queueMessageOffline(chatMsg);
-        // Trigger background sync to push this message to server immediately
-        SyncService().triggerSync();
       }
     }
+
+    // 3. Kích hoạt Sync ngay lập tức để đẩy outbox lên server
+    SyncService().triggerSync();
   }
 
   void _onUpdateWsConnectionState(
@@ -870,6 +886,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     _wsEventSubscription?.cancel();
     _wsConnSubscription?.cancel();
     _bleMessageSubscription?.cancel();
+    _syncSubscription?.cancel();
     return super.close();
   }
 
@@ -1005,7 +1022,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       final identityService = DeviceIdentityService();
       final discoveryService = DeviceDiscoveryService();
-      final myIdentity = await identityService.getOrCreateIdentity();
+      await identityService.getOrCreateIdentity();
 
       // Pull pending messages for this device
       final pendingMessages = await discoveryService.getPendingMessages();
@@ -1253,10 +1270,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final messageId = const Uuid().v4();
     final now = DateTime.now();
 
-    // Create ChatMessage object with status 'pending'
+    // Create ChatMessage object with status 'uploading' to prevent SyncService from duplicate uploading
+    final initialAttachments = attachments
+        .map((a) => AttachmentFile(
+              id: a.id,
+              name: a.name,
+              mimeType: a.mimeType,
+              fileSize: a.fileSize,
+              localUri: a.localUri,
+              remoteUrl: a.remoteUrl,
+              uploadStatus: 'uploading',
+            ))
+        .toList();
+
     final messageContent = ChatMessageContent(
       text: event.text,
-      attachments: attachments,
+      attachments: initialAttachments,
     );
 
     final chatMsg = ChatMessage(

@@ -3,6 +3,7 @@ import sys
 import os
 import shutil
 import uuid
+import hashlib
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
 router = APIRouter(prefix="/api/v1/attachments", tags=["Attachments"])
@@ -15,18 +16,22 @@ async def upload_attachment(file: UploadFile = File(...)):
         uploads_dir = os.path.join(get_stable_data_dir(), "uploads")
         os.makedirs(uploads_dir, exist_ok=True)
         
-        # Generate a unique filename using UUID to prevent collisions
+        # Read file contents and compute SHA-256 for content deduplication
+        contents = await file.read()
+        file_hash = hashlib.sha256(contents).hexdigest()
+        
         original_name = file.filename or "attachment"
-        file_ext = os.path.splitext(original_name)[1]
-        unique_filename = f"{uuid.uuid4().hex}{file_ext}"
+        file_ext = os.path.splitext(original_name)[1].lower()
+        unique_filename = f"{file_hash}{file_ext}"
         
         file_path = os.path.join(uploads_dir, unique_filename)
         
-        # Save file contents
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        # Only write if it does not already exist (avoids duplicate disk writes)
+        if not os.path.exists(file_path):
+            with open(file_path, "wb") as buffer:
+                buffer.write(contents)
             
-        file_size = os.path.getsize(file_path)
+        file_size = len(contents)
         
         # Return attachment info. URL is relative, client can prepend the server base URL.
         return {

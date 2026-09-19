@@ -6,6 +6,7 @@ import 'package:izii_app/core/database/app_database.dart';
 import 'package:izii_app/core/sync/sync_service.dart';
 import 'package:izii_app/modules/mushrooms/repository.dart';
 import 'employee_service.dart';
+import 'plant_room_service.dart';
 
 abstract class GrowRoomService {
   /// Stream phát ra danh sách tất cả các phòng trồng sắp xếp theo tên.
@@ -24,8 +25,29 @@ abstract class GrowRoomService {
   Future<Map<String, dynamic>?> getRoomById(String roomId);
 
   /// Thêm một phòng trồng mới.
-  /// Thực hiện validate chống trùng tên trong cùng một nhà máy (Plant).
-  Future<void> addRoom({required String name, required String plantName});
+  /// Thực hiện validate chống trùng tên và gán nhà máy (Plant).
+  Future<void> addRoom({
+    required String name,
+    required String plantName,
+    double targetYield = 0.0,
+  });
+
+  /// Chỉnh sửa thông tin phòng trồng (Tên, Nhà máy, Giai đoạn, Năng suất, v.v.).
+  Future<void> updateRoom({
+    required String roomId,
+    required String name,
+    required String plantName,
+    String? status,
+    String? currentStage,
+    double? targetYield,
+    int? dayInCycle,
+  });
+
+  /// Đổi nhanh nhà máy của phòng trồng (ví dụ: chuyển sang M1 hoặc M2).
+  Future<void> reassignRoomPlant(String roomId, String newPlantCode);
+
+  /// Xóa một phòng trồng khỏi hệ thống.
+  Future<void> deleteRoom(String roomId);
 
   /// Cập nhật giai đoạn hiện tại (Stage) của phòng trồng (e.g. filling, casing, watering, alone_worker).
   Future<void> updateRoomStage(String roomId, String stage);
@@ -42,19 +64,26 @@ class GrowRoomServiceImpl implements GrowRoomService {
   final AppDatabase _db;
   final EmployeeService _employeeService;
   final MushroomsRepository _repository;
+  final PlantRoomService _plantRoomService;
 
-  GrowRoomServiceImpl(
-      {AppDatabase? db,
-      EmployeeService? employeeService,
-      MushroomsRepository? repository})
-      : _db = db ?? AppDatabase(),
+  GrowRoomServiceImpl({
+    AppDatabase? db,
+    EmployeeService? employeeService,
+    MushroomsRepository? repository,
+    PlantRoomService? plantRoomService,
+  })  : _db = db ?? AppDatabase(),
         _employeeService = employeeService ?? EmployeeServiceImpl(),
-        _repository = repository ?? MushroomsRepository(db ?? AppDatabase());
+        _repository = repository ?? MushroomsRepository(db ?? AppDatabase()),
+        _plantRoomService = plantRoomService ?? PlantRoomService();
 
   Map<String, dynamic> _mapRoom(GrowRoom r) {
+    final plantCode =
+        _plantRoomService.getPlantForRoomSync(roomId: r.id, roomName: r.name);
     return <String, dynamic>{
       'id': r.id,
       'name': r.name,
+      'plant': plantCode,
+      'plant_name': 'Plant $plantCode',
       'status': r.status,
       'current_stage': r.currentStage,
       'day_in_cycle': r.dayInCycle,
@@ -83,25 +112,19 @@ class GrowRoomServiceImpl implements GrowRoomService {
 
   @override
   Stream<List<Map<String, dynamic>>> watchRoomsByPlant(String plantName) {
+    final targetCode =
+        plantName.replaceAll('Plant ', '').trim().toUpperCase();
+
     return watchRooms().map((list) {
       return list.where((room) {
-        final name = room['name'] as String;
-        final isM2 = _isRoomInPlantM2(name);
-        if (plantName == 'Plant M2') return isM2;
-        return !isM2;
+        final id = room['id'] as String? ?? '';
+        final name = room['name'] as String? ?? '';
+        final pCode = _plantRoomService
+            .getPlantForRoomSync(roomId: id, roomName: name)
+            .toUpperCase();
+        return pCode == targetCode;
       }).toList();
     });
-  }
-
-  bool _isRoomInPlantM2(String roomName) {
-    final numMatch = RegExp(r'\d+').firstMatch(roomName);
-    if (numMatch != null) {
-      final roomNum = int.tryParse(numMatch.group(0)!);
-      if (roomNum != null && roomNum >= 33) {
-        return true;
-      }
-    }
-    return false;
   }
 
   @override
@@ -121,14 +144,17 @@ class GrowRoomServiceImpl implements GrowRoomService {
   }
 
   @override
-  Future<void> addRoom(
-      {required String name, required String plantName}) async {
+  Future<void> addRoom({
+    required String name,
+    required String plantName,
+    double targetYield = 0.0,
+  }) async {
     final currentEmpId =
         await _employeeService.getCurrentEmployeeId() ?? '555555';
     final hasPerm =
         await _employeeService.hasPermission(currentEmpId, 'addRoom');
     if (!hasPerm) {
-      throw Exception('Can not add room: employee does not have permission.');
+      throw Exception('Không có quyền thêm phòng trồng.');
     }
 
     final deterministicId = name.toLowerCase().replaceAll(' ', '_');
@@ -136,7 +162,7 @@ class GrowRoomServiceImpl implements GrowRoomService {
     // Check duplication by ID and name
     final existing = await getRoomById(deterministicId);
     if (existing != null) {
-      throw Exception('Can not add room: room already exists.');
+      throw Exception('Phòng đã tồn tại trong hệ thống.');
     }
 
     final allRooms = await getRooms();
@@ -144,8 +170,11 @@ class GrowRoomServiceImpl implements GrowRoomService {
         (r['name'] as String).trim().toLowerCase() ==
         name.trim().toLowerCase());
     if (duplicateName) {
-      throw Exception('Can not add room: room with this name already exists.');
+      throw Exception('Tên phòng này đã tồn tại.');
     }
+
+    final cleanPlant =
+        plantName.replaceAll('Plant ', '').trim().toUpperCase();
 
     await _db.into(_db.growRooms).insertOnConflictUpdate(GrowRoom(
           id: deterministicId,
@@ -153,20 +182,129 @@ class GrowRoomServiceImpl implements GrowRoomService {
           status: 'idle',
           currentStage: 'idle',
           dayInCycle: 1,
-          targetYield: 0.0,
+          targetYield: targetYield,
           pickedYield: 0.0,
           createdAt: DateTime.now(),
         ));
 
+    await _plantRoomService.assignRoomToPlant(
+      roomId: deterministicId,
+      plantCode: cleanPlant,
+      roomName: name,
+    );
+
     await SyncService().queueMutation('grow_rooms', 'insert', {
       'id': deterministicId,
       'name': name,
+      'plant': cleanPlant,
       'status': 'idle',
       'current_stage': 'idle',
       'day_in_cycle': 1,
-      'target_yield': 0.0,
+      'target_yield': targetYield,
       'picked_yield': 0.0,
       'created_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  @override
+  Future<void> updateRoom({
+    required String roomId,
+    required String name,
+    required String plantName,
+    String? status,
+    String? currentStage,
+    double? targetYield,
+    int? dayInCycle,
+  }) async {
+    final currentEmpId =
+        await _employeeService.getCurrentEmployeeId() ?? '555555';
+    final hasPerm =
+        await _employeeService.hasPermission(currentEmpId, 'addRoom');
+    if (!hasPerm) {
+      throw Exception('Không có quyền chỉnh sửa phòng trồng.');
+    }
+
+    final cleanPlant =
+        plantName.replaceAll('Plant ', '').trim().toUpperCase();
+
+    await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId)))
+        .write(GrowRoomsCompanion(
+      name: Value(name),
+      updatedAt: Value(DateTime.now()),
+      status: status != null ? Value(status) : const Value.absent(),
+      currentStage:
+          currentStage != null ? Value(currentStage) : const Value.absent(),
+      targetYield:
+          targetYield != null ? Value(targetYield) : const Value.absent(),
+      dayInCycle:
+          dayInCycle != null ? Value(dayInCycle) : const Value.absent(),
+    ));
+
+    await _plantRoomService.assignRoomToPlant(
+      roomId: roomId,
+      plantCode: cleanPlant,
+      roomName: name,
+    );
+
+    await SyncService().queueMutation('grow_rooms', 'update', {
+      'id': roomId,
+      'name': name,
+      'plant': cleanPlant,
+      if (status != null) 'status': status,
+      if (currentStage != null) 'current_stage': currentStage,
+      if (targetYield != null) 'target_yield': targetYield,
+      if (dayInCycle != null) 'day_in_cycle': dayInCycle,
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  @override
+  Future<void> reassignRoomPlant(String roomId, String newPlantCode) async {
+    final room = await getRoomById(roomId);
+    if (room == null) return;
+    final name = room['name'] as String;
+    final cleanPlant =
+        newPlantCode.replaceAll('Plant ', '').trim().toUpperCase();
+
+    await _plantRoomService.assignRoomToPlant(
+      roomId: roomId,
+      plantCode: cleanPlant,
+      roomName: name,
+    );
+
+    await SyncService().queueMutation('grow_rooms', 'update', {
+      'id': roomId,
+      'name': name,
+      'plant': cleanPlant,
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  @override
+  Future<void> deleteRoom(String roomId) async {
+    final currentEmpId =
+        await _employeeService.getCurrentEmployeeId() ?? '555555';
+    final hasPerm =
+        await _employeeService.hasPermission(currentEmpId, 'addRoom');
+    if (!hasPerm) {
+      throw Exception('Không có quyền xóa phòng trồng.');
+    }
+
+    // Check if there are active jobs in this room
+    final activeJobs = await (_db.select(_db.mushroomJobs)
+          ..where((tbl) =>
+              tbl.roomId.equals(roomId) & tbl.status.equals('in_progress')))
+        .get();
+    if (activeJobs.isNotEmpty) {
+      throw Exception(
+          'Không thể xóa phòng đang có ${activeJobs.length} công việc đang thực hiện.');
+    }
+
+    await (_db.delete(_db.growRooms)..where((tbl) => tbl.id.equals(roomId)))
+        .go();
+
+    await SyncService().queueMutation('grow_rooms', 'delete', {
+      'id': roomId,
     });
   }
 

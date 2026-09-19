@@ -17,12 +17,14 @@ import 'safety_tab_screen.dart';
 import 'employees_tab_screen.dart';
 import 'departments_tab_screen.dart';
 import 'job_types_management_screen.dart';
+import 'grow_room_plant_management_screen.dart';
 import 'settings_tab_screen.dart';
 import 'growing_performance_board_screen.dart';
 import 'manager_batch_attendance_screen.dart';
 import 'mushrooms_profile_screen.dart';
 import 'grow_room_3d_screen.dart';
 import '../services/employee_service.dart';
+import '../services/plant_room_service.dart';
 import 'package:izii_app/core/database/app_database.dart';
 
 // --- Premium color definitions ---
@@ -213,6 +215,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
   // BLoC
   late MushroomsBloc _bloc;
+  StreamSubscription<void>? _plantRoomSub;
 
   @override
   void initState() {
@@ -222,6 +225,23 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     }
     _bloc = MushroomsBloc()..add(LoadRoomsEvent());
     _loadMushroomData();
+
+    _plantRoomSub = PlantRoomService().watchChanges.listen((_) {
+      if (mounted) {
+        setState(() {
+          for (final entry in _localRooms.entries) {
+            entry.value['plant'] =
+                _getPlantFromRoomName(entry.key, roomId: entry.value['id']);
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _plantRoomSub?.cancel();
+    super.dispose();
   }
 
   // Role name -> numeric level (0=Worker, 1=Specialist, 2=Lead/Supervisor,
@@ -339,27 +359,22 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     });
   }
 
-  // Helper: check if a room belongs to M1 or M2
-  String _getPlantFromRoomName(String name) {
-    final clean = name.replaceAll('Room ', '').trim();
-    if (clean == '6A' || clean == '6B' || clean == '22A') {
-      return 'M1';
-    }
-    final num = int.tryParse(clean.replaceAll(RegExp(r'[^0-9]'), ''));
-    if (num != null && num >= 33) {
-      return 'M2';
-    }
-    return 'M1';
+  // Helper: check if a room belongs to a plant dynamically via PlantRoomService
+  String _getPlantFromRoomName(String name, {String? roomId}) {
+    final rId = roomId ?? name.toLowerCase().replaceAll(' ', '_');
+    return PlantRoomService()
+        .getPlantForRoomSync(roomId: rId, roomName: name);
   }
 
   void _syncDatabaseRooms(List<Map<String, dynamic>> dbRooms) {
     for (var r in dbRooms) {
       final name = r['name'] as String;
+      final roomId = (r['id'] as String?) ?? name.toLowerCase().replaceAll(' ', '_');
       if (!_localRooms.containsKey(name)) {
         _localRooms[name] = {
-          'id': r['id'],
+          'id': roomId,
           'name': name,
-          'plant': _getPlantFromRoomName(name),
+          'plant': _getPlantFromRoomName(name, roomId: roomId),
           'status': r['status'] ?? 'idle',
           'current_stage': r['current_stage'] ?? 'idle',
           'day_in_cycle': r['day_in_cycle'] ?? 1,
@@ -374,6 +389,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         };
       } else {
         // Update stage & status from database
+        _localRooms[name]!['plant'] =
+            _getPlantFromRoomName(name, roomId: roomId);
         _localRooms[name]!['status'] =
             r['status'] ?? _localRooms[name]!['status'];
         _localRooms[name]!['current_stage'] =
@@ -737,6 +754,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
           ? 'Phòng ban (Departments)'
           : 'Department Directory';
     }
+    if (_activeTab == 'rooms_plants') {
+      return _language == 'vi'
+          ? 'Phòng Trồng & Nhà Máy (Rooms & Plants)'
+          : 'Rooms & Plants Management';
+    }
     if (_activeTab == 'settings') {
       return _language == 'vi' ? 'Cài đặt (Settings)' : 'Settings';
     }
@@ -762,6 +784,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'employees') return 'Staff & Specialist Registry';
     if (_activeTab == 'departments') {
       return 'Manage business department listings';
+    }
+    if (_activeTab == 'rooms_plants') {
+      return 'Grow Rooms, Plants Catalog & Room Assignments (CRUD)';
     }
     if (_activeTab == 'settings') {
       return 'Server, Sync & Application Preferences';
@@ -1019,6 +1044,14 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                       const SizedBox(height: 8),
                     _buildSidebarLabel(
                         _language == 'vi' ? 'CẤU HÌNH' : 'CONFIGURATION',
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'rooms_plants',
+                        Icons.meeting_room_rounded,
+                        _language == 'vi'
+                            ? 'Phòng & Nhà máy'
+                            : 'Rooms & Plants',
+                        const Color(0xFF10B981),
                         effectiveExpanded),
                     _buildSidebarItem(
                         'settings',
@@ -1329,6 +1362,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         );
       }
       return JobTypesManagementScreen(isDark: isDark);
+    }
+    if (_activeTab == 'rooms_plants') {
+      return GrowRoomPlantManagementScreen(isDark: isDark);
     }
     if (_activeTab == 'settings') {
       return SettingsTabScreen(

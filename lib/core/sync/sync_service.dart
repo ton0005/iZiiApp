@@ -513,7 +513,10 @@ class SyncService {
           
           for (var att in attachmentsList) {
             final status = att['upload_status'] as String? ?? 'pending';
-            if (status == 'pending' || status == 'failed') {
+            // Không upload nếu tệp đang được ChatBloc tải lên ('uploading').
+            // Chỉ upload bù nếu status là 'failed' hoặc tin nhắn đã tồn tại quá 30 giây mà chưa hoàn thành.
+            final isStalePending = status == 'pending' && DateTime.now().difference(msg.sentAt).inSeconds > 30;
+            if (status == 'failed' || isStalePending) {
               final localUri = att['local_uri'] as String?;
               if (localUri != null && await File(localUri).exists()) {
                 _log('Tải lên tệp đính kèm chưa hoàn thành cho tin nhắn ${msg.id}: ${att['name']}');
