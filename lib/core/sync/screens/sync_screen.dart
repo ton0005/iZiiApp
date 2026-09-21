@@ -557,7 +557,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Text('Đồng bộ theo từng Module',
+          child: Text('Sync by individual modules',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         ),
         ..._configs.map((config) {
@@ -612,9 +612,9 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                     child: Text(
                       config.isEnabled
                           ? (unsyncedCount > 0
-                              ? 'Chờ đồng bộ ($unsyncedCount)'
-                              : 'Đã đồng bộ')
-                          : 'Tắt đồng bộ',
+                              ? 'Waiting for sync ($unsyncedCount)'
+                              : 'Synced')
+                          : 'Sync disabled',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
@@ -627,7 +627,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                 ],
               ),
               trailing: isAlwaysOn
-                  ? const Text('Bắt buộc',
+                  ? const Text('Required',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
@@ -649,7 +649,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Bắt buộc đồng bộ (Admin Lock)',
+                            const Text('Required Sync (Admin Lock)',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 13)),
                             Switch(
@@ -665,7 +665,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Chế độ đồng bộ:',
+                          const Text('Sync Mode:',
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 14)),
                           DropdownButton<String>(
@@ -673,13 +673,13 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                             items: const [
                               DropdownMenuItem(
                                   value: 'full',
-                                  child: Text('Tự động (Real-time)')),
+                                  child: Text('Automatic (Real-time)')),
                               DropdownMenuItem(
                                   value: 'manual',
-                                  child: Text('Chỉ khi ấn nút')),
+                                  child: Text('Manual')),
                               DropdownMenuItem(
                                   value: 'selective',
-                                  child: Text('Tùy chọn thực thể')),
+                                  child: Text('Selective')),
                             ],
                             onChanged: (isAlwaysOn || isLocked)
                                 ? null
@@ -695,7 +695,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                       if (config.syncGranularity == 'selective' &&
                           subEntities.isNotEmpty) ...[
                         const SizedBox(height: 12),
-                        const Text('Chọn thực thể muốn đồng bộ:',
+                        const Text('Select entities to sync:',
                             style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
@@ -751,7 +751,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                 Icon(Icons.settings_input_component_outlined,
                     color: Color(0xFF6366F1), size: 20),
                 SizedBox(width: 8),
-                Text('Cấu hình API Server',
+                Text('API Server Configuration',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ],
@@ -760,7 +760,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
             TextField(
               controller: _urlController,
               decoration: InputDecoration(
-                labelText: 'Địa chỉ Server URL',
+                labelText: 'Server URL',
                 hintText: 'http://10.146.147.160:8080',
                 prefixIcon: const Icon(Icons.link_rounded),
                 border:
@@ -771,8 +771,8 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
             TextField(
               controller: _tokenController,
               decoration: InputDecoration(
-                labelText: 'API Token Bảo mật',
-                hintText: 'Nhập token kết nối...',
+                labelText: 'API Token (Secure)',
+                hintText: 'Enter connection token...',
                 prefixIcon: const Icon(Icons.vpn_key_outlined),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -797,7 +797,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                         height: 20,
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white))
-                    : const Text('Lưu cấu hình',
+                    : const Text('Save Configuration',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15)),
               ),
@@ -823,7 +823,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                 Icon(Icons.history_edu_outlined,
                     color: Color(0xFF06B6D4), size: 20),
                 SizedBox(width: 8),
-                Text('Nhật ký đồng bộ (Real-time)',
+                Text('Sync Logs (Real-time)',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ],
@@ -839,7 +839,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
               child: _localLogs.isEmpty
                   ? const Center(
                       child: Text(
-                        'Chưa có log đồng bộ nào phát sinh.',
+                        'No sync logs available.',
                         style: TextStyle(
                             color: Colors.grey,
                             fontStyle: FontStyle.italic,
@@ -870,7 +870,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
   Widget _buildAuditLogsView(Color cardColor) {
     if (_audits.isEmpty) {
       return const Center(
-          child: Text('Chưa có lịch sử thay đổi cấu hình đồng bộ.',
+          child: Text('No audit logs available.',
               style:
                   TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)));
     }
@@ -902,7 +902,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             subtitle: Text(
-              'Người dùng: ${audit.userId}\nThời gian: ${audit.timestamp.toLocal().toString().substring(0, 19)}',
+              'User: ${audit.userId}\nTimestamp: ${audit.timestamp.toLocal().toString().substring(0, 19)}',
               style: const TextStyle(fontSize: 12),
             ),
           ),
@@ -914,7 +914,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
   Widget _buildConflictLogsView(Color cardColor) {
     if (_conflicts.isEmpty) {
       return const Center(
-          child: Text('Chưa ghi nhận xung đột dữ liệu nào.',
+          child: Text('No conflict logs available.',
               style:
                   TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)));
     }
@@ -931,14 +931,14 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ExpansionTile(
             title: Text(
-              'Xung đột: ${conflict.targetTable} (${conflict.recordId})',
+              'Conflict: ${conflict.targetTable} (${conflict.recordId})',
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                   color: Color(0xFFF43F5E)),
             ),
             subtitle: Text(
-              'Giải quyết bằng: ${conflict.resolutionStrategy.toUpperCase()}\nThời gian: ${conflict.timestamp.toLocal().toString().substring(0, 19)}',
+              'Resolved by: ${conflict.resolutionStrategy.toUpperCase()}\nTimestamp: ${conflict.timestamp.toLocal().toString().substring(0, 19)}',
               style: const TextStyle(fontSize: 12),
             ),
             children: [
@@ -947,21 +947,21 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Dữ liệu cục bộ (Local Data):',
+                    const Text('Local Data:',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 12)),
                     Text(conflict.localData,
                         style: const TextStyle(
                             fontFamily: 'monospace', fontSize: 11)),
                     const SizedBox(height: 8),
-                    const Text('Dữ liệu máy chủ (Server Data):',
+                    const Text('Server Data:',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 12)),
                     Text(conflict.serverData,
                         style: const TextStyle(
                             fontFamily: 'monospace', fontSize: 11)),
                     const SizedBox(height: 8),
-                    const Text('Dữ liệu đã giải quyết (Resolved):',
+                    const Text('Resolved Data:',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 12)),
                     Text(conflict.resolvedData,

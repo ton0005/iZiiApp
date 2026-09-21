@@ -66,6 +66,41 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
   Offset? _lastPanPosition;
   double _baseZoom = 1.0;
 
+  // Trạng thái thu gọn/bật tắt khung điều khiển (UI/UX Mobile Optimization)
+  bool _showHud = true; // Bật/Tắt toàn bộ HUD (Zen mode / Fullscreen 3D)
+  bool _isCameraControlsExpanded = false; // Thu gọn/mở rộng khung Camera & Tầng
+  bool _isDisplayModeExpanded = false; // Thu gọn/mở rộng khung Chế độ hiển thị
+  bool _isBottomInspectorExpanded = true; // Thu gọn/mở rộng thanh thông số / ô chọn
+  String _currentPreset = 'isometric';
+
+  String get _currentPresetLabel {
+    switch (_currentPreset) {
+      case 'front':
+        return 'Front End';
+      case 'side':
+        return 'Side (9W)';
+      case 'top':
+        return 'Top Floor';
+      case 'isometric':
+      default:
+        return 'Isometric';
+    }
+  }
+
+  String get _displayModeLabel {
+    switch (_displayMode) {
+      case GrowRoom3dDisplayMode.temperature:
+        return 'Heatmap';
+      case GrowRoom3dDisplayMode.moisture:
+        return 'Moisture';
+      case GrowRoom3dDisplayMode.pickingStatus:
+        return 'Harvest';
+      case GrowRoom3dDisplayMode.realistic:
+      default:
+        return 'Realistic';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -188,6 +223,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
 
   void _setPresetCamera(String preset) {
     setState(() {
+      _currentPreset = preset;
       _panOffset = Offset.zero;
       switch (preset) {
         case 'isometric':
@@ -239,6 +275,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
     setState(() {
       if (hit != null) {
         _selectedWindow = hit.poly.windowLocation;
+        _isBottomInspectorExpanded = true; // Tự động mở rộng khi chọn ô trồng
       } else {
         _selectedWindow = null;
       }
@@ -253,11 +290,15 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
     final cardBg = isDark ? const Color(0xFF131C2E) : Colors.white;
     final borderColor = isDark ? Colors.white12 : Colors.black12;
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 700;
+
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: cardBg,
         elevation: 0,
+        titleSpacing: isMobile ? 8 : NavigationToolbar.kMiddleSpacing,
         title: Row(
           children: [
             Container(
@@ -269,46 +310,51 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
               child: const Icon(Icons.view_in_ar_rounded,
                   color: Color(0xFF2A78D6), size: 20),
             ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Grow Room 3D Model',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : Colors.black87,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _selectedRoomName ?? 'Grow Room 3D',
+                    style: TextStyle(
+                      fontSize: isMobile ? 14 : 15,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                Text(
-                  _isLargeRoom
-                      ? 'Large Room • 4 Racks • 6 Levels • 9 Windows (27m) • 6m Height'
-                      : 'Small Room • 2 Racks • 6 Levels • 9 Windows (27m) • 6m Height',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: isDark ? Colors.white60 : Colors.black54,
+                  Text(
+                    _isLargeRoom
+                        ? (isMobile ? '4 Racks • 6 Levels • 6m H' : 'Large Room • 4 Racks • 6 Levels • 9 Windows (27m) • 6m Height')
+                        : (isMobile ? '2 Racks • 6 Levels • 6m H' : 'Small Room • 2 Racks • 6 Levels • 9 Windows (27m) • 6m Height'),
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      color: isDark ? Colors.white60 : Colors.black54,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
         actions: [
           // Quick toggle Large Room / Small Room
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
             child: SegmentedButton<bool>(
-              segments: const [
+              segments: [
                 ButtonSegment<bool>(
                   value: false,
-                  label: Text('Small (2 Racks)'),
-                  icon: Icon(Icons.view_column_outlined, size: 16),
+                  label: Text(isMobile ? '2R' : 'Small (2 Racks)'),
+                  icon: isMobile ? null : const Icon(Icons.view_column_outlined, size: 16),
                 ),
                 ButtonSegment<bool>(
                   value: true,
-                  label: Text('Large (4 Racks)'),
-                  icon: Icon(Icons.view_column_rounded, size: 16),
+                  label: Text(isMobile ? '4R' : 'Large (4 Racks)'),
+                  icon: isMobile ? null : const Icon(Icons.view_column_rounded, size: 16),
                 ),
               ],
               selected: {_isLargeRoom},
@@ -320,7 +366,8 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
               },
               style: ButtonStyle(
                 visualDensity: VisualDensity.compact,
-                textStyle: WidgetStateProperty.all(const TextStyle(fontSize: 12)),
+                padding: WidgetStateProperty.all(EdgeInsets.symmetric(horizontal: isMobile ? 6 : 10)),
+                textStyle: WidgetStateProperty.all(TextStyle(fontSize: isMobile ? 11 : 12, fontWeight: FontWeight.w600)),
               ),
             ),
           ),
@@ -328,13 +375,13 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
           // Dropdown chọn phòng từ danh sách (nếu có)
           if (_dbRooms.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: _selectedRoomName,
                   dropdownColor: cardBg,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: isMobile ? 12 : 13,
                     fontWeight: FontWeight.w600,
                     color: isDark ? Colors.white : Colors.black87,
                   ),
@@ -350,6 +397,18 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                 ),
               ),
             ),
+
+          // Fullscreen / Zen mode Master Toggle
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: Icon(
+              _showHud ? Icons.fullscreen_rounded : Icons.fullscreen_exit_rounded,
+              color: _showHud ? (isDark ? Colors.white70 : Colors.black87) : const Color(0xFF2A78D6),
+            ),
+            tooltip: _showHud ? 'Zen Mode (Hide All Controls)' : 'Show All Controls',
+            onPressed: () => setState(() => _showHud = !_showHud),
+          ),
+          const SizedBox(width: 4),
         ],
       ),
       body: Stack(
@@ -420,42 +479,174 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
             ),
           ),
 
-          // HUD TOP-LEFT: BỘ ĐIỀU KHIỂN GÓC NHÌN & CÔNG CỤ
-          Positioned(
-            top: 16,
-            left: 16,
-            child: _buildControlsCard(cardBg, borderColor, isDark),
-          ),
+          // HUD OVERLAYS (Hiện khi _showHud == true)
+          if (_showHud) ...[
+            // HUD TOP-LEFT: BỘ ĐIỀU KHIỂN GÓC NHÌN & CÔNG CỤ
+            Positioned(
+              top: 12,
+              left: 12,
+              child: _buildControlsCard(cardBg, borderColor, isDark, isMobile),
+            ),
 
-          // HUD TOP-RIGHT: CHỌN CHẾ ĐỘ HIỂN THỊ MÀU
-          Positioned(
-            top: 16,
-            right: 16,
-            child: _buildDisplayModeCard(cardBg, borderColor, isDark),
-          ),
+            // HUD TOP-RIGHT: CHỌN CHẾ ĐỘ HIỂN THỊ MÀU
+            Positioned(
+              top: 12,
+              right: 12,
+              child: _buildDisplayModeCard(cardBg, borderColor, isDark, isMobile),
+            ),
 
-          // HUD BOTTOM: THANH THÔNG TIN CHI TIẾT Ô ĐANG CHỌN HOẶC TỔNG QUAN PHÒNG
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 16,
-            child: _buildBottomInspector(cardBg, borderColor, isDark),
-          ),
+            // HUD BOTTOM: THANH THÔNG TIN CHI TIẾT Ô ĐANG CHỌN HOẶC TỔNG QUAN PHÒNG
+            Positioned(
+              bottom: 12,
+              left: 12,
+              right: 12,
+              child: _buildBottomInspector(cardBg, borderColor, isDark, isMobile),
+            ),
+          ] else ...[
+            // NÚT PHỤC HỒI HUD KHI ĐANG Ở ZEN / FULLSCREEN MODE
+            Positioned(
+              top: 12,
+              right: 12,
+              child: _buildShowHudButton(cardBg, borderColor, isDark),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  // --- WIDGET BỘ ĐIỀU KHIỂN GÓC NHÌN CAMERA ---
-  Widget _buildControlsCard(Color cardBg, Color borderColor, bool isDark) {
+  // --- NÚT PHỤC HỒI HUD KHI ĐANG Ở ZEN / FULLSCREEN MODE ---
+  Widget _buildShowHudButton(Color cardBg, Color borderColor, bool isDark) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: cardBg.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: borderColor),
         boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => setState(() => _showHud = true),
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.tune_rounded, size: 16, color: Color(0xFF2A78D6)),
+                const SizedBox(width: 6),
+                Text(
+                  'Show Controls',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white70 : Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- WIDGET BỘ ĐIỀU KHIỂN GÓC NHÌN CAMERA & TẦNG ---
+  Widget _buildControlsCard(
+      Color cardBg, Color borderColor, bool isDark, bool isMobile) {
+    if (!_isCameraControlsExpanded) {
+      // COLLAPSED PILL: Gọn gàng, vừa vặn trên mobile, không che khuất mô hình 3D
+      return Container(
+        decoration: BoxDecoration(
+          color: cardBg.withValues(alpha: 0.92),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderColor),
+          boxShadow: const [
+            BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                _isCameraControlsExpanded = true;
+                if (isMobile) _isDisplayModeExpanded = false; // Tránh chồng chéo trên màn hình hẹp
+              });
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.videocam_rounded, size: 16, color: Color(0xFF2A78D6)),
+                  const SizedBox(width: 6),
+                  Text(
+                    _currentPresetLabel,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  if (_isolatedLevel != null) ...[
+                    const SizedBox(width: 5),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2A78D6).withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'L$_isolatedLevel',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2A78D6),
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(width: 4),
+                  const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: Colors.blueGrey),
+                  const SizedBox(width: 6),
+                  // Nút bật tắt xoay tự động nhanh ngay trên pill
+                  InkWell(
+                    onTap: _toggleAutoRotate,
+                    borderRadius: BorderRadius.circular(10),
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: Icon(
+                        _isAutoRotating
+                            ? Icons.pause_circle_filled_rounded
+                            : Icons.play_circle_fill_rounded,
+                        color: _isAutoRotating ? Colors.amber : Colors.blueGrey,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // EXPANDED CARD
+    return Container(
+      constraints: BoxConstraints(maxWidth: isMobile ? 275 : 320),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: cardBg.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: borderColor),
+        boxShadow: const [
+          BoxShadow(color: Colors.black38, blurRadius: 12, offset: Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -463,48 +654,70 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.camera_alt_outlined, size: 16, color: Color(0xFF2A78D6)),
+              const Icon(Icons.videocam_rounded, size: 16, color: Color(0xFF2A78D6)),
               const SizedBox(width: 6),
               Text(
-                'Camera View',
+                'Camera & Controls',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: isDark ? Colors.white70 : Colors.black87,
                 ),
               ),
-              const SizedBox(width: 8),
+              const Spacer(),
               // Auto-rotate button
               IconButton(
                 visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
                 icon: Icon(
-                  _isAutoRotating ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
+                  _isAutoRotating
+                      ? Icons.pause_circle_filled_rounded
+                      : Icons.play_circle_fill_rounded,
                   color: _isAutoRotating ? Colors.amber : Colors.blueGrey,
                   size: 20,
                 ),
                 tooltip: 'Auto Rotate 3D',
                 onPressed: _toggleAutoRotate,
               ),
+              const SizedBox(width: 4),
               // Reset Button
               IconButton(
                 visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
                 icon: const Icon(Icons.restart_alt_rounded, size: 18),
                 tooltip: 'Reset to Default View',
                 onPressed: () => _setPresetCamera('isometric'),
+              ),
+              const SizedBox(width: 4),
+              // Collapse Button
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+                icon: const Icon(Icons.keyboard_arrow_up_rounded, size: 20),
+                tooltip: 'Collapse',
+                onPressed: () =>
+                    setState(() => _isCameraControlsExpanded = false),
               ),
             ],
           ),
           const SizedBox(height: 6),
           // Camera presets
           Wrap(
-            spacing: 6,
+            spacing: 5,
+            runSpacing: 5,
             children: [
-              _buildPresetBtn('Isometric', () => _setPresetCamera('isometric')),
-              _buildPresetBtn('Front End', () => _setPresetCamera('front')),
-              _buildPresetBtn('Side (9W)', () => _setPresetCamera('side')),
-              _buildPresetBtn('Top Floor', () => _setPresetCamera('top')),
+              _buildPresetBtn('Isometric', _currentPreset == 'isometric',
+                  () => _setPresetCamera('isometric')),
+              _buildPresetBtn('Front End', _currentPreset == 'front',
+                  () => _setPresetCamera('front')),
+              _buildPresetBtn('Side (9W)', _currentPreset == 'side',
+                  () => _setPresetCamera('side')),
+              _buildPresetBtn('Top Floor', _currentPreset == 'top',
+                  () => _setPresetCamera('top')),
             ],
           ),
           const SizedBox(height: 8),
@@ -513,14 +726,14 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               FilterChip(
-                label: const Text('Room Shell', style: TextStyle(fontSize: 11)),
+                label: const Text('Room Shell', style: TextStyle(fontSize: 10.5)),
                 selected: _showRoomShell,
                 onSelected: (val) => setState(() => _showRoomShell = val),
                 visualDensity: VisualDensity.compact,
               ),
               const SizedBox(width: 6),
               FilterChip(
-                label: const Text('6m/27m Rulers', style: TextStyle(fontSize: 11)),
+                label: const Text('Rulers (6m/27m)', style: TextStyle(fontSize: 10.5)),
                 selected: _showDimensions,
                 onSelected: (val) => setState(() => _showDimensions = val),
                 visualDensity: VisualDensity.compact,
@@ -530,7 +743,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
           const SizedBox(height: 8),
           // Level filter (Level 1..6)
           Text(
-            'Level Filter (Level 1..6):',
+            'Level Filter (Tầng 1..6):',
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -540,18 +753,20 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
           const SizedBox(height: 4),
           Wrap(
             spacing: 4,
+            runSpacing: 4,
             children: [
               ChoiceChip(
-                label: const Text('All', style: TextStyle(fontSize: 11)),
+                label: const Text('All', style: TextStyle(fontSize: 10.5)),
                 selected: _isolatedLevel == null,
                 onSelected: (_) => setState(() => _isolatedLevel = null),
                 visualDensity: VisualDensity.compact,
               ),
               for (int l = 1; l <= 6; l++)
                 ChoiceChip(
-                  label: Text('L$l', style: const TextStyle(fontSize: 11)),
+                  label: Text('L$l', style: const TextStyle(fontSize: 10.5)),
                   selected: _isolatedLevel == l,
-                  onSelected: (sel) => setState(() => _isolatedLevel = sel ? l : null),
+                  onSelected: (sel) =>
+                      setState(() => _isolatedLevel = sel ? l : null),
                   visualDensity: VisualDensity.compact,
                 ),
             ],
@@ -561,34 +776,89 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
     );
   }
 
-  Widget _buildPresetBtn(String label, VoidCallback onTap) {
+  Widget _buildPresetBtn(String label, bool isSelected, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(6),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.blueGrey.withValues(alpha: 0.12),
+          color: isSelected
+              ? const Color(0xFF2A78D6)
+              : Colors.blueGrey.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
           label,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : null,
+          ),
         ),
       ),
     );
   }
 
   // --- WIDGET CHỌN CHẾ ĐỘ HIỂN THỊ MÀU ---
-  Widget _buildDisplayModeCard(Color cardBg, Color borderColor, bool isDark) {
+  Widget _buildDisplayModeCard(
+      Color cardBg, Color borderColor, bool isDark, bool isMobile) {
+    if (!_isDisplayModeExpanded) {
+      // COLLAPSED PILL
+      return Container(
+        decoration: BoxDecoration(
+          color: cardBg.withValues(alpha: 0.92),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderColor),
+          boxShadow: const [
+            BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                _isDisplayModeExpanded = true;
+                if (isMobile) _isCameraControlsExpanded = false; // Tránh chồng chéo
+              });
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.palette_rounded, size: 16, color: Color(0xFF10B981)),
+                  const SizedBox(width: 6),
+                  Text(
+                    _displayModeLabel,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: Colors.blueGrey),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // EXPANDED CARD
     return Container(
+      constraints: BoxConstraints(maxWidth: isMobile ? 220 : 260),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: cardBg.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(12),
+        color: cardBg.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: borderColor),
         boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(color: Colors.black38, blurRadius: 12, offset: Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -598,7 +868,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.palette_outlined, size: 16, color: Color(0xFF10B981)),
+              const Icon(Icons.palette_rounded, size: 16, color: Color(0xFF10B981)),
               const SizedBox(width: 6),
               Text(
                 'Display Mode',
@@ -607,6 +877,15 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                   fontWeight: FontWeight.w700,
                   color: isDark ? Colors.white70 : Colors.black87,
                 ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+                icon: const Icon(Icons.keyboard_arrow_up_rounded, size: 20),
+                tooltip: 'Collapse',
+                onPressed: () => setState(() => _isDisplayModeExpanded = false),
               ),
             ],
           ),
@@ -617,7 +896,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
             crossAxisAlignment: WrapCrossAlignment.end,
             children: [
               _buildModeChip('Realistic (Materials)', GrowRoom3dDisplayMode.realistic),
-              _buildModeChip('Temperature Gradient', GrowRoom3dDisplayMode.temperature),
+              _buildModeChip('Temperature Heatmap', GrowRoom3dDisplayMode.temperature),
               _buildModeChip('Moisture / Irrigation', GrowRoom3dDisplayMode.moisture),
               _buildModeChip('Harvest Progress', GrowRoom3dDisplayMode.pickingStatus),
             ],
@@ -638,7 +917,8 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
   }
 
   // --- WIDGET BẢNG THÔNG SỐ CHI TIẾT DƯỚI ĐÁY MÀN HÌNH ---
-  Widget _buildBottomInspector(Color cardBg, Color borderColor, bool isDark) {
+  Widget _buildBottomInspector(
+      Color cardBg, Color borderColor, bool isDark, bool isMobile) {
     if (_selectedWindow != null) {
       final loc = _selectedWindow!;
       final double zStart = 1.0 + loc.windowIndex * 3.0;
@@ -647,8 +927,84 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
       final tele = _getTelemetryForWindow(loc);
       final activeIssue = _activeIssues[loc.code];
 
+      // KHI ĐANG THU GỌN: Thanh bar siêu gọn hiển thị mã ô & nhiệt ẩm
+      if (!_isBottomInspectorExpanded) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: cardBg.withValues(alpha: 0.95),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: activeIssue != null
+                  ? (activeIssue.category == WindowIssueCategory.disease
+                      ? Colors.redAccent
+                      : Colors.amber)
+                  : const Color(0xFF2A78D6),
+              width: 1.5,
+            ),
+            boxShadow: const [
+              BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                decoration: BoxDecoration(
+                  color: (activeIssue != null ? Colors.red : const Color(0xFF2A78D6))
+                      .withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (activeIssue != null) ...[
+                      const Icon(Icons.warning_amber_rounded, size: 14, color: Colors.redAccent),
+                      const SizedBox(width: 4),
+                    ],
+                    Text(
+                      loc.code,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: activeIssue != null ? Colors.redAccent : const Color(0xFF2A78D6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${tele['temp']}°C • ${tele['humidity']}% RH • ${tele['flush']}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white70 : Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.keyboard_arrow_up_rounded, size: 20),
+                tooltip: 'Expand Details',
+                onPressed: () => setState(() => _isBottomInspectorExpanded = true),
+              ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.close_rounded, size: 18),
+                tooltip: 'Deselect',
+                onPressed: () => setState(() => _selectedWindow = null),
+              ),
+            ],
+          ),
+        );
+      }
+
+      // KHI ĐANG MỞ RỘNG: Bảng thông số chi tiết của ô
       return Container(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(isMobile ? 10 : 14),
         decoration: BoxDecoration(
           color: cardBg.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(16),
@@ -668,11 +1024,11 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Row 1: Tiêu đề ô, vị trí, kích thước, và nút Bỏ chọn
+            // Row 1: Tiêu đề ô, vị trí, kích thước, Thu nhỏ & Bỏ chọn
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                   decoration: BoxDecoration(
                     color: (activeIssue != null ? Colors.red : const Color(0xFF2A78D6))
                         .withValues(alpha: 0.18),
@@ -687,13 +1043,13 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                       Icon(
                         activeIssue != null ? Icons.warning_amber_rounded : Icons.view_in_ar_rounded,
                         color: activeIssue != null ? Colors.redAccent : const Color(0xFF2A78D6),
-                        size: 20,
+                        size: 18,
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 5),
                       Text(
                         loc.code,
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.w800,
                           color: activeIssue != null ? Colors.redAccent : const Color(0xFF2A78D6),
                         ),
@@ -701,7 +1057,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                     ],
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -709,31 +1065,40 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                       Text(
                         '${loc.rackLabel} • ${loc.levelLabel} • ${loc.windowLabel}',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 12.5,
                           fontWeight: FontWeight.w700,
                           color: isDark ? Colors.white : Colors.black87,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        '3.0m × 1.2m = 3.6 m² • Position: ${zStart.toStringAsFixed(1)}m – ${zEnd.toStringAsFixed(1)}m (of 27m) • Height: ~${elevation.toStringAsFixed(2)}m (6.0m ceiling)',
+                        '3.0m×1.2m (3.6m²) • Pos: ${zStart.toStringAsFixed(1)}-${zEnd.toStringAsFixed(1)}m • H: ~${elevation.toStringAsFixed(1)}m',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 10.5,
                           color: isDark ? Colors.white60 : Colors.black54,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, size: 20),
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
+                  tooltip: 'Minimize Details',
+                  onPressed: () => setState(() => _isBottomInspectorExpanded = false),
+                ),
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.close_rounded, size: 18),
                   tooltip: 'Deselect',
                   onPressed: () => setState(() => _selectedWindow = null),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
 
-            // Row 2: Telemetry Chips (Air Temp, Humidity, CO2, Casing, Flush)
+            // Row 2: Telemetry Chips
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -745,7 +1110,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                     color: const Color(0xFFEF4444),
                     isDark: isDark,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   _buildTelemetryChip(
                     icon: Icons.water_drop_rounded,
                     label: 'RH Humidity',
@@ -753,7 +1118,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                     color: const Color(0xFF0284C7),
                     isDark: isDark,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   _buildTelemetryChip(
                     icon: Icons.co2_rounded,
                     label: 'CO2 Level',
@@ -761,7 +1126,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                     color: const Color(0xFF10B981),
                     isDark: isDark,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   _buildTelemetryChip(
                     icon: Icons.grass_rounded,
                     label: 'Casing Temp',
@@ -769,7 +1134,7 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                     color: const Color(0xFFD97706),
                     isDark: isDark,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   _buildTelemetryChip(
                     icon: Icons.eco_rounded,
                     label: 'Flush Stage',
@@ -781,11 +1146,11 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
               ),
             ),
 
-            // Row 3 (If active issue exists): Active Issue Alert Banner
+            // Row 3: Active Issue Alert Banner (if any)
             if (activeIssue != null) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
@@ -795,9 +1160,9 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                   children: [
                     Text(
                       activeIssue.category.iconEmoji,
-                      style: const TextStyle(fontSize: 18),
+                      style: const TextStyle(fontSize: 16),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -808,13 +1173,13 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                                 '[${activeIssue.category.displayName}] ${activeIssue.title}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 12.5,
+                                  fontSize: 11.5,
                                   color: Colors.redAccent,
                                 ),
                               ),
                               const SizedBox(width: 6),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                                 decoration: BoxDecoration(
                                   color: Colors.red,
                                   borderRadius: BorderRadius.circular(4),
@@ -823,20 +1188,21 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                                   activeIssue.severity.toUpperCase(),
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 9,
+                                    fontSize: 8.5,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 2),
                           Text(
-                            '${activeIssue.description} • Reported by: ${activeIssue.reporterName}',
+                            '${activeIssue.description} • By: ${activeIssue.reporterName}',
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 10.5,
                               color: isDark ? Colors.white70 : Colors.black87,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -845,9 +1211,10 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.green,
                         visualDensity: VisualDensity.compact,
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
                       ),
-                      icon: const Icon(Icons.check_circle_outline, size: 16),
-                      label: const Text('Resolve', style: TextStyle(fontSize: 11)),
+                      icon: const Icon(Icons.check_circle_outline, size: 14),
+                      label: const Text('Resolve', style: TextStyle(fontSize: 10.5)),
                       onPressed: () => _resolveIssue(activeIssue.id),
                     ),
                   ],
@@ -855,9 +1222,9 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
               ),
             ],
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
 
-            // Row 4: Action Buttons
+            // Row 4: Action Button
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -865,13 +1232,14 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE11D48),
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    visualDensity: VisualDensity.compact,
                   ),
-                  icon: const Icon(Icons.add_alert_rounded, size: 16),
+                  icon: const Icon(Icons.add_alert_rounded, size: 15),
                   label: const Text(
                     'Log Issue / Add Action',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
                   ),
                   onPressed: () => _showLogIssueDialog(context, loc, tele),
                 ),
@@ -888,8 +1256,52 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
     final int totalWindows = shelfCount * 9;
     final double totalArea = shelfCount * 27.0 * 1.2;
 
+    if (!_isBottomInspectorExpanded) {
+      // MINIMIZED CAPSULE for Room Specs
+      return Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: cardBg.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: borderColor),
+            boxShadow: const [
+              BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => setState(() => _isBottomInspectorExpanded = true),
+              borderRadius: BorderRadius.circular(20),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.info_outline_rounded, size: 15, color: Color(0xFF2A78D6)),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${_isLargeRoom ? "Large (4 Racks)" : "Small (2 Racks)"} • 6m H • Tap bed to inspect',
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(Icons.keyboard_arrow_up_rounded, size: 16, color: Colors.blueGrey),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // EXPANDED ROOM SUMMARY
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: cardBg.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(14),
@@ -898,36 +1310,49 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
           BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            _buildMetricBadge(
-              'Room Type',
-              _isLargeRoom ? 'LARGE ROOM' : 'SMALL ROOM',
-              _isLargeRoom ? Colors.indigo : Colors.teal,
-            ),
-            const SizedBox(width: 14),
-            _buildMetricBadge('Ceiling Height', '6.0 meters', Colors.blueGrey),
-            const SizedBox(width: 14),
-            _buildMetricBadge('Rack Scale', '$rackCount Racks × 6 Levels', const Color(0xFF2A78D6)),
-            const SizedBox(width: 14),
-            _buildMetricBadge('Rack Length', '27.0 meters (9 Windows)', const Color(0xFF10B981)),
-            const SizedBox(width: 14),
-            _buildMetricBadge('Total Bed Area', '${totalArea.toStringAsFixed(1)} m²', Colors.amber[800]!),
-            const SizedBox(width: 14),
-            _buildMetricBadge('Total Bays', '$totalWindows Windows (3m)', Colors.purple),
-            const SizedBox(width: 20),
-            Text(
-              '• Tap any bed window to inspect details',
-              style: TextStyle(
-                fontSize: 11,
-                fontStyle: FontStyle.italic,
-                color: isDark ? Colors.white38 : Colors.black38,
+      child: Row(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildMetricBadge(
+                    'Room Type',
+                    _isLargeRoom ? 'LARGE ROOM' : 'SMALL ROOM',
+                    _isLargeRoom ? Colors.indigo : Colors.teal,
+                  ),
+                  const SizedBox(width: 14),
+                  _buildMetricBadge('Ceiling Height', '6.0 meters', Colors.blueGrey),
+                  const SizedBox(width: 14),
+                  _buildMetricBadge('Rack Scale', '$rackCount Racks × 6 Levels', const Color(0xFF2A78D6)),
+                  const SizedBox(width: 14),
+                  _buildMetricBadge('Rack Length', '27.0 meters (9 Windows)', const Color(0xFF10B981)),
+                  const SizedBox(width: 14),
+                  _buildMetricBadge('Total Bed Area', '${totalArea.toStringAsFixed(1)} m²', Colors.amber[800]!),
+                  const SizedBox(width: 14),
+                  _buildMetricBadge('Total Bays', '$totalWindows Windows (3m)', Colors.purple),
+                  const SizedBox(width: 14),
+                  Text(
+                    '• Tap any bed window to inspect details',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontStyle: FontStyle.italic,
+                      color: isDark ? Colors.white38 : Colors.black38,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 4),
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
+            tooltip: 'Minimize Specs',
+            onPressed: () => setState(() => _isBottomInspectorExpanded = false),
+          ),
+        ],
       ),
     );
   }

@@ -880,8 +880,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                   ],
                 ),
                 tooltip: _active3dIssues.isNotEmpty
-                    ? 'Mô hình 3D Phòng Trồng (${_active3dIssues.length} sự cố đang chờ xử lý)'
-                    : 'Mô hình 3D Phòng Trồng (3D Grow Room)',
+                    ? 'Grow Room (${_active3dIssues.length} pending issues)'
+                    : '3D Grow Room',
                 onPressed: () {
                   final firstIssueRoom = _active3dIssues.isNotEmpty
                       ? _active3dIssues.first.roomName

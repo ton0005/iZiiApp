@@ -116,7 +116,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        tooltip: 'Grow Room 3D: $count sự cố chưa xử lý',
+                        tooltip: 'Grow Room 3D: $count unaddressed issues',
                         onPressed: () => context.push('/mushrooms/3d-room'),
                       );
                     },
@@ -280,7 +280,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(context.tr('home_action_reports'))),
+                      SnackBar(
+                          content: Text(context.tr('home_action_reports'))),
                     );
                   },
                 ),
@@ -311,7 +312,9 @@ class HomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      context.tr('home_module_installed_count').replaceAll('{count}', '$moduleCount'),
+                      context
+                          .tr('home_module_installed_count')
+                          .replaceAll('{count}', '$moduleCount'),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -347,7 +350,8 @@ class HomeScreen extends StatelessWidget {
                             subtitle: module.category,
                             color: _colorForModule(module.id),
                             badgeCount: count,
-                            onTap: () => context.push(_routeForModule(module.id)),
+                            onTap: () =>
+                                context.push(_routeForModule(module.id)),
                           );
                         },
                       );
@@ -443,7 +447,8 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-Future<List<_HomeActionFeedEntry>> _loadRecentActions(String Function(String) tr) async {
+Future<List<_HomeActionFeedEntry>> _loadRecentActions(
+    String Function(String) tr) async {
   final leads = await CrmRepository().getLeads();
   final products = await SupplyChainRepository().getProductsWithStock();
   final serviceItems = await ServicesRepository().getServiceItems();
@@ -467,8 +472,10 @@ Future<List<_HomeActionFeedEntry>> _loadRecentActions(String Function(String) tr
     entries.add(_HomeActionFeedEntry(
       icon: Icons.inventory_rounded,
       iconColor: IZiiColors.accent,
-      title: tr('home_feed_new_product').replaceAll('{name}', '${product['name']}'),
-      subtitle: '${tr('home_feed_stock_label').replaceAll('{count}', '${product['stock']}')} • ${_formatRelativeTime(createdAt, tr)}',
+      title: tr('home_feed_new_product')
+          .replaceAll('{name}', '${product['name']}'),
+      subtitle:
+          '${tr('home_feed_stock_label').replaceAll('{count}', '${product['stock']}')} • ${_formatRelativeTime(createdAt, tr)}',
       createdAt: createdAt,
     ));
   }
@@ -478,8 +485,10 @@ Future<List<_HomeActionFeedEntry>> _loadRecentActions(String Function(String) tr
     entries.add(_HomeActionFeedEntry(
       icon: Icons.handyman_rounded,
       iconColor: const Color(0xFF22D3EE),
-      title: tr('home_feed_new_service').replaceAll('{name}', '${service['name']}'),
-      subtitle: '${service['category']} • ${_formatRelativeTime(createdAt, tr)}',
+      title: tr('home_feed_new_service')
+          .replaceAll('{name}', '${service['name']}'),
+      subtitle:
+          '${service['category']} • ${_formatRelativeTime(createdAt, tr)}',
       createdAt: createdAt,
     ));
   }
@@ -489,7 +498,8 @@ Future<List<_HomeActionFeedEntry>> _loadRecentActions(String Function(String) tr
     entries.add(_HomeActionFeedEntry(
       icon: Icons.home_repair_service_rounded,
       iconColor: IZiiColors.primary,
-      title: tr('home_feed_new_booking').replaceAll('{name}', '${booking['service_name']}'),
+      title: tr('home_feed_new_booking')
+          .replaceAll('{name}', '${booking['service_name']}'),
       subtitle:
           '${booking['customer_name']} • ${_formatRelativeTime(createdAt, tr)}',
       createdAt: createdAt,
@@ -525,7 +535,9 @@ String _formatRelativeTime(DateTime dateTime, String Function(String) tr) {
     return tr('home_time_yesterday').replaceAll('{time}', time);
   }
   if (diff.inDays < 7) {
-    return tr('home_time_days_ago').replaceAll('{days}', '${diff.inDays}').replaceAll('{time}', time);
+    return tr('home_time_days_ago')
+        .replaceAll('{days}', '${diff.inDays}')
+        .replaceAll('{time}', time);
   }
   return '${dateTime.day}/${dateTime.month} $time';
 }

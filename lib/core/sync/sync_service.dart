@@ -613,7 +613,7 @@ class SyncService {
     Map<String, UserSyncConfig> configMap,
     bool isManual,
   ) async {
-    _log('Đang kiểm tra cập nhật mới từ Server...');
+    _log('Fetching new updates from the server...');
 
     int? afterSeq = await _settingsService.getLastSyncSeq(url);
     String? serverTimestamp;
@@ -650,7 +650,7 @@ class SyncService {
         // vừa bị reset dữ liệu và seq quay về 0. Server đã tự phục vụ lại từ
         // đầu, ta chỉ cần ghi nhận để biết mà đọc log.
         if (data['cursor_reset'] == true) {
-          _log('ℹ️ Server đã reset dữ liệu — con trỏ đồng bộ được đặt lại từ đầu.');
+          _log('ℹ️ Server has reset data — sync cursor has been reset to the beginning.');
         }
 
         for (final update in updatesList) {
@@ -682,21 +682,21 @@ class SyncService {
         }
 
         if (updatesList.isNotEmpty) {
-          _log('📥 Trang ${page + 1}: nhận ${updatesList.length} cập nhật'
-              '${hasMore ? ' (còn nữa...)' : ''}');
+          _log('📥 Page ${page + 1}: received ${updatesList.length} updates'
+              '${hasMore ? ' (more available...)' : ''}');
         }
 
         if (!hasMore) break;
 
         if (page == _maxPullPages - 1) {
-          _log('ℹ️ Còn dữ liệu sau $_maxPullPages trang, sẽ kéo tiếp ở lần đồng bộ sau.');
+          _log('ℹ️ There is more data after $_maxPullPages pages, will fetch more in the next sync.');
         }
       }
 
       if (totalApplied == 0 && totalSkipped == 0) {
-        _log('Không có cập nhật mới từ Server.');
+        _log('No new updates from the server.');
       } else {
-        _log('✅ Đã ghi $totalApplied bản ghi vào database local (bỏ qua/lọc $totalSkipped).');
+        _log('✅ Applied $totalApplied records to the local database (skipped/filtered $totalSkipped).');
       }
 
       if (totalApplied > 0 && updatedTables.isNotEmpty) {
@@ -706,7 +706,7 @@ class SyncService {
       }
       return serverTimestamp;
     } on DioException catch (e) {
-      _log('⚠️ Không thể kéo dữ liệu từ Server: ${e.message}');
+      _log('⚠️ Cannot fetch data from Server: ${e.message}');
     }
     return null;
   }
@@ -832,7 +832,7 @@ class SyncService {
       case 'mushroom_payroll_calculations':
         return _upsertMushroomPayrollCalculation(data);
       default:
-        _log('   ⚠️ Bảng "$table" chưa được hỗ trợ đồng bộ PULL.');
+        _log('   ⚠️ The "$table" table is not supported for PULL synchronization.');
         return false;
     }
   }
@@ -879,7 +879,7 @@ class SyncService {
       }
 
       if (rawTitle == null || rawTitle.trim().isEmpty || rawTitle.trim() == 'Untitled') {
-        _log('⚠️ Bỏ qua tạo Lead stub rỗng cho id $id (thiếu title hợp lệ)');
+        _log('⚠️ Skipping creation of empty Lead stub for id $id (missing valid title)');
         return false;
       }
 
@@ -989,7 +989,7 @@ class SyncService {
       }
 
       if (rawTitle == null || rawTitle.trim().isEmpty || rawTitle.trim() == 'Untitled Deal') {
-        _log('⚠️ Bỏ qua tạo Deal stub rỗng cho id $id (thiếu title hợp lệ)');
+        _log('⚠️ Skip creating an empty Deal stub for ID $id (missing valid title)');
         return false;
       }
 

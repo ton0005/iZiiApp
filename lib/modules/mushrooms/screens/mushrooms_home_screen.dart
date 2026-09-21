@@ -610,8 +610,8 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
               ],
             ),
             tooltip: _active3dIssues.isNotEmpty
-                ? 'Mô hình 3D Phòng Trồng (${_active3dIssues.length} sự cố)'
-                : 'Mô hình 3D Phòng Trồng',
+                ? 'Grow Room (${_active3dIssues.length} pending issues)'
+                : '3D Grow Room',
             onPressed: () {
               final firstIssueRoom = _active3dIssues.isNotEmpty
                   ? _active3dIssues.first.roomName
@@ -791,10 +791,10 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           ),
           const SizedBox(height: 12),
           QuickAccessCard(
-            title: 'Mô hình 3D Phòng Trồng',
+            title: '3D Grow Room Model',
             subtitle: _active3dIssues.isNotEmpty
-                ? '⚠️ ${_active3dIssues.length} sự cố ô luống đang chờ xử lý'
-                : '3D Grow Room Model • Cao 6m • 4/2 Racks, 6 Tầng, 9 Windows (27m)',
+                ? '⚠️ ${_active3dIssues.length} windows with pending issues'
+                : '3D Grow Room Model • Height: 6m • 4/2 Racks, 6 Floors, 9 Windows (27m)',
             icon: Icons.view_in_ar_rounded,
             color: _active3dIssues.isNotEmpty
                 ? Colors.redAccent
@@ -935,10 +935,10 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 onTap: () => _navigateToDesktop(context),
               ),
               QuickAccessCard(
-                title: 'Mô hình 3D Phòng Trồng',
+                title: 'Grow Room 3D Model',
                 subtitle: _active3dIssues.isNotEmpty
-                    ? '⚠️ ${_active3dIssues.length} sự cố ô luống đang chờ xử lý'
-                    : '3D Grow Room Model • Cao 6m • 4/2 Racks, 6 Tầng, 9 Windows (27m)',
+                    ? '⚠️ ${_active3dIssues.length} windows with pending issues'
+                    : '3D Grow Room Model • Height: 6m • 4/2 Racks, 6 Floors, 9 Windows (27m)',
                 icon: Icons.view_in_ar_rounded,
                 color: _active3dIssues.isNotEmpty
                     ? Colors.redAccent
