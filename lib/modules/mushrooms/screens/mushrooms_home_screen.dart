@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
@@ -12,6 +13,7 @@ import '../../../core/session/widgets/session_banner.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
 import '../services/employee_service.dart';
+import '../services/window_action_service.dart';
 import 'mushrooms_dashboard_screen.dart';
 import 'mushboom_monarto_screen.dart';
 import 'continuous_scanner_screen.dart';
@@ -42,11 +44,33 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
   List<Map<String, dynamic>> _safetyLogs = [];
   bool _isAuthenticated = false;
   String? _currentEmployeeId;
+  final WindowActionService _windowActionService = WindowActionService();
+  StreamSubscription<List<WindowIssueReport>>? _windowIssuesSub;
+  List<WindowIssueReport> _active3dIssues = [];
 
   @override
   void initState() {
     super.initState();
     _checkAuth();
+    _load3dIssues();
+    _windowIssuesSub = _windowActionService.issuesStream.listen((_) {
+      if (mounted) _load3dIssues();
+    });
+  }
+
+  @override
+  void dispose() {
+    _windowIssuesSub?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _load3dIssues() async {
+    final issues = await _windowActionService.getActiveIssues();
+    if (mounted) {
+      setState(() {
+        _active3dIssues = issues;
+      });
+    }
   }
 
   Future<void> _checkAuth() async {
@@ -549,6 +573,64 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
         elevation: 0,
         actions: [
           IconButton(
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  Icons.view_in_ar_rounded,
+                  color: _active3dIssues.isNotEmpty
+                      ? Colors.amber.shade400
+                      : null,
+                ),
+                if (_active3dIssues.isNotEmpty)
+                  Positioned(
+                    right: -4,
+                    top: -4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '${_active3dIssues.length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            tooltip: _active3dIssues.isNotEmpty
+                ? 'Mô hình 3D Phòng Trồng (${_active3dIssues.length} sự cố)'
+                : 'Mô hình 3D Phòng Trồng',
+            onPressed: () {
+              final firstIssueRoom = _active3dIssues.isNotEmpty
+                  ? _active3dIssues.first.roomName
+                  : null;
+              final firstIssueWindow = _active3dIssues.isNotEmpty
+                  ? _active3dIssues.first.windowCode
+                  : null;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GrowRoom3dScreen(
+                    initialRoomName: firstIssueRoom,
+                    initialSelectedWindowCode: firstIssueWindow,
+                  ),
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.desktop_windows_rounded),
             tooltip: 'Desktop View (Monarto)',
             onPressed: () => _navigateToDesktop(context),
@@ -592,6 +674,11 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 // the easiest thing to forget during the day, and the consequence only appears
                 // when workers try to create an Alone Worker task and get blocked.
                 SessionBanner(isDark: isDark),
+
+                // 3D Grow Room Issue Notification Banner (if any open issues exist)
+                if (_active3dIssues.isNotEmpty)
+                  _build3dIssueAlertBanner(context, isDark),
+
                 Expanded(
                   child: isTablet
                       ? _buildTabletGrid(context, localRooms, activeRoomsCount,
@@ -705,12 +792,21 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
           const SizedBox(height: 12),
           QuickAccessCard(
             title: 'Mô hình 3D Phòng Trồng',
-            subtitle:
-                '3D Grow Room Model • Cao 6m • 4/2 Racks, 6 Tầng, 9 Windows (27m)',
+            subtitle: _active3dIssues.isNotEmpty
+                ? '⚠️ ${_active3dIssues.length} sự cố ô luống đang chờ xử lý'
+                : '3D Grow Room Model • Cao 6m • 4/2 Racks, 6 Tầng, 9 Windows (27m)',
             icon: Icons.view_in_ar_rounded,
-            color: const Color(0xFF0EA5E9),
+            color: _active3dIssues.isNotEmpty
+                ? Colors.redAccent
+                : const Color(0xFF0EA5E9),
+            badgeCount: _active3dIssues.length,
             isDark: isDark,
-            onTap: () => _navigateTo3dRoom(context),
+            onTap: () {
+              final firstIssueRoom = _active3dIssues.isNotEmpty
+                  ? _active3dIssues.first.roomName
+                  : null;
+              _navigateTo3dRoom(context, roomName: firstIssueRoom);
+            },
           ),
           const SizedBox(height: 12),
           QuickAccessCard(
@@ -840,12 +936,21 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
               ),
               QuickAccessCard(
                 title: 'Mô hình 3D Phòng Trồng',
-                subtitle:
-                    '3D Grow Room Model • Cao 6m • 4/2 Racks, 6 Tầng, 9 Windows (27m)',
+                subtitle: _active3dIssues.isNotEmpty
+                    ? '⚠️ ${_active3dIssues.length} sự cố ô luống đang chờ xử lý'
+                    : '3D Grow Room Model • Cao 6m • 4/2 Racks, 6 Tầng, 9 Windows (27m)',
                 icon: Icons.view_in_ar_rounded,
-                color: const Color(0xFF0EA5E9),
+                color: _active3dIssues.isNotEmpty
+                    ? Colors.redAccent
+                    : const Color(0xFF0EA5E9),
+                badgeCount: _active3dIssues.length,
                 isDark: isDark,
-                onTap: () => _navigateTo3dRoom(context),
+                onTap: () {
+                  final firstIssueRoom = _active3dIssues.isNotEmpty
+                      ? _active3dIssues.first.roomName
+                      : null;
+                  _navigateTo3dRoom(context, roomName: firstIssueRoom);
+                },
               ),
               QuickAccessCard(
                 title: 'Purchasing & Suppliers',
@@ -946,5 +1051,129 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     if (page == 'safety') {
       _navigateToSafety(context);
     }
+  }
+
+  Widget _build3dIssueAlertBanner(BuildContext context, bool isDark) {
+    final issueCount = _active3dIssues.length;
+    final firstIssue = _active3dIssues.first;
+    final hasCritical = _active3dIssues.any((i) => i.severity == 'critical');
+    final bannerBg = hasCritical
+        ? (isDark ? const Color(0xFF450A0A) : const Color(0xFFFEF2F2))
+        : (isDark ? const Color(0xFF422006) : const Color(0xFFFFFBEB));
+    final bannerBorder = hasCritical
+        ? (isDark ? Colors.red.shade800 : Colors.red.shade300)
+        : (isDark ? Colors.amber.shade800 : Colors.amber.shade300);
+    final bannerTextColor = hasCritical
+        ? (isDark ? Colors.red.shade200 : Colors.red.shade900)
+        : (isDark ? Colors.amber.shade200 : Colors.amber.shade900);
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: bannerBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: bannerBorder, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: hasCritical
+                ? Colors.red.withValues(alpha: 0.12)
+                : Colors.amber.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: (hasCritical ? Colors.red : Colors.amber)
+                  .withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              hasCritical ? Icons.warning_amber_rounded : Icons.view_in_ar_rounded,
+              color: hasCritical ? Colors.redAccent : Colors.amber.shade700,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      '3D GROW ROOM ALERT',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                        color: bannerTextColor,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: hasCritical ? Colors.red : Colors.amber.shade700,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        '$issueCount open',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${firstIssue.roomName} • ${firstIssue.windowCode}: [${firstIssue.category.displayName}] ${firstIssue.title}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: hasCritical ? Colors.red : const Color(0xFF0EA5E9),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GrowRoom3dScreen(
+                    initialRoomName: firstIssue.roomName,
+                    initialSelectedWindowCode: firstIssue.windowCode,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.open_in_new_rounded, size: 14),
+            label: const Text('View 3D', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
   }
 }

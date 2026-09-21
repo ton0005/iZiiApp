@@ -97,10 +97,14 @@ class GrowRoomServiceImpl implements GrowRoomService {
 
   @override
   Stream<List<Map<String, dynamic>>> watchRooms() {
-    return (_db.select(_db.growRooms)
-          ..orderBy([(t) => OrderingTerm(expression: t.name)]))
+    return _db.select(_db.growRooms)
         .watch()
-        .map((list) => list.map(_mapRoom).toList());
+        .map((list) {
+          final mapped = list.map(_mapRoom).toList();
+          mapped.sort((a, b) => PlantRoomService.compareRoomNames(
+              a['name'] as String? ?? '', b['name'] as String? ?? ''));
+          return mapped;
+        });
   }
 
   @override
@@ -129,10 +133,11 @@ class GrowRoomServiceImpl implements GrowRoomService {
 
   @override
   Future<List<Map<String, dynamic>>> getRooms() async {
-    final list = await (_db.select(_db.growRooms)
-          ..orderBy([(t) => OrderingTerm(expression: t.name)]))
-        .get();
-    return list.map(_mapRoom).toList();
+    final list = await _db.select(_db.growRooms).get();
+    final mapped = list.map(_mapRoom).toList();
+    mapped.sort((a, b) => PlantRoomService.compareRoomNames(
+        a['name'] as String? ?? '', b['name'] as String? ?? ''));
+    return mapped;
   }
 
   @override

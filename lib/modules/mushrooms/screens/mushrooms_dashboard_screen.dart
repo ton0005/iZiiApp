@@ -10,6 +10,7 @@ import 'mushboom_monarto_screen.dart';
 import 'growing_performance_board_screen.dart';
 import '../widgets/job_completion_review_dialog.dart';
 import '../repository.dart';
+import '../services/plant_room_service.dart';
 import 'job_types_management_screen.dart';
 
 class MushroomsDashboardScreen extends StatefulWidget {
@@ -22,6 +23,7 @@ class MushroomsDashboardScreen extends StatefulWidget {
 
 class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
   String _activeFilter = 'all'; // all, active, idle, alerts
+  String _selectedPlant = 'M1'; // M1, M2, all
   late MushroomsBloc _bloc;
   Timer? _alarmAudioTimer;
   bool _isAlarmDialogOpen = false;
@@ -188,25 +190,59 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // Calculations
-            final activeRoomsCount =
-                state.rooms.where((r) => r['status'] == 'active').length;
-            final idleRoomsCount =
-                state.rooms.where((r) => r['status'] == 'idle').length;
+            // Group by Plant M1 vs M2
+            final m1Rooms = state.rooms.where((r) {
+              final p = ((r['plant'] as String?)?.trim().isNotEmpty == true
+                      ? r['plant'] as String
+                      : PlantRoomService.resolveDefaultPlantCode(
+                          r['name'] as String? ?? ''))
+                  .toUpperCase();
+              return p == 'M1';
+            }).toList();
 
-            final filteredRooms = state.rooms.where((r) {
+            final m2Rooms = state.rooms.where((r) {
+              final p = ((r['plant'] as String?)?.trim().isNotEmpty == true
+                      ? r['plant'] as String
+                      : PlantRoomService.resolveDefaultPlantCode(
+                          r['name'] as String? ?? ''))
+                  .toUpperCase();
+              return p == 'M2';
+            }).toList();
+
+            List<Map<String, dynamic>> plantRooms;
+            if (_selectedPlant == 'M1') {
+              plantRooms = m1Rooms;
+            } else if (_selectedPlant == 'M2') {
+              plantRooms = m2Rooms;
+            } else {
+              plantRooms = state.rooms;
+            }
+
+            final activeRoomsCount =
+                plantRooms.where((r) => r['status'] == 'active').length;
+            final idleRoomsCount =
+                plantRooms.where((r) => r['status'] == 'idle').length;
+
+            final filteredRooms = plantRooms.where((r) {
               if (_activeFilter == 'active') return r['status'] == 'active';
               if (_activeFilter == 'idle') return r['status'] == 'idle';
-              // 'alerts' filter will show rooms currently in alone_worker or active stages that have alerts (for demo we filter by active solo alarm status)
               return true;
             }).toList();
 
+            // Sắp xếp theo thứ tự: 1, 2, 3, 4, 5, 6, 6A, 6B, 7, 8, ...
+            filteredRooms.sort((a, b) => PlantRoomService.compareRoomNames(
+                a['name'] as String? ?? '', b['name'] as String? ?? ''));
+
             return Column(
               children: [
+                // --- Plant Selection Tabs (M1 / M2 / All) ---
+                _buildPlantSelector(
+                    cardBg, isDark, m1Rooms.length, m2Rooms.length, state.rooms.length),
+
                 // --- Industry Stats Header Panel ---
                 Container(
                   padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                   decoration: BoxDecoration(
                     color: isDark
                         ? const Color(0xFF1E293B).withValues(alpha: 0.8)
@@ -221,8 +257,10 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildStatItem(
-                          context.tr('mushrooms_total_rooms'),
-                          '${state.rooms.length}',
+                          _selectedPlant == 'all'
+                              ? context.tr('mushrooms_total_rooms')
+                              : '${context.tr('mushrooms_total_rooms')} (${_selectedPlant.toUpperCase()})',
+                          '${plantRooms.length}',
                           Icons.warehouse_rounded,
                           Colors.blue),
                       _buildStatItem(
@@ -370,15 +408,45 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Expanded(
-                                                child: Text(
-                                                  room['name'] as String,
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 16),
+                                                child: Row(
+                                                  children: [
+                                                    Flexible(
+                                                      child: Text(
+                                                        room['name'] as String,
+                                                        maxLines: 1,
+                                                        overflow:
+                                                            TextOverflow.ellipsis,
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(
+                                                          horizontal: 5, vertical: 1.5),
+                                                      decoration: BoxDecoration(
+                                                        color: ((((room['plant'] as String?)?.toUpperCase() ?? PlantRoomService.resolveDefaultPlantCode(room['name'] as String? ?? '')) == 'M2')
+                                                                ? const Color(0xFF8B5CF6)
+                                                                : const Color(0xFF10B981))
+                                                            .withValues(alpha: 0.15),
+                                                        borderRadius:
+                                                            BorderRadius.circular(4),
+                                                      ),
+                                                      child: Text(
+                                                        ((room['plant'] as String?)?.toUpperCase() ??
+                                                            PlantRoomService.resolveDefaultPlantCode(room['name'] as String? ?? '')),
+                                                        style: TextStyle(
+                                                          fontSize: 10,
+                                                          fontWeight: FontWeight.w800,
+                                                          color: (((room['plant'] as String?)?.toUpperCase() ?? PlantRoomService.resolveDefaultPlantCode(room['name'] as String? ?? '')) == 'M2')
+                                                              ? const Color(0xFF8B5CF6)
+                                                              : const Color(0xFF10B981),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                               Column(
@@ -573,6 +641,111 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
     );
   }
 
+  Widget _buildPlantSelector(
+      Color cardBg, bool isDark, int m1Count, int m2Count, int totalCount) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDark ? Colors.white12 : Colors.black.withValues(alpha: 0.08),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildPlantTabButton(
+              title: 'Plant M1',
+              subtitle: 'Phòng 1-32 ($m1Count)',
+              isSelected: _selectedPlant == 'M1',
+              activeColor: const Color(0xFF10B981),
+              onTap: () => setState(() => _selectedPlant = 'M1'),
+              isDark: isDark,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: _buildPlantTabButton(
+              title: 'Plant M2',
+              subtitle: 'Phòng 33-66 ($m2Count)',
+              isSelected: _selectedPlant == 'M2',
+              activeColor: const Color(0xFF8B5CF6),
+              onTap: () => setState(() => _selectedPlant = 'M2'),
+              isDark: isDark,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: _buildPlantTabButton(
+              title: 'Tất cả',
+              subtitle: 'All ($totalCount)',
+              isSelected: _selectedPlant == 'all',
+              activeColor: const Color(0xFF0EA5E9),
+              onTap: () => setState(() => _selectedPlant = 'all'),
+              isDark: isDark,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlantTabButton({
+    required String title,
+    required String subtitle,
+    required bool isSelected,
+    required Color activeColor,
+    required VoidCallback onTap,
+    required bool isDark,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? activeColor.withValues(alpha: isDark ? 0.25 : 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected ? activeColor : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                fontSize: 13,
+                color: isSelected
+                    ? activeColor
+                    : (isDark ? Colors.grey.shade400 : Colors.grey.shade700),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected
+                    ? activeColor
+                    : (isDark ? Colors.grey.shade500 : Colors.grey.shade600),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildStatItem(
       String label, String value, IconData icon, Color color) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -662,6 +835,10 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
   void _openRoomDetails(BuildContext context, Map<String, dynamic> room) {
     final roomId = room['id'] as String;
     final roomName = room['name'] as String;
+    final plant = ((room['plant'] as String?)?.trim().isNotEmpty == true
+            ? room['plant'] as String
+            : PlantRoomService.resolveDefaultPlantCode(roomName))
+        .toUpperCase();
 
     _bloc.add(LoadRoomDetailsEvent(roomId));
 
@@ -674,7 +851,8 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
           providers: [
             BlocProvider.value(value: _bloc),
           ],
-          child: _RoomDetailsSheet(roomId: roomId, roomName: roomName),
+          child: _RoomDetailsSheet(
+              roomId: roomId, roomName: roomName, plant: plant),
         );
       },
     );
@@ -873,7 +1051,9 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
 
     return BlocBuilder<MushroomsBloc, MushroomsState>(
       builder: (context, state) {
-        final rooms = state.rooms;
+        final rooms = List<Map<String, dynamic>>.from(state.rooms);
+        rooms.sort((a, b) => PlantRoomService.compareRoomNames(
+            a['name'] as String? ?? '', b['name'] as String? ?? ''));
         if (_selectedRoomId == null && rooms.isNotEmpty) {
           _selectedRoomId = rooms.first['id'] as String;
         }
@@ -895,12 +1075,17 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                   decoration: InputDecoration(
                       labelText: context.tr('mushrooms_dialog_select_room'),
                       border: const OutlineInputBorder()),
-                  items: rooms
-                      .map((r) => DropdownMenuItem<String>(
-                            value: r['id'] as String,
-                            child: Text(r['name'] as String),
-                          ))
-                      .toList(),
+                  items: rooms.map((r) {
+                    final p = ((r['plant'] as String?)?.trim().isNotEmpty == true
+                            ? r['plant'] as String
+                            : PlantRoomService.resolveDefaultPlantCode(
+                                r['name'] as String? ?? ''))
+                        .toUpperCase();
+                    return DropdownMenuItem<String>(
+                      value: r['id'] as String,
+                      child: Text('[$p] ${r['name']}'),
+                    );
+                  }).toList(),
                   onChanged: (val) => setState(() => _selectedRoomId = val),
                 ),
                 const SizedBox(height: 12),
@@ -1383,8 +1568,10 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
 class _RoomDetailsSheet extends StatefulWidget {
   final String roomId;
   final String roomName;
+  final String? plant;
 
-  const _RoomDetailsSheet({required this.roomId, required this.roomName});
+  const _RoomDetailsSheet(
+      {required this.roomId, required this.roomName, this.plant});
 
   @override
   State<_RoomDetailsSheet> createState() => _RoomDetailsSheetState();
@@ -1516,7 +1703,7 @@ class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            context.tr('mushrooms_sheet_m2_plant'),
+                            'Plant ${(widget.plant ?? PlantRoomService.resolveDefaultPlantCode(widget.roomName)).toUpperCase()}',
                             style: const TextStyle(
                                 color: Colors.grey, fontSize: 12),
                           ),

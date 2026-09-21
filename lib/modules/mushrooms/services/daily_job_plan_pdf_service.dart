@@ -5,6 +5,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../../../core/database/app_database.dart';
+import 'plant_room_service.dart';
 
 /// Service to generate professional A4 PDF printouts of the Daily Job Plan
 /// for the Growing department (Mushroom Farm).
@@ -78,7 +79,7 @@ class DailyJobPlanPdfService {
     sortedJobs.sort((a, b) {
       final roomA = roomNameById[a.roomId] ?? a.roomId;
       final roomB = roomNameById[b.roomId] ?? b.roomId;
-      final cRoom = roomA.compareTo(roomB);
+      final cRoom = PlantRoomService.compareRoomNames(roomA, roomB);
       if (cRoom != 0) return cRoom;
       return (a.scheduledAt ?? a.createdAt)
           .compareTo(b.scheduledAt ?? b.createdAt);

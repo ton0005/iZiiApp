@@ -7,6 +7,7 @@ import '../../core/theme/izii_colors.dart';
 import '../../modules/sales_crm/bloc/crm_bloc.dart';
 import '../../modules/services/repository.dart';
 import '../../modules/supply_chain/repository.dart';
+import '../../modules/mushrooms/services/window_action_service.dart';
 import '../../core/localization/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -75,6 +76,53 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             actions: [
+              StreamBuilder<List<WindowIssueReport>>(
+                stream: WindowActionService().issuesStream,
+                builder: (context, snapshot) {
+                  return FutureBuilder<int>(
+                    future: WindowActionService().getActiveIssuesCount(),
+                    builder: (context, countSnap) {
+                      final count = countSnap.data ?? 0;
+                      if (count == 0) return const SizedBox.shrink();
+                      return IconButton(
+                        icon: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            const Icon(Icons.view_in_ar_rounded,
+                                size: 22, color: Colors.amber),
+                            Positioned(
+                              right: -4,
+                              top: -4,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 16,
+                                  minHeight: 16,
+                                ),
+                                child: Text(
+                                  '$count',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        tooltip: 'Grow Room 3D: $count sự cố chưa xử lý',
+                        onPressed: () => context.push('/mushrooms/3d-room'),
+                      );
+                    },
+                  );
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.brightness_6_rounded, size: 22),
                 onPressed: () {
@@ -285,6 +333,27 @@ class HomeScreen extends StatelessWidget {
                 childAspectRatio: 1.4,
               ),
               delegate: SliverChildListDelegate(availableModules.map((module) {
+                if (module.id == 'izii.mushrooms') {
+                  return StreamBuilder<List<WindowIssueReport>>(
+                    stream: WindowActionService().issuesStream,
+                    builder: (context, snapshot) {
+                      return FutureBuilder<int>(
+                        future: WindowActionService().getActiveIssuesCount(),
+                        builder: (context, countSnap) {
+                          final count = countSnap.data ?? 0;
+                          return _ModuleCard(
+                            icon: _iconForModule(module.id),
+                            title: module.name,
+                            subtitle: module.category,
+                            color: _colorForModule(module.id),
+                            badgeCount: count,
+                            onTap: () => context.push(_routeForModule(module.id)),
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
                 return _ModuleCard(
                   icon: _iconForModule(module.id),
                   title: module.name,
@@ -552,6 +621,7 @@ class _ModuleCard extends StatelessWidget {
   final String subtitle;
   final Color color;
   final VoidCallback onTap;
+  final int badgeCount;
 
   const _ModuleCard({
     required this.icon,
@@ -559,6 +629,7 @@ class _ModuleCard extends StatelessWidget {
     required this.subtitle,
     required this.color,
     required this.onTap,
+    this.badgeCount = 0,
   });
 
   @override
@@ -588,14 +659,36 @@ class _ModuleCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 22),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: color, size: 22),
+                ),
+                if (badgeCount > 0)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '$badgeCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const Spacer(),
             Text(

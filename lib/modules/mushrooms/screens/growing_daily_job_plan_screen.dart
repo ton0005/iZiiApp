@@ -8,6 +8,7 @@ import '../../../core/events/app_event_bus.dart';
 import '../repository.dart';
 import '../widgets/job_completion_review_dialog.dart';
 import '../services/daily_job_plan_pdf_service.dart';
+import '../services/plant_room_service.dart';
 
 class GrowingDailyJobPlanScreen extends StatefulWidget {
   final DateTime? initialDate;
@@ -32,6 +33,9 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   List<Map<String, dynamic>> _jobTypes = [];
   List<Map<String, dynamic>> _employees = [];
   List<Map<String, dynamic>> _departments = [];
+
+  // Filter by Plant (M1, M2, all)
+  String _selectedPlant = 'all'; // all, M1, M2
 
   // Filter for Sup/Lead Tab
   String _leadStatusFilter =
@@ -78,6 +82,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
     setState(() => _isLoading = true);
     try {
       final rooms = await _db.select(_db.growRooms).get();
+      rooms.sort((a, b) => PlantRoomService.compareRoomNames(a.name, b.name));
       final jobTypes = await _repo.getJobTypes(activeOnly: true);
       final employees = await _repo.getEmployees();
       final departments = await _repo.getDepartments();
@@ -169,11 +174,29 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
     return roomId;
   }
 
+  String _getRoomPlant(String roomId) {
+    final match = _rooms.where((r) => r.id == roomId);
+    if (match.isNotEmpty) {
+      return PlantRoomService.resolveDefaultPlantCode(match.first.name);
+    }
+    return PlantRoomService.resolveDefaultPlantCode(roomId);
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   //  MODAL: Growing Manager Batch Job Planning
   // ══════════════════════════════════════════════════════════════════════════
   void _showAddPlanDialog() {
     final selectedRoomIds = <String>{};
+    String dialogPlantFilter = 'all'; // 'all', 'M1', 'M2'
+    final m1Rooms = _rooms
+        .where((r) => PlantRoomService.resolveDefaultPlantCode(r.name) == 'M1')
+        .toList()
+      ..sort((a, b) => PlantRoomService.compareRoomNames(a.name, b.name));
+    final m2Rooms = _rooms
+        .where((r) => PlantRoomService.resolveDefaultPlantCode(r.name) == 'M2')
+        .toList()
+      ..sort((a, b) => PlantRoomService.compareRoomNames(a.name, b.name));
+
     String selectedJobType =
         _jobTypes.isNotEmpty ? _jobTypes.first['id'] as String : 'watering';
     final nameController = TextEditingController(text: '');
@@ -272,7 +295,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   Expanded(
                     child: ListView(
                       children: [
-                        // Room Selection (Multi-select)
+                        // Room Selection Header & Plant Tabs
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -280,10 +303,13 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                               'Select Rooms (${selectedRoomIds.length}/${_rooms.length})',
                               style: TextStyle(
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                   color: ink),
                             ),
                             TextButton(
+                              style: TextButton.styleFrom(
+                                visualDensity: VisualDensity.compact,
+                              ),
                               onPressed: () {
                                 setSheetState(() {
                                   if (selectedRoomIds.length == _rooms.length) {
@@ -301,37 +327,302 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: _rooms.map((r) {
-                            final isSel = selectedRoomIds.contains(r.id);
-                            return FilterChip(
-                              label: Text(r.name),
-                              selected: isSel,
-                              selectedColor: const Color(0xFF2A78D6)
-                                  .withValues(alpha: 0.2),
-                              checkmarkColor: const Color(0xFF2A78D6),
-                              labelStyle: TextStyle(
-                                fontSize: 12,
-                                fontWeight:
-                                    isSel ? FontWeight.w700 : FontWeight.normal,
-                                color: isSel ? const Color(0xFF2A78D6) : ink,
-                              ),
-                              onSelected: (val) {
-                                setSheetState(() {
+                        const SizedBox(height: 6),
+                        // Quick Plant Filter Toggle Chips
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              ChoiceChip(
+                                label: Text('Tất cả (${_rooms.length})'),
+                                selected: dialogPlantFilter == 'all',
+                                onSelected: (val) {
                                   if (val) {
-                                    selectedRoomIds.add(r.id);
-                                  } else {
-                                    selectedRoomIds.remove(r.id);
+                                    setSheetState(
+                                        () => dialogPlantFilter = 'all');
                                   }
-                                });
-                              },
-                            );
-                          }).toList(),
+                                },
+                              ),
+                              const SizedBox(width: 8),
+                              ChoiceChip(
+                                label: Text('Plant M1 (${m1Rooms.length})'),
+                                selectedColor: const Color(0xFF10B981)
+                                    .withValues(alpha: 0.2),
+                                selected: dialogPlantFilter == 'M1',
+                                onSelected: (val) {
+                                  if (val) {
+                                    setSheetState(
+                                        () => dialogPlantFilter = 'M1');
+                                  }
+                                },
+                              ),
+                              const SizedBox(width: 8),
+                              ChoiceChip(
+                                label: Text('Plant M2 (${m2Rooms.length})'),
+                                selectedColor: const Color(0xFF8B5CF6)
+                                    .withValues(alpha: 0.2),
+                                selected: dialogPlantFilter == 'M2',
+                                onSelected: (val) {
+                                  if (val) {
+                                    setSheetState(
+                                        () => dialogPlantFilter = 'M2');
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 12),
+
+                        // Section 1: Plant M1
+                        if (dialogPlantFilter == 'all' ||
+                            dialogPlantFilter == 'M1') ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981)
+                                  .withValues(alpha: 0.06),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                  color: const Color(0xFF10B981)
+                                      .withValues(alpha: 0.25)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF10B981),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: const Text('M1',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold)),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text('Plant M1 (Phòng 1-32)',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 13,
+                                                color: ink)),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          '(${m1Rooms.where((r) => selectedRoomIds.contains(r.id)).length}/${m1Rooms.length})',
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: ink2,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6),
+                                        visualDensity: VisualDensity.compact,
+                                      ),
+                                      onPressed: () {
+                                        setSheetState(() {
+                                          final allM1Sel = m1Rooms.every((r) =>
+                                              selectedRoomIds.contains(r.id));
+                                          if (allM1Sel) {
+                                            for (final r in m1Rooms) {
+                                              selectedRoomIds.remove(r.id);
+                                            }
+                                          } else {
+                                            for (final r in m1Rooms) {
+                                              selectedRoomIds.add(r.id);
+                                            }
+                                          }
+                                        });
+                                      },
+                                      child: Text(
+                                        m1Rooms.every((r) =>
+                                                selectedRoomIds.contains(r.id))
+                                            ? 'Bỏ chọn M1'
+                                            : 'Chọn tất cả M1',
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  spacing: 6,
+                                  runSpacing: 6,
+                                  children: m1Rooms.map((r) {
+                                    final isSel =
+                                        selectedRoomIds.contains(r.id);
+                                    return FilterChip(
+                                      label: Text(r.name),
+                                      selected: isSel,
+                                      selectedColor: const Color(0xFF10B981)
+                                          .withValues(alpha: 0.2),
+                                      checkmarkColor: const Color(0xFF10B981),
+                                      labelStyle: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: isSel
+                                            ? FontWeight.w700
+                                            : FontWeight.normal,
+                                        color: isSel
+                                            ? const Color(0xFF10B981)
+                                            : ink,
+                                      ),
+                                      onSelected: (val) {
+                                        setSheetState(() {
+                                          if (val) {
+                                            selectedRoomIds.add(r.id);
+                                          } else {
+                                            selectedRoomIds.remove(r.id);
+                                          }
+                                        });
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+
+                        // Section 2: Plant M2
+                        if (dialogPlantFilter == 'all' ||
+                            dialogPlantFilter == 'M2') ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF8B5CF6)
+                                  .withValues(alpha: 0.06),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                  color: const Color(0xFF8B5CF6)
+                                      .withValues(alpha: 0.25)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF8B5CF6),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: const Text('M2',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold)),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text('Plant M2 (Phòng 33-66)',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 13,
+                                                color: ink)),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          '(${m2Rooms.where((r) => selectedRoomIds.contains(r.id)).length}/${m2Rooms.length})',
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: ink2,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6),
+                                        visualDensity: VisualDensity.compact,
+                                      ),
+                                      onPressed: () {
+                                        setSheetState(() {
+                                          final allM2Sel = m2Rooms.every((r) =>
+                                              selectedRoomIds.contains(r.id));
+                                          if (allM2Sel) {
+                                            for (final r in m2Rooms) {
+                                              selectedRoomIds.remove(r.id);
+                                            }
+                                          } else {
+                                            for (final r in m2Rooms) {
+                                              selectedRoomIds.add(r.id);
+                                            }
+                                          }
+                                        });
+                                      },
+                                      child: Text(
+                                        m2Rooms.every((r) =>
+                                                selectedRoomIds.contains(r.id))
+                                            ? 'Bỏ chọn M2'
+                                            : 'Chọn tất cả M2',
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  spacing: 6,
+                                  runSpacing: 6,
+                                  children: m2Rooms.map((r) {
+                                    final isSel =
+                                        selectedRoomIds.contains(r.id);
+                                    return FilterChip(
+                                      label: Text(r.name),
+                                      selected: isSel,
+                                      selectedColor: const Color(0xFF8B5CF6)
+                                          .withValues(alpha: 0.2),
+                                      checkmarkColor: const Color(0xFF8B5CF6),
+                                      labelStyle: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: isSel
+                                            ? FontWeight.w700
+                                            : FontWeight.normal,
+                                        color: isSel
+                                            ? const Color(0xFF8B5CF6)
+                                            : ink,
+                                      ),
+                                      onSelected: (val) {
+                                        setSheetState(() {
+                                          if (val) {
+                                            selectedRoomIds.add(r.id);
+                                          } else {
+                                            selectedRoomIds.remove(r.id);
+                                          }
+                                        });
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
 
                         // Job Type Selection
                         Text(
@@ -1018,20 +1309,29 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
     final ink2 = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569);
     final border = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
 
+    final m1Jobs =
+        _allJobs.where((j) => _getRoomPlant(j.roomId) == 'M1').toList();
+    final m2Jobs =
+        _allJobs.where((j) => _getRoomPlant(j.roomId) == 'M2').toList();
+    final effectiveJobs = _selectedPlant == 'M1'
+        ? m1Jobs
+        : (_selectedPlant == 'M2' ? m2Jobs : _allJobs);
+
     // KPI counts
-    final totalJobs = _allJobs.length;
-    final unassignedJobs = _allJobs
+    final totalJobs = effectiveJobs.length;
+    final unassignedJobs = effectiveJobs
         .where((j) => j.assignee == null || j.assignee!.trim().isEmpty)
         .length;
-    final assignedJobs = _allJobs
+    final assignedJobs = effectiveJobs
         .where((j) =>
             (j.assignee != null && j.assignee!.trim().isNotEmpty) &&
             j.status != 'completed' &&
             j.status != 'in_progress')
         .length;
     final inProgressJobs =
-        _allJobs.where((j) => j.status == 'in_progress').length;
-    final completedJobs = _allJobs.where((j) => j.status == 'completed').length;
+        effectiveJobs.where((j) => j.status == 'in_progress').length;
+    final completedJobs =
+        effectiveJobs.where((j) => j.status == 'completed').length;
 
     return Scaffold(
       backgroundColor: bg,
@@ -1095,6 +1395,10 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                 children: [
                   // Date Switcher Header
                   _buildDateHeader(surface, ink, ink2, border),
+
+                  // Plant Selection Header Tabs (M1 / M2 / All)
+                  _buildPlantSelector(surface, ink, ink2, border,
+                      m1Jobs.length, m2Jobs.length, _allJobs.length),
 
                   // KPI Summary Bar
                   _buildKpiBar(
@@ -1218,6 +1522,111 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
     );
   }
 
+  Widget _buildPlantSelector(Color surface, Color ink, Color ink2, Color border,
+      int m1Count, int m2Count, int totalCount) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: surface,
+        border: Border(bottom: BorderSide(color: border)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildPlantFilterChip(
+              title: 'Plant M1',
+              subtitle: 'Phòng 1-32 ($m1Count jobs)',
+              isSelected: _selectedPlant == 'M1',
+              activeColor: const Color(0xFF10B981),
+              onTap: () => setState(() => _selectedPlant = 'M1'),
+              ink: ink,
+              ink2: ink2,
+              border: border,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _buildPlantFilterChip(
+              title: 'Plant M2',
+              subtitle: 'Phòng 33-66 ($m2Count jobs)',
+              isSelected: _selectedPlant == 'M2',
+              activeColor: const Color(0xFF8B5CF6),
+              onTap: () => setState(() => _selectedPlant = 'M2'),
+              ink: ink,
+              ink2: ink2,
+              border: border,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _buildPlantFilterChip(
+              title: 'Tất cả Plants',
+              subtitle: 'All ($totalCount jobs)',
+              isSelected: _selectedPlant == 'all',
+              activeColor: const Color(0xFF2A78D6),
+              onTap: () => setState(() => _selectedPlant = 'all'),
+              ink: ink,
+              ink2: ink2,
+              border: border,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlantFilterChip({
+    required String title,
+    required String subtitle,
+    required bool isSelected,
+    required Color activeColor,
+    required VoidCallback onTap,
+    required Color ink,
+    required Color ink2,
+    required Color border,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? activeColor.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected ? activeColor : border,
+            width: isSelected ? 1.8 : 1,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                color: isSelected ? activeColor : ink,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? activeColor : ink2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildKpiBar({
     required Color surface,
     required Color border,
@@ -1289,7 +1698,13 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   // ══════════════════════════════════════════════════════════════════════════
   Widget _buildManagerPlanningTab(
       Color surface, Color ink, Color ink2, Color border) {
-    if (_allJobs.isEmpty) {
+    final displayJobs = _selectedPlant == 'all'
+        ? _allJobs
+        : _allJobs
+            .where((j) => _getRoomPlant(j.roomId) == _selectedPlant)
+            .toList();
+
+    if (displayJobs.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1298,7 +1713,9 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                 size: 64, color: ink2.withValues(alpha: 0.4)),
             const SizedBox(height: 12),
             Text(
-              'No jobs planned for ${DateFormat('dd/MM/yyyy').format(_selectedDate)}',
+              _selectedPlant == 'all'
+                  ? 'No jobs planned for ${DateFormat('dd/MM/yyyy').format(_selectedDate)}'
+                  : 'No jobs planned for Plant ${_selectedPlant.toUpperCase()} on ${DateFormat('dd/MM/yyyy').format(_selectedDate)}',
               style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w600, color: ink),
             ),
@@ -1322,74 +1739,197 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       );
     }
 
-    // Group jobs by Room
-    final Map<String, List<MushroomJob>> jobsByRoom = {};
-    for (final j in _allJobs) {
-      jobsByRoom.putIfAbsent(j.roomId, () => []).add(j);
+    // Separate jobs into M1 and M2
+    final Map<String, List<MushroomJob>> m1JobsByRoom = {};
+    final Map<String, List<MushroomJob>> m2JobsByRoom = {};
+
+    for (final j in displayJobs) {
+      final plant = _getRoomPlant(j.roomId);
+      if (plant == 'M2') {
+        m2JobsByRoom.putIfAbsent(j.roomId, () => []).add(j);
+      } else {
+        m1JobsByRoom.putIfAbsent(j.roomId, () => []).add(j);
+      }
     }
+
+    // Sort rooms naturally: 1, 2, 3, 4, 5, 6, 6A, 6B, 7, 8, ..., 22, 22A, 23...
+    final sortedM1RoomIds = m1JobsByRoom.keys.toList()
+      ..sort((a, b) => PlantRoomService.compareRoomNames(
+          _getRoomName(a), _getRoomName(b)));
+    final sortedM2RoomIds = m2JobsByRoom.keys.toList()
+      ..sort((a, b) => PlantRoomService.compareRoomNames(
+          _getRoomName(a), _getRoomName(b)));
 
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: jobsByRoom.entries.map((entry) {
-        final roomId = entry.key;
-        final roomName = _getRoomName(roomId);
-        final roomJobs = entry.value;
+      children: [
+        // Plant M1 Section
+        if (sortedM1RoomIds.isNotEmpty) ...[
+          if (_selectedPlant == 'all')
+            _buildPlantSectionHeader(
+              title: 'Plant M1 (Phòng 1-32)',
+              jobCount: sortedM1RoomIds.fold<int>(
+                  0, (sum, id) => sum + (m1JobsByRoom[id]?.length ?? 0)),
+              roomCount: sortedM1RoomIds.length,
+              color: const Color(0xFF10B981),
+              ink: ink,
+              ink2: ink2,
+            ),
+          ...sortedM1RoomIds.map((roomId) => _buildRoomCard(
+              roomId, m1JobsByRoom[roomId]!, surface, ink, ink2, border)),
+          if (_selectedPlant == 'all' && sortedM2RoomIds.isNotEmpty)
+            const SizedBox(height: 8),
+        ],
 
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          elevation: 0,
-          color: surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: border),
+        // Plant M2 Section
+        if (sortedM2RoomIds.isNotEmpty) ...[
+          if (_selectedPlant == 'all')
+            _buildPlantSectionHeader(
+              title: 'Plant M2 (Phòng 33-66)',
+              jobCount: sortedM2RoomIds.fold<int>(
+                  0, (sum, id) => sum + (m2JobsByRoom[id]?.length ?? 0)),
+              roomCount: sortedM2RoomIds.length,
+              color: const Color(0xFF8B5CF6),
+              ink: ink,
+              ink2: ink2,
+            ),
+          ...sortedM2RoomIds.map((roomId) => _buildRoomCard(
+              roomId, m2JobsByRoom[roomId]!, surface, ink, ink2, border)),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildPlantSectionHeader({
+    required String title,
+    required int jobCount,
+    required int roomCount,
+    required Color color,
+    required Color ink,
+    required Color ink2,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
+              ),
+            ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Text(
+            '$roomCount phòng · $jobCount jobs',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: ink2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoomCard(String roomId, List<MushroomJob> roomJobs,
+      Color surface, Color ink, Color ink2, Color border) {
+    final roomName = _getRoomName(roomId);
+    final plant = _getRoomPlant(roomId);
+    final isM2 = plant == 'M2';
+    final plantColor =
+        isM2 ? const Color(0xFF8B5CF6) : const Color(0xFF10B981);
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 14),
+      elevation: 0,
+      color: surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: border),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color:
-                                const Color(0xFF2A78D6).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.meeting_room,
-                              size: 18, color: Color(0xFF2A78D6)),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          roomName,
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: ink),
-                        ),
-                      ],
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: plantColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(Icons.meeting_room_rounded,
+                          size: 18, color: plantColor),
                     ),
+                    const SizedBox(width: 8),
                     Text(
-                      '${roomJobs.length} job(s)',
+                      roomName,
                       style: TextStyle(
-                          fontSize: 12,
-                          color: ink2,
-                          fontWeight: FontWeight.w600),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: ink),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: plantColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        plant,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: plantColor,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const Divider(height: 20),
-                ...roomJobs
-                    .map((j) => _buildManagerJobItem(j, ink, ink2, border)),
+                Text(
+                  '${roomJobs.length} job(s)',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: ink2,
+                      fontWeight: FontWeight.w600),
+                ),
               ],
             ),
-          ),
-        );
-      }).toList(),
+            const Divider(height: 20),
+            ...roomJobs
+                .map((j) => _buildManagerJobItem(j, ink, ink2, border)),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1531,6 +2071,10 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   Widget _buildLeadAssignmentTab(
       Color surface, Color ink, Color ink2, Color border) {
     final filteredJobs = _allJobs.where((j) {
+      if (_selectedPlant != 'all' &&
+          _getRoomPlant(j.roomId) != _selectedPlant) {
+        return false;
+      }
       final isUnassigned = j.assignee == null || j.assignee!.trim().isEmpty;
       if (_leadStatusFilter == 'unassigned' && !isUnassigned) return false;
       if (_leadStatusFilter == 'assigned' &&
@@ -1544,6 +2088,16 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       if (_leadRoomFilter != 'all' && j.roomId != _leadRoomFilter) return false;
       return true;
     }).toList();
+
+    // Sắp xếp các jobs theo thứ tự phòng tự nhiên: 1, 2, ..., 6, 6A, 6B, 7, 8...
+    filteredJobs.sort((a, b) {
+      final roomA = _getRoomName(a.roomId);
+      final roomB = _getRoomName(b.roomId);
+      final cRoom = PlantRoomService.compareRoomNames(roomA, roomB);
+      if (cRoom != 0) return cRoom;
+      return (a.scheduledAt ?? a.createdAt)
+          .compareTo(b.scheduledAt ?? b.createdAt);
+    });
 
     return Column(
       children: [
@@ -1619,6 +2173,10 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
     final jtInfo = _getJobTypeInfo(job.jobType);
     final color = _colorFromHex(jtInfo?['color'] as String?);
     final roomName = _getRoomName(job.roomId);
+    final plant = _getRoomPlant(job.roomId);
+    final isM2 = plant == 'M2';
+    final plantColor =
+        isM2 ? const Color(0xFF8B5CF6) : const Color(0xFF10B981);
     final isUnassigned = job.assignee == null || job.assignee!.trim().isEmpty;
 
     return Card(
@@ -1655,6 +2213,23 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                           color: ink),
                     ),
                     const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: plantColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        plant,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: plantColor,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
                     Text('·  $roomName',
                         style: TextStyle(
                             fontSize: 13,

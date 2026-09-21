@@ -110,15 +110,48 @@ class PlantRoomService {
         ),
       ];
 
+  /// Sắp xếp tên phòng theo thứ tự số tự nhiên và hậu tố: 1, 2, 3, 4, 5, 6, 6A, 6B, 7, 8, ..., 22, 22A, 23, ..., 52, 52A, 53, ...
+  static int compareRoomNames(String a, String b) {
+    if (a == b) return 0;
+    final regExp = RegExp(r'(\d+)\s*([A-Za-z]*)');
+    final matchA = regExp.firstMatch(a);
+    final matchB = regExp.firstMatch(b);
+
+    if (matchA != null && matchB != null) {
+      final numA = int.tryParse(matchA.group(1) ?? '') ?? 0;
+      final numB = int.tryParse(matchB.group(1) ?? '') ?? 0;
+      if (numA != numB) {
+        return numA.compareTo(numB);
+      }
+      final suffixA = (matchA.group(2) ?? '').trim().toUpperCase();
+      final suffixB = (matchB.group(2) ?? '').trim().toUpperCase();
+      if (suffixA != suffixB) {
+        return suffixA.compareTo(suffixB);
+      }
+    } else if (matchA != null) {
+      return -1;
+    } else if (matchB != null) {
+      return 1;
+    }
+
+    return a.compareTo(b);
+  }
+
   /// Giải quyết nhà máy mặc định dựa theo số phòng (Monarto Standard)
+  /// M1: Phòng 1-32, 6A, 6B, 22A
+  /// M2: Phòng 33-66, 52A
   static String resolveDefaultPlantCode(String roomName) {
     final clean = roomName.replaceAll('Room ', '').trim();
     if (clean == '6A' || clean == '6B' || clean == '22A') {
       return 'M1';
     }
-    final num = int.tryParse(clean.replaceAll(RegExp(r'[^0-9]'), ''));
-    if (num != null && num >= 33) {
-      return 'M2';
+    final regExp = RegExp(r'(\d+)');
+    final match = regExp.firstMatch(roomName);
+    if (match != null) {
+      final num = int.tryParse(match.group(1)!);
+      if (num != null && num >= 33) {
+        return 'M2';
+      }
     }
     return 'M1';
   }

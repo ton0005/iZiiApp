@@ -453,6 +453,21 @@ final appRouter = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/mushrooms/3d-room',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.mushrooms'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          final module =
+              _moduleRegistry.getModule('izii.mushrooms') as MushroomsModule;
+          return module.routes['/mushrooms/3d-room']!(context);
+        },
+      ),
+    ),
+    GoRoute(
       path: '/chat/inbox',
       builder: (context, state) => const ChatInboxScreen(),
     ),

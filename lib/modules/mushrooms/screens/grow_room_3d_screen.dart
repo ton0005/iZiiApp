@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../widgets/grow_room_3d_painter.dart';
 import '../repository.dart';
 import '../services/window_action_service.dart';
+import '../services/plant_room_service.dart';
 
 /// Màn hình tương tác 3D mô hình phòng nuôi trồng nấm (Grow Room 3D Model)
 /// Tuân thủ quy cách thực tế:
@@ -163,6 +164,10 @@ class _GrowRoom3dScreenState extends State<GrowRoom3dScreen>
   Future<void> _loadRooms() async {
     try {
       final rooms = await MushroomsRepository().getRooms();
+      rooms.sort((a, b) => PlantRoomService.compareRoomNames(
+            (a['name'] as String?) ?? '',
+            (b['name'] as String?) ?? '',
+          ));
       if (mounted) {
         setState(() {
           _dbRooms = rooms;

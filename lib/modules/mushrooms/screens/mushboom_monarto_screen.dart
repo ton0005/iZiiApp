@@ -27,6 +27,7 @@ import 'grow_room_3d_screen.dart';
 import 'purchasing_tab_screen.dart';
 import '../services/employee_service.dart';
 import '../services/plant_room_service.dart';
+import '../services/window_action_service.dart';
 import 'package:izii_app/core/database/app_database.dart';
 
 // --- Premium color definitions ---
@@ -224,6 +225,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   Timer? _globalAlarmAudioTimer;
   DateTime? _globalSnoozeUntil;
 
+  // 3D Grow Room Issues & Alarms
+  final WindowActionService _windowActionService = WindowActionService();
+  StreamSubscription<List<WindowIssueReport>>? _windowIssuesSub;
+  List<WindowIssueReport> _active3dIssues = [];
+
   @override
   void initState() {
     super.initState();
@@ -232,6 +238,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     }
     _bloc = MushroomsBloc()..add(LoadRoomsEvent());
     _loadMushroomData();
+    _load3dIssues();
+
+    _windowIssuesSub = _windowActionService.issuesStream.listen((_) {
+      if (mounted) _load3dIssues();
+    });
 
     _plantRoomSub = PlantRoomService().watchChanges.listen((_) {
       if (mounted) {
@@ -248,8 +259,18 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   @override
   void dispose() {
     _plantRoomSub?.cancel();
+    _windowIssuesSub?.cancel();
     _globalAlarmAudioTimer?.cancel();
     super.dispose();
+  }
+
+  Future<void> _load3dIssues() async {
+    final issues = await _windowActionService.getActiveIssues();
+    if (mounted) {
+      setState(() {
+        _active3dIssues = issues;
+      });
+    }
   }
 
   // Role name -> numeric level (0=Worker, 1=Specialist, 2=Lead/Supervisor,
@@ -821,14 +842,59 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.view_in_ar_rounded, size: 24, color: Color(0xFF2A78D6)),
-                tooltip: 'Mô hình 3D Phòng Trồng (3D Grow Room)',
+                icon: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Icon(
+                      Icons.view_in_ar_rounded,
+                      size: 24,
+                      color: _active3dIssues.isNotEmpty
+                          ? Colors.amber.shade400
+                          : const Color(0xFF2A78D6),
+                    ),
+                    if (_active3dIssues.isNotEmpty)
+                      Positioned(
+                        right: -4,
+                        top: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            '${_active3dIssues.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                tooltip: _active3dIssues.isNotEmpty
+                    ? 'Mô hình 3D Phòng Trồng (${_active3dIssues.length} sự cố đang chờ xử lý)'
+                    : 'Mô hình 3D Phòng Trồng (3D Grow Room)',
                 onPressed: () {
+                  final firstIssueRoom = _active3dIssues.isNotEmpty
+                      ? _active3dIssues.first.roomName
+                      : _selectedRoomName;
+                  final firstIssueWindow = _active3dIssues.isNotEmpty
+                      ? _active3dIssues.first.windowCode
+                      : null;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => GrowRoom3dScreen(
-                        initialRoomName: _selectedRoomName,
+                        initialRoomName: firstIssueRoom,
+                        initialSelectedWindowCode: firstIssueWindow,
                       ),
                     ),
                   );
@@ -1178,7 +1244,8 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                             ? 'Hiệu suất (Performance)'
                             : 'Performance Board',
                         const Color(0xFF2A78D6),
-                        effectiveExpanded),
+                        effectiveExpanded,
+                        badgeCount: _active3dIssues.length),
                     _buildSidebarItem(
                         'tasks',
                         Icons.view_kanban_rounded,
@@ -1320,7 +1387,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   }
 
   Widget _buildSidebarItem(String tabId, IconData icon, String label,
-      Color indicatorColor, bool expanded) {
+      Color indicatorColor, bool expanded, {int badgeCount = 0}) {
     final isActive = _activeTab == tabId;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -1333,6 +1400,35 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final Color textIconCol = isActive
         ? (isDark ? Colors.white : FarmColors.forestGreenText)
         : Colors.grey.shade600;
+
+    final iconWithBadge = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Icon(icon, size: 20, color: textIconCol),
+        if (badgeCount > 0 && !expanded)
+          Positioned(
+            right: -6,
+            top: -6,
+            child: Container(
+              padding: const EdgeInsets.all(3),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
+              child: Text(
+                '$badgeCount',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 8,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
+    );
 
     final itemWidget = Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -1372,12 +1468,29 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                               ),
                             ),
                           ),
+                          if (badgeCount > 0)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 7, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                '$badgeCount',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
                   )
                 : Center(
-                    child: Icon(icon, size: 20, color: textIconCol),
+                    child: iconWithBadge,
                   ),
           ),
         ),

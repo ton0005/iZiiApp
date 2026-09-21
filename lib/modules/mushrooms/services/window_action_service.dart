@@ -238,6 +238,18 @@ class WindowActionService {
     return List.unmodifiable(_cachedIssues);
   }
 
+  /// Lấy danh sách tất cả các sự cố đang mở (open hoặc in_progress)
+  Future<List<WindowIssueReport>> getActiveIssues({String? roomName}) async {
+    final all = await getIssues(roomName: roomName);
+    return all.where((i) => i.status != 'resolved').toList();
+  }
+
+  /// Đếm tổng số sự cố đang mở
+  Future<int> getActiveIssuesCount({String? roomName}) async {
+    final active = await getActiveIssues(roomName: roomName);
+    return active.length;
+  }
+
   /// Nạp danh sách từ SharedPreferences (hoặc gieo mầm dữ liệu mẫu nếu trống)
   Future<void> _loadFromStorage() async {
     try {
