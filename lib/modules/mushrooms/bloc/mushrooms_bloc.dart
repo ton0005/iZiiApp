@@ -138,6 +138,7 @@ class MushroomsState {
   final String? error;
   final String? selectedRoomId;
   final bool alarmActive;
+  final List<Map<String, dynamic>> triggeredSoloJobs;
 
   MushroomsState({
     this.rooms = const [],
@@ -148,6 +149,7 @@ class MushroomsState {
     this.error,
     this.selectedRoomId,
     this.alarmActive = false,
+    this.triggeredSoloJobs = const [],
   }) : selectedRoomJobs = selectedRoomJobs ?? roomJobs;
 
   MushroomsState copyWith({
@@ -159,6 +161,7 @@ class MushroomsState {
     String? error,
     String? selectedRoomId,
     bool? alarmActive,
+    List<Map<String, dynamic>>? triggeredSoloJobs,
     bool clearJobs = false,
   }) {
     // ── Ràng buộc: selectedRoomJobs LUÔN phải thuộc về selectedRoomId ────────
@@ -188,6 +191,7 @@ class MushroomsState {
       error: error,
       selectedRoomId: selectedRoomId ?? this.selectedRoomId,
       alarmActive: alarmActive ?? this.alarmActive,
+      triggeredSoloJobs: triggeredSoloJobs ?? this.triggeredSoloJobs,
     );
   }
 }
@@ -253,8 +257,9 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
     _roomsSubscription = _roomService.watchRooms().listen((rooms) {
       add(RoomsUpdatedEvent(rooms));
     });
-    final alarmActive = await _jobService.isAnySoloAlarmActive();
-    emit(state.copyWith(alarmActive: alarmActive));
+    final triggeredJobs = await _jobService.getActiveTriggeredSoloJobs();
+    final alarmActive = triggeredJobs.isNotEmpty || await _jobService.isAnySoloAlarmActive();
+    emit(state.copyWith(alarmActive: alarmActive, triggeredSoloJobs: triggeredJobs));
   }
 
   Future<void> _onLoadRoomDetails(
@@ -368,8 +373,13 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
       CheckAlarmsEvent event, Emitter<MushroomsState> emit) async {
     try {
       await _jobService.checkSoloJobsAlarms();
-      final alarmActive = await _jobService.isAnySoloAlarmActive();
-      emit(state.copyWith(alarmActive: alarmActive));
+      final triggeredJobs = await _jobService.getActiveTriggeredSoloJobs();
+      final alarmActive =
+          triggeredJobs.isNotEmpty || await _jobService.isAnySoloAlarmActive();
+      emit(state.copyWith(
+        alarmActive: alarmActive,
+        triggeredSoloJobs: triggeredJobs,
+      ));
     } catch (_) {}
   }
 
@@ -415,8 +425,13 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
       for (var job in activeTriggeredJobs) {
         await _jobService.checkInSoloJob(job['id']);
       }
-      final alarmActive = await _jobService.isAnySoloAlarmActive();
-      emit(state.copyWith(alarmActive: alarmActive));
+      final triggeredJobs = await _jobService.getActiveTriggeredSoloJobs();
+      final alarmActive =
+          triggeredJobs.isNotEmpty || await _jobService.isAnySoloAlarmActive();
+      emit(state.copyWith(
+        alarmActive: alarmActive,
+        triggeredSoloJobs: triggeredJobs,
+      ));
     } catch (_) {}
   }
 

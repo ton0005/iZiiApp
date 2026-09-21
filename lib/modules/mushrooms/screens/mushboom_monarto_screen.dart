@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
@@ -23,6 +24,7 @@ import 'growing_performance_board_screen.dart';
 import 'manager_batch_attendance_screen.dart';
 import 'mushrooms_profile_screen.dart';
 import 'grow_room_3d_screen.dart';
+import 'purchasing_tab_screen.dart';
 import '../services/employee_service.dart';
 import '../services/plant_room_service.dart';
 import 'package:izii_app/core/database/app_database.dart';
@@ -217,6 +219,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   late MushroomsBloc _bloc;
   StreamSubscription<void>? _plantRoomSub;
 
+  // Global Solo Worker Timeout Alarm (fires across all tabs)
+  bool _isGlobalAlarmDialogOpen = false;
+  Timer? _globalAlarmAudioTimer;
+  DateTime? _globalSnoozeUntil;
+
   @override
   void initState() {
     super.initState();
@@ -241,6 +248,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   @override
   void dispose() {
     _plantRoomSub?.cancel();
+    _globalAlarmAudioTimer?.cancel();
     super.dispose();
   }
 
@@ -414,6 +422,165 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     }
   }
 
+  void _showGlobalAlarmDialog(
+      BuildContext context, List<Map<String, dynamic>> triggeredSoloJobs) {
+    if (_isGlobalAlarmDialogOpen) return;
+    if (_globalSnoozeUntil != null &&
+        DateTime.now().isBefore(_globalSnoozeUntil!)) {
+      return;
+    }
+
+    _isGlobalAlarmDialogOpen = true;
+
+    if (_globalAlarmAudioTimer == null) {
+      HapticFeedback.vibrate();
+      SystemSound.play(SystemSoundType.alert);
+      _globalAlarmAudioTimer =
+          Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+        HapticFeedback.vibrate();
+        SystemSound.play(SystemSoundType.alert);
+      });
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        return AlertDialog(
+          backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Colors.red, width: 2),
+          ),
+          icon: const Icon(
+            Icons.warning_amber_rounded,
+            color: Colors.red,
+            size: 64,
+          ),
+          title: const Text(
+            '🚨 ALARM: ALONE WORKER TIMEOUT',
+            style: TextStyle(
+              color: Colors.red,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Alone working time limit has expired! Please check the employee immediately.',
+                style: TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: triggeredSoloJobs.map((tj) {
+                    final roomName = tj['roomName'] ?? 'Room';
+                    final assignee = tj['assignee'] ?? 'Solo Worker';
+                    final limit = tj['time_limit_minutes'] ?? 45;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            roomName.toString(),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.red),
+                          ),
+                          Text(
+                            'Employee: $assignee (Limit: ${limit}m)',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.snooze, color: Colors.orange),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.orange,
+                    side: const BorderSide(color: Colors.orange),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _isGlobalAlarmDialogOpen = false;
+                    setState(() {
+                      _globalSnoozeUntil =
+                          DateTime.now().add(const Duration(minutes: 5));
+                    });
+                    _globalAlarmAudioTimer?.cancel();
+                    _globalAlarmAudioTimer = null;
+                  },
+                  label: const Text(
+                    'SNOOZE 5 MINS',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.check_circle_outline,
+                      color: Colors.white),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _isGlobalAlarmDialogOpen = false;
+                    setState(() {
+                      _globalSnoozeUntil =
+                          DateTime.now().add(const Duration(seconds: 10));
+                      _activeTab = 'growing';
+                    });
+                    _globalAlarmAudioTimer?.cancel();
+                    _globalAlarmAudioTimer = null;
+                    try {
+                      _bloc.add(DismissActiveAlarmsEvent());
+                    } catch (_) {}
+                  },
+                  label: const Text(
+                    'CONFIRM SAFETY',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    ).then((_) {
+      _isGlobalAlarmDialogOpen = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -422,6 +589,15 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       value: _bloc,
       child: BlocConsumer<MushroomsBloc, MushroomsState>(
         listener: (context, state) {
+          if (state.alarmActive && _activeTab != 'growing') {
+            if (!_isGlobalAlarmDialogOpen) {
+              _showGlobalAlarmDialog(context, state.triggeredSoloJobs);
+            }
+          } else if (!state.alarmActive) {
+            _globalAlarmAudioTimer?.cancel();
+            _globalAlarmAudioTimer = null;
+          }
+
           if (state.rooms.isNotEmpty) {
             setState(() {
               _syncDatabaseRooms(state.rooms);
@@ -733,6 +909,11 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'maintenance') {
       return _language == 'vi' ? 'Bảo trì (Maintenance)' : 'Maintenance Log';
     }
+    if (_activeTab == 'purchasing') {
+      return _language == 'vi'
+          ? 'Thu mua & Nhà cung cấp (Purchasing)'
+          : 'Purchasing & Suppliers';
+    }
     if (_activeTab == 'performance') {
       return _language == 'vi'
           ? 'Hiệu suất (Performance Board)'
@@ -775,6 +956,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     }
     if (_activeTab == 'maintenance') {
       return 'Maintenance History & Technical Error Reports';
+    }
+    if (_activeTab == 'purchasing') {
+      return 'Material Purchase Requests & Supplier Directory';
     }
     if (_activeTab == 'performance') {
       return 'Joblist Completion, Break Time & Alone Worker Safety Board';
@@ -971,6 +1155,14 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                             ? 'Bảo trì (Maintenance)'
                             : 'Maintenance',
                         FarmColors.maintenanceOrange,
+                        effectiveExpanded),
+                    _buildSidebarItem(
+                        'purchasing',
+                        Icons.shopping_cart_checkout_rounded,
+                        _language == 'vi'
+                            ? 'Thu mua (Purchasing)'
+                            : 'Purchasing',
+                        const Color(0xFF0D9488),
                         effectiveExpanded),
                     if (effectiveExpanded)
                       const Divider()
@@ -1279,6 +1471,13 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
         maintenanceJobs: _maintenanceJobs,
         onCreateMaintenanceJob: _onCreateMaintenanceJob,
         onUpdateMaintStatus: _onUpdateMaintStatus,
+      );
+    }
+    if (_activeTab == 'purchasing') {
+      return PurchasingTabScreen(
+        isDark: isDark,
+        activePlant: _activePlant,
+        currentRole: _activeRole,
       );
     }
     if (_activeTab == 'performance') {

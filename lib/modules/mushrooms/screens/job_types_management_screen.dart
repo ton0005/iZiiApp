@@ -32,6 +32,18 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
 
   // null = still checking, true = allowed, false = denied
   bool? _accessAllowed;
+  int _userLevel = 0;
+  String? _userDepartment;
+  String _selectedDepartment = 'All'; // 'All', 'Growing', 'Harvest', 'Maintenance', 'Sales', 'Purchasing'
+
+  static const List<String> _departments = [
+    'All',
+    'Growing',
+    'Harvest',
+    'Maintenance',
+    'Sales',
+    'Purchasing',
+  ];
 
   @override
   void initState() {
@@ -45,12 +57,77 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
     super.dispose();
   }
 
+  Color _departmentColor(String? dept) {
+    switch (dept?.trim().toLowerCase()) {
+      case 'growing':
+        return const Color(0xFF10B981); // Emerald
+      case 'harvest':
+        return const Color(0xFFEC4899); // Pink
+      case 'maintenance':
+        return const Color(0xFF0284C7); // Sky blue
+      case 'sales':
+        return const Color(0xFF6366F1); // Indigo
+      case 'purchasing':
+        return const Color(0xFF0D9488); // Teal
+      default:
+        return Colors.blueGrey;
+    }
+  }
+
+  IconData _departmentIcon(String? dept) {
+    switch (dept?.trim().toLowerCase()) {
+      case 'growing':
+        return Icons.eco_rounded;
+      case 'harvest':
+        return Icons.content_cut_rounded;
+      case 'maintenance':
+        return Icons.build_rounded;
+      case 'sales':
+        return Icons.storefront_rounded;
+      case 'purchasing':
+        return Icons.shopping_cart_checkout_rounded;
+      default:
+        return Icons.domain_rounded;
+    }
+  }
+
   Future<void> _checkAccessAndLoad() async {
-    final empId = await _employeeService.getCurrentEmployeeId();
+    final emp = await _employeeService.getCurrentEmployee();
+    final empId = emp?.id ?? await _employeeService.getCurrentEmployeeId();
     final level = empId != null ? await _repo.getEmployeeLevel(empId) : 0;
     final allowed = level >= 2;
+
+    String? dept = emp?.department?.trim();
+    if (dept == null || dept.isEmpty) {
+      final role = emp?.role.toLowerCase() ?? '';
+      if (role.contains('growing')) {
+        dept = 'Growing';
+      } else if (role.contains('harvest')) {
+        dept = 'Harvest';
+      } else if (role.contains('maintenance')) {
+        dept = 'Maintenance';
+      } else if (role.contains('sales')) {
+        dept = 'Sales';
+      } else if (role.contains('purchasing')) {
+        dept = 'Purchasing';
+      } else if (role.contains('cool room')) {
+        dept = 'Sales';
+      }
+    }
+
     if (!mounted) return;
-    setState(() => _accessAllowed = allowed);
+    setState(() {
+      _accessAllowed = allowed;
+      _userLevel = level;
+      _userDepartment = dept;
+      // If Level 2 (Supervisor/Lead), pre-select their own department if identified
+      if (level == 2 && dept != null && dept.isNotEmpty && _departments.contains(dept)) {
+        _selectedDepartment = dept;
+      } else {
+        _selectedDepartment = 'All';
+      }
+    });
+
     if (allowed) {
       await _loadJobTypes();
     }
@@ -100,9 +177,15 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
     }
 
     final filtered = _jobTypes.where((j) {
+      // Department filter
+      final dept = (j['department'] as String?)?.trim() ?? 'Growing';
+      if (_selectedDepartment != 'All' && dept.toLowerCase() != _selectedDepartment.toLowerCase()) {
+        return false;
+      }
       final query = _searchQuery.toLowerCase();
       return j['id'].toString().toLowerCase().contains(query) ||
-          j['name'].toString().toLowerCase().contains(query);
+          j['name'].toString().toLowerCase().contains(query) ||
+          dept.toLowerCase().contains(query);
     }).toList();
 
     final Widget content = Column(
@@ -126,7 +209,9 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Catalogue of Growing job types and standards (${_jobTypes.length} total)',
+                    _selectedDepartment == 'All'
+                        ? 'Catalogue of job types across all departments (${_jobTypes.length} total)'
+                        : 'Catalogue of $_selectedDepartment job types and standards (${filtered.length} total)',
                     style: TextStyle(fontSize: 13, color: ink2),
                   ),
                 ],
@@ -147,6 +232,86 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
           const SizedBox(height: 16),
         ],
 
+        // Department Selector Tabs
+        Container(
+          height: 42,
+          margin: const EdgeInsets.only(bottom: 12),
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _departments.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, idx) {
+              final dept = _departments[idx];
+              final isSelected = _selectedDepartment == dept;
+              final deptColor = dept == 'All' ? IZiiColors.primary : _departmentColor(dept);
+
+              int count;
+              if (dept == 'All') {
+                count = _jobTypes.length;
+              } else {
+                count = _jobTypes.where((j) => ((j['department'] as String?) ?? 'Growing').toLowerCase() == dept.toLowerCase()).length;
+              }
+
+              return InkWell(
+                onTap: () => setState(() => _selectedDepartment = dept),
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? (isDark ? deptColor.withValues(alpha: 0.25) : deptColor)
+                        : surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isSelected ? deptColor : border,
+                      width: isSelected ? 1.5 : 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        dept == 'All' ? Icons.dashboard_customize_rounded : _departmentIcon(dept),
+                        size: 16,
+                        color: isSelected
+                            ? (isDark ? Colors.white : Colors.white)
+                            : ink2,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        dept,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          color: isSelected ? Colors.white : ink,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Colors.white24
+                              : (isDark ? Colors.white10 : const Color(0xFFF1F5F9)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '$count',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: isSelected ? Colors.white : ink2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+
         // Search Box & Summary Bar
         Container(
           margin: const EdgeInsets.only(bottom: 14),
@@ -159,7 +324,9 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
             controller: _searchController,
             style: TextStyle(color: ink, fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Search job type by ID or name...',
+              hintText: _selectedDepartment == 'All'
+                  ? 'Search job type across departments by ID, name or department...'
+                  : 'Search $_selectedDepartment job type by ID or name...',
               hintStyle: TextStyle(color: ink2, fontSize: 14),
               prefixIcon: Icon(Icons.search, color: ink2),
               suffixIcon: _searchQuery.isNotEmpty
@@ -192,7 +359,9 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                           Icon(Icons.layers_clear_outlined, size: 52, color: ink2.withValues(alpha: 0.5)),
                           const SizedBox(height: 10),
                           Text(
-                            _searchQuery.isEmpty ? 'No job types configured.' : 'No matching job types found.',
+                            _searchQuery.isEmpty
+                                ? 'No job types configured for $_selectedDepartment.'
+                                : 'No matching job types found.',
                             style: TextStyle(color: ink2, fontSize: 14),
                           ),
                         ],
@@ -401,6 +570,31 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                       runSpacing: 6,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
+                        // Department badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: _departmentColor(jt['department'] as String?).withValues(alpha: isDark ? 0.2 : 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: _departmentColor(jt['department'] as String?).withValues(alpha: 0.5)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(_departmentIcon(jt['department'] as String?), size: 11, color: _departmentColor(jt['department'] as String?)),
+                              const SizedBox(width: 4),
+                              Text(
+                                (jt['department'] as String?) ?? 'Growing',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: _departmentColor(jt['department'] as String?),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
                         // ID chip
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -501,6 +695,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
               children: [
                 Expanded(flex: 3, child: Text('JOB TYPE ID', style: _tableHeaderStyle(ink2))),
                 Expanded(flex: 3, child: Text('NAME', style: _tableHeaderStyle(ink2))),
+                Expanded(flex: 2, child: Text('DEPARTMENT', style: _tableHeaderStyle(ink2))),
                 Expanded(flex: 2, child: Text('STD. TIME', style: _tableHeaderStyle(ink2))),
                 Expanded(flex: 2, child: Text('TYPE', style: _tableHeaderStyle(ink2))),
                 Expanded(flex: 2, child: Text('STATUS', style: _tableHeaderStyle(ink2))),
@@ -520,6 +715,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                 final isCustom = jt['is_custom'] == true;
                 final isActive = jt['is_active'] == true;
                 final dotColor = MushroomsRepository.parseHexColor(jt['color'] as String?) ?? IZiiColors.primary;
+                final deptName = (jt['department'] as String?) ?? 'Growing';
 
                 return Container(
                   decoration: BoxDecoration(
@@ -579,6 +775,17 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                                   ),
                                 ),
                             ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: _buildBadge(
+                              deptName,
+                              _departmentColor(deptName),
+                              isDark,
+                            ),
                           ),
                         ),
                         Expanded(
@@ -691,7 +898,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Only Level 2+ management (Lead / Supervisor / Manager) can manage Growing job types.',
+              'Only Level 2+ management (Lead / Supervisor / Manager) can manage department job types.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: ink2),
             ),
@@ -720,6 +927,11 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
     final formKey = GlobalKey<FormState>();
     String id = '';
     String name = '';
+    String department = (_selectedDepartment != 'All')
+        ? _selectedDepartment
+        : (_userDepartment != null && _departments.contains(_userDepartment))
+            ? _userDepartment!
+            : 'Growing';
     int planMinutes = 30;
     bool isSoloJob = false;
     String color = '#10B981';
@@ -771,6 +983,33 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                         idManuallyEdited = true;
                         id = val.trim();
                       },
+                    ),
+                    const SizedBox(height: 12),
+                    // Department Dropdown
+                    DropdownButtonFormField<String>(
+                      initialValue: department,
+                      decoration: _dialogInputDecoration('Department *', border),
+                      dropdownColor: surface,
+                      items: _departments.where((d) => d != 'All').map((d) {
+                        final dCol = _departmentColor(d);
+                        return DropdownMenuItem(
+                          value: d,
+                          child: Row(
+                            children: [
+                              Icon(_departmentIcon(d), size: 16, color: dCol),
+                              const SizedBox(width: 8),
+                              Text(d, style: TextStyle(color: ink, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (_userLevel == 2 && _userDepartment != null && _userDepartment!.isNotEmpty)
+                          ? null // Locked to their own department if Level 2 Lead/Supervisor
+                          : (val) {
+                              if (val != null) {
+                                setDialogState(() => department = val);
+                              }
+                            },
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -831,6 +1070,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                 final ok = await _repo.addJobType(
                   id: finalId,
                   name: name.trim(),
+                  department: department,
                   planMinutes: planMinutes,
                   isSoloJob: isSoloJob,
                   color: color.isNotEmpty ? color : null,
@@ -869,6 +1109,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
     final formKey = GlobalKey<FormState>();
     final id = jobType['id'] as String;
     String name = jobType['name'] as String? ?? id;
+    String department = (jobType['department'] as String?)?.trim() ?? 'Growing';
     int planMinutes = jobType['plan_minutes'] as int? ?? 30;
     bool isSoloJob = jobType['is_solo_job'] == true;
     bool isActive = jobType['is_active'] == true;
@@ -905,6 +1146,33 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                       validator: (val) =>
                           val == null || val.trim().isEmpty ? 'Name is required' : null,
                       onChanged: (val) => name = val,
+                    ),
+                    const SizedBox(height: 12),
+                    // Department Dropdown
+                    DropdownButtonFormField<String>(
+                      initialValue: department,
+                      decoration: _dialogInputDecoration('Department *', border),
+                      dropdownColor: surface,
+                      items: _departments.where((d) => d != 'All').map((d) {
+                        final dCol = _departmentColor(d);
+                        return DropdownMenuItem(
+                          value: d,
+                          child: Row(
+                            children: [
+                              Icon(_departmentIcon(d), size: 16, color: dCol),
+                              const SizedBox(width: 8),
+                              Text(d, style: TextStyle(color: ink, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (_userLevel == 2 && _userDepartment != null && _userDepartment!.isNotEmpty)
+                          ? null // Locked to their own department if Level 2 Lead/Supervisor
+                          : (val) {
+                              if (val != null) {
+                                setDialogState(() => department = val);
+                              }
+                            },
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -978,6 +1246,7 @@ class _JobTypesManagementScreenState extends State<JobTypesManagementScreen> {
                 await _repo.updateJobType(
                   id: id,
                   name: name.trim(),
+                  department: department,
                   planMinutes: planMinutes,
                   isSoloJob: isSoloJob,
                   isActive: isActive,

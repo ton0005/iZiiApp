@@ -219,9 +219,9 @@ DDL_STATEMENTS = [
         id          TEXT PRIMARY KEY,
         name        TEXT NOT NULL,
         plan_minutes INT DEFAULT 0,
-        is_solo_job INT DEFAULT 0,
-        is_custom   INT DEFAULT 0,
-        is_active   INT DEFAULT 1,
+        is_solo_job BOOLEAN DEFAULT FALSE,
+        is_custom   BOOLEAN DEFAULT FALSE,
+        is_active   BOOLEAN DEFAULT TRUE,
         color       TEXT,
         label       JSONB,
         icon        TEXT,
@@ -301,7 +301,7 @@ DDL_STATEMENTS = [
         check_in_interval_minutes INT DEFAULT 30,
         grace_period_minutes      INT DEFAULT 5,
         escalation_target         TEXT DEFAULT 'supervisor',
-        auto_start_on_job_begin   INT DEFAULT 1,
+        auto_start_on_job_begin   BOOLEAN DEFAULT TRUE,
         alarm_type                TEXT DEFAULT 'push_inapp',
         created_at                TEXT
     )
@@ -348,7 +348,7 @@ DDL_STATEMENTS = [
         plan_details    TEXT,
         prochloraz_rate TEXT,
         linked_task_id  TEXT,
-        is_solo_job     INT DEFAULT 0,
+        is_solo_job     BOOLEAN DEFAULT FALSE,
         created_at      TEXT,
         updated_at      TEXT
     )
@@ -374,7 +374,7 @@ DDL_STATEMENTS = [
         headcount        INT DEFAULT 0,
         rate_estimate    REAL DEFAULT 0.0,
         member_ids_json  TEXT,
-        is_seed          INT DEFAULT 0
+        is_seed          BOOLEAN DEFAULT FALSE
     )
     """,
     """
@@ -383,7 +383,7 @@ DDL_STATEMENTS = [
         name        TEXT,
         description TEXT,
         created_at  TEXT,
-        is_seed     INT DEFAULT 0
+        is_seed     BOOLEAN DEFAULT FALSE
     )
     """,
     """
@@ -393,7 +393,7 @@ DDL_STATEMENTS = [
         sender_id       TEXT,
         content         TEXT,
         created_at      TEXT,
-        is_seed         INT DEFAULT 0
+        is_seed         BOOLEAN DEFAULT FALSE
     )
     """,
 ]
@@ -460,9 +460,55 @@ ALTER_STATEMENTS = [
     'ALTER TABLE mushroom_job_types ADD COLUMN IF NOT EXISTS label JSONB',
     'ALTER TABLE mushroom_job_types ADD COLUMN IF NOT EXISTS icon TEXT',
     'ALTER TABLE mushroom_job_types ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 100',
-    'ALTER TABLE picker_teams ADD COLUMN IF NOT EXISTS is_seed INT DEFAULT 0',
-    'ALTER TABLE departments ADD COLUMN IF NOT EXISTS is_seed INT DEFAULT 0',
-    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_seed INT DEFAULT 0',
+    'ALTER TABLE picker_teams ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE',
+    'ALTER TABLE departments ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE',
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE',
+    # Idempotent conversion of columns to native BOOLEAN
+    """
+    DO $$
+    BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'departments' AND column_name = 'is_seed' AND data_type = 'integer') THEN
+            ALTER TABLE departments ALTER COLUMN is_seed DROP DEFAULT;
+            ALTER TABLE departments ALTER COLUMN is_seed TYPE boolean USING (is_seed::int != 0);
+            ALTER TABLE departments ALTER COLUMN is_seed SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'picker_teams' AND column_name = 'is_seed' AND data_type = 'integer') THEN
+            ALTER TABLE picker_teams ALTER COLUMN is_seed DROP DEFAULT;
+            ALTER TABLE picker_teams ALTER COLUMN is_seed TYPE boolean USING (is_seed::int != 0);
+            ALTER TABLE picker_teams ALTER COLUMN is_seed SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'chat_messages' AND column_name = 'is_seed' AND data_type = 'integer') THEN
+            ALTER TABLE chat_messages ALTER COLUMN is_seed DROP DEFAULT;
+            ALTER TABLE chat_messages ALTER COLUMN is_seed TYPE boolean USING (is_seed::int != 0);
+            ALTER TABLE chat_messages ALTER COLUMN is_seed SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_job_types' AND column_name = 'is_solo_job' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_solo_job DROP DEFAULT;
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_solo_job TYPE boolean USING (is_solo_job::int != 0);
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_solo_job SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_job_types' AND column_name = 'is_active' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_active DROP DEFAULT;
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_active TYPE boolean USING (is_active::int != 0);
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_active SET DEFAULT true;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_job_types' AND column_name = 'is_custom' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_custom DROP DEFAULT;
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_custom TYPE boolean USING (is_custom::int != 0);
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_custom SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_jobs' AND column_name = 'is_solo_job' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_jobs ALTER COLUMN is_solo_job DROP DEFAULT;
+            ALTER TABLE mushroom_jobs ALTER COLUMN is_solo_job TYPE boolean USING (is_solo_job::int != 0);
+            ALTER TABLE mushroom_jobs ALTER COLUMN is_solo_job SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_job_safety_configs' AND column_name = 'auto_start_on_job_begin' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_job_safety_configs ALTER COLUMN auto_start_on_job_begin DROP DEFAULT;
+            ALTER TABLE mushroom_job_safety_configs ALTER COLUMN auto_start_on_job_begin TYPE boolean USING (auto_start_on_job_begin::int != 0);
+            ALTER TABLE mushroom_job_safety_configs ALTER COLUMN auto_start_on_job_begin SET DEFAULT true;
+        END IF;
+    END $$;
+    """,
 ]
 
 # ── Phase 1: Nền tảng: Audit, RLS, Tenant isolation & Text Search ─────────────

@@ -215,7 +215,39 @@ def _filter_valid_mutations(
             if assignee:
                 session = None
                 try:
-                    session = get_active_session_for_person(conn, assignee)
+                    # 1. Kiểm tra xem trong CÙNG BATCH có sự kiện điểm danh cho assignee này không
+                    for prior_m in mutations:
+                        if prior_m.table in ("mushroom_attendance_events", "attendance_events"):
+                            p_data = prior_m.data or {}
+                            p_emp = str(p_data.get("employee_id") or p_data.get("employeeId") or "").strip()
+                            p_type = str(p_data.get("event_type") or p_data.get("eventType") or "").upper()
+                            if p_emp and (p_emp.casefold() in assignee.casefold() or assignee.casefold() in p_emp.casefold()):
+                                if p_type in ("CHECK_IN", "BREAK_END"):
+                                    session = {
+                                        "id": f"batch_inflight_{p_emp}",
+                                        "user_id": p_emp,
+                                        "user_name": assignee,
+                                        "method": "manager_batch_attendance_inflight",
+                                        "started_at": str(p_data.get("timestamp") or now),
+                                    }
+                                    break
+                        elif prior_m.table in ("mushroom_daily_timesheets", "daily_timesheets"):
+                            p_data = prior_m.data or {}
+                            p_emp = str(p_data.get("employee_id") or p_data.get("employeeId") or "").strip()
+                            if p_emp and (p_emp.casefold() in assignee.casefold() or assignee.casefold() in p_emp.casefold()):
+                                if p_data.get("check_in_time") or p_data.get("checkInTime"):
+                                    session = {
+                                        "id": f"batch_ts_inflight_{p_emp}",
+                                        "user_id": p_emp,
+                                        "user_name": assignee,
+                                        "method": "manager_batch_attendance_inflight",
+                                        "started_at": now,
+                                    }
+                                    break
+
+                    # 2. Nếu không có trong cùng batch, tra cứu DB (ưu tiên Manager Batch Attendance -> Work Sessions)
+                    if session is None:
+                        session = get_active_session_for_person(conn, assignee)
                 except Exception as e:
                     print(f"⚠️  [SESSION] Không tra được phiên của '{assignee}': {e}")
 

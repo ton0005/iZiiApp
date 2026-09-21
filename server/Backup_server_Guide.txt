@@ -1,0 +1,151 @@
+Logs file:
+/home/iziiserver/.local/share/iziiapp/server
+
+/opt/izii_server/migrations/versions
+/opt/izii_server/routers
+
+
+Move all except:
+ mv !(routers) /home/vinhphan88_vn/routers
+
+
+sudo cp call.py /opt/izii_server/routers/
+sudo chown $(sudo grep -m1 -E '^\s*User=' /etc/systemd/system/iziiserver.service | cut -d= -f2) /opt/izii_server/routers/call.py
+/opt/izii_server/seeds
+sudo chown $(sudo grep -m1 -E '^\s*User=' /etc/systemd/system/iziiserver.service | cut -d= -f2) /opt/izii_server/seeds/seed_loader.py
+sudo chown $(sudo grep -m1 -E '^\s*User=' /etc/systemd/system/iziiserver.service | cut -d= -f2) /opt/izii_server/migrations/versions/0007_fix_boolean_types.sql
+
+
+SVC_USER=$(sudo grep -m1 -E '^\s*User=' /etc/systemd/system/iziiserver.service | cut -d= -f2 | tr -d '[:space:]')
+sudo chown "$SVC_USER": /opt/izii_server/routers/call.py /opt/izii_server/routers/metadata.py \
+  /opt/izii_server/routers/sync.py /opt/izii_server/routers/sessions.py
+============
+skip BACKUP:
+sudo bash ./fix_and_upgrade_iziiserver.sh --skip-backup
+============
+sudo "$APP_DIR"/venv/bin/python "$APP_DIR"/migrations/runner.py --migrate
+# hoặc nếu venv nằm chỗ khác:
+sudo /opt/izii_server/venv/bin/python /opt/izii_server/migrations/runner.py --migrate
+
+
+
+
+
+🟩 1. SCRIPT BACKUP (chạy trên WSL)
+Tạo file:
+
+Code
+backup_izii.sh
+Nội dung:
+
+bash
+#!/bin/bash
+set -e
+
+echo "=== BACKUP IZII SERVER + POSTGRESQL (WSL) ==="
+
+# 1. Backup iZiiServer code
+echo "[1] Backup iZiiServer..."
+sudo tar -czvf izii_server_backup.tar.gz /opt/izii_server
+
+# 2. Backup source code (nếu có)
+if [ -d "/home/iziiserver/iZiiApp/server" ]; then
+    echo "[2] Backup source code..."
+    tar -czvf iziiapp_source_backup.tar.gz /home/iziiserver/iZiiApp/server
+fi
+
+# 3. Backup PostgreSQL
+echo "[3] Backup PostgreSQL..."
+pg_dump -U postgres -d iZiiApp -F c -f iziiapp_pg_backup.dump
+
+# 4. Backup config
+echo "[4] Backup PostgreSQL config..."
+cp /etc/postgresql/*/main/postgresql.conf pg_conf_backup.txt
+cp /etc/postgresql/*/main/pg_hba.conf pg_hba_backup.txt
+
+# 5. Backup systemd service
+echo "[5] Backup systemd service..."
+sudo cp /etc/systemd/system/iziiserver.service iziiserver.service.backup
+
+# 6. Copy to Windows for upload
+echo "[6] Copy backup files to Windows C:/"
+cp izii_server_backup.tar.gz /mnt/c/
+cp iziiapp_source_backup.tar.gz /mnt/c/ 2>/dev/null || true
+cp iziiapp_pg_backup.dump /mnt/c/
+cp pg_conf_backup.txt /mnt/c/
+cp pg_hba_backup.txt /mnt/c/
+cp iziiserver.service.backup /mnt/c/
+
+echo "=== DONE ==="
+echo "Backup files are now in C:/"
+Chạy:
+
+bash
+chmod +x backup_izii.sh
+./backup_izii.sh
+→ Tất cả file backup sẽ nằm trong C:\\ để bạn upload lên Google Cloud.
+
+🟩 2. SCRIPT RESTORE (chạy trên Google Cloud Ubuntu VM)
+Tạo file:
+
+Code
+restore_izii.sh
+Nội dung:
+
+bash
+#!/bin/bash
+set -e
+
+echo "=== RESTORE IZII SERVER + POSTGRESQL (GOOGLE CLOUD UBUNTU) ==="
+
+# 1. Update system
+sudo apt update
+
+# 2. Install Python + PostgreSQL
+echo "[1] Install Python + PostgreSQL..."
+sudo apt install -y python3 python3-venv python3-pip postgresql postgresql-contrib
+
+# 3. Restore iZiiServer
+echo "[2] Restore iZiiServer..."
+sudo mkdir -p /opt/izii_server
+sudo tar -xzvf izii_server_backup.tar.gz -C /opt
+
+# 4. Setup Python environment
+echo "[3] Setup Python venv..."
+cd /opt/izii_server
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 5. Restore PostgreSQL
+echo "[4] Restore PostgreSQL..."
+sudo -u postgres createdb iziiapp || true
+pg_restore -U postgres -d iziiapp iziiapp_pg_backup.dump
+
+# 6. Restore PostgreSQL config (optional)
+echo "[5] Restore PostgreSQL config..."
+sudo cp pg_conf_backup.txt /etc/postgresql/*/main/postgresql.conf
+sudo cp pg_hba_backup.txt /etc/postgresql/*/main/pg_hba.conf
+sudo systemctl restart postgresql
+
+# 7. Restore systemd service
+echo "[6] Restore systemd service..."
+sudo cp iziiserver.service.backup /etc/systemd/system/iziiserver.service
+sudo systemctl daemon-reload
+sudo systemctl enable iziiserver
+sudo systemctl start iziiserver
+
+echo "=== DONE ==="
+echo "iZiiServer is now running on Google Cloud!"
+Chạy:
+
+bash
+chmod +x restore_izii.sh
+./restore_izii.sh
+🟩 3. Sau khi restore xong
+Kiểm tra service:
+bash
+sudo systemctl status iziiserver
+Kiểm tra API:
+bash
+curl http://localhost:8080/devices/enroll/status

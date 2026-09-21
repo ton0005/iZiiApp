@@ -316,8 +316,16 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     } catch (_) {}
 
     if (_isPrivateHost(host)) {
-      print('[Call] Server ở địa chỉ nội bộ ($host) → gọi trong LAN, bỏ STUN.');
-      return const [];
+      print('[Call] Server ở địa chỉ nội bộ ($host) → giữ STUN công cộng dự phòng cho NAT/mạng hỗn hợp.');
+      return const [
+        {
+          'urls': [
+            'stun:stun.l.google.com:19302',
+            'stun:stun1.l.google.com:19302',
+            'stun:stun2.l.google.com:19302',
+          ]
+        }
+      ];
     }
 
     // Ra ngoài Internet: lấy cấu hình từ server để còn thay TURN mà không phải

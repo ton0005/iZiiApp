@@ -43,6 +43,11 @@ class CallSignalingService {
     return target.toString() == clientId;
   }
 
+  Timer? _heartbeatTimer;
+  Timer? _reconnectTimer;
+  int _reconnectAttempts = 0;
+  bool _isConnecting = false;
+
   Future<void> connect(String clientId) async {
     // Đổi danh tính thì phải mở lại socket dưới id mới, không được giữ cái cũ.
     if (isConnected && _clientId != null && _clientId != clientId) {
@@ -71,7 +76,8 @@ class CallSignalingService {
       }
     });
 
-    if (isConnected) return;
+    if (isConnected || _isConnecting) return;
+    _isConnecting = true;
 
     final settings = SettingsService();
     final serverUrl = await settings.getSyncServerUrl();
@@ -88,11 +94,20 @@ class CallSignalingService {
       _channel = WebSocketChannel.connect(uri);
       await _channel!.ready;
       isConnected = true;
+      _isConnecting = false;
+      _reconnectAttempts = 0;
+      _reconnectTimer?.cancel();
+      _startHeartbeat();
+      print('[Call] Đã kết nối kênh tín hiệu /call/ws/$clientId thành công.');
 
       _channel!.stream.listen(
         (message) {
           try {
-            final Map<String, dynamic> msg = jsonDecode(message as String);
+            final raw = message as String;
+            if (raw.trim() == 'pong') return;
+            final Map<String, dynamic> msg = jsonDecode(raw);
+            if (msg['event'] == 'pong') return;
+
             // Server có lúc phát quảng bá khi không tìm thấy người nhận trên
             // /call/ws, nên kênh trực tiếp cũng phải lọc như kênh /chat.
             final payload = Map<String, dynamic>.from(msg['data'] ?? {});
@@ -106,14 +121,52 @@ class CallSignalingService {
           } catch (_) {}
         },
         onError: (err) {
-          isConnected = false;
+          print('[Call] Lỗi kênh tín hiệu: $err');
+          _handleDisconnect();
         },
         onDone: () {
-          isConnected = false;
+          print('[Call] Kênh tín hiệu đóng (onDone).');
+          _handleDisconnect();
         },
       );
-    } catch (_) {
-      isConnected = false;
+    } catch (e) {
+      print('[Call] Không thể kết nối kênh tín hiệu: $e');
+      _handleDisconnect();
+    }
+  }
+
+  void _startHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = Timer.periodic(const Duration(seconds: 20), (_) {
+      if (isConnected && _channel != null) {
+        try {
+          _channel!.sink.add(jsonEncode({'event': 'ping'}));
+        } catch (_) {
+          _handleDisconnect();
+        }
+      }
+    });
+  }
+
+  void _handleDisconnect() {
+    isConnected = false;
+    _isConnecting = false;
+    _heartbeatTimer?.cancel();
+    try {
+      _channel?.sink.close();
+    } catch (_) {}
+    _channel = null;
+
+    if (_clientId != null && _clientId!.isNotEmpty) {
+      _reconnectAttempts++;
+      final backoffSeconds = (_reconnectAttempts * 2).clamp(2, 20);
+      _reconnectTimer?.cancel();
+      _reconnectTimer = Timer(Duration(seconds: backoffSeconds), () {
+        if (!isConnected && _clientId != null) {
+          print('[Call] Đang tự động kết nối lại kênh tín hiệu (lần $_reconnectAttempts sau ${backoffSeconds}s)...');
+          connect(_clientId!);
+        }
+      });
     }
   }
 
@@ -206,10 +259,19 @@ class CallSignalingService {
   }
 
   void disconnect() {
+    _heartbeatTimer?.cancel();
+    _reconnectTimer?.cancel();
+    _isConnecting = false;
     try {
       _channel?.sink.close();
     } catch (_) {}
     _channel = null;
     isConnected = false;
+  }
+
+  void dispose() {
+    disconnect();
+    _chatWsSubscription?.cancel();
+    _eventController.close();
   }
 }

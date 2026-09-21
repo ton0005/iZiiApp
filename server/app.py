@@ -274,10 +274,8 @@ async def _daily_timesheet_cron_loop() -> None:
 
             today_str = datetime.now().strftime("%Y-%m-%d")
             print(f"🕒 [CRON-TIMESHEET] Bắt đầu tổng hợp bảng chấm công tự động ngày {today_str} lúc 22:00...")
-            with open_connection() as conn:
-                res = compute_and_save_daily_timesheets(conn, today_str)
-                conn.commit()
-                print(f"✅ [CRON-TIMESHEET] Hoàn tất tổng hợp ngày {today_str}: {res.get('processed_count', 0)} nhân viên.")
+            count = await asyncio.to_thread(compute_and_save_daily_timesheets, today_str)
+            print(f"✅ [CRON-TIMESHEET] Hoàn tất tổng hợp ngày {today_str}: {count} nhân viên.")
         except asyncio.CancelledError:
             break
         except Exception as e:
@@ -521,8 +519,11 @@ def _write_latency_sync(event_type: str, sent_at_str: str):
     try:
         if not sent_at_str:
             return
-        client_dt = datetime.fromisoformat(sent_at_str.replace('Z', '+00:00'))
-        server_dt = datetime.now(client_dt.tzinfo)
+        clean_str = sent_at_str.replace('Z', '+00:00')
+        client_dt = datetime.fromisoformat(clean_str)
+        if client_dt.tzinfo is None:
+            client_dt = client_dt.replace(tzinfo=timezone.utc)
+        server_dt = datetime.now(timezone.utc)
         diff = server_dt - client_dt
         latency_ms = diff.total_seconds() * 1000
         

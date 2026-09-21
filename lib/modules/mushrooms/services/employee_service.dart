@@ -423,6 +423,8 @@ class EmployeeServiceImpl implements EmployeeService {
       MushroomDepartment(id: 'DEP001', name: 'Harvest', description: 'Responsible for mushroom picking and grading', createdAt: DateTime.now()),
       MushroomDepartment(id: 'DEP002', name: 'Growing', description: 'Responsible for watering, composting and climate control', createdAt: DateTime.now()),
       MushroomDepartment(id: 'DEP003', name: 'Maintenance', description: 'Responsible for mechanical repairs and cleaning', createdAt: DateTime.now()),
+      MushroomDepartment(id: 'DEP004', name: 'Sales', description: 'Responsible for retail orders and shipping logistics', createdAt: DateTime.now()),
+      MushroomDepartment(id: 'DEP005', name: 'Purchasing', description: 'Responsible for material procurement, parts purchasing, and supplier management', createdAt: DateTime.now()),
     ];
 
     for (final d in depts) {

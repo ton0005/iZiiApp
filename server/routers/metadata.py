@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from dependencies import get_db
+from server_config import CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -93,11 +94,12 @@ def get_ui_descriptor(model_name: str, conn=Depends(get_db)):
 
         # 2. Xử lý đặc thù cho job type (giải F1 & dynamic job types)
         if normalized_model == "job":
+            active_cond = "is_active IS TRUE" if CONFIG.db_backend == "postgres" else "is_active = 1"
             cur_jt = conn.execute(
-                """
+                f"""
                 SELECT id, name, plan_minutes, is_solo_job, is_custom, is_active, color, label, icon, sort_order
                 FROM mushroom_job_types
-                WHERE is_active = 1
+                WHERE {active_cond}
                 ORDER BY sort_order ASC, name ASC
                 """
             )

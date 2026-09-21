@@ -70,12 +70,15 @@ def load_seeds(force_update: bool = False) -> Dict[str, Dict[str, int]]:
                             fields = [k for k in item.keys() if k not in ("id", "noupdate")]
                             if fields:
                                 set_clause = ", ".join([f"{f} = %s" for f in fields])
-                                values = [item[f] for f in fields] + [item_id]
+                                values = [(bool(item[f]) if f.startswith("is_") or f.startswith("has_") or f == "auto_start_on_job_begin" else item[f]) for f in fields] + [item_id]
                                 conn.execute(f"UPDATE {table} SET {set_clause} WHERE id = %s", values)
                                 updated += 1
                     else:
                         # Insert with is_seed = True (PostgreSQL boolean)
-                        clean_item = {k: v for k, v in item.items() if k != "noupdate"}
+                        clean_item = {
+                            k: (bool(v) if k.startswith("is_") or k.startswith("has_") or k == "auto_start_on_job_begin" else v)
+                            for k, v in item.items() if k != "noupdate"
+                        }
                         clean_item["is_seed"] = True
                         cols = list(clean_item.keys())
                         placeholders = ", ".join(["%s"] * len(cols))

@@ -16109,14 +16109,6 @@ class $MushroomJobTypesTable extends MushroomJobTypes
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
       defaultValue: const Constant(true));
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
   static const VerificationMeta _colorMeta = const VerificationMeta('color');
   @override
   late final GeneratedColumn<String> color = GeneratedColumn<String>(
@@ -16127,11 +16119,14 @@ class $MushroomJobTypesTable extends MushroomJobTypes
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
       'label', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _iconMeta = const VerificationMeta('icon');
+  static const VerificationMeta _departmentMeta =
+      const VerificationMeta('department');
   @override
-  late final GeneratedColumn<String> icon = GeneratedColumn<String>(
-      'icon', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> department = GeneratedColumn<String>(
+      'department', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Growing'));
   static const VerificationMeta _sortOrderMeta =
       const VerificationMeta('sortOrder');
   @override
@@ -16140,6 +16135,14 @@ class $MushroomJobTypesTable extends MushroomJobTypes
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultValue: const Constant(100));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -16150,7 +16153,7 @@ class $MushroomJobTypesTable extends MushroomJobTypes
         isActive,
         color,
         label,
-        icon,
+        department,
         sortOrder,
         createdAt
       ];
@@ -16203,15 +16206,15 @@ class $MushroomJobTypesTable extends MushroomJobTypes
       context.handle(
           _labelMeta, label.isAcceptableOrUnknown(data['label']!, _labelMeta));
     }
-    if (data.containsKey('icon')) {
+    if (data.containsKey('department')) {
       context.handle(
-          _iconMeta, icon.isAcceptableOrUnknown(data['icon']!, _iconMeta));
+          _departmentMeta,
+          department.isAcceptableOrUnknown(
+              data['department']!, _departmentMeta));
     }
     if (data.containsKey('sort_order')) {
-      context.handle(
-          _sortOrderMeta,
-          sortOrder.isAcceptableOrUnknown(
-              data['sort_order']!, _sortOrderMeta));
+      context.handle(_sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -16238,17 +16241,16 @@ class $MushroomJobTypesTable extends MushroomJobTypes
           .read(DriftSqlType.bool, data['${effectivePrefix}is_custom'])!,
       isActive: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       color: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}color']),
       label: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}label']),
-      icon: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}icon']),
+      department: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}department'])!,
       sortOrder: attachedDatabase.typeMapping
-              .read(DriftSqlType.int, data['${effectivePrefix}sort_order']) ??
-          100,
+          .read(DriftSqlType.int, data['${effectivePrefix}sort_order'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
   }
 
@@ -16265,11 +16267,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
   final bool isSoloJob;
   final bool isCustom;
   final bool isActive;
-  final DateTime createdAt;
   final String? color;
   final String? label;
-  final String? icon;
+  final String department;
   final int sortOrder;
+  final DateTime createdAt;
   const MushroomJobType(
       {required this.id,
       required this.name,
@@ -16277,11 +16279,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       required this.isSoloJob,
       required this.isCustom,
       required this.isActive,
-      required this.createdAt,
       this.color,
       this.label,
-      this.icon,
-      this.sortOrder = 100});
+      required this.department,
+      required this.sortOrder,
+      required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -16291,17 +16293,15 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
     map['is_solo_job'] = Variable<bool>(isSoloJob);
     map['is_custom'] = Variable<bool>(isCustom);
     map['is_active'] = Variable<bool>(isActive);
-    map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || color != null) {
       map['color'] = Variable<String>(color);
     }
     if (!nullToAbsent || label != null) {
       map['label'] = Variable<String>(label);
     }
-    if (!nullToAbsent || icon != null) {
-      map['icon'] = Variable<String>(icon);
-    }
+    map['department'] = Variable<String>(department);
     map['sort_order'] = Variable<int>(sortOrder);
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
@@ -16313,13 +16313,13 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       isSoloJob: Value(isSoloJob),
       isCustom: Value(isCustom),
       isActive: Value(isActive),
-      createdAt: Value(createdAt),
       color:
           color == null && nullToAbsent ? const Value.absent() : Value(color),
       label:
           label == null && nullToAbsent ? const Value.absent() : Value(label),
-      icon: icon == null && nullToAbsent ? const Value.absent() : Value(icon),
+      department: Value(department),
       sortOrder: Value(sortOrder),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -16333,11 +16333,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       isSoloJob: serializer.fromJson<bool>(json['isSoloJob']),
       isCustom: serializer.fromJson<bool>(json['isCustom']),
       isActive: serializer.fromJson<bool>(json['isActive']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       color: serializer.fromJson<String?>(json['color']),
       label: serializer.fromJson<String?>(json['label']),
-      icon: serializer.fromJson<String?>(json['icon']),
-      sortOrder: serializer.fromJson<int?>(json['sortOrder']) ?? 100,
+      department: serializer.fromJson<String>(json['department']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -16350,11 +16350,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       'isSoloJob': serializer.toJson<bool>(isSoloJob),
       'isCustom': serializer.toJson<bool>(isCustom),
       'isActive': serializer.toJson<bool>(isActive),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
       'color': serializer.toJson<String?>(color),
       'label': serializer.toJson<String?>(label),
-      'icon': serializer.toJson<String?>(icon),
+      'department': serializer.toJson<String>(department),
       'sortOrder': serializer.toJson<int>(sortOrder),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
@@ -16365,11 +16365,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
           bool? isSoloJob,
           bool? isCustom,
           bool? isActive,
-          DateTime? createdAt,
-          String? color,
-          String? label,
-          String? icon,
-          int? sortOrder}) =>
+          Value<String?> color = const Value.absent(),
+          Value<String?> label = const Value.absent(),
+          String? department,
+          int? sortOrder,
+          DateTime? createdAt}) =>
       MushroomJobType(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -16377,11 +16377,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
         isSoloJob: isSoloJob ?? this.isSoloJob,
         isCustom: isCustom ?? this.isCustom,
         isActive: isActive ?? this.isActive,
-        createdAt: createdAt ?? this.createdAt,
-        color: color ?? this.color,
-        label: label ?? this.label,
-        icon: icon ?? this.icon,
+        color: color.present ? color.value : this.color,
+        label: label.present ? label.value : this.label,
+        department: department ?? this.department,
         sortOrder: sortOrder ?? this.sortOrder,
+        createdAt: createdAt ?? this.createdAt,
       );
   MushroomJobType copyWithCompanion(MushroomJobTypesCompanion data) {
     return MushroomJobType(
@@ -16392,11 +16392,12 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
       isSoloJob: data.isSoloJob.present ? data.isSoloJob.value : this.isSoloJob,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       color: data.color.present ? data.color.value : this.color,
       label: data.label.present ? data.label.value : this.label,
-      icon: data.icon.present ? data.icon.value : this.icon,
+      department:
+          data.department.present ? data.department.value : this.department,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
@@ -16409,18 +16410,18 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
           ..write('isSoloJob: $isSoloJob, ')
           ..write('isCustom: $isCustom, ')
           ..write('isActive: $isActive, ')
-          ..write('createdAt: $createdAt, ')
           ..write('color: $color, ')
           ..write('label: $label, ')
-          ..write('icon: $icon, ')
-          ..write('sortOrder: $sortOrder')
+          ..write('department: $department, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, name, planMinutes, isSoloJob, isCustom,
-      isActive, createdAt, color, label, icon, sortOrder);
+      isActive, color, label, department, sortOrder, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -16431,11 +16432,11 @@ class MushroomJobType extends DataClass implements Insertable<MushroomJobType> {
           other.isSoloJob == this.isSoloJob &&
           other.isCustom == this.isCustom &&
           other.isActive == this.isActive &&
-          other.createdAt == this.createdAt &&
           other.color == this.color &&
           other.label == this.label &&
-          other.icon == this.icon &&
-          other.sortOrder == this.sortOrder);
+          other.department == this.department &&
+          other.sortOrder == this.sortOrder &&
+          other.createdAt == this.createdAt);
 }
 
 class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
@@ -16445,11 +16446,11 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
   final Value<bool> isSoloJob;
   final Value<bool> isCustom;
   final Value<bool> isActive;
-  final Value<DateTime> createdAt;
   final Value<String?> color;
   final Value<String?> label;
-  final Value<String?> icon;
+  final Value<String> department;
   final Value<int> sortOrder;
+  final Value<DateTime> createdAt;
   final Value<int> rowid;
   const MushroomJobTypesCompanion({
     this.id = const Value.absent(),
@@ -16458,11 +16459,11 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
     this.isSoloJob = const Value.absent(),
     this.isCustom = const Value.absent(),
     this.isActive = const Value.absent(),
-    this.createdAt = const Value.absent(),
     this.color = const Value.absent(),
     this.label = const Value.absent(),
-    this.icon = const Value.absent(),
+    this.department = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   MushroomJobTypesCompanion.insert({
@@ -16472,11 +16473,11 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
     this.isSoloJob = const Value.absent(),
     this.isCustom = const Value.absent(),
     this.isActive = const Value.absent(),
-    this.createdAt = const Value.absent(),
     this.color = const Value.absent(),
     this.label = const Value.absent(),
-    this.icon = const Value.absent(),
+    this.department = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         name = Value(name);
@@ -16487,11 +16488,11 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
     Expression<bool>? isSoloJob,
     Expression<bool>? isCustom,
     Expression<bool>? isActive,
-    Expression<DateTime>? createdAt,
     Expression<String>? color,
     Expression<String>? label,
-    Expression<String>? icon,
+    Expression<String>? department,
     Expression<int>? sortOrder,
+    Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -16501,11 +16502,11 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
       if (isSoloJob != null) 'is_solo_job': isSoloJob,
       if (isCustom != null) 'is_custom': isCustom,
       if (isActive != null) 'is_active': isActive,
-      if (createdAt != null) 'created_at': createdAt,
       if (color != null) 'color': color,
       if (label != null) 'label': label,
-      if (icon != null) 'icon': icon,
+      if (department != null) 'department': department,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -16517,11 +16518,11 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
       Value<bool>? isSoloJob,
       Value<bool>? isCustom,
       Value<bool>? isActive,
-      Value<DateTime>? createdAt,
       Value<String?>? color,
       Value<String?>? label,
-      Value<String?>? icon,
+      Value<String>? department,
       Value<int>? sortOrder,
+      Value<DateTime>? createdAt,
       Value<int>? rowid}) {
     return MushroomJobTypesCompanion(
       id: id ?? this.id,
@@ -16530,11 +16531,11 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
       isSoloJob: isSoloJob ?? this.isSoloJob,
       isCustom: isCustom ?? this.isCustom,
       isActive: isActive ?? this.isActive,
-      createdAt: createdAt ?? this.createdAt,
       color: color ?? this.color,
       label: label ?? this.label,
-      icon: icon ?? this.icon,
+      department: department ?? this.department,
       sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -16560,20 +16561,20 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
     }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
     if (color.present) {
       map['color'] = Variable<String>(color.value);
     }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
     }
-    if (icon.present) {
-      map['icon'] = Variable<String>(icon.value);
+    if (department.present) {
+      map['department'] = Variable<String>(department.value);
     }
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -16590,6 +16591,10 @@ class MushroomJobTypesCompanion extends UpdateCompanion<MushroomJobType> {
           ..write('isSoloJob: $isSoloJob, ')
           ..write('isCustom: $isCustom, ')
           ..write('isActive: $isActive, ')
+          ..write('color: $color, ')
+          ..write('label: $label, ')
+          ..write('department: $department, ')
+          ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -17619,8 +17624,19 @@ class $MushroomMaintenanceTicketsTable extends MushroomMaintenanceTickets
       'completed_at', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, title, plant, room, assignee, priority, status, notes, createdAt, dueDate, completedAt];
+  List<GeneratedColumn> get $columns => [
+        id,
+        title,
+        plant,
+        room,
+        assignee,
+        priority,
+        status,
+        notes,
+        createdAt,
+        dueDate,
+        completedAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -17684,8 +17700,10 @@ class $MushroomMaintenanceTicketsTable extends MushroomMaintenanceTickets
           dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta));
     }
     if (data.containsKey('completed_at')) {
-      context.handle(_completedAtMeta,
-          completedAt.isAcceptableOrUnknown(data['completed_at']!, _completedAtMeta));
+      context.handle(
+          _completedAtMeta,
+          completedAt.isAcceptableOrUnknown(
+              data['completed_at']!, _completedAtMeta));
     }
     return context;
   }
@@ -35886,6 +35904,10 @@ typedef $$MushroomJobTypesTableCreateCompanionBuilder
   Value<bool> isSoloJob,
   Value<bool> isCustom,
   Value<bool> isActive,
+  Value<String?> color,
+  Value<String?> label,
+  Value<String> department,
+  Value<int> sortOrder,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -35897,6 +35919,10 @@ typedef $$MushroomJobTypesTableUpdateCompanionBuilder
   Value<bool> isSoloJob,
   Value<bool> isCustom,
   Value<bool> isActive,
+  Value<String?> color,
+  Value<String?> label,
+  Value<String> department,
+  Value<int> sortOrder,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -35927,6 +35953,18 @@ class $$MushroomJobTypesTableFilterComposer
 
   ColumnFilters<bool> get isActive => $composableBuilder(
       column: $table.isActive, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get color => $composableBuilder(
+      column: $table.color, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get label => $composableBuilder(
+      column: $table.label, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get department => $composableBuilder(
+      column: $table.department, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+      column: $table.sortOrder, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -35959,6 +35997,18 @@ class $$MushroomJobTypesTableOrderingComposer
   ColumnOrderings<bool> get isActive => $composableBuilder(
       column: $table.isActive, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get color => $composableBuilder(
+      column: $table.color, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get label => $composableBuilder(
+      column: $table.label, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get department => $composableBuilder(
+      column: $table.department, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+      column: $table.sortOrder, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 }
@@ -35989,6 +36039,18 @@ class $$MushroomJobTypesTableAnnotationComposer
 
   GeneratedColumn<bool> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get department => $composableBuilder(
+      column: $table.department, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -36027,6 +36089,10 @@ class $$MushroomJobTypesTableTableManager extends RootTableManager<
             Value<bool> isSoloJob = const Value.absent(),
             Value<bool> isCustom = const Value.absent(),
             Value<bool> isActive = const Value.absent(),
+            Value<String?> color = const Value.absent(),
+            Value<String?> label = const Value.absent(),
+            Value<String> department = const Value.absent(),
+            Value<int> sortOrder = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -36037,6 +36103,10 @@ class $$MushroomJobTypesTableTableManager extends RootTableManager<
             isSoloJob: isSoloJob,
             isCustom: isCustom,
             isActive: isActive,
+            color: color,
+            label: label,
+            department: department,
+            sortOrder: sortOrder,
             createdAt: createdAt,
             rowid: rowid,
           ),
@@ -36047,6 +36117,10 @@ class $$MushroomJobTypesTableTableManager extends RootTableManager<
             Value<bool> isSoloJob = const Value.absent(),
             Value<bool> isCustom = const Value.absent(),
             Value<bool> isActive = const Value.absent(),
+            Value<String?> color = const Value.absent(),
+            Value<String?> label = const Value.absent(),
+            Value<String> department = const Value.absent(),
+            Value<int> sortOrder = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -36057,6 +36131,10 @@ class $$MushroomJobTypesTableTableManager extends RootTableManager<
             isSoloJob: isSoloJob,
             isCustom: isCustom,
             isActive: isActive,
+            color: color,
+            label: label,
+            department: department,
+            sortOrder: sortOrder,
             createdAt: createdAt,
             rowid: rowid,
           ),
@@ -36568,6 +36646,9 @@ typedef $$MushroomMaintenanceTicketsTableCreateCompanionBuilder
   required String priority,
   Value<String> status,
   Value<String?> notes,
+  Value<DateTime?> createdAt,
+  Value<DateTime?> dueDate,
+  Value<DateTime?> completedAt,
   Value<int> rowid,
 });
 typedef $$MushroomMaintenanceTicketsTableUpdateCompanionBuilder
@@ -36580,6 +36661,9 @@ typedef $$MushroomMaintenanceTicketsTableUpdateCompanionBuilder
   Value<String> priority,
   Value<String> status,
   Value<String?> notes,
+  Value<DateTime?> createdAt,
+  Value<DateTime?> dueDate,
+  Value<DateTime?> completedAt,
   Value<int> rowid,
 });
 
@@ -36615,6 +36699,15 @@ class $$MushroomMaintenanceTicketsTableFilterComposer
 
   ColumnFilters<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dueDate => $composableBuilder(
+      column: $table.dueDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnFilters(column));
 }
 
 class $$MushroomMaintenanceTicketsTableOrderingComposer
@@ -36649,6 +36742,15 @@ class $$MushroomMaintenanceTicketsTableOrderingComposer
 
   ColumnOrderings<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dueDate => $composableBuilder(
+      column: $table.dueDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnOrderings(column));
 }
 
 class $$MushroomMaintenanceTicketsTableAnnotationComposer
@@ -36683,6 +36785,15 @@ class $$MushroomMaintenanceTicketsTableAnnotationComposer
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => column);
 }
 
 class $$MushroomMaintenanceTicketsTableTableManager extends RootTableManager<
@@ -36724,6 +36835,9 @@ class $$MushroomMaintenanceTicketsTableTableManager extends RootTableManager<
             Value<String> priority = const Value.absent(),
             Value<String> status = const Value.absent(),
             Value<String?> notes = const Value.absent(),
+            Value<DateTime?> createdAt = const Value.absent(),
+            Value<DateTime?> dueDate = const Value.absent(),
+            Value<DateTime?> completedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               MushroomMaintenanceTicketsCompanion(
@@ -36735,6 +36849,9 @@ class $$MushroomMaintenanceTicketsTableTableManager extends RootTableManager<
             priority: priority,
             status: status,
             notes: notes,
+            createdAt: createdAt,
+            dueDate: dueDate,
+            completedAt: completedAt,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -36746,6 +36863,9 @@ class $$MushroomMaintenanceTicketsTableTableManager extends RootTableManager<
             required String priority,
             Value<String> status = const Value.absent(),
             Value<String?> notes = const Value.absent(),
+            Value<DateTime?> createdAt = const Value.absent(),
+            Value<DateTime?> dueDate = const Value.absent(),
+            Value<DateTime?> completedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               MushroomMaintenanceTicketsCompanion.insert(
@@ -36757,6 +36877,9 @@ class $$MushroomMaintenanceTicketsTableTableManager extends RootTableManager<
             priority: priority,
             status: status,
             notes: notes,
+            createdAt: createdAt,
+            dueDate: dueDate,
+            completedAt: completedAt,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0

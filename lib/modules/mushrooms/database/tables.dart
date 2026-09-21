@@ -29,7 +29,7 @@ class MushroomJobTypes extends Table {
   BoolColumn get isActive => boolean().withDefault(const Constant(true))(); // inactive = hidden from new-job dropdown
   TextColumn get color => text().nullable()(); // hex color e.g. #EB6834 for stage & job rendering (solves F1)
   TextColumn get label => text().nullable()(); // multilingual label JSON e.g. {"vi":"...","en":"..."}
-  TextColumn get icon => text().nullable()(); // icon identifier
+  TextColumn get department => text().withDefault(const Constant('Growing'))(); // Department: Growing, Harvest, Maintenance, Sales, Purchasing
   IntColumn get sortOrder => integer().withDefault(const Constant(100))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 

@@ -500,15 +500,35 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 return Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.phone_rounded, color: ChatTheme.getAccent(isDark)),
-                      tooltip: 'Voice Call',
-                      onPressed: () => _startCall(context, 'audio', companion),
+                    Container(
+                      width: 38,
+                      height: 38,
+                      margin: const EdgeInsets.only(right: 6),
+                      decoration: BoxDecoration(
+                        color: ChatTheme.getAccent(isDark).withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.phone_rounded, color: ChatTheme.getAccent(isDark), size: 19),
+                        tooltip: 'Voice Call',
+                        padding: EdgeInsets.zero,
+                        onPressed: () => _startCall(context, 'audio', companion),
+                      ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.videocam_rounded, color: ChatTheme.getAccent(isDark)),
-                      tooltip: 'Video Call',
-                      onPressed: () => _startCall(context, 'video', companion),
+                    Container(
+                      width: 38,
+                      height: 38,
+                      margin: const EdgeInsets.only(right: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF06B6D4).withValues(alpha: 0.14),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.videocam_rounded, color: Color(0xFF06B6D4), size: 20),
+                        tooltip: 'Video Call',
+                        padding: EdgeInsets.zero,
+                        onPressed: () => _startCall(context, 'video', companion),
+                      ),
                     ),
                   ],
                 );

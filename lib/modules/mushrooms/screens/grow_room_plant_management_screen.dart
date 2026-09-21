@@ -136,7 +136,7 @@ class _GrowRoomPlantManagementScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Quản lý Phòng Trồng & Nhà Máy',
+                  'Grow Rooms & Plants Management',
                   style: TextStyle(
                       color: ink, fontSize: 17, fontWeight: FontWeight.bold),
                 ),
@@ -157,11 +157,11 @@ class _GrowRoomPlantManagementScreenState
           tabs: [
             Tab(
               icon: const Icon(Icons.door_sliding_rounded, size: 20),
-              text: 'Phòng Trồng (${_rooms.length})',
+              text: 'Grow Rooms (${_rooms.length})',
             ),
             Tab(
               icon: const Icon(Icons.domain_rounded, size: 20),
-              text: 'Nhà Máy (${_plants.length})',
+              text: 'Plants (${_plants.length})',
             ),
           ],
         ),
@@ -224,7 +224,7 @@ class _GrowRoomPlantManagementScreenState
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildPlantFilterChip('ALL', 'Tất cả (${_rooms.length})'),
+                          _buildPlantFilterChip('ALL', 'All (${_rooms.length})'),
                           const SizedBox(width: 8),
                           for (final p in _plants) ...[
                             _buildPlantFilterChip(
@@ -240,7 +240,7 @@ class _GrowRoomPlantManagementScreenState
                   const SizedBox(width: 8),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.add_rounded, size: 18),
-                    label: const Text('Thêm Phòng'),
+                    label: const Text('Add Room'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: FarmColors.forestGreen,
                       foregroundColor: Colors.white,
@@ -261,7 +261,7 @@ class _GrowRoomPlantManagementScreenState
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: 'Tìm kiếm phòng (ví dụ: Room 33, room_32)...',
+                        hintText: 'Search room (e.g. Room 33, room_32)...',
                         hintStyle: TextStyle(color: ink2, fontSize: 13),
                         prefixIcon:
                             Icon(Icons.search_rounded, size: 20, color: ink2),
@@ -316,11 +316,11 @@ class _GrowRoomPlantManagementScreenState
                         },
                         items: const [
                           DropdownMenuItem(
-                              value: 'ALL', child: Text('Tất cả trạng thái')),
+                              value: 'ALL', child: Text('All Statuses')),
                           DropdownMenuItem(
-                              value: 'active', child: Text('Đang chạy (Active)')),
+                              value: 'active', child: Text('Active')),
                           DropdownMenuItem(
-                              value: 'idle', child: Text('Trống (Idle)')),
+                              value: 'idle', child: Text('Idle')),
                         ],
                       ),
                     ),
@@ -342,7 +342,7 @@ class _GrowRoomPlantManagementScreenState
                       Icon(Icons.search_off_rounded, size: 48, color: ink2),
                       const SizedBox(height: 12),
                       Text(
-                        'Không tìm thấy phòng trồng nào phù hợp.',
+                        'No matching grow rooms found.',
                         style: TextStyle(color: ink2, fontSize: 14),
                       ),
                     ],
@@ -499,7 +499,7 @@ class _GrowRoomPlantManagementScreenState
                       ),
                       const SizedBox(width: 14),
                       Text(
-                        'Giai đoạn: $stage',
+                        'Stage: $stage',
                         style: TextStyle(
                             color: ink2,
                             fontSize: 11,
@@ -507,13 +507,13 @@ class _GrowRoomPlantManagementScreenState
                       ),
                       const SizedBox(width: 14),
                       Text(
-                        'Ngày $dayInCycle',
+                        'Day $dayInCycle',
                         style: TextStyle(color: ink2, fontSize: 11),
                       ),
                       if (targetYield > 0) ...[
                         const SizedBox(width: 14),
                         Text(
-                          'Mục tiêu: ${targetYield.toStringAsFixed(1)} kg',
+                          'Target: ${targetYield.toStringAsFixed(1)} kg',
                           style: TextStyle(color: ink2, fontSize: 11),
                         ),
                       ],
@@ -525,7 +525,7 @@ class _GrowRoomPlantManagementScreenState
 
             // Quick Reassign Button (M1 <-> M2)
             PopupMenuButton<String>(
-              tooltip: 'Gán nhanh Nhà máy (Quick Reassign Plant)',
+              tooltip: 'Quick Reassign Plant',
               icon: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -542,7 +542,7 @@ class _GrowRoomPlantManagementScreenState
                         size: 16, color: plantColor),
                     const SizedBox(width: 4),
                     Text(
-                      'Đổi Plant',
+                      'Change Plant',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -560,7 +560,7 @@ class _GrowRoomPlantManagementScreenState
                   messenger.showSnackBar(
                     SnackBar(
                       content: Text(
-                          'Đã chuyển $name sang Plant $newCode thành công.'),
+                          'Successfully moved $name to Plant $newCode.'),
                       duration: const Duration(seconds: 2),
                     ),
                   );
@@ -607,7 +607,7 @@ class _GrowRoomPlantManagementScreenState
             // Edit Room Action
             IconButton(
               icon: Icon(Icons.edit_outlined, size: 18, color: ink2),
-              tooltip: 'Chỉnh sửa thông tin phòng',
+              tooltip: 'Edit Room',
               onPressed: () => _showEditRoomDialog(room),
             ),
 
@@ -615,7 +615,7 @@ class _GrowRoomPlantManagementScreenState
             IconButton(
               icon: const Icon(Icons.delete_outline_rounded,
                   size: 18, color: Colors.redAccent),
-              tooltip: 'Xóa phòng',
+              tooltip: 'Delete Room',
               onPressed: () => _confirmDeleteRoom(room),
             ),
           ],
@@ -648,19 +648,19 @@ class _GrowRoomPlantManagementScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Danh mục Nhà máy Sản xuất',
+                    'Production Plants Catalog',
                     style: TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold, color: ink),
                   ),
                   Text(
-                    'Quản lý các cơ sở sản xuất và khu vực phòng trực thuộc (${_plants.length} nhà máy)',
+                    'Manage production facilities and assigned grow rooms (${_plants.length} plants)',
                     style: TextStyle(fontSize: 11, color: ink2),
                   ),
                 ],
               ),
               ElevatedButton.icon(
                 icon: const Icon(Icons.add_business_rounded, size: 18),
-                label: const Text('Thêm Nhà Máy'),
+                label: const Text('Add Plant'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: FarmColors.forestGreen,
                   foregroundColor: Colors.white,
@@ -725,7 +725,7 @@ class _GrowRoomPlantManagementScreenState
                       // Plant Details
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
@@ -774,7 +774,7 @@ class _GrowRoomPlantManagementScreenState
                                     size: 14, color: ink2),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${plantRooms.length} phòng trực thuộc',
+                                  '${plantRooms.length} assigned rooms',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: ink2,
@@ -790,13 +790,13 @@ class _GrowRoomPlantManagementScreenState
                       // Actions
                       IconButton(
                         icon: Icon(Icons.edit_outlined, size: 20, color: ink2),
-                        tooltip: 'Chỉnh sửa nhà máy',
+                        tooltip: 'Edit Plant',
                         onPressed: () => _showEditPlantDialog(plant),
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete_outline_rounded,
                             size: 20, color: Colors.redAccent),
-                        tooltip: 'Xóa nhà máy',
+                        tooltip: 'Delete Plant',
                         onPressed: () => _confirmDeletePlant(plant, plantRooms.length),
                       ),
                     ],
@@ -823,7 +823,7 @@ class _GrowRoomPlantManagementScreenState
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlgState) => AlertDialog(
-          title: const Text('Thêm Phòng Trồng Mới'),
+          title: const Text('Add New Grow Room'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -832,12 +832,12 @@ class _GrowRoomPlantManagementScreenState
                 TextField(
                   controller: nameCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Tên phòng *',
-                    hintText: 'ví dụ: Room 67, Spawn Room 1',
+                    labelText: 'Room Name *',
+                    hintText: 'e.g. Room 67, Spawn Room 1',
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text('Nhà máy trực thuộc *',
+                const Text('Assigned Plant *',
                     style:
                         TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 6),
@@ -877,7 +877,7 @@ class _GrowRoomPlantManagementScreenState
                   controller: yieldCtrl,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                    labelText: 'Năng suất mục tiêu (kg)',
+                    labelText: 'Target Yield (kg)',
                     hintText: '0.0',
                   ),
                 ),
@@ -886,14 +886,14 @@ class _GrowRoomPlantManagementScreenState
           ),
           actions: [
             TextButton(
-              child: const Text('Hủy'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.pop(ctx),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: FarmColors.forestGreen,
                   foregroundColor: Colors.white),
-              child: const Text('Lưu Phòng'),
+              child: const Text('Save Room'),
               onPressed: () async {
                 final name = nameCtrl.text.trim();
                 if (name.isEmpty) return;
@@ -938,7 +938,7 @@ class _GrowRoomPlantManagementScreenState
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlgState) => AlertDialog(
-          title: Text('Chỉnh Sửa ${room['name']}'),
+          title: Text('Edit ${room['name']}'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -947,11 +947,11 @@ class _GrowRoomPlantManagementScreenState
                 TextField(
                   controller: nameCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Tên phòng *',
+                    labelText: 'Room Name *',
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text('Nhà máy trực thuộc *',
+                const Text('Assigned Plant *',
                     style:
                         TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 6),
@@ -993,16 +993,16 @@ class _GrowRoomPlantManagementScreenState
                       child: DropdownButtonFormField<String>(
                         initialValue: selectedStatus,
                         decoration: const InputDecoration(
-                          labelText: 'Trạng thái',
+                          labelText: 'Status',
                           border: OutlineInputBorder(),
                           contentPadding:
                               EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                         ),
                         items: const [
                           DropdownMenuItem(
-                              value: 'idle', child: Text('Idle (Trống)')),
+                              value: 'idle', child: Text('Idle')),
                           DropdownMenuItem(
-                              value: 'active', child: Text('Active (Đang chạy)')),
+                              value: 'active', child: Text('Active')),
                         ],
                         onChanged: (val) {
                           if (val != null) {
@@ -1016,7 +1016,7 @@ class _GrowRoomPlantManagementScreenState
                       child: DropdownButtonFormField<String>(
                         initialValue: selectedStage,
                         decoration: const InputDecoration(
-                          labelText: 'Giai đoạn',
+                          labelText: 'Stage',
                           border: OutlineInputBorder(),
                           contentPadding:
                               EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -1050,7 +1050,7 @@ class _GrowRoomPlantManagementScreenState
                   controller: yieldCtrl,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                    labelText: 'Năng suất mục tiêu (kg)',
+                    labelText: 'Target Yield (kg)',
                   ),
                 ),
               ],
@@ -1058,14 +1058,14 @@ class _GrowRoomPlantManagementScreenState
           ),
           actions: [
             TextButton(
-              child: const Text('Hủy'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.pop(ctx),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: FarmColors.forestGreen,
                   foregroundColor: Colors.white),
-              child: const Text('Lưu Thay Đổi'),
+              child: const Text('Save Changes'),
               onPressed: () async {
                 final name = nameCtrl.text.trim();
                 if (name.isEmpty) return;
@@ -1107,22 +1107,22 @@ class _GrowRoomPlantManagementScreenState
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Xác nhận xóa $name?'),
+        title: Text('Delete $name?'),
         content: Text(
           status == 'active'
-              ? 'CẢNH BÁO: Phòng này đang có trạng thái ACTIVE. Bạn có chắc chắn muốn xóa không?'
-              : 'Phòng này sẽ bị xóa vĩnh viễn khỏi danh sách và thiết bị.',
+              ? 'WARNING: This room is currently ACTIVE. Are you sure you want to delete it?'
+              : 'This room will be permanently removed from the catalog.',
         ),
         actions: [
           TextButton(
-            child: const Text('Hủy'),
+            child: const Text('Cancel'),
             onPressed: () => Navigator.pop(ctx),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
                 foregroundColor: Colors.white),
-            child: const Text('Xóa Phòng'),
+            child: const Text('Delete Room'),
             onPressed: () async {
               final nav = Navigator.of(ctx);
               final messenger = ScaffoldMessenger.of(context);
@@ -1157,7 +1157,7 @@ class _GrowRoomPlantManagementScreenState
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlgState) => AlertDialog(
-          title: const Text('Thêm Nhà Máy Mới'),
+          title: const Text('Add New Plant'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1166,28 +1166,28 @@ class _GrowRoomPlantManagementScreenState
                 TextField(
                   controller: codeCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Mã nhà máy *',
-                    hintText: 'ví dụ: M3, LAB, SUB',
+                    labelText: 'Plant Code *',
+                    hintText: 'e.g. M3, LAB, SUB',
                   ),
                 ),
                 const SizedBox(height: 14),
                 TextField(
                   controller: nameCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Tên nhà máy *',
-                    hintText: 'ví dụ: Plant M3, Spawn Laboratory',
+                    labelText: 'Plant Name *',
+                    hintText: 'e.g. Plant M3, Spawn Laboratory',
                   ),
                 ),
                 const SizedBox(height: 14),
                 TextField(
                   controller: descCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Mô tả khu vực',
-                    hintText: 'ví dụ: Khu vực nuôi trồng mở rộng',
+                    labelText: 'Description',
+                    hintText: 'e.g. Monarto expansion facility',
                   ),
                 ),
                 const SizedBox(height: 14),
-                const Text('Màu hiển thị:',
+                const Text('Badge Color:',
                     style:
                         TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
@@ -1233,14 +1233,14 @@ class _GrowRoomPlantManagementScreenState
           ),
           actions: [
             TextButton(
-              child: const Text('Hủy'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.pop(ctx),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: FarmColors.forestGreen,
                   foregroundColor: Colors.white),
-              child: const Text('Thêm Nhà Máy'),
+              child: const Text('Add Plant'),
               onPressed: () async {
                 final code = codeCtrl.text.trim().toUpperCase();
                 final name = nameCtrl.text.trim();
@@ -1278,7 +1278,7 @@ class _GrowRoomPlantManagementScreenState
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlgState) => AlertDialog(
-          title: Text('Chỉnh Sửa Nhà Máy ${plant.code}'),
+          title: Text('Edit Plant ${plant.code}'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1287,25 +1287,25 @@ class _GrowRoomPlantManagementScreenState
                 TextField(
                   controller: nameCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Tên nhà máy *',
+                    labelText: 'Plant Name *',
                   ),
                 ),
                 const SizedBox(height: 14),
                 TextField(
                   controller: descCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Mô tả khu vực',
+                    labelText: 'Description',
                   ),
                 ),
                 const SizedBox(height: 14),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Trạng thái hoạt động (Active)'),
+                  title: const Text('Active Status'),
                   value: isActive,
                   onChanged: (val) => setDlgState(() => isActive = val),
                 ),
                 const SizedBox(height: 8),
-                const Text('Màu hiển thị:',
+                const Text('Badge Color:',
                     style:
                         TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
@@ -1351,14 +1351,14 @@ class _GrowRoomPlantManagementScreenState
           ),
           actions: [
             TextButton(
-              child: const Text('Hủy'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.pop(ctx),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: FarmColors.forestGreen,
                   foregroundColor: Colors.white),
-              child: const Text('Lưu Thay Đổi'),
+              child: const Text('Save Changes'),
               onPressed: () async {
                 final name = nameCtrl.text.trim();
                 if (name.isEmpty) return;
@@ -1387,22 +1387,22 @@ class _GrowRoomPlantManagementScreenState
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Xác nhận xóa Nhà Máy ${plant.name}?'),
+        title: Text('Delete Plant ${plant.name}?'),
         content: Text(
           roomCount > 0
-              ? 'CẢNH BÁO: Đang có $roomCount phòng trực thuộc nhà máy này. Nếu xóa, các phòng này sẽ được gán lại nhà máy mặc định.'
-              : 'Nhà máy này sẽ bị xóa khỏi danh mục sản xuất.',
+              ? 'WARNING: There are $roomCount rooms currently assigned to this plant. Deleting it will reassign them to default plants.'
+              : 'This plant will be permanently removed from the catalog.',
         ),
         actions: [
           TextButton(
-            child: const Text('Hủy'),
+            child: const Text('Cancel'),
             onPressed: () => Navigator.pop(ctx),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
                 foregroundColor: Colors.white),
-            child: const Text('Xóa Nhà Máy'),
+            child: const Text('Delete Plant'),
             onPressed: () async {
               final nav = Navigator.of(ctx);
               await _plantService.deletePlant(plant.code);

@@ -748,6 +748,7 @@ class _EmployeesTabScreenState extends State<EmployeesTabScreen> {
             {'id': 'DEP002', 'name': 'Growing', 'description': 'Responsible for watering, composting and climate control'},
             {'id': 'DEP003', 'name': 'Maintenance', 'description': 'Responsible for mechanical repairs and cleaning'},
             {'id': 'DEP004', 'name': 'Sales', 'description': 'Responsible for retail orders and shipping logistics'},
+            {'id': 'DEP005', 'name': 'Purchasing', 'description': 'Responsible for material procurement, parts purchasing, and supplier management'},
           ];
 
     return depts.map((dept) {

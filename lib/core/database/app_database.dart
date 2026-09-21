@@ -101,7 +101,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 30;
+  int get schemaVersion => 31;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -476,9 +476,14 @@ class AppDatabase extends _$AppDatabase {
               await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN completed_at TEXT;');
             } catch (_) {}
           }
+          if (from < 31) {
+            try {
+              await customStatement("ALTER TABLE mushroom_job_types ADD COLUMN department TEXT DEFAULT 'Growing';");
+            } catch (_) {}
+          }
         },
         beforeOpen: (details) async {
-          // Bảo đảm các cột color, label, icon, sort_order luôn tồn tại trên SQLite
+          // Bảo đảm các cột color, label, icon, sort_order, department luôn tồn tại trên SQLite
           try {
             await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN color TEXT;');
           } catch (_) {}
@@ -490,6 +495,9 @@ class AppDatabase extends _$AppDatabase {
           } catch (_) {}
           try {
             await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN sort_order INTEGER DEFAULT 100;');
+          } catch (_) {}
+          try {
+            await customStatement("ALTER TABLE mushroom_job_types ADD COLUMN department TEXT DEFAULT 'Growing';");
           } catch (_) {}
           // Bảo đảm các cột created_at, due_date, completed_at luôn tồn tại trên mushroom_maintenance_tickets
           try {

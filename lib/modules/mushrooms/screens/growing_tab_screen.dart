@@ -237,9 +237,30 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
 
   List<Map<String, dynamic>> _getTimedOutRooms() {
     final list = <Map<String, dynamic>>[];
+
+    // Read triggered solo jobs directly from MushroomsBloc state if available
+    List<Map<String, dynamic>> triggeredJobs = [];
+    try {
+      triggeredJobs = context.read<MushroomsBloc>().state.triggeredSoloJobs;
+    } catch (_) {}
+
+    final triggeredMap = <String, Map<String, dynamic>>{};
+    for (final tj in triggeredJobs) {
+      final rId = tj['roomId']?.toString();
+      final rName = tj['roomName']?.toString();
+      if (rId != null && rId.isNotEmpty) triggeredMap[rId] = tj;
+      if (rName != null && rName.isNotEmpty) triggeredMap[rName] = tj;
+    }
+
     for (final room in widget.localRooms.values) {
       final stage = (room['current_stage'] ?? '').toString().toLowerCase();
-      if (stage != 'alone_worker' && stage != 'alone_timeout') {
+      final rId = room['id']?.toString() ?? '';
+      final rName = room['name']?.toString() ?? '';
+      final triggeredJob = triggeredMap[rId] ?? triggeredMap[rName];
+
+      if (stage != 'alone_worker' &&
+          stage != 'alone_timeout' &&
+          triggeredJob == null) {
         continue;
       }
       final List<Map<String, dynamic>> jobs = room['jobs'] != null
@@ -247,27 +268,73 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           : [];
       final activeSoloJob = jobs.firstWhere(
         (j) =>
-            j['job_type'] == 'alone_worker' &&
+            (j['job_type'] == 'alone_worker' || j['is_solo_job'] == true) &&
             (j['status'] == 'in_progress' || j['status'] == 'inprog'),
         orElse: () => {},
       );
+
+      // 1. Room is already marked alone_timeout OR is in triggeredSoloJobs
+      if (stage == 'alone_timeout' || triggeredJob != null) {
+        final jobData = activeSoloJob.isNotEmpty
+            ? activeSoloJob
+            : (triggeredJob?['job'] as Map<String, dynamic>? ?? {
+                'name': 'Alone Worker',
+                'assignee': triggeredJob?['assignee'] ??
+                    room['assignee'] ??
+                    'Solo Worker',
+                'time_limit_minutes': triggeredJob?['time_limit_minutes'] ?? 45,
+              });
+        list.add({
+          'roomName':
+              rName.isNotEmpty ? rName : (triggeredJob?['roomName'] ?? 'Room'),
+          'roomId': rId.isNotEmpty ? rId : triggeredJob?['roomId'],
+          'job': jobData,
+        });
+        continue;
+      }
+
+      // 2. Room is in alone_worker and job is loaded -> check if time limit expired
       if (activeSoloJob.isNotEmpty) {
         final startedAtStr =
             activeSoloJob['started_at'] ?? activeSoloJob['scheduled_at'];
         if (startedAtStr != null) {
-          final startedAt = DateTime.parse(startedAtStr.toString());
-          final limitMins = (activeSoloJob['time_limit_minutes'] ?? 45) as int;
-          final deadline = startedAt.add(Duration(minutes: limitMins));
-          if (DateTime.now().isAfter(deadline)) {
-            list.add({
-              'roomName': room['name'],
-              'roomId': room['id'],
-              'job': activeSoloJob,
-            });
+          final startedAt = DateTime.tryParse(startedAtStr.toString());
+          if (startedAt != null) {
+            final limitMins =
+                (activeSoloJob['time_limit_minutes'] ?? 45) as int;
+            final deadline = startedAt.add(Duration(minutes: limitMins));
+            if (DateTime.now().isAfter(deadline)) {
+              list.add({
+                'roomName': rName,
+                'roomId': rId,
+                'job': activeSoloJob,
+              });
+            }
           }
         }
       }
     }
+
+    // 3. Fallback: Add any triggered jobs from bloc that might not be in widget.localRooms yet
+    for (final tj in triggeredJobs) {
+      final tjRoomName = tj['roomName']?.toString() ?? '';
+      final tjRoomId = tj['roomId']?.toString() ?? '';
+      final alreadyAdded = list.any((item) =>
+          (tjRoomId.isNotEmpty && item['roomId'] == tjRoomId) ||
+          (tjRoomName.isNotEmpty && item['roomName'] == tjRoomName));
+      if (!alreadyAdded) {
+        list.add({
+          'roomName': tjRoomName.isNotEmpty ? tjRoomName : 'Room',
+          'roomId': tjRoomId,
+          'job': tj['job'] ?? {
+            'name': 'Alone Worker',
+            'assignee': tj['assignee'] ?? 'Solo Worker',
+            'time_limit_minutes': tj['time_limit_minutes'] ?? 45,
+          },
+        });
+      }
+    }
+
     return list;
   }
 

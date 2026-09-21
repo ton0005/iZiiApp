@@ -394,10 +394,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     if (_currentUserId == null) return;
 
-    // Trigger background sync to push local messages and pull new messages
-    SyncService().triggerSync();
-
-    emit(state.copyWith(isLoading: true));
+    // Chỉ hiện trạng thái loading nếu danh sách hội thoại ban đầu hoàn toàn rỗng
+    if (state.conversations.isEmpty) {
+      emit(state.copyWith(isLoading: true));
+    }
     try {
       final conversations =
           await _chatRepository.getConversations(_currentUserId!);
@@ -413,10 +413,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     if (_currentUserId == null) return;
 
-    // Trigger background sync to pull latest contact updates
-    SyncService().triggerSync();
-
-    emit(state.copyWith(isLoading: true));
+    if (state.contacts.isEmpty) {
+      emit(state.copyWith(isLoading: true));
+    }
     try {
       final contacts =
           await _chatRepository.getReachableContacts(_currentUserId!);
@@ -430,8 +429,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     OpenConversationEvent event,
     Emitter<ChatState> emit,
   ) async {
-    emit(state.copyWith(
-        isLoading: true, activeConversationId: event.conversationId));
+    final isDifferentConvo = state.activeConversationId != event.conversationId;
+    // Chỉ bật spinner loading khi chuyển sang hội thoại mới chưa có tin nhắn
+    if (isDifferentConvo && state.activeMessages.isEmpty) {
+      emit(state.copyWith(
+          isLoading: true, activeConversationId: event.conversationId));
+    } else {
+      emit(state.copyWith(activeConversationId: event.conversationId));
+    }
     try {
       final messages = await _chatRepository.getMessages(event.conversationId);
       emit(state.copyWith(activeMessages: messages, isLoading: false));
@@ -480,28 +485,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     if (_currentUserId == null) return;
 
-    // Auto-detect E2EE capability: if the companion has online devices, encrypt!
-    final companion = await _chatRepository.getCompanion(
-        event.conversationId, _currentUserId!);
-    if (companion != null) {
-      try {
-        final discoveryService = DeviceDiscoveryService();
-        final onlineDevices = await discoveryService.getOnlineDevices();
-        final companionDevices =
-            onlineDevices.where((d) => d.userId == companion.id).toList();
-
-        if (companionDevices.isNotEmpty) {
-          add(SendEncryptedMessageEvent(
-            conversationId: event.conversationId,
-            text: event.text,
-          ));
-          return;
-        }
-      } catch (e) {
-        print('[E2EE] Error checking companion devices: $e');
-      }
-    }
-
     final messageId = const Uuid().v4();
     final now = DateTime.now();
 
@@ -520,24 +503,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       isDeleted: false,
     );
 
-    // Save message locally first
-    await _chatRepository.saveMessage(chatMsg);
-
-    // Update state to include new message
+    // 1. Optimistic UI: Hiển thị ngay tức thì trên màn hình người gửi (< 1ms)
     if (state.activeConversationId == event.conversationId) {
       final updatedList = List<ChatMessage>.from(state.activeMessages)
         ..add(chatMsg);
       emit(state.copyWith(activeMessages: updatedList));
     }
 
-    // Refresh conversation list to update snippets
-    add(LoadConversationsEvent());
-
-    // 1. Luôn xếp hàng tin nhắn vào Outbox để đồng bộ bền vững lên PostgreSQL
-    // (Zero-Loss Guarantee: Dù WebSocket rớt hoặc người nhận đang tạm ngắt kết nối, tin nhắn không bao giờ bị mất).
-    await _chatRepository.queueMessageOffline(chatMsg);
-
-    // 2. Phát ngay sự kiện qua WebSocket nếu đang kết nối để người nhận online nhận tức thì (<50ms)
+    // 2. Realtime WebSocket: Bắn ngay gói tin qua WebSocket ở mili-giây đầu tiên (< 30ms tới người nhận)
     if (_wsService.isConnected) {
       _wsService.sendEvent(ChatWebSocketEvent(
         event: 'send_message',
@@ -551,40 +524,60 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         },
       ));
     } else {
-      // Offline fallback: Kiểm tra nếu thiết bị đối phương có kết nối BLE P2P
-      final bleDiscovery = BleDeviceDiscoveryService();
-      final companionId = companion?.id;
-      final bleDeviceId = companionId != null
-          ? bleDiscovery.getConnectedDeviceIdForUser(companionId)
-          : null;
+      // Offline fallback: Kiểm tra nếu thiết bị đối phương có kết nối BLE P2P lân cận
+      unawaited(() async {
+        try {
+          final companion = await _chatRepository.getCompanion(
+              event.conversationId, _currentUserId!);
+          final bleDiscovery = BleDeviceDiscoveryService();
+          final companionId = companion?.id;
+          final bleDeviceId = companionId != null
+              ? bleDiscovery.getConnectedDeviceIdForUser(companionId)
+              : null;
 
-      if (bleDeviceId != null) {
-        print(
-            '[ChatBloc] Companion is connected via BLE P2P. Sending message directly...');
-        final payloadBytes = utf8.encode(jsonEncode({
-          'id': messageId,
-          'conversation_id': event.conversationId,
-          'sender_id': _currentUserId!,
-          'type': event.type.name,
-          'content': contentMap,
-          'sent_at': now.toIso8601String(),
-        }));
+          if (bleDeviceId != null) {
+            print(
+                '[ChatBloc] Companion is connected via BLE P2P. Sending message directly...');
+            final payloadBytes = utf8.encode(jsonEncode({
+              'id': messageId,
+              'conversation_id': event.conversationId,
+              'sender_id': _currentUserId!,
+              'type': event.type.name,
+              'content': contentMap,
+              'sent_at': now.toIso8601String(),
+            }));
 
-        final packet = BleMeshPacket(
-          messageId: messageId,
-          senderDeviceId: 'local-device',
-          recipientDeviceId: bleDeviceId,
-          payload: payloadBytes,
-          ttl: 1,
-          messageType: BleMessageType.message,
-        );
+            final packet = BleMeshPacket(
+              messageId: messageId,
+              senderDeviceId: 'local-device',
+              recipientDeviceId: bleDeviceId,
+              payload: payloadBytes,
+              ttl: 1,
+              messageType: BleMessageType.message,
+            );
 
-        await bleDiscovery.sendPacket(bleDeviceId, packet);
-      }
+            await bleDiscovery.sendPacket(bleDeviceId, packet);
+          }
+        } catch (e) {
+          print('[ChatBloc] BLE fallback error: $e');
+        }
+      }());
     }
 
-    // 3. Kích hoạt Sync ngay lập tức để đẩy outbox lên server
-    SyncService().triggerSync();
+    // 3. Zero-Loss Guarantee: Lưu SQLite cục bộ và xếp hàng Outbox ngầm (không chặn UI chat)
+    unawaited(() async {
+      try {
+        await _chatRepository.saveMessage(chatMsg);
+        await _chatRepository.queueMessageOffline(chatMsg);
+        // Đẩy nhanh Outbox lên PostgreSQL mà không kích hoạt Full Database Sync
+        SyncService().debounceFlushOutbox();
+      } catch (e) {
+        print('[ChatBloc] Error persisting message: $e');
+      }
+    }());
+
+    // Cập nhật preview tóm tắt cuộc hội thoại ngoài danh sách chat
+    add(LoadConversationsEvent());
   }
 
   void _onUpdateWsConnectionState(
@@ -619,8 +612,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     switch (wsEvent.event) {
       case 'sync_trigger':
-        print('[ChatWS] Sync trigger received from WebSocket. Pulling updates...');
-        SyncService().triggerSync(isManual: true);
+        print('[ChatWS] Sync trigger received from WebSocket. Pulling updates (debounced)...');
+        SyncService().debounceSync();
         break;
 
       case 'event_reaction':

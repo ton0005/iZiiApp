@@ -25,6 +25,7 @@ import 'growing_performance_board_screen.dart';
 import 'growing_daily_job_plan_screen.dart';
 import 'manager_batch_attendance_screen.dart';
 import 'grow_room_3d_screen.dart';
+import 'purchasing_tab_screen.dart';
 import '../../communication/bloc/chat_bloc.dart';
 
 class MushroomsHomeScreen extends StatefulWidget {
@@ -481,6 +482,35 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
     );
   }
 
+  void _navigateToPurchasing(BuildContext context) {
+    final bloc = context.read<MushroomsBloc>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BlocProvider.value(
+          value: bloc,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Purchasing & Suppliers'),
+              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              foregroundColor: isDark ? Colors.white : Colors.black87,
+            ),
+            body: PurchasingTabScreen(
+              isDark: isDark,
+              activePlant: 'M2',
+              currentRole: 'Manager',
+            ),
+          ),
+        ),
+      ),
+    ).then((_) {
+      if (!mounted) return;
+      bloc.add(LoadRoomsEvent());
+      _loadMushroomData();
+    });
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   //  Build
   // ══════════════════════════════════════════════════════════════════════════
@@ -682,6 +712,16 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
             isDark: isDark,
             onTap: () => _navigateTo3dRoom(context),
           ),
+          const SizedBox(height: 12),
+          QuickAccessCard(
+            title: 'Purchasing & Suppliers',
+            subtitle:
+                'Purchase requests, Part No., required dates & supplier directory',
+            icon: Icons.shopping_cart_checkout_rounded,
+            color: const Color(0xFF0D9488),
+            isDark: isDark,
+            onTap: () => _navigateToPurchasing(context),
+          ),
         ],
       ),
     );
@@ -806,6 +846,15 @@ class _MushroomsHomeScreenState extends State<MushroomsHomeScreen> {
                 color: const Color(0xFF0EA5E9),
                 isDark: isDark,
                 onTap: () => _navigateTo3dRoom(context),
+              ),
+              QuickAccessCard(
+                title: 'Purchasing & Suppliers',
+                subtitle:
+                    'Purchase requests, Part No., required dates & supplier directory',
+                icon: Icons.shopping_cart_checkout_rounded,
+                color: const Color(0xFF0D9488),
+                isDark: isDark,
+                onTap: () => _navigateToPurchasing(context),
               ),
             ]),
           )

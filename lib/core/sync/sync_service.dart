@@ -275,6 +275,24 @@ class SyncService {
     }
   }
 
+  /// Gom các thay đổi Outbox và đẩy nhanh bằng flushOutbox sau khi người dùng ngừng thao tác
+  /// (Dành riêng cho các tác vụ thời gian thực như Chat nhằm gửi lên PostgreSQL mà không kích hoạt Full Sync).
+  void debounceFlushOutbox({Duration delay = const Duration(milliseconds: 500)}) {
+    _debounceFlushTimer?.cancel();
+    _debounceFlushTimer = Timer(delay, () {
+      flushOutbox();
+    });
+  }
+
+  /// Gom các tín hiệu sync_trigger từ WebSocket để tránh việc 2 máy chat qua lại
+  /// kích hoạt liên hoàn hàng chục lần pull full database làm sập mạng và giật lag.
+  void debounceSync({Duration delay = const Duration(milliseconds: 1500), bool isManual = false}) {
+    _debounceSyncTimer?.cancel();
+    _debounceSyncTimer = Timer(delay, () {
+      triggerSync(isManual: isManual);
+    });
+  }
+
   Future<bool> triggerSync({bool isManual = false}) async {
     if (_isSyncing) {
       _syncQueued = true;
@@ -1942,6 +1960,7 @@ class SyncService {
     if (id == null || id.isEmpty) return false;
     final rawLabel = data['label'];
     final labelStr = rawLabel is Map ? jsonEncode(rawLabel) : rawLabel as String?;
+    final dept = (data['department'] as String?)?.trim();
     await _db.into(_db.mushroomJobTypes).insertOnConflictUpdate(
       MushroomJobType(
         id: id,
@@ -1952,7 +1971,7 @@ class SyncService {
         isActive: (data['is_active'] ?? data['isActive']) as bool? ?? true,
         color: data['color'] as String?,
         label: labelStr,
-        icon: data['icon'] as String?,
+        department: (dept != null && dept.isNotEmpty) ? dept : 'Growing',
         sortOrder: ((data['sort_order'] ?? data['sortOrder']) as num?)?.toInt() ?? 100,
         createdAt: (data['created_at'] ?? data['createdAt']) != null
             ? DateTime.tryParse((data['created_at'] ?? data['createdAt']).toString()) ?? DateTime.now()

@@ -115,7 +115,7 @@ def _hook_ensure_alone_worker_safety_config(ctx: HookContext, record: Dict[str, 
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (id) DO NOTHING
                 """,
-                (cfg_id, job_id, 30, 5, "supervisor", 1, "push_inapp", now_str, ctx.tenant_id),
+                (cfg_id, job_id, 30, 5, "supervisor", True, "push_inapp", now_str, ctx.tenant_id),
             )
             logger.info(f"🛡️ [HOOK] Tự động tạo safety config {cfg_id} cho Alone Worker job {job_id}")
 

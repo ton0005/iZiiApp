@@ -478,6 +478,7 @@ class MushroomsRepository {
             {'id': 'DEP002', 'name': 'Growing', 'description': 'Responsible for watering, composting and climate control'},
             {'id': 'DEP003', 'name': 'Maintenance', 'description': 'Responsible for mechanical repairs and cleaning'},
             {'id': 'DEP004', 'name': 'Sales', 'description': 'Responsible for retail orders and shipping logistics'},
+            {'id': 'DEP005', 'name': 'Purchasing', 'description': 'Responsible for material procurement, parts purchasing, and supplier management'},
           ];
           await file.writeAsString(jsonEncode(defaults));
           return defaults;
@@ -693,16 +694,38 @@ class MushroomsRepository {
       final existing = await _db.select(_db.mushroomJobTypes).get();
       if (existing.isNotEmpty) return;
 
-      final defaults = <(String, String, int, bool, String)>[
-        ('filling', 'Filling', 60, false, '#F59E0B'),
-        ('airing', 'Airing', 20, false, '#06B6D4'),
-        ('floor_wet', 'Floor Wet', 25, false, '#6366F1'),
-        ('clean_room', 'Clean Room', 45, false, '#10B981'),
-        ('watering', 'Watering', 25, false, '#3B82F6'),
-        ('clean_bed', 'Clean Bed', 35, false, '#10B981'),
-        ('prochloraz', 'Prochloraz', 30, false, '#8B5CF6'),
-        ('packup_tree', 'Pack Up Tree', 50, false, '#14B8A6'),
-        ('alone_worker', 'Alone Worker', 40, true, '#F97316'),
+      // Seed core templates for all departments
+      final defaults = <(String, String, int, bool, String, String)>[
+        // Growing
+        ('filling', 'Filling', 60, false, '#F59E0B', 'Growing'),
+        ('airing', 'Airing', 20, false, '#06B6D4', 'Growing'),
+        ('floor_wet', 'Floor Wet', 25, false, '#6366F1', 'Growing'),
+        ('clean_room', 'Clean Room', 45, false, '#10B981', 'Growing'),
+        ('watering', 'Watering', 25, false, '#3B82F6', 'Growing'),
+        ('clean_bed', 'Clean Bed', 35, false, '#10B981', 'Growing'),
+        ('prochloraz', 'Prochloraz', 30, false, '#8B5CF6', 'Growing'),
+        ('packup_tree', 'Pack Up Tree', 50, false, '#14B8A6', 'Growing'),
+        ('alone_worker', 'Alone Worker', 40, true, '#F97316', 'Growing'),
+        // Harvest
+        ('picking_button', 'Picking Button', 120, false, '#EC4899', 'Harvest'),
+        ('picking_cup', 'Picking Cup', 120, false, '#D946EF', 'Harvest'),
+        ('picking_flat', 'Picking Flat', 90, false, '#A855F7', 'Harvest'),
+        ('grading_packing', 'Grading & Packing', 60, false, '#8B5CF6', 'Harvest'),
+        ('trolley_transport', 'Trolley Transport', 30, false, '#6366F1', 'Harvest'),
+        // Maintenance
+        ('ahu_filter_service', 'AHU Filter Service', 45, false, '#0284C7', 'Maintenance'),
+        ('pump_repair', 'Pump & Valve Repair', 60, false, '#0EA5E9', 'Maintenance'),
+        ('room_sanitization', 'Room Sanitization & Steam', 90, false, '#14B8A6', 'Maintenance'),
+        ('forklift_inspection', 'Forklift Daily Check', 20, false, '#F59E0B', 'Maintenance'),
+        ('electrical_check', 'Electrical & Sensor Audit', 45, false, '#EF4444', 'Maintenance'),
+        // Sales & Logistics
+        ('dispatch_order_pick', 'Dispatch Order Picking', 60, false, '#3B82F6', 'Sales'),
+        ('pallet_loading', 'Pallet Loading & Wrap', 40, false, '#2563EB', 'Sales'),
+        ('refrigerated_dock_staging', 'Cold Dock Staging', 30, false, '#0284C7', 'Sales'),
+        // Purchasing
+        ('supplier_pr_review', 'PR Review & Sourcing', 30, false, '#0D9488', 'Purchasing'),
+        ('goods_receipt_inspection', 'Goods Receipt Inspection', 45, false, '#10B981', 'Purchasing'),
+        ('parts_catalog_audit', 'Parts & Inventory Audit', 60, false, '#059669', 'Purchasing'),
       ];
       for (final d in defaults) {
         await _db.into(_db.mushroomJobTypes).insertOnConflictUpdate(
@@ -714,6 +737,8 @@ class MushroomsRepository {
                 isCustom: false,
                 isActive: true,
                 color: d.$5,
+                department: d.$6,
+                sortOrder: 100,
                 createdAt: DateTime.now(),
               ),
             );
@@ -763,12 +788,18 @@ class MushroomsRepository {
     return map;
   }
 
-  Future<List<Map<String, dynamic>>> getJobTypes({bool activeOnly = false}) async {
+  Future<List<Map<String, dynamic>>> getJobTypes({
+    bool activeOnly = false,
+    String? department,
+  }) async {
     await seedJobTypesIfEmpty();
     final query = _db.select(_db.mushroomJobTypes)
       ..orderBy([(t) => OrderingTerm(expression: t.name)]);
     if (activeOnly) {
       query.where((t) => t.isActive.equals(true));
+    }
+    if (department != null && department.trim().isNotEmpty && department.toLowerCase() != 'all') {
+      query.where((t) => t.department.equals(department.trim()));
     }
     final list = await query.get();
     final res = list.map((j) => <String, dynamic>{
@@ -780,7 +811,7 @@ class MushroomsRepository {
       'is_active': j.isActive,
       'color': j.color,
       'label': j.label,
-      'icon': j.icon,
+      'department': j.department,
       'sort_order': j.sortOrder,
       'created_at': j.createdAt.toIso8601String(),
     }).toList();
@@ -802,12 +833,15 @@ class MushroomsRepository {
     required int planMinutes,
     bool isSoloJob = false,
     String? color,
+    String department = 'Growing',
   }) async {
     final trimmedId = id.trim();
     final existing = await (_db.select(_db.mushroomJobTypes)
           ..where((t) => t.id.equals(trimmedId)))
         .getSingleOrNull();
     if (existing != null) return false;
+
+    final deptVal = department.trim().isNotEmpty ? department.trim() : 'Growing';
 
     await _db.into(_db.mushroomJobTypes).insert(
           MushroomJobTypesCompanion.insert(
@@ -818,6 +852,7 @@ class MushroomsRepository {
             isCustom: const Value(true),
             isActive: const Value(true),
             color: color != null ? Value(color) : const Value.absent(),
+            department: Value(deptVal),
           ),
         );
 
@@ -832,6 +867,7 @@ class MushroomsRepository {
       'is_solo_job': isSoloJob,
       'is_custom': true,
       'is_active': true,
+      'department': deptVal,
       if (color != null) 'color': color,
       'created_at': DateTime.now().toIso8601String(),
     });
@@ -845,7 +881,9 @@ class MushroomsRepository {
     required bool isSoloJob,
     required bool isActive,
     String? color,
+    String? department,
   }) async {
+    final deptVal = department?.trim();
     await (_db.update(_db.mushroomJobTypes)..where((t) => t.id.equals(id))).write(
       MushroomJobTypesCompanion(
         name: Value(name.trim()),
@@ -853,6 +891,9 @@ class MushroomsRepository {
         isSoloJob: Value(isSoloJob),
         isActive: Value(isActive),
         color: color != null ? Value(color) : const Value.absent(),
+        department: (deptVal != null && deptVal.isNotEmpty)
+            ? Value(deptVal)
+            : const Value.absent(),
       ),
     );
     if (color != null && color.isNotEmpty) {
@@ -864,6 +905,7 @@ class MushroomsRepository {
       'plan_minutes': planMinutes,
       'is_solo_job': isSoloJob,
       'is_active': isActive,
+      if (deptVal != null && deptVal.isNotEmpty) 'department': deptVal,
       if (color != null) 'color': color,
     });
   }
@@ -1711,6 +1753,12 @@ class MushroomsRepository {
     await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).write(
       const MushroomJobsCompanion(alarmTriggered: Value(true)),
     );
+    try {
+      await SyncService().queueMutation('mushroom_jobs', 'update', {
+        'id': jobId,
+        'alarm_triggered': true,
+      });
+    } catch (_) {}
   }
 
   Future<void> checkSoloJobsAlarms() async {
@@ -1781,7 +1829,12 @@ class MushroomsRepository {
                 (tbl.status.equals('in_progress') | tbl.status.equals('inprog')) &
                 tbl.alarmTriggered.equals(true)))
           .get();
-      return activeAlarms.isNotEmpty;
+      if (activeAlarms.isNotEmpty) return true;
+
+      final timedOutRooms = await (_db.select(_db.growRooms)
+            ..where((tbl) => tbl.currentStage.equals('alone_timeout') & tbl.status.equals('active')))
+          .get();
+      return timedOutRooms.isNotEmpty;
     } catch (_) {
       return false;
     }
@@ -2000,9 +2053,38 @@ class MushroomsRepository {
   Future<List<Map<String, dynamic>>> getActiveTriggeredSoloJobs() async {
     try {
       final query = _db.select(_db.mushroomJobs)
-        ..where((tbl) => tbl.isSoloJob.equals(true) & tbl.status.equals('in_progress') & tbl.alarmTriggered.equals(true));
+        ..where((tbl) =>
+            (tbl.isSoloJob.equals(true) | tbl.jobType.equals('alone_worker')) &
+            (tbl.status.equals('in_progress') | tbl.status.equals('inprog')) &
+            tbl.alarmTriggered.equals(true));
       final jobs = await query.get();
-      return jobs.map((j) => {'id': j.id, 'roomId': j.roomId}).toList();
+
+      final results = <Map<String, dynamic>>[];
+      for (final j in jobs) {
+        String roomName = '';
+        if (j.roomId.isNotEmpty) {
+          final room = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(j.roomId))).getSingleOrNull();
+          if (room != null) {
+            roomName = room.name;
+          }
+        }
+        results.add({
+          'id': j.id,
+          'roomId': j.roomId,
+          'roomName': roomName.isNotEmpty ? roomName : 'Room',
+          'assignee': j.assignee ?? 'Solo Worker',
+          'time_limit_minutes': j.timeLimitMinutes ?? 45,
+          'job': {
+            'id': j.id,
+            'name': j.name,
+            'assignee': j.assignee ?? 'Solo Worker',
+            'time_limit_minutes': j.timeLimitMinutes ?? 45,
+            'job_type': j.jobType,
+            'started_at': j.startedAt?.toIso8601String(),
+          },
+        });
+      }
+      return results;
     } catch (_) {
       return [];
     }
@@ -2024,6 +2106,26 @@ class MushroomsRepository {
         alarmTriggered: const Value(false),
       ),
     );
+
+    // Reset room stage back to alone_worker if it was alone_timeout
+    final room = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).getSingleOrNull();
+    if (room != null && room.currentStage == 'alone_timeout') {
+      await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+        GrowRoomsCompanion(
+          currentStage: const Value('alone_worker'),
+          updatedAt: Value(now),
+        ),
+      );
+      try {
+        await SyncService().queueMutation('grow_rooms', 'update', {
+          'id': job.roomId,
+          if (room.name.trim().isNotEmpty) 'name': room.name.trim(),
+          'status': room.status,
+          'current_stage': 'alone_worker',
+          'updated_at': now.toIso8601String(),
+        });
+      } catch (_) {}
+    }
 
     try {
       await SyncService().queueMutation('mushroom_jobs', 'update', {

@@ -27,6 +27,10 @@ TABLE_ALIASES = {
     "safety_logs": "mushroom_safety_checkin_logs",
 }
 
+BOOLEAN_COLS = {
+    "is_solo_job", "auto_start_on_job_begin", "is_seed", "is_active", "is_custom"
+}
+
 
 class ReadModelProjector:
     """
@@ -106,7 +110,10 @@ class ReadModelProjector:
             insert_payload: Dict[str, Any] = {}
             for col in cols:
                 if col in data:
-                    insert_payload[col] = data[col]
+                    val = data[col]
+                    if col in BOOLEAN_COLS and val is not None:
+                        val = bool(val) if val not in ("0", 0, "false", "False", False) else False
+                    insert_payload[col] = val
 
             # Bổ sung audit columns nếu bảng hỗ trợ
             if "tenant_id" in cols and "tenant_id" not in insert_payload:
@@ -222,6 +229,8 @@ class ReadModelProjector:
         for key, val in data.items():
             if key in EXPLICIT_COLS or key not in cols:
                 continue
+            if key in BOOLEAN_COLS and val is not None:
+                val = bool(val) if val not in ("0", 0, "false", "False", False) else False
             # Format JSON/Dict if column is jsonb/text
             if isinstance(val, (dict, list)):
                 val = json.dumps(val)
