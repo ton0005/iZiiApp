@@ -2080,11 +2080,15 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       if (_leadStatusFilter == 'assigned' &&
           (isUnassigned ||
               j.status == 'completed' ||
-              j.status == 'in_progress')) return false;
-      if (_leadStatusFilter == 'in_progress' && j.status != 'in_progress')
+              j.status == 'in_progress')) {
         return false;
-      if (_leadStatusFilter == 'completed' && j.status != 'completed')
+      }
+      if (_leadStatusFilter == 'in_progress' && j.status != 'in_progress') {
         return false;
+      }
+      if (_leadStatusFilter == 'completed' && j.status != 'completed') {
+        return false;
+      }
       if (_leadRoomFilter != 'all' && j.roomId != _leadRoomFilter) return false;
       return true;
     }).toList();

@@ -62,8 +62,8 @@ class ChatRepository {
 
     // Fallback: If not found in users table yet, create a placeholder user from companionUserId
     final fallbackUser = User(
-      id: companionUserId!,
-      name: companionUserId!,
+      id: companionUserId,
+      name: companionUserId,
       type: 'both',
       kycStatus: 'verified',
       createdAt: DateTime.now(),

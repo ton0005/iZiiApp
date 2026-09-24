@@ -215,7 +215,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
 
               const Text(
                 'iZii-VZKP Zero-Knowledge Security Portal',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: primaryColor,

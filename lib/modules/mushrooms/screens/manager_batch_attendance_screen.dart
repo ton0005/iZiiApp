@@ -23,14 +23,14 @@ class _ManagerBatchAttendanceScreenState
   bool _isLoading = true;
   DateTime _selectedDate = DateTime.now();
   DateTime? _customEffectiveTime; // null = use real-time now()
-  bool _useCustomTime = false;
+  final bool _useCustomTime = false;
 
   List<EmployeeAttendanceRecord> _allRecords = [];
   final Set<String> _selectedEmpIds = {};
 
   // Filter state
   String _searchQuery = '';
-  String _selectedDepartment = 'ALL';
+  final String _selectedDepartment = 'ALL';
   String _selectedTeam = 'ALL';
   AttendanceWorkState? _selectedStateFilter; // null = all
 

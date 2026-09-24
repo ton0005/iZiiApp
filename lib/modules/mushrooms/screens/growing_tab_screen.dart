@@ -1329,7 +1329,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
           BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
       child: Text(name,
           style:
-              TextStyle(color: fg, fontSize: 9, fontWeight: FontWeight.bold)),
+              const TextStyle(color: fg, fontSize: 9, fontWeight: FontWeight.bold)),
     );
   }
 

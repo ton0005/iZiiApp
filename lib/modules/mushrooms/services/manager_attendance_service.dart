@@ -145,8 +145,8 @@ class ManagerAttendanceService {
       DateTime? checkIn = ts?.checkInTime;
       DateTime? checkOut = ts?.checkOutTime;
       DateTime? breakStart;
-      int breakMinutes = ts?.totalBreakTakenMinutes ?? 0;
-      int paidMin = ts?.paidMinutes ?? 0;
+      final int breakMinutes = ts?.totalBreakTakenMinutes ?? 0;
+      final int paidMin = ts?.paidMinutes ?? 0;
 
       // Tìm sự kiện gần nhất
       if (empEvents.isNotEmpty) {
