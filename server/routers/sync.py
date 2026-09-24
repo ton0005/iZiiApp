@@ -208,7 +208,11 @@ def _filter_valid_mutations(
         # B. Kiểm tra Alone Worker
         if (
             m.table in ("mushroom_jobs", "jobs")
-            and str(m.data.get("job_type", "")).lower() == "alone_worker"
+            and (
+                str(m.data.get("job_type", "")).lower() == "alone_worker"
+                or m.data.get("is_solo_job") is True
+                or m.data.get("isSoloJob") is True
+            )
             and str(m.operation).lower() in ("insert", "create")
         ):
             assignee = _job_assignee(m.data)
@@ -220,26 +224,35 @@ def _filter_valid_mutations(
                         if prior_m.table in ("mushroom_attendance_events", "attendance_events"):
                             p_data = prior_m.data or {}
                             p_emp = str(p_data.get("employee_id") or p_data.get("employeeId") or "").strip()
+                            p_name = str(p_data.get("employee_name") or p_data.get("employeeName") or "").strip()
                             p_type = str(p_data.get("event_type") or p_data.get("eventType") or "").upper()
-                            if p_emp and (p_emp.casefold() in assignee.casefold() or assignee.casefold() in p_emp.casefold()):
-                                if p_type in ("CHECK_IN", "BREAK_END"):
-                                    session = {
-                                        "id": f"batch_inflight_{p_emp}",
-                                        "user_id": p_emp,
-                                        "user_name": assignee,
-                                        "method": "manager_batch_attendance_inflight",
-                                        "started_at": str(p_data.get("timestamp") or now),
-                                    }
-                                    break
+                            is_prior_match = (
+                                (p_emp and (p_emp.casefold() == assignee.casefold() or (len(p_emp) >= 2 and p_emp.casefold() in assignee.casefold())))
+                                or (p_name and (p_name.casefold() == assignee.casefold() or (len(p_name) >= 3 and len(assignee) >= 3 and (p_name.casefold() in assignee.casefold() or assignee.casefold() in p_name.casefold()))))
+                            )
+                            if is_prior_match and p_type in ("CHECK_IN", "BREAK_END"):
+                                session = {
+                                    "id": f"batch_inflight_{p_emp}",
+                                    "user_id": p_emp,
+                                    "user_name": p_name or assignee,
+                                    "method": "manager_batch_attendance_inflight",
+                                    "started_at": str(p_data.get("timestamp") or now),
+                                }
+                                break
                         elif prior_m.table in ("mushroom_daily_timesheets", "daily_timesheets"):
                             p_data = prior_m.data or {}
                             p_emp = str(p_data.get("employee_id") or p_data.get("employeeId") or "").strip()
-                            if p_emp and (p_emp.casefold() in assignee.casefold() or assignee.casefold() in p_emp.casefold()):
+                            p_name = str(p_data.get("employee_name") or p_data.get("employeeName") or "").strip()
+                            is_prior_match = (
+                                (p_emp and (p_emp.casefold() == assignee.casefold() or (len(p_emp) >= 2 and p_emp.casefold() in assignee.casefold())))
+                                or (p_name and (p_name.casefold() == assignee.casefold() or (len(p_name) >= 3 and len(assignee) >= 3 and (p_name.casefold() in assignee.casefold() or assignee.casefold() in p_name.casefold()))))
+                            )
+                            if is_prior_match:
                                 if p_data.get("check_in_time") or p_data.get("checkInTime"):
                                     session = {
                                         "id": f"batch_ts_inflight_{p_emp}",
                                         "user_id": p_emp,
-                                        "user_name": assignee,
+                                        "user_name": p_name or assignee,
                                         "method": "manager_batch_attendance_inflight",
                                         "started_at": now,
                                     }

@@ -178,6 +178,70 @@ class TestManagerBatchAttendance(unittest.TestCase):
             self.assertEqual(len(rejected), 1)
             self.assertEqual(rejected[0]["error"], "assignee_not_checked_in")
 
+    def test_get_active_session_by_clean_name_without_id(self):
+        """Khớp chính xác tên nhân viên thuần (không có mã trong ngoặc) qua employee_name."""
+        clean_name = f"Vinh Worker {uuid.uuid4().hex[:4]}"
+        now = datetime.now(timezone.utc)
+        check_in_str = (now - timedelta(hours=1)).isoformat()
+        date_str = now.strftime("%Y-%m-%d")
+
+        with open_connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO mushroom_daily_timesheets (
+                    id, employee_id, employee_name, plan_date, check_in_time, check_out_time,
+                    gross_worked_minutes, created_at, updated_at
+                ) VALUES (%s, %s, %s, %s, %s, NULL, 60, %s, %s)
+                """,
+                (f"ts_{self.emp_id}", self.emp_id, clean_name, date_str, check_in_str, check_in_str, check_in_str),
+            )
+            conn.commit()
+
+            # Tra cứu bằng TÊN THUẦN — không kèm mã nhân viên
+            session = get_active_session_for_person(conn, clean_name)
+            self.assertIsNotNone(session, "Phải tìm thấy phiên qua trường employee_name")
+            self.assertEqual(session["user_name"], clean_name)
+
+    def test_filter_valid_mutations_alone_worker_with_clean_name(self):
+        """Giao việc Alone Worker theo tên sạch (như dropdown UI) chấp thuận thành công."""
+        clean_name = f"Vinh Worker {uuid.uuid4().hex[:4]}"
+        now = datetime.now(timezone.utc)
+        check_in_str = (now - timedelta(hours=1)).isoformat()
+        date_str = now.strftime("%Y-%m-%d")
+
+        with open_connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO mushroom_daily_timesheets (
+                    id, employee_id, employee_name, plan_date, check_in_time, check_out_time,
+                    gross_worked_minutes, created_at, updated_at
+                ) VALUES (%s, %s, %s, %s, %s, NULL, 60, %s, %s)
+                """,
+                (f"ts_{self.emp_id}", self.emp_id, clean_name, date_str, check_in_str, check_in_str, check_in_str),
+            )
+            conn.commit()
+
+            job_mutations = [
+                MutationModel(
+                    id=f"m_{uuid.uuid4().hex[:8]}",
+                    table="mushroom_jobs",
+                    operation="insert",
+                    data={
+                        "id": f"job_{uuid.uuid4().hex[:8]}",
+                        "name": "Solo Picking Room 01",
+                        "job_type": "alone_worker",
+                        "assigned_to": clean_name,
+                        "room_id": "room_01",
+                    },
+                )
+            ]
+
+            repo = make_sync_repo(conn)
+            valid, rejected = _filter_valid_mutations(conn, repo, job_mutations, None)
+            self.assertEqual(len(valid), 1, "Job Alone Worker phải được chấp thuận với tên nhân viên thuần")
+            self.assertEqual(len(rejected), 0)
+
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -1735,7 +1735,14 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final roomId = (room.isNotEmpty ? room['id'] : null) ??
         roomName.toLowerCase().replaceAll(' ', '_');
 
+    final effectiveRoom = room;
     if (jobType == 'alone_worker' || isSoloJob) {
+      if (effectiveRoom != null && effectiveRoom.isNotEmpty) {
+        setState(() {
+          effectiveRoom['current_stage'] = 'alone_worker';
+          effectiveRoom['status'] = 'active';
+        });
+      }
       // jobType may be a custom solo type from the Job Types catalogue
       // (e.g. "deep_clean_solo") — title still needs to read like a job
       // name, not the raw slug.

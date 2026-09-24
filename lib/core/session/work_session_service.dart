@@ -310,30 +310,200 @@ class WorkSessionService {
     }
   }
 
-  /// Người này có đang trong ca không — trên BẤT KỲ thiết bị nào.
+  /// Người này có đang trong ca không — trên BẤT KỲ thiết bị nào hoặc qua điểm danh theo nhóm.
   ///
   /// Khác với [getCurrent] (hỏi "ai đang cầm máy NÀY"). Dùng khi giao việc cho
   /// người khác: quản lý ngồi laptop cần biết công nhân đã điểm danh trên iPad
-  /// hay chưa.
+  /// hay qua Batch Attendance hay chưa.
   ///
   /// [identifier] nhận cả mã nhân viên lẫn tên, vì công việc lưu TÊN người
   /// được phân công chứ không lưu mã.
   ///
-  /// Mất mạng thì trả `true` — không chặn sản xuất vì Wi-Fi chập chờn. Server
-  /// vẫn kiểm độc lập ở `/sync/push`, đó mới là ràng buộc thật.
+  /// Ưu tiên 1: Tra cứu CSDL cục bộ (tức thời khi vừa điểm danh Batch trên máy này).
+  /// Ưu tiên 2: Tra cứu máy chủ qua `/sessions/active`.
   Future<bool> isPersonOnShift(String identifier) async {
-    final needle = identifier.trim().toLowerCase();
-    if (needle.isEmpty) return false;
+    final raw = identifier.trim();
+    if (raw.isEmpty) return false;
+
+    // 1. Kiểm tra CSDL cục bộ trước (khi Manager vừa batch checkin trên máy hoặc thiết bị offline)
+    try {
+      final db = AppDatabase();
+      final now = DateTime.now();
+      final startOfDay = DateTime(now.year, now.month, now.day);
+      final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+      // Tách mã trong ngoặc nếu có dạng "Tên (Mã)"
+      String cleanName = raw;
+      String? extractedId;
+      final match = RegExp(r'^(.*?)\s*\(([^)]+)\)$').firstMatch(raw);
+      if (match != null) {
+        cleanName = match.group(1)?.trim() ?? raw;
+        extractedId = match.group(2)?.trim();
+      }
+
+      final cleanLower = cleanName.toLowerCase();
+      final rawLower = raw.toLowerCase();
+      final extLower = extractedId?.toLowerCase();
+
+      // Tra cứu nhân sự trong CSDL cục bộ để lấy id và name chuẩn
+      final emps = await db.select(db.mushroomEmployees).get();
+      final matchedEmp = emps.cast<MushroomEmployee?>().firstWhere(
+        (e) {
+          if (e == null) return false;
+          final eName = e.name.trim().toLowerCase();
+          final eId = e.id.trim().toLowerCase();
+          return eName == cleanLower ||
+              eId == cleanLower ||
+              eName == rawLower ||
+              eId == rawLower ||
+              (extLower != null && (eId == extLower || eName == extLower));
+        },
+        orElse: () => null,
+      );
+
+      final empId = matchedEmp?.id ?? extractedId ?? raw;
+      final empName = matchedEmp?.name ?? cleanName;
+
+      // Kiểm tra bảng timesheet hôm nay: check_in_time có và check_out_time chưa có
+      final ts = await (db.select(db.mushroomDailyTimesheets)
+            ..where((t) =>
+                (t.employeeId.equals(empId) | t.employeeId.equals(empName)) &
+                t.planDate.isBiggerOrEqualValue(startOfDay) &
+                t.planDate.isSmallerOrEqualValue(endOfDay)))
+          .get();
+
+      if (ts.any((t) => t.checkInTime != null && t.checkOutTime == null)) {
+        return true;
+      }
+
+      // Kiểm tra sự kiện điểm danh gần nhất hôm nay
+      final events = await (db.select(db.mushroomAttendanceEvents)
+            ..where((e) =>
+                (e.employeeId.equals(empId) | e.employeeId.equals(empName)) &
+                e.timestamp.isBiggerOrEqualValue(startOfDay) &
+                e.timestamp.isSmallerOrEqualValue(endOfDay))
+            ..orderBy([(e) => d.OrderingTerm.desc(e.timestamp)])
+            ..limit(1))
+          .get();
+
+      if (events.isNotEmpty) {
+        final lastEv = events.first.eventType;
+        if (lastEv == 'CHECK_IN' || lastEv == 'BREAK_END') {
+          return true;
+        }
+      }
+    } catch (_) {}
+
+    // 2. Tra cứu danh sách active sessions trên máy chủ
     try {
       final sessions = await listActive();
+
+      String cleanName = raw;
+      String? extractedId;
+      final match = RegExp(r'^(.*?)\s*\(([^)]+)\)$').firstMatch(raw);
+      if (match != null) {
+        cleanName = match.group(1)?.trim() ?? raw;
+        extractedId = match.group(2)?.trim();
+      }
+
+      final needle = raw.toLowerCase();
+      final cleanLower = cleanName.toLowerCase();
+      final extLower = extractedId?.toLowerCase();
+
       return sessions.any((s) {
         final id = (s['user_id'] ?? '').toString().trim().toLowerCase();
         final name = (s['user_name'] ?? '').toString().trim().toLowerCase();
-        return id == needle || name == needle;
+        if (id.isEmpty && name.isEmpty) return false;
+
+        final idMatch = id.isNotEmpty && (
+          id == needle ||
+          id == cleanLower ||
+          (extLower != null && id == extLower)
+        );
+        final nameMatch = name.isNotEmpty && (
+          name == needle ||
+          name == cleanLower ||
+          (extLower != null && name == extLower) ||
+          (cleanLower.isNotEmpty && cleanLower.length >= 3 && name.length >= 3 && (name.contains(cleanLower) || cleanLower.contains(name)))
+        );
+        return idMatch || nameMatch;
       });
     } catch (_) {
-      return true;
+      // Khi không tra cứu được server và CSDL cục bộ cũng không xác nhận:
+      // Không cho phép bỏ qua kiểm tra an toàn Alone Worker.
+      return false;
     }
+  }
+
+  /// Lấy tập hợp tất cả định danh (id, name dạng lowercase) của các nhân viên đang trong ca (Checked In).
+  /// Kết hợp cả CSDL cục bộ (Daily Timesheets, Attendance Events) và máy chủ (/sessions/active).
+  Future<Set<String>> getCheckedInIdentifiers() async {
+    final Set<String> checkedIn = {};
+
+    // 1. CSDL cục bộ
+    try {
+      final db = AppDatabase();
+      final now = DateTime.now();
+      final startOfDay = DateTime(now.year, now.month, now.day);
+      final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+      // Timesheet hôm nay đã check-in và chưa check-out
+      final ts = await (db.select(db.mushroomDailyTimesheets)
+            ..where((t) =>
+                t.planDate.isBiggerOrEqualValue(startOfDay) &
+                t.planDate.isSmallerOrEqualValue(endOfDay)))
+          .get();
+
+      for (final t in ts) {
+        if (t.checkInTime != null && t.checkOutTime == null) {
+          final id = t.employeeId.trim().toLowerCase();
+          if (id.isNotEmpty) checkedIn.add(id);
+        }
+      }
+
+      // Sự kiện điểm danh hôm nay
+      final events = await (db.select(db.mushroomAttendanceEvents)
+            ..where((e) =>
+                e.timestamp.isBiggerOrEqualValue(startOfDay) &
+                e.timestamp.isSmallerOrEqualValue(endOfDay))
+            ..orderBy([(e) => d.OrderingTerm.desc(e.timestamp)]))
+          .get();
+
+      final seen = <String>{};
+      for (final ev in events) {
+        final empId = ev.employeeId.trim().toLowerCase();
+        if (seen.add(empId)) {
+          if (ev.eventType == 'CHECK_IN' || ev.eventType == 'BREAK_END') {
+            if (empId.isNotEmpty) checkedIn.add(empId);
+          }
+        }
+      }
+
+      // Đối chiếu nhân sự để nạp cả name lẫn id
+      final emps = await db.select(db.mushroomEmployees).get();
+      for (final emp in emps) {
+        final idLower = emp.id.trim().toLowerCase();
+        final nameLower = emp.name.trim().toLowerCase();
+        if (checkedIn.contains(idLower) && nameLower.isNotEmpty) {
+          checkedIn.add(nameLower);
+        } else if (checkedIn.contains(nameLower) && idLower.isNotEmpty) {
+          checkedIn.add(idLower);
+        }
+      }
+    } catch (_) {}
+
+    // 2. Tra cứu máy chủ qua /sessions/active
+    try {
+      final sessions = await listActive();
+      for (final s in sessions) {
+        final id = (s['user_id'] ?? '').toString().trim().toLowerCase();
+        final name = (s['user_name'] ?? '').toString().trim().toLowerCase();
+        if (id.isNotEmpty) checkedIn.add(id);
+        if (name.isNotEmpty) checkedIn.add(name);
+      }
+    } catch (_) {}
+
+    return checkedIn;
   }
 
   /// Nhân viên nào đã được đặt PIN — để màn hình biết có hiện ô nhập PIN không.

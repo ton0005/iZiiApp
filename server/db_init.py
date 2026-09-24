@@ -396,6 +396,7 @@ def init_db():
     CREATE TABLE IF NOT EXISTS mushroom_attendance_events (
         id TEXT PRIMARY KEY,
         employee_id TEXT NOT NULL,
+        employee_name TEXT,
         plan_id TEXT,
         event_type TEXT NOT NULL,
         timestamp TEXT NOT NULL,
@@ -421,6 +422,7 @@ def init_db():
     CREATE TABLE IF NOT EXISTS mushroom_daily_timesheets (
         id TEXT PRIMARY KEY,
         employee_id TEXT NOT NULL,
+        employee_name TEXT,
         plan_date TEXT NOT NULL,
         check_in_time TEXT,
         check_out_time TEXT,

@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import 'package:izii_app/core/database/app_database.dart';
 import 'package:izii_app/core/sync/sync_service.dart';
 import 'package:izii_app/modules/mushrooms/repository.dart';
+import 'package:izii_app/core/session/work_session_service.dart';
 import 'employee_service.dart';
 
 abstract class JobListService {
@@ -338,6 +339,10 @@ class JobListServiceImpl implements JobListService {
     final hasPerm = await _employeeService.hasPermission(currentEmpId, 'createJob');
     if (!hasPerm) {
       throw Exception('Nhân viên không có quyền tạo công việc.');
+    }
+    final onShift = await WorkSessionService().isPersonOnShift(assignee);
+    if (!onShift) {
+      throw Exception('Nhân viên "$assignee" chưa điểm danh đầu ca. Không thể giao việc Làm việc một mình.');
     }
     await _repository.addSpecialSoloJob(
       roomId,

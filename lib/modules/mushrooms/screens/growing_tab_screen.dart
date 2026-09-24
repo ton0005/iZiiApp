@@ -940,26 +940,29 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
         : [];
     final activeSoloJob = jobs.firstWhere(
       (j) =>
-          j['job_type'] == 'alone_worker' &&
+          (j['job_type'] == 'alone_worker' || j['is_solo_job'] == true) &&
           (j['status'] == 'in_progress' || j['status'] == 'inprog'),
       orElse: () => {},
     );
 
-    final bool isAloneWorker = stageIsAlone || stageIsTimeout;
+    final bool hasActiveSoloJob = activeSoloJob.isNotEmpty;
+    final bool isAloneWorker = stageIsAlone || stageIsTimeout || hasActiveSoloJob;
     bool isSoloTimedOut = stageIsTimeout;
     String displayStage = stage;
 
-    if (activeSoloJob.isNotEmpty && isAloneWorker) {
+    if (hasActiveSoloJob) {
       displayStage = 'alone_worker';
       final startedAtStr =
           activeSoloJob['started_at'] ?? activeSoloJob['scheduled_at'];
       if (startedAtStr != null) {
-        final startedAt = DateTime.parse(startedAtStr.toString());
-        final limitMins = (activeSoloJob['time_limit_minutes'] ?? 45) as int;
-        final deadline = startedAt.add(Duration(minutes: limitMins));
-        if (DateTime.now().isAfter(deadline)) {
-          isSoloTimedOut = true;
-          displayStage = 'alone_timeout';
+        final startedAt = DateTime.tryParse(startedAtStr.toString());
+        if (startedAt != null) {
+          final limitMins = (activeSoloJob['time_limit_minutes'] ?? 45) as int;
+          final deadline = startedAt.add(Duration(minutes: limitMins));
+          if (DateTime.now().isAfter(deadline)) {
+            isSoloTimedOut = true;
+            displayStage = 'alone_timeout';
+          }
         }
       }
     } else if (stageIsAlone || stageIsTimeout) {

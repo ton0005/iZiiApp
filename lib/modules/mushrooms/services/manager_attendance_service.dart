@@ -1,9 +1,9 @@
-// lib/modules/mushrooms/services/manager_attendance_service.dart
-
-import 'dart:convert';
+import 'dart:async';
 import 'package:drift/drift.dart' as d;
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/database/app_database.dart';
+import '../../../core/sync/sync_service.dart';
 import '../repository.dart';
 
 enum AttendanceWorkState {
@@ -214,9 +214,14 @@ class ManagerAttendanceService {
 
     for (var empId in employeeIds) {
       try {
+        final emp = await (_db.select(_db.mushroomEmployees)
+              ..where((e) => e.id.equals(empId)))
+            .getSingleOrNull();
+        final empName = emp?.name ?? empId;
+
         final evId = 'EV_IN_${empId}_${now.millisecondsSinceEpoch}_${const Uuid().v4().substring(0, 5)}';
 
-        // 1. Ghi nhận sự kiện CHECK_IN
+        // 1. Ghi nhận sự kiện CHECK_IN cục bộ
         await _db.into(_db.mushroomAttendanceEvents).insert(
               MushroomAttendanceEventsCompanion.insert(
                 id: evId,
@@ -228,6 +233,18 @@ class ManagerAttendanceService {
               ),
             );
 
+        // Queue mutation cho attendance event
+        await SyncService().queueMutation('mushroom_attendance_events', 'insert', {
+          'id': evId,
+          'employee_id': empId,
+          'employee_name': empName,
+          'event_type': 'CHECK_IN',
+          'timestamp': now.toIso8601String(),
+          'source': 'MANAGER_BATCH',
+          'location': note ?? 'Batch Check-in by Manager',
+          'created_at': now.toIso8601String(),
+        });
+
         // 2. Kiểm tra/Tạo Timesheet tương ứng
         final existingTs = await (_db.select(_db.mushroomDailyTimesheets)
               ..where((t) =>
@@ -237,10 +254,6 @@ class ManagerAttendanceService {
             .getSingleOrNull();
 
         if (existingTs == null) {
-          final emp = await (_db.select(_db.mushroomEmployees)
-                ..where((e) => e.id.equals(empId)))
-              .getSingleOrNull();
-
           final tsId = 'TS_${empId}_${now.millisecondsSinceEpoch}';
           await _db.into(_db.mushroomDailyTimesheets).insert(
                 MushroomDailyTimesheetsCompanion.insert(
@@ -252,12 +265,32 @@ class ManagerAttendanceService {
                   status: const d.Value('normal'),
                 ),
               );
+
+          await SyncService().queueMutation('mushroom_daily_timesheets', 'insert', {
+            'id': tsId,
+            'employee_id': empId,
+            'employee_name': empName,
+            'plan_date': DateFormat('yyyy-MM-dd').format(today),
+            'check_in_time': now.toIso8601String(),
+            'assigned_team_color': emp?.pickerTeamColor ?? 'PURPLE',
+            'status': 'normal',
+            'created_at': now.toIso8601String(),
+            'updated_at': now.toIso8601String(),
+          });
         } else if (existingTs.checkInTime == null) {
           await (_db.update(_db.mushroomDailyTimesheets)
                 ..where((t) => t.id.equals(existingTs.id)))
               .write(MushroomDailyTimesheetsCompanion(
                 checkInTime: d.Value(now),
               ));
+
+          await SyncService().queueMutation('mushroom_daily_timesheets', 'update', {
+            'id': existingTs.id,
+            'employee_id': empId,
+            'employee_name': empName,
+            'check_in_time': now.toIso8601String(),
+            'updated_at': now.toIso8601String(),
+          });
         }
 
         count++;
@@ -265,6 +298,10 @@ class ManagerAttendanceService {
         print('Error batch check-in for $empId: $e');
       }
     }
+
+    try {
+      unawaited(SyncService().flushOutbox());
+    } catch (_) {}
 
     final result = BatchActionResult(
       totalRequested: employeeIds.length,
@@ -288,6 +325,11 @@ class ManagerAttendanceService {
 
     for (var empId in employeeIds) {
       try {
+        final emp = await (_db.select(_db.mushroomEmployees)
+              ..where((e) => e.id.equals(empId)))
+            .getSingleOrNull();
+        final empName = emp?.name ?? empId;
+
         final evId = 'EV_BST_${empId}_${now.millisecondsSinceEpoch}_${const Uuid().v4().substring(0, 5)}';
 
         await _db.into(_db.mushroomAttendanceEvents).insert(
@@ -300,11 +342,27 @@ class ManagerAttendanceService {
                 location: d.Value(note ?? 'Batch Break Start by Manager'),
               ),
             );
+
+        await SyncService().queueMutation('mushroom_attendance_events', 'insert', {
+          'id': evId,
+          'employee_id': empId,
+          'employee_name': empName,
+          'event_type': 'BREAK_START',
+          'timestamp': now.toIso8601String(),
+          'source': 'MANAGER_BATCH',
+          'location': note ?? 'Batch Break Start by Manager',
+          'created_at': now.toIso8601String(),
+        });
+
         count++;
       } catch (e) {
         print('Error batch start break for $empId: $e');
       }
     }
+
+    try {
+      unawaited(SyncService().flushOutbox());
+    } catch (_) {}
 
     final result = BatchActionResult(
       totalRequested: employeeIds.length,
@@ -329,6 +387,11 @@ class ManagerAttendanceService {
 
     for (var empId in employeeIds) {
       try {
+        final emp = await (_db.select(_db.mushroomEmployees)
+              ..where((e) => e.id.equals(empId)))
+            .getSingleOrNull();
+        final empName = emp?.name ?? empId;
+
         // Tìm sự kiện BREAK_START gần nhất hôm nay
         final lastBreakStart = await (_db.select(_db.mushroomAttendanceEvents)
               ..where((e) =>
@@ -360,6 +423,17 @@ class ManagerAttendanceService {
               ),
             );
 
+        await SyncService().queueMutation('mushroom_attendance_events', 'insert', {
+          'id': evId,
+          'employee_id': empId,
+          'employee_name': empName,
+          'event_type': 'BREAK_END',
+          'timestamp': now.toIso8601String(),
+          'source': 'MANAGER_BATCH',
+          'location': note ?? 'Batch Break End by Manager',
+          'created_at': now.toIso8601String(),
+        });
+
         // Cộng dồn vào Timesheet
         final existingTs = await (_db.select(_db.mushroomDailyTimesheets)
               ..where((t) =>
@@ -375,6 +449,14 @@ class ManagerAttendanceService {
               .write(MushroomDailyTimesheetsCompanion(
                 totalBreakTakenMinutes: d.Value(newBreakTotal),
               ));
+
+          await SyncService().queueMutation('mushroom_daily_timesheets', 'update', {
+            'id': existingTs.id,
+            'employee_id': empId,
+            'employee_name': empName,
+            'total_break_taken_minutes': newBreakTotal,
+            'updated_at': now.toIso8601String(),
+          });
         }
 
         count++;
@@ -382,6 +464,10 @@ class ManagerAttendanceService {
         print('Error batch end break for $empId: $e');
       }
     }
+
+    try {
+      unawaited(SyncService().flushOutbox());
+    } catch (_) {}
 
     final result = BatchActionResult(
       totalRequested: employeeIds.length,
@@ -406,6 +492,11 @@ class ManagerAttendanceService {
 
     for (var empId in employeeIds) {
       try {
+        final emp = await (_db.select(_db.mushroomEmployees)
+              ..where((e) => e.id.equals(empId)))
+            .getSingleOrNull();
+        final empName = emp?.name ?? empId;
+
         final evId = 'EV_OUT_${empId}_${now.millisecondsSinceEpoch}_${const Uuid().v4().substring(0, 5)}';
 
         // 1. Ghi nhận sự kiện CHECK_OUT
@@ -419,6 +510,17 @@ class ManagerAttendanceService {
                 location: d.Value(note ?? 'Batch Check-out by Manager'),
               ),
             );
+
+        await SyncService().queueMutation('mushroom_attendance_events', 'insert', {
+          'id': evId,
+          'employee_id': empId,
+          'employee_name': empName,
+          'event_type': 'CHECK_OUT',
+          'timestamp': now.toIso8601String(),
+          'source': 'MANAGER_BATCH',
+          'location': note ?? 'Batch Check-out by Manager',
+          'created_at': now.toIso8601String(),
+        });
 
         // 2. Chốt Timesheet
         final existingTs = await (_db.select(_db.mushroomDailyTimesheets)
@@ -446,6 +548,19 @@ class ManagerAttendanceService {
                 paidMinutes: d.Value(paidMinutes),
                 status: d.Value(extraBreak > 0 ? 'needs_review' : 'normal'),
               ));
+
+          await SyncService().queueMutation('mushroom_daily_timesheets', 'update', {
+            'id': existingTs.id,
+            'employee_id': empId,
+            'employee_name': empName,
+            'check_out_time': now.toIso8601String(),
+            'gross_worked_minutes': gross,
+            'standard_break_allowed_minutes': stdAllowed,
+            'extra_break_minutes': extraBreak,
+            'paid_minutes': paidMinutes,
+            'status': extraBreak > 0 ? 'needs_review' : 'normal',
+            'updated_at': now.toIso8601String(),
+          });
         } else {
           final tsId = 'TS_${empId}_${now.millisecondsSinceEpoch}';
           await _db.into(_db.mushroomDailyTimesheets).insert(
@@ -462,6 +577,22 @@ class ManagerAttendanceService {
                   status: d.Value(extraBreak > 0 ? 'needs_review' : 'normal'),
                 ),
               );
+
+          await SyncService().queueMutation('mushroom_daily_timesheets', 'insert', {
+            'id': tsId,
+            'employee_id': empId,
+            'employee_name': empName,
+            'plan_date': DateFormat('yyyy-MM-dd').format(today),
+            'check_in_time': checkIn.toIso8601String(),
+            'check_out_time': now.toIso8601String(),
+            'gross_worked_minutes': gross,
+            'standard_break_allowed_minutes': stdAllowed,
+            'extra_break_minutes': extraBreak,
+            'paid_minutes': paidMinutes,
+            'status': extraBreak > 0 ? 'needs_review' : 'normal',
+            'created_at': now.toIso8601String(),
+            'updated_at': now.toIso8601String(),
+          });
         }
 
         count++;
@@ -469,6 +600,10 @@ class ManagerAttendanceService {
         print('Error batch check-out for $empId: $e');
       }
     }
+
+    try {
+      unawaited(SyncService().flushOutbox());
+    } catch (_) {}
 
     final result = BatchActionResult(
       totalRequested: employeeIds.length,

@@ -1168,7 +1168,10 @@ class MushroomsRepository {
     String jobType = 'alone_worker',
   }) async {
     final jobId = const Uuid().v4();
-    final room = await (_db.select(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).getSingleOrNull();
+    final room = await (_db.select(_db.growRooms)
+          ..where((tbl) => tbl.id.equals(roomId) | tbl.name.equals(roomId)))
+        .getSingleOrNull();
+    final effectiveRoomId = room?.id ?? roomId;
     final roomName = room?.name ?? 'Room';
     
     // Create new Task in Project & Task module automatically as part of Odoo integration
@@ -1214,7 +1217,7 @@ class MushroomsRepository {
 
     await _db.into(_db.mushroomJobs).insert(MushroomJobsCompanion.insert(
       id: jobId,
-      roomId: roomId,
+      roomId: effectiveRoomId,
       jobType: jobType,
       name: title,
       status: const Value('in_progress'),
@@ -1232,7 +1235,7 @@ class MushroomsRepository {
 
     await SyncService().queueMutation('mushroom_jobs', 'insert', {
       'id': jobId,
-      'room_id': roomId,
+      'room_id': effectiveRoomId,
       'job_type': jobType,
       'name': title,
       'status': 'in_progress',
@@ -1297,7 +1300,12 @@ class MushroomsRepository {
     } catch (_) {}
 
     // Update room stage to alone_worker & active
-    await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(roomId))).write(
+    await (_db.update(_db.growRooms)
+          ..where((tbl) =>
+              tbl.id.equals(effectiveRoomId) |
+              tbl.id.equals(roomId) |
+              tbl.name.equals(roomName)))
+        .write(
       const GrowRoomsCompanion(
         status: Value('active'),
         currentStage: Value('alone_worker'),
@@ -1305,7 +1313,7 @@ class MushroomsRepository {
     );
 
     await SyncService().queueMutation('grow_rooms', 'update', {
-      'id': roomId,
+      'id': effectiveRoomId,
       if (roomName.isNotEmpty) 'name': roomName,
       'status': 'active',
       'current_stage': 'alone_worker',
@@ -1367,32 +1375,52 @@ class MushroomsRepository {
 
     // Update room stage if it's in_progress
     final roomName = await _getRoomNameById(job.roomId);
+    final room = await (_db.select(_db.growRooms)
+          ..where((tbl) => tbl.id.equals(job.roomId) | tbl.name.equals(job.roomId)))
+        .getSingleOrNull();
+    final effectiveRoomId = room?.id ?? job.roomId;
 
-    if (newStatus == 'in_progress' && !job.isSoloJob) {
-      await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+    if (newStatus == 'in_progress') {
+      final isSolo = job.isSoloJob || job.jobType == 'alone_worker';
+      final stageStr = isSolo ? 'alone_worker' : job.jobType;
+
+      await (_db.update(_db.growRooms)
+            ..where((tbl) =>
+                tbl.id.equals(effectiveRoomId) |
+                tbl.id.equals(job.roomId) |
+                (roomName != null ? tbl.name.equals(roomName) : const Constant(false))))
+          .write(
         GrowRoomsCompanion(
           status: const Value('active'),
-          currentStage: Value(job.jobType),
+          currentStage: Value(stageStr),
           updatedAt: Value(DateTime.now()),
         ),
       );
       // Queue GrowRoom update mutation
       await SyncService().queueMutation('grow_rooms', 'update', {
-        'id': job.roomId,
+        'id': effectiveRoomId,
         if (roomName != null) 'name': roomName,
         'status': 'active',
-        'current_stage': job.jobType,
+        'current_stage': stageStr,
         'updated_at': DateTime.now().toIso8601String(),
       });
     } else if (newStatus == 'completed' || newStatus == 'done' || newStatus == 'todo') {
       // Check if there are remaining in_progress jobs for this room
       final remainingInProgressJob = await (_db.select(_db.mushroomJobs)
-            ..where((tbl) => tbl.roomId.equals(job.roomId) & tbl.status.equals('in_progress')))
+            ..where((tbl) =>
+                (tbl.roomId.equals(effectiveRoomId) | tbl.roomId.equals(job.roomId)) &
+                tbl.status.equals('in_progress')))
           .getSingleOrNull();
 
       if (remainingInProgressJob != null) {
-        final stageStr = remainingInProgressJob.isSoloJob ? 'alone_worker' : remainingInProgressJob.jobType;
-        await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+        final isSolo = remainingInProgressJob.isSoloJob || remainingInProgressJob.jobType == 'alone_worker';
+        final stageStr = isSolo ? 'alone_worker' : remainingInProgressJob.jobType;
+        await (_db.update(_db.growRooms)
+              ..where((tbl) =>
+                  tbl.id.equals(effectiveRoomId) |
+                  tbl.id.equals(job.roomId) |
+                  (roomName != null ? tbl.name.equals(roomName) : const Constant(false))))
+            .write(
           GrowRoomsCompanion(
             status: const Value('active'),
             currentStage: Value(stageStr),
@@ -1400,7 +1428,7 @@ class MushroomsRepository {
           ),
         );
         await SyncService().queueMutation('grow_rooms', 'update', {
-          'id': job.roomId,
+          'id': effectiveRoomId,
           if (roomName != null) 'name': roomName,
           'status': 'active',
           'current_stage': stageStr,
@@ -1408,7 +1436,12 @@ class MushroomsRepository {
         });
       } else {
         // No remaining in_progress jobs -> Auto-reset room status to idle!
-        await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId))).write(
+        await (_db.update(_db.growRooms)
+              ..where((tbl) =>
+                  tbl.id.equals(effectiveRoomId) |
+                  tbl.id.equals(job.roomId) |
+                  (roomName != null ? tbl.name.equals(roomName) : const Constant(false))))
+            .write(
           GrowRoomsCompanion(
             status: const Value('idle'),
             currentStage: const Value('idle'),
@@ -1416,7 +1449,7 @@ class MushroomsRepository {
           ),
         );
         await SyncService().queueMutation('grow_rooms', 'update', {
-          'id': job.roomId,
+          'id': effectiveRoomId,
           if (roomName != null) 'name': roomName,
           'status': 'idle',
           'current_stage': 'idle',
@@ -1523,20 +1556,29 @@ class MushroomsRepository {
     return jobId;
   }
 
-  Future<void> assignJobToWorker(String jobId, String workerName) async {
+  Future<void> assignJobToWorker(String jobId, String workerName, {bool startImmediately = false}) async {
+    final status = startImmediately ? 'in_progress' : 'assigned';
+    final startedAtVal = startImmediately ? Value(DateTime.now()) : const Value<DateTime?>.absent();
+
     await (_db.update(_db.mushroomJobs)..where((tbl) => tbl.id.equals(jobId))).write(
       MushroomJobsCompanion(
         assignee: Value(workerName),
-        status: const Value('assigned'),
+        status: Value(status),
+        startedAt: startedAtVal,
         updatedAt: Value(DateTime.now()),
       ),
     );
     await SyncService().queueMutation('mushroom_jobs', 'update', {
       'id': jobId,
       'assignee': workerName,
-      'status': 'assigned',
+      'status': status,
+      if (startImmediately) 'started_at': DateTime.now().toIso8601String(),
       'updated_at': DateTime.now().toIso8601String(),
     });
+
+    if (startImmediately) {
+      await updateJobStatus(jobId, 'in_progress');
+    }
   }
 
   Future<void> unassignJob(String jobId) async {

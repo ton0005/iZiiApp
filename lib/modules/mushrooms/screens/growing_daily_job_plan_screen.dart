@@ -9,6 +9,7 @@ import '../repository.dart';
 import '../widgets/job_completion_review_dialog.dart';
 import '../services/daily_job_plan_pdf_service.dart';
 import '../services/plant_room_service.dart';
+import '../../../core/session/work_session_service.dart';
 
 class GrowingDailyJobPlanScreen extends StatefulWidget {
   final DateTime? initialDate;
@@ -33,6 +34,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   List<Map<String, dynamic>> _jobTypes = [];
   List<Map<String, dynamic>> _employees = [];
   List<Map<String, dynamic>> _departments = [];
+  Set<String> _checkedInEmployees = {};
 
   // Filter by Plant (M1, M2, all)
   String _selectedPlant = 'all'; // all, M1, M2
@@ -87,6 +89,11 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       final employees = await _repo.getEmployees();
       final departments = await _repo.getDepartments();
 
+      Set<String> checkedIn = {};
+      try {
+        checkedIn = await WorkSessionService().getCheckedInIdentifiers();
+      } catch (_) {}
+
       // Load jobs for selected day
       final startOfDay =
           DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
@@ -107,6 +114,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         _jobTypes = jobTypes;
         _employees = employees;
         _departments = departments;
+        _checkedInEmployees = checkedIn;
         _allJobs = allDbJobs;
         _isLoading = false;
       });
@@ -117,6 +125,20 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         SnackBar(content: Text('Error loading daily plan: $e')),
       );
     }
+  }
+
+  bool _isEmpCheckedIn(Map<String, dynamic> emp) {
+    final id = (emp['id'] ?? '').toString().trim().toLowerCase();
+    final name = (emp['name'] ?? '').toString().trim().toLowerCase();
+    if (id.isNotEmpty && _checkedInEmployees.contains(id)) return true;
+    if (name.isNotEmpty && _checkedInEmployees.contains(name)) return true;
+    for (final c in _checkedInEmployees) {
+      if (c.length >= 3) {
+        if (name.isNotEmpty && (c == name || c.contains(name) || name.contains(c))) return true;
+        if (id.isNotEmpty && (c == id || c.contains(id) || id.contains(c))) return true;
+      }
+    }
+    return false;
   }
 
   void _onDateChanged(DateTime newDate) {
@@ -983,8 +1005,19 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   //  MODAL: Sup/Lead Assign Worker
   // ══════════════════════════════════════════════════════════════════════════
   void _showAssignWorkerDialog(MushroomJob job) {
+    final isSolo = job.isSoloJob ||
+        job.jobType == 'alone_worker' ||
+        job.name.toLowerCase().contains('alone worker');
     String search = '';
-    String deptFilter = 'all';
+    String deptFilter = isSolo ? 'Growing' : 'all';
+    bool startJobImmediately = isSolo;
+
+    // Trigger an immediate background refresh of checked-in list in case of recent check-ins
+    WorkSessionService().getCheckedInIdentifiers().then((set) {
+      if (mounted) {
+        setState(() => _checkedInEmployees = set);
+      }
+    }).catchError((_) {});
 
     showModalBottomSheet(
       context: context,
@@ -1001,18 +1034,34 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
             final filteredEmps = _employees.where((e) {
               final name = (e['name'] as String? ?? '').toLowerCase();
               final dept = (e['department'] as String? ?? '').toLowerCase();
-              if (deptFilter != 'all' &&
-                  !dept.contains(deptFilter.toLowerCase())) {
-                return false;
+              final id = (e['id'] as String? ?? '').toLowerCase();
+
+              if (isSolo) {
+                // Must be in Growing department
+                if (!dept.contains('growing')) {
+                  return false;
+                }
+                // Must be currently checked in (on shift)
+                if (!_isEmpCheckedIn(e)) {
+                  return false;
+                }
+              } else {
+                if (deptFilter != 'all' &&
+                    !dept.contains(deptFilter.toLowerCase())) {
+                  return false;
+                }
               }
-              if (search.isNotEmpty && !name.contains(search.toLowerCase())) {
+
+              if (search.isNotEmpty &&
+                  !name.contains(search.toLowerCase()) &&
+                  !id.contains(search.toLowerCase())) {
                 return false;
               }
               return true;
             }).toList();
 
             return Container(
-              height: MediaQuery.of(ctx).size.height * 0.75,
+              height: MediaQuery.of(ctx).size.height * 0.8,
               decoration: BoxDecoration(
                 color: bg,
                 borderRadius:
@@ -1036,22 +1085,49 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Assign Worker to Job',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  color: ink)),
-                          Text(
-                            '${job.name} · Room: ${_getRoomName(job.roomId)}',
-                            style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF2A78D6)),
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text('Assign Worker to Job',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: ink)),
+                                if (isSolo) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 7, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF97316)
+                                          .withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(
+                                          color: const Color(0xFFF97316)
+                                              .withValues(alpha: 0.4)),
+                                    ),
+                                    child: const Text('ALONE WORKER',
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w800,
+                                            color: Color(0xFFF97316))),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${job.name} · Room: ${_getRoomName(job.roomId)}',
+                              style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF2A78D6)),
+                            ),
+                          ],
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close),
@@ -1059,7 +1135,40 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+
+                  // Alone Worker Safety Banner
+                  if (isSolo)
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF97316).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: const Color(0xFFF97316).withValues(alpha: 0.4)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.shield_outlined,
+                              color: Color(0xFFF97316), size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Quy chuẩn an toàn Alone Worker: Chỉ hiển thị nhân viên phòng ban Growing đã Check-in ca làm việc.',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? const Color(0xFFFDBA74)
+                                    : const Color(0xFFC2410C),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  const SizedBox(height: 8),
                   TextField(
                     decoration: InputDecoration(
                       hintText: 'Search employee by name...',
@@ -1074,38 +1183,132 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                     },
                   ),
                   const SizedBox(height: 8),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        ChoiceChip(
-                          label: const Text('All Depts'),
-                          selected: deptFilter == 'all',
-                          onSelected: (s) =>
-                              setSheetState(() => deptFilter = 'all'),
-                        ),
-                        const SizedBox(width: 6),
-                        ..._departments.map((d) {
-                          final dName = (d['name'] as String?) ?? '';
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 6),
-                            child: ChoiceChip(
-                              label: Text(dName),
-                              selected: deptFilter == dName,
-                              onSelected: (s) =>
-                                  setSheetState(() => deptFilter = dName),
+
+                  // Department selection or locked indicator
+                  if (isSolo)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2A78D6)
+                                  .withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                  color: const Color(0xFF2A78D6)
+                                      .withValues(alpha: 0.4)),
                             ),
-                          );
-                        }),
-                      ],
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.lock,
+                                    size: 13, color: Color(0xFF2A78D6)),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Department: Growing (Đã khóa)',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF2A78D6),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ChoiceChip(
+                            label: const Text('All Depts'),
+                            selected: deptFilter == 'all',
+                            onSelected: (s) =>
+                                setSheetState(() => deptFilter = 'all'),
+                          ),
+                          const SizedBox(width: 6),
+                          ..._departments.map((d) {
+                            final dName = (d['name'] as String?) ?? '';
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 6),
+                              child: ChoiceChip(
+                                label: Text(dName),
+                                selected: deptFilter == dName,
+                                onSelected: (s) =>
+                                    setSheetState(() => deptFilter = dName),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
                     ),
-                  ),
-                  const Divider(height: 20),
+
+                  // Start immediately toggle for Alone Worker
+                  if (isSolo)
+                    SwitchListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text(
+                        'Bắt đầu việc ngay & chuyển phòng sang màu Cam',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: const Text(
+                        'Kích hoạt trạng thái Alone Worker và đếm ngược an toàn',
+                        style: TextStyle(fontSize: 11),
+                      ),
+                      value: startJobImmediately,
+                      activeThumbColor: const Color(0xFFF97316),
+                      onChanged: (val) {
+                        setSheetState(() => startJobImmediately = val);
+                      },
+                    ),
+
+                  const Divider(height: 16),
                   Expanded(
                     child: filteredEmps.isEmpty
                         ? Center(
-                            child: Text('No employees match search.',
-                                style: TextStyle(color: ink2)),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    isSolo
+                                        ? Icons.no_accounts
+                                        : Icons.person_off,
+                                    size: 40,
+                                    color: ink2.withValues(alpha: 0.5),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    isSolo
+                                        ? 'Không có nhân viên phòng ban Growing nào đã Check-in ca làm việc.'
+                                        : 'No employees match search.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: ink2,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  if (isSolo) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Vui lòng yêu cầu nhân viên Check-in hoặc dùng tính năng Batch Team Attendance trước khi giao việc.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 12, color: ink2),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
                           )
                         : ListView.separated(
                             itemCount: filteredEmps.length,
@@ -1118,6 +1321,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                               final empDept =
                                   (emp['department'] as String?) ?? 'Staff';
                               final isCurrent = job.assignee == empName;
+                              final isEmpChecked = _isEmpCheckedIn(emp);
 
                               // Count current daily assigned jobs for this employee
                               final countToday = _allJobs
@@ -1144,9 +1348,43 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                         : ink,
                                   ),
                                 ),
-                                subtitle: Text(
-                                  '$empDept · $countToday job(s) today',
-                                  style: TextStyle(fontSize: 12, color: ink2),
+                                subtitle: Row(
+                                  children: [
+                                    Text(
+                                      '$empDept · $countToday job(s) today',
+                                      style: TextStyle(
+                                          fontSize: 12, color: ink2),
+                                    ),
+                                    if (isEmpChecked) ...[
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 1),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF10B981)
+                                              .withValues(alpha: 0.15),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: const Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.check_circle,
+                                                size: 11,
+                                                color: Color(0xFF10B981)),
+                                            SizedBox(width: 3),
+                                            Text(
+                                              'Checked In',
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Color(0xFF10B981)),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                                 trailing: isCurrent
                                     ? const Chip(
@@ -1155,17 +1393,23 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                       )
                                     : ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              const Color(0xFF2A78D6),
+                                          backgroundColor: isSolo
+                                              ? const Color(0xFFF97316)
+                                              : const Color(0xFF2A78D6),
                                           foregroundColor: Colors.white,
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 14, vertical: 8),
                                         ),
                                         onPressed: () async {
                                           Navigator.pop(ctx);
-                                          await _assignJob(job.id, empName);
+                                          await _assignJob(job.id, empName,
+                                              startImmediately: isSolo &&
+                                                  startJobImmediately);
                                         },
-                                        child: const Text('Select'),
+                                        child: Text(isSolo &&
+                                                startJobImmediately
+                                            ? 'Assign & Start'
+                                            : 'Select'),
                                       ),
                               );
                             },
@@ -1180,15 +1424,40 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
     );
   }
 
-  Future<void> _assignJob(String jobId, String workerName) async {
+  Future<void> _assignJob(String jobId, String workerName,
+      {bool startImmediately = false}) async {
+    final job = _allJobs.where((j) => j.id == jobId).firstOrNull;
+    final isSolo = job != null &&
+        (job.isSoloJob ||
+            job.jobType == 'alone_worker' ||
+            job.name.toLowerCase().contains('alone worker'));
+
+    if (isSolo) {
+      final onShift = await WorkSessionService().isPersonOnShift(workerName);
+      if (!onShift) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+                'Nhân viên "$workerName" chưa điểm danh đầu ca. Không thể giao việc Alone Worker.'),
+          ),
+        );
+        return;
+      }
+    }
+
     setState(() => _isLoading = true);
     try {
-      await _repo.assignJobToWorker(jobId, workerName);
+      await _repo.assignJobToWorker(jobId, workerName,
+          startImmediately: startImmediately);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: const Color(0xFF10B981),
-          content: Text('Assigned job to $workerName'),
+          content: Text(startImmediately
+              ? 'Đã giao việc & Bắt đầu Alone Worker cho $workerName (Phòng đã chuyển sang màu Cam)'
+              : 'Assigned job to $workerName'),
         ),
       );
       await _loadData();
@@ -1220,6 +1489,28 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
   }
 
   Future<void> _startJob(String jobId) async {
+    final job = _allJobs.where((j) => j.id == jobId).firstOrNull;
+    final isSolo = job != null &&
+        (job.isSoloJob ||
+            job.jobType == 'alone_worker' ||
+            job.name.toLowerCase().contains('alone worker'));
+
+    if (isSolo && job?.assignee != null && job!.assignee!.trim().isNotEmpty) {
+      final onShift =
+          await WorkSessionService().isPersonOnShift(job.assignee!);
+      if (!onShift) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+                'Nhân viên "${job.assignee}" chưa điểm danh đầu ca. Không thể bắt đầu Alone Worker Job.'),
+          ),
+        );
+        return;
+      }
+    }
+
     setState(() => _isLoading = true);
     try {
       await _repo.updateJobStatus(jobId, 'in_progress');
@@ -1913,6 +2204,38 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                         ),
                       ),
                     ),
+                    if (roomJobs.any((j) =>
+                        (j.isSoloJob ||
+                            j.jobType == 'alone_worker' ||
+                            j.name.toLowerCase().contains('alone worker')) &&
+                        j.status == 'in_progress')) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF97316).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                              color: const Color(0xFFF97316).withValues(alpha: 0.5)),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.shield, size: 12, color: Color(0xFFF97316)),
+                            SizedBox(width: 3),
+                            Text(
+                              'ALONE WORKER ACTIVE',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFFF97316),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
                 Text(
@@ -1935,8 +2258,11 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
 
   Widget _buildManagerJobItem(
       MushroomJob job, Color ink, Color ink2, Color border) {
+    final isSolo = job.isSoloJob ||
+        job.jobType == 'alone_worker' ||
+        job.name.toLowerCase().contains('alone worker');
     final jtInfo = _getJobTypeInfo(job.jobType);
-    final color = _colorFromHex(jtInfo?['color'] as String?);
+    final color = isSolo ? const Color(0xFFF97316) : _colorFromHex(jtInfo?['color'] as String?);
     final isUnassigned = job.assignee == null || job.assignee!.trim().isEmpty;
 
     return Container(
@@ -1971,19 +2297,21 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                           color: ink),
                     ),
                     const SizedBox(width: 8),
-                    if (job.isSoloJob)
+                    if (isSolo)
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.amber.withValues(alpha: 0.2),
+                          color: const Color(0xFFF97316).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                              color: const Color(0xFFF97316).withValues(alpha: 0.5)),
                         ),
-                        child: const Text('SOLO',
+                        child: const Text('ALONE WORKER',
                             style: TextStyle(
                                 fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.amber)),
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFFF97316))),
                       ),
                   ],
                 ),
@@ -2174,8 +2502,11 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
 
   Widget _buildLeadJobCard(
       MushroomJob job, Color surface, Color ink, Color ink2, Color border) {
+    final isSolo = job.isSoloJob ||
+        job.jobType == 'alone_worker' ||
+        job.name.toLowerCase().contains('alone worker');
     final jtInfo = _getJobTypeInfo(job.jobType);
-    final color = _colorFromHex(jtInfo?['color'] as String?);
+    final color = isSolo ? const Color(0xFFF97316) : _colorFromHex(jtInfo?['color'] as String?);
     final roomName = _getRoomName(job.roomId);
     final plant = _getRoomPlant(job.roomId);
     final isM2 = plant == 'M2';
@@ -2216,6 +2547,27 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                           fontWeight: FontWeight.w700,
                           color: ink),
                     ),
+                    if (isSolo) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 1.5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF97316).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                              color: const Color(0xFFF97316).withValues(alpha: 0.5)),
+                        ),
+                        child: const Text(
+                          'ALONE WORKER',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFFF97316),
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(

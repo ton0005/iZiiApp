@@ -352,7 +352,11 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
         checkOutTime: event.checkOutTime,
         jobType: event.jobType,
       );
-      emit(state.copyWith(isLoading: false));
+      final rooms = await _roomService.getRooms();
+      emit(state.copyWith(isLoading: false, rooms: rooms));
+      if (state.selectedRoomId != null) {
+        add(LoadRoomDetailsEvent(state.selectedRoomId!));
+      }
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }
@@ -400,7 +404,11 @@ class MushroomsBloc extends Bloc<MushroomsEvent, MushroomsState> {
     try {
       await _jobService.updateJobStatus(event.jobId, event.newStatus,
           onTimeOverride: event.onTimeOverride);
-      emit(state.copyWith(isLoading: false));
+      final rooms = await _roomService.getRooms();
+      emit(state.copyWith(isLoading: false, rooms: rooms));
+      if (state.selectedRoomId != null) {
+        add(LoadRoomDetailsEvent(state.selectedRoomId!));
+      }
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
     }

@@ -12,6 +12,7 @@ import '../widgets/job_completion_review_dialog.dart';
 import '../repository.dart';
 import '../services/plant_room_service.dart';
 import 'job_types_management_screen.dart';
+import '../../../core/session/widgets/session_banner.dart';
 
 class MushroomsDashboardScreen extends StatefulWidget {
   const MushroomsDashboardScreen({super.key});
@@ -1458,7 +1459,7 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3B82F6)),
-              onPressed: () {
+              onPressed: () async {
                 if (_selectedRoomId != null) {
                   final scheduledDateTime = DateTime(
                     _selectedDate.year,
@@ -1488,12 +1489,23 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                   }
 
                   if (_isCurrentSolo) {
+                    final assignedWorker = _assigneeController.text.trim().isEmpty
+                        ? 'Solo Worker'
+                        : _assigneeController.text.trim();
+                    final ok = await ensureCheckedIn(
+                      context,
+                      assignee: assignedWorker,
+                      reason: 'Công việc "Làm việc một mình" cần biết chính xác ai '
+                          'đang trong phòng để cảnh báo an toàn có ý nghĩa. '
+                          'Vui lòng điểm danh trước.',
+                    );
+                    if (!ok) return;
+                    if (!context.mounted) return;
+
                     context.read<MushroomsBloc>().add(AddSoloJobEvent(
                           roomId: _selectedRoomId!,
                           title: finalTitle,
-                          assignee: _assigneeController.text.trim().isEmpty
-                              ? 'Solo Worker'
-                              : _assigneeController.text,
+                          assignee: assignedWorker,
                           timeLimit: _soloTimeLimit,
                           coLevel: _coLevel,
                           co2Level: _co2Level,
