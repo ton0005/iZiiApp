@@ -4,7 +4,7 @@ import 'package:drift/drift.dart' as d;
 import '../database/app_database.dart';
 import '../settings/settings_service.dart';
 
-/// Một phiên làm việc đang mở trên máy này.
+/// An active work session on this device.
 class WorkSession {
   final String id;
   final String userId;
@@ -89,14 +89,13 @@ class WorkSession {
   }
 }
 
-/// Điểm danh đầu ca — tách danh tính NGƯỜI khỏi danh tính MÁY (G1).
+/// Shift check-in — separates PERSON identity from DEVICE identity (G1).
 ///
-/// VÌ SAO CẦN: một tablet dùng chung nhiều ca sẽ khiến hệ thống ghi cả hai ca là
-/// cùng một người. Với cảnh báo Làm việc một mình thì đó là lỗi nghiêm trọng —
-/// khi có sự cố, hệ thống phải nói được ĐÍCH DANH ai đang trong phòng.
+/// WHY NEEDED: Shared tablets across shifts would otherwise attribute
+/// operations to the wrong user. For Alone Worker safety alarms, the system
+/// must identify the EXACT person currently inside the room.
 ///
-/// Phiên lưu trên SERVER chứ không trên máy: nếu lưu cục bộ thì người dùng gỡ
-/// app cài lại là xoá được dấu vết, và quản lý không xem được ai đang trong ca.
+/// Sessions are stored on SERVER rather than locally to maintain audit integrity.
 class WorkSessionService {
   static final WorkSessionService _instance = WorkSessionService._internal();
   factory WorkSessionService() => _instance;
@@ -108,27 +107,26 @@ class WorkSessionService {
   ));
   final SettingsService _settings = SettingsService();
 
-  /// Bộ nhớ đệm để màn hình không phải gọi mạng liên tục.
+  /// Cache to avoid frequent network roundtrips.
   WorkSession? _cached;
   DateTime? _cachedAt;
 
-  /// Chế độ của máy này: 'shared' (tablet dùng chung) hoặc 'personal'
-  /// (iPhone/iPad riêng của Manager, Supervisor).
+  /// Device profile: 'shared' (shared tablet) or 'personal'
+  /// (dedicated device for Manager/Supervisor).
   String _profile = 'shared';
   String _ownerName = '';
   int? _maxHours;
 
   WorkSession? get cachedSession => _cached;
 
-  /// Máy cá nhân — không bắt buộc điểm danh vì danh tính đã xác định từ lúc
-  /// cấp máy. Manager mang iPhone về nhà, bắt điểm danh mỗi sáng là vô nghĩa.
+  /// Personal device — check-in not mandatory since identity is pre-assigned.
   bool get isPersonal => _profile == 'personal';
   String get ownerName => _ownerName;
 
-  /// Số giờ tối đa của một ca trên máy này. null = không giới hạn.
+  /// Maximum shift duration on this device. null = unlimited.
   int? get maxHours => _maxHours;
 
-  /// Có cần hiện màn hình điểm danh không.
+  /// Whether the check-in screen is required.
   bool get requiresCheckIn => !isPersonal;
 
   Future<String> _baseUrl() async =>
@@ -143,9 +141,9 @@ class WorkSessionService {
     };
   }
 
-  /// Phiên đang mở của máy này. Trả null nếu chưa điểm danh.
+  /// Active session on this device. Returns null if not checked in.
   ///
-  /// [force] bỏ qua bộ nhớ đệm — dùng sau khi vừa điểm danh hoặc kết thúc ca.
+  /// [force] bypasses cache — used after check-in or shift end.
   Future<WorkSession?> getCurrent({bool force = false}) async {
     if (!force &&
         _cachedAt != null &&
@@ -157,9 +155,8 @@ class WorkSessionService {
           options: Options(headers: await _headers()));
       final data = Map<String, dynamic>.from(resp.data);
 
-      // Chế độ máy do SERVER quyết định (ghi lúc cấp mã đăng ký), không phải
-      // do máy tự khai — nếu không thì ai cũng tự nâng mình thành 'personal'
-      // để khỏi điểm danh.
+      // Device profile is determined by SERVER at registration time,
+      // not self-declared by the device.
       _profile = (data['profile'] ?? 'shared').toString();
       _ownerName = (data['owner_user_name'] ?? '').toString();
       _maxHours = data['max_hours'] is int ? data['max_hours'] as int : null;
@@ -173,8 +170,7 @@ class WorkSessionService {
       _cachedAt = DateTime.now();
       return _cached;
     } on DioException catch (e) {
-      // Mất mạng thì giữ nguyên giá trị đã đệm — công nhân vẫn làm việc được,
-      // không bắt điểm danh lại chỉ vì Wi-Fi chập chờn.
+      // Retain cached session on network error so workers can continue operating.
       if (e.response?.statusCode == 401) {
         _cached = null;
         _cachedAt = DateTime.now();
@@ -183,7 +179,7 @@ class WorkSessionService {
     }
   }
 
-  /// Tra cứu sự kiện nghỉ gần nhất trong CSDL cục bộ để khôi phục trạng thái nghỉ.
+  /// Lookup recent break event from local DB to restore break state.
   Future<void> _enrichWithBreakState(WorkSession session) async {
     try {
       final db = AppDatabase();
@@ -202,7 +198,7 @@ class WorkSessionService {
     } catch (_) {}
   }
 
-  /// Bắt đầu nghỉ giải lao (Break Start) — ghi sự kiện và đổi trạng thái.
+  /// Start break — log event and update state.
   Future<void> startBreak({String? planId}) async {
     final s = _cached;
     if (s == null) return;
@@ -224,7 +220,7 @@ class WorkSessionService {
     _cachedAt = DateTime.now();
   }
 
-  /// Kết thúc nghỉ giải lao (Break End) — ghi sự kiện và quay lại làm việc.
+  /// End break — log event and return to work.
   Future<void> endBreak({String? planId}) async {
     final s = _cached;
     if (s == null) return;
@@ -246,7 +242,7 @@ class WorkSessionService {
     _cachedAt = DateTime.now();
   }
 
-  /// Điểm danh. Trả về phiên mới, hoặc ném [WorkSessionException].
+  /// Check-in. Returns new session, or throws [WorkSessionException].
   Future<WorkSession> checkIn({
     required String userId,
     String? userName,
@@ -283,7 +279,7 @@ class WorkSessionService {
     }
   }
 
-  /// Kết thúc ca.
+  /// End shift.
   Future<void> checkOut() async {
     try {
       await _dio.post('${await _baseUrl()}/sessions/end',
@@ -296,7 +292,7 @@ class WorkSessionService {
     }
   }
 
-  /// Danh sách người đang trong ca — cho màn hình giám sát của quản lý.
+  /// List of active shift workers — for manager monitoring dashboard.
   Future<List<Map<String, dynamic>>> listActive() async {
     try {
       final resp = await _dio.get('${await _baseUrl()}/sessions/active',
@@ -310,29 +306,22 @@ class WorkSessionService {
     }
   }
 
-  /// Người này có đang trong ca không — trên BẤT KỲ thiết bị nào hoặc qua điểm danh theo nhóm.
+  /// Checks if this worker is currently on shift — on ANY device or via Batch Attendance.
   ///
-  /// Khác với [getCurrent] (hỏi "ai đang cầm máy NÀY"). Dùng khi giao việc cho
-  /// người khác: quản lý ngồi laptop cần biết công nhân đã điểm danh trên iPad
-  /// hay qua Batch Attendance hay chưa.
-  ///
-  /// [identifier] nhận cả mã nhân viên lẫn tên, vì công việc lưu TÊN người
-  /// được phân công chứ không lưu mã.
-  ///
-  /// Ưu tiên 1: Tra cứu CSDL cục bộ (tức thời khi vừa điểm danh Batch trên máy này).
-  /// Ưu tiên 2: Tra cứu máy chủ qua `/sessions/active`.
+  /// Priority 1: Check local database (instant after batch check-in or offline).
+  /// Priority 2: Query server via `/sessions/active`.
   Future<bool> isPersonOnShift(String identifier) async {
     final raw = identifier.trim();
     if (raw.isEmpty) return false;
 
-    // 1. Kiểm tra CSDL cục bộ trước (khi Manager vừa batch checkin trên máy hoặc thiết bị offline)
+    // 1. Check local DB first
     try {
       final db = AppDatabase();
       final now = DateTime.now();
       final startOfDay = DateTime(now.year, now.month, now.day);
       final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
-      // Tách mã trong ngoặc nếu có dạng "Tên (Mã)"
+      // Extract code in parentheses if format is "Name (Code)"
       String cleanName = raw;
       String? extractedId;
       final match = RegExp(r'^(.*?)\s*\(([^)]+)\)$').firstMatch(raw);
@@ -345,7 +334,7 @@ class WorkSessionService {
       final rawLower = raw.toLowerCase();
       final extLower = extractedId?.toLowerCase();
 
-      // Tra cứu nhân sự trong CSDL cục bộ để lấy id và name chuẩn
+      // Look up employee in local DB to get standard id and name
       final emps = await db.select(db.mushroomEmployees).get();
       final matchedEmp = emps.cast<MushroomEmployee?>().firstWhere(
         (e) {
@@ -364,7 +353,7 @@ class WorkSessionService {
       final empId = matchedEmp?.id ?? extractedId ?? raw;
       final empName = matchedEmp?.name ?? cleanName;
 
-      // Kiểm tra bảng timesheet hôm nay: check_in_time có và check_out_time chưa có
+      // Check daily timesheet: check_in_time exists and check_out_time is null
       final ts = await (db.select(db.mushroomDailyTimesheets)
             ..where((t) =>
                 (t.employeeId.equals(empId) | t.employeeId.equals(empName)) &
@@ -376,7 +365,7 @@ class WorkSessionService {
         return true;
       }
 
-      // Kiểm tra sự kiện điểm danh gần nhất hôm nay
+      // Check recent attendance events today
       final events = await (db.select(db.mushroomAttendanceEvents)
             ..where((e) =>
                 (e.employeeId.equals(empId) | e.employeeId.equals(empName)) &
@@ -394,7 +383,7 @@ class WorkSessionService {
       }
     } catch (_) {}
 
-    // 2. Tra cứu danh sách active sessions trên máy chủ
+    // 2. Query active sessions from server
     try {
       final sessions = await listActive();
 
@@ -429,25 +418,25 @@ class WorkSessionService {
         return idMatch || nameMatch;
       });
     } catch (_) {
-      // Khi không tra cứu được server và CSDL cục bộ cũng không xác nhận:
-      // Không cho phép bỏ qua kiểm tra an toàn Alone Worker.
+      // When server cannot be queried and local DB does not confirm:
+      // Do not allow bypassing Alone Worker safety checks.
       return false;
     }
   }
 
-  /// Lấy tập hợp tất cả định danh (id, name dạng lowercase) của các nhân viên đang trong ca (Checked In).
-  /// Kết hợp cả CSDL cục bộ (Daily Timesheets, Attendance Events) và máy chủ (/sessions/active).
+  /// Get set of all lowercase identifiers (id, name) of workers currently on shift (Checked In).
+  /// Aggregates both local DB (Daily Timesheets, Attendance Events) and server (/sessions/active).
   Future<Set<String>> getCheckedInIdentifiers() async {
     final Set<String> checkedIn = {};
 
-    // 1. CSDL cục bộ
+    // 1. Local DB
     try {
       final db = AppDatabase();
       final now = DateTime.now();
       final startOfDay = DateTime(now.year, now.month, now.day);
       final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
-      // Timesheet hôm nay đã check-in và chưa check-out
+      // Timesheets today with check-in and no check-out
       final ts = await (db.select(db.mushroomDailyTimesheets)
             ..where((t) =>
                 t.planDate.isBiggerOrEqualValue(startOfDay) &
@@ -461,7 +450,7 @@ class WorkSessionService {
         }
       }
 
-      // Sự kiện điểm danh hôm nay
+      // Recent attendance events today
       final events = await (db.select(db.mushroomAttendanceEvents)
             ..where((e) =>
                 e.timestamp.isBiggerOrEqualValue(startOfDay) &
@@ -479,7 +468,7 @@ class WorkSessionService {
         }
       }
 
-      // Đối chiếu nhân sự để nạp cả name lẫn id
+      // Match employee list to add both name and id
       final emps = await db.select(db.mushroomEmployees).get();
       for (final emp in emps) {
         final idLower = emp.id.trim().toLowerCase();
@@ -492,7 +481,7 @@ class WorkSessionService {
       }
     } catch (_) {}
 
-    // 2. Tra cứu máy chủ qua /sessions/active
+    // 2. Query server via /sessions/active
     try {
       final sessions = await listActive();
       for (final s in sessions) {
@@ -506,7 +495,7 @@ class WorkSessionService {
     return checkedIn;
   }
 
-  /// Nhân viên nào đã được đặt PIN — để màn hình biết có hiện ô nhập PIN không.
+  /// Set of workers who have a PIN configured.
   Future<Set<String>> usersWithPin() async {
     try {
       final resp = await _dio.get('${await _baseUrl()}/sessions/pin/status',
@@ -529,9 +518,7 @@ class WorkSessionService {
     final code = e.response?.statusCode;
     final detail = e.response?.data is Map ? e.response?.data['detail'] : null;
     if (code == 401) {
-      // Phân biệt "chưa từng đăng ký" với "đã đăng ký nhưng token chết".
-      // Gộp chung thành một câu khiến người dùng quét lại mã, thấy báo "máy đã
-      // đăng ký rồi", rồi quay lại đây vẫn bị chặn — vòng luẩn quẩn đã gặp.
+      // Distinguish between unregistered and expired/invalid device token.
       return 'The server does not accept this device’s token.\n\n'
           'If the device has been registered before, it is likely that the server has been reinstalled, '
           'rendering the old token invalid. Please ask your manager for a new QR code and scan it.';

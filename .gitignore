@@ -55,3 +55,7 @@ server/certs/
 /server/build/
 /server/venv/
 _reset_backup_20260803-130428/
+
+# Windows installer build artifacts & redistributables
+/windows/installer/Output/
+/windows/installer/redist/

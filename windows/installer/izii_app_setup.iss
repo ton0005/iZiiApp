@@ -4,7 +4,9 @@
 ; =====================================================================
 
 #define MyAppName "iZiiApp"
+#ifndef MyAppVersion
 #define MyAppVersion "1.0.4"
+#endif
 #define MyAppPublisher "iZiiApp Team"
 #define MyAppURL "https://iziiapp.com"
 #define MyAppExeName "izii_app.exe"

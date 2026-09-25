@@ -1,12 +1,14 @@
 <#
 .SYNOPSIS
-    Script tự động tải vc_redist.x64.exe và biên dịch bộ cài đặt Inno Setup cho iZiiApp.
+    Script tu dong kiem tra, build Flutter Release (neu can), tai vc_redist.x64.exe va bien dich bo cai dat Inno Setup cho iZiiApp.
 #>
 
 [CmdletBinding()]
 param (
+    [switch]$RebuildFlutter,
     [switch]$SkipDownloadRedist,
-    [switch]$AutoInstallInnoSetup
+    [switch]$AutoInstallInnoSetup,
+    [string]$AppVersion = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -23,39 +25,52 @@ Write-Host "=====================================================" -ForegroundCo
 Write-Host "   iZiiApp Windows Installer Builder (Inno Setup)   " -ForegroundColor Cyan
 Write-Host "=====================================================" -ForegroundColor Cyan
 
-# 1. Kiểm tra thư mục Release
-if (-not (Test-Path (Join-Path $ReleaseDir "izii_app.exe"))) {
-    Write-Host "⚠️  Không tìm thấy bản build Release tại: $ReleaseDir" -ForegroundColor Yellow
-    Write-Host "Đang tiến hành build Flutter Release cho Windows..." -ForegroundColor Yellow
+# Tim lenh Flutter
+$FlutterCmd = "flutter"
+if (-not (Get-Command flutter -ErrorAction SilentlyContinue)) {
+    if (Test-Path "C:\flutter\bin\flutter.bat") {
+        $FlutterCmd = "C:\flutter\bin\flutter.bat"
+    } elseif (Test-Path "$env:LOCALAPPDATA\flutter\bin\flutter.bat") {
+        $FlutterCmd = "$env:LOCALAPPDATA\flutter\bin\flutter.bat"
+    }
+}
+
+# 1. Kiem tra thu muc Release hoac yeu cau Rebuild
+$NeedBuildFlutter = $RebuildFlutter.IsPresent -or (-not (Test-Path (Join-Path $ReleaseDir "izii_app.exe")))
+
+if ($NeedBuildFlutter) {
+    Write-Host "[BUILD] Dang tien hanh bien dich Flutter Windows Release..." -ForegroundColor Yellow
     Push-Location $ProjectRoot
     try {
-        flutter build windows --release
+        & $FlutterCmd build windows --release
     }
     finally {
         Pop-Location
     }
     if (-not (Test-Path (Join-Path $ReleaseDir "izii_app.exe"))) {
-        Write-Host "❌ Build Flutter thất bại. Vui lòng kiểm tra lại môi trường Flutter." -ForegroundColor Red
+        Write-Host "[ERROR] Build Flutter that bai. Vui long kiem tra lai moi truong Flutter." -ForegroundColor Red
         exit 1
     }
+    Write-Host "[OK] Da build Flutter Release thanh cong." -ForegroundColor Green
+} else {
+    Write-Host "[OK] Da co san ban build Release iZiiApp." -ForegroundColor Green
 }
-Write-Host "✅ Đã tìm thấy bản build Release iZiiApp." -ForegroundColor Green
 
-# 2. Tự động tải vc_redist.x64.exe nếu chưa có
+# 2. Tu dong tai vc_redist.x64.exe neu chua co
 if (-not (Test-Path $RedistDir)) {
     New-Item -ItemType Directory -Path $RedistDir -Force | Out-Null
 }
 
-if (-not (Test-Path $VcRedistExe) -and (-not $SkipDownloadRedist)) {
-    Write-Host "⬇️  Đang tải Microsoft Visual C++ 2015-2022 Redistributable (x64)..." -ForegroundColor Yellow
+if ((-not (Test-Path $VcRedistExe)) -and (-not $SkipDownloadRedist)) {
+    Write-Host "[DOWNLOAD] Dang tai Microsoft Visual C++ 2015-2022 Redistributable (x64)..." -ForegroundColor Yellow
     $VcRedistUrl = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
     Invoke-WebRequest -Uri $VcRedistUrl -OutFile $VcRedistExe
-    Write-Host "✅ Đã tải xong: $VcRedistExe" -ForegroundColor Green
+    Write-Host "[OK] Da tai xong: $VcRedistExe" -ForegroundColor Green
 } else {
-    Write-Host "✅ Đã có sẵn tệp vc_redist.x64.exe" -ForegroundColor Green
+    Write-Host "[OK] Da co san tep vc_redist.x64.exe" -ForegroundColor Green
 }
 
-# 3. Tìm trình biên dịch Inno Setup (ISCC.exe)
+# 3. Tim trinh bien dich Inno Setup (ISCC.exe)
 $IsccCandidates = @(
     "ISCC.exe",
     "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
@@ -76,11 +91,10 @@ foreach ($path in $IsccCandidates) {
 }
 
 if (-not $IsccPath) {
-    Write-Host "⚠️  Chưa tìm thấy phần mềm Inno Setup 6 (ISCC.exe) trên máy." -ForegroundColor Yellow
-    Write-Host "Đang tự động cài đặt Inno Setup qua winget..." -ForegroundColor Cyan
+    Write-Host "[WARN] Chua tim thay phan mem Inno Setup 6 (ISCC.exe) tren may." -ForegroundColor Yellow
+    Write-Host "[INFO] Dang tu dong cai dat Inno Setup qua winget..." -ForegroundColor Cyan
     try {
         winget install JRSoftware.InnoSetup -e --silent --accept-source-agreements --accept-package-agreements
-        # Thử dò lại sau khi cài
         foreach ($path in $IsccCandidates) {
             if (Test-Path $path) {
                 $IsccPath = $path
@@ -89,39 +103,46 @@ if (-not $IsccPath) {
         }
     }
     catch {
-        Write-Host "⚠️ Không thể tự cài Inno Setup qua winget." -ForegroundColor Yellow
+        Write-Host "[WARN] Khong the tu cai Inno Setup qua winget." -ForegroundColor Yellow
     }
 
     if (-not $IsccPath) {
-        Write-Host "👉 Vui lòng tải và cài đặt Inno Setup miễn phí tại: https://jrsoftware.org/isdl.php" -ForegroundColor Cyan
-        Write-Host "   Sau khi cài xong, chạy lại script này." -ForegroundColor Cyan
+        Write-Host "[INFO] Vui long tai va cai dat Inno Setup mien phi tai: https://jrsoftware.org/isdl.php" -ForegroundColor Cyan
         exit 1
     }
 }
 
-Write-Host "🔨 Sử dụng Inno Setup Compiler: $IsccPath" -ForegroundColor Green
+Write-Host "[OK] Su dung Inno Setup Compiler: $IsccPath" -ForegroundColor Green
 
-# 4. Biên dịch bộ cài đặt
+# 4. Bien dich bo cai dat
 if (-not (Test-Path $OutputDir)) {
     New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 }
 
-Write-Host "🚀 Đang biên dịch bộ cài đặt Setup..." -ForegroundColor Cyan
+Write-Host "[PACKAGE] Dang bien dich bo cai dat Setup bang Inno..." -ForegroundColor Cyan
 Push-Location $ScriptDir
 try {
-    & $IsccPath $IssFile
+    $IsccArgs = @()
+    if ($AppVersion) {
+        $IsccArgs += "/DMyAppVersion=$AppVersion"
+    }
+    $IsccArgs += $IssFile
+
+    & $IsccPath @IsccArgs
     if ($LASTEXITCODE -eq 0) {
         Write-Host ""
         Write-Host "=====================================================" -ForegroundColor Green
-        Write-Host "🎉 BIÊN DỊCH BỘ CÀI ĐẶT THÀNH CÔNG!" -ForegroundColor Green
-        Write-Host "📁 File cài đặt nằm tại: $OutputDir" -ForegroundColor Green
+        Write-Host "[SUCCESS] BIEN DICH BO CAI DAT THÀNH CONG!" -ForegroundColor Green
+        Write-Host "[DIR] File cai dat nam tai: $OutputDir" -ForegroundColor Green
         Write-Host "=====================================================" -ForegroundColor Green
-        Get-ChildItem -Path $OutputDir -Filter "*.exe" | ForEach-Object {
+        Get-ChildItem -Path $OutputDir -Filter "*.exe" | Sort-Object LastWriteTime -Descending | ForEach-Object {
             $sizeMB = [math]::Round($_.Length / 1MB, 2)
-            Write-Host "   • $($_.Name) ($sizeMB MB)" -ForegroundColor Cyan
+            $lastMod = $_.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss")
+            Write-Host "   * $($_.Name) ($sizeMB MB - $lastMod)" -ForegroundColor Cyan
         }
     } else {
-        Write-Host "❌ Quá trình biên dịch gặp lỗi." -ForegroundColor Red
+        Write-Host "[ERROR] Qua trinh bien dich gap loi." -ForegroundColor Red
+        exit 1
     }
 }
 finally {

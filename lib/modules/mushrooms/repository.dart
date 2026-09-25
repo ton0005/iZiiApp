@@ -750,10 +750,10 @@ class MushroomsRepository {
 
   static final Map<String, String> _jobTypeColorCache = {};
 
-  /// Bộ nhớ đệm màu động tra cứu tức thời cho UI (Growing Tab & Plant Map)
+  /// In-memory cache of dynamic stage colors for UI (Growing Tab & Plant Map)
   static Map<String, String> get cachedJobTypeColors => _jobTypeColorCache;
 
-  /// Chuyển đổi mã hex (vd '#10B981') sang đối tượng [Color]
+  /// Convert hex code (e.g. '#10B981') to [Color]
   static Color? parseHexColor(String? hexString) {
     if (hexString == null || hexString.trim().isEmpty) return null;
     var hex = hexString.trim().replaceAll('#', '');
@@ -767,7 +767,7 @@ class MushroomsRepository {
     return null;
   }
 
-  /// Tra cứu màu động theo stage hoặc loại job. Trả về null nếu chưa có trong DB.
+  /// Lookup dynamic color by stage or job type. Returns null if not in DB.
   static Color? resolveDynamicColor(String stageOrJobType) {
     final s = stageOrJobType.trim().toLowerCase().replaceAll(' ', '_');
     final hex = _jobTypeColorCache[s];
@@ -1184,7 +1184,7 @@ class MushroomsRepository {
         await _db.into(_db.projects).insert(ProjectsCompanion.insert(
           id: projectId,
           name: 'Costa M2 Operations',
-          description: const Value('Giám sát công việc tại Costa Mushroom M2'),
+          description: const Value('Supervise operations at Costa Mushroom M2'),
         ));
         project = await (_db.select(_db.projects)..where((tbl) => tbl.id.equals(projectId))).getSingle();
         
@@ -1822,26 +1822,14 @@ class MushroomsRepository {
           await triggerSafetyAlarm(job.id);
         }
 
-        // ⚠️ SỬA LỖI SINH BẢN GHI VÔ HẠN
-        //
-        // Hàm này chạy mỗi 30 GIÂY (mushrooms_bloc.dart: _alarmCheckTimer).
-        // Bản cũ ghi grow_rooms và đẩy mutation MỖI LẦN CHẠY, không kiểm phòng
-        // đã ở trạng thái đó chưa — chỉ có `triggerSafetyAlarm` là được chặn
-        // bằng cờ `alarmTriggered`, còn phần dưới thì không.
-        //
-        // Hậu quả: một công việc Alone Worker quá giờ mà không ai đóng sẽ sinh
-        // 120 mutation mỗi giờ, tất cả nội dung y hệt nhau nhưng mỗi cái một
-        // UUID mới nên server không gộp được. Đó là nguồn gốc của 15.272 bản
-        // ghi `grow_rooms` trong /sync/status — tương đương khoảng 5 ngày với
-        // một công việc kẹt.
-        //
-        // Chỉ ghi khi trạng thái THỰC SỰ đổi.
+        // Prevent infinite room mutations during periodic check (runs every 30s)
+        // Only write mutation when room status actually changes.
         final room = await (_db.select(_db.growRooms)
               ..where((tbl) => tbl.id.equals(job.roomId)))
             .getSingleOrNull();
         if (room == null) continue;
         if (room.currentStage == 'alone_timeout' && room.status == 'active') {
-          continue; // đã báo động rồi, không ghi lại
+          continue; // Alarm already active, skip rewrite
         }
 
         await (_db.update(_db.growRooms)..where((tbl) => tbl.id.equals(job.roomId)))

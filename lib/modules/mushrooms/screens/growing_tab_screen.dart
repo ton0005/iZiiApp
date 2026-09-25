@@ -181,7 +181,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     MushroomsRepository().getJobTypeColorMap().then((_) {
       if (mounted) setState(() {});
     });
-    // Ẩn nút "Chạm thẻ" trên máy không có NFC thay vì hiện nút bấm không được.
+    // Hide "Tap Tag" on devices without NFC.
     JobTagService.isAvailable().then((v) {
       if (mounted) setState(() => _jobTagNfcAvailable = v);
     });
@@ -204,19 +204,14 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     super.dispose();
   }
 
-  /// Máy có NFC không — quyết định hiện hay ẩn nút "Chạm thẻ".
+  /// Whether device has NFC — determines if "Tap Tag" button is displayed.
   bool _jobTagNfcAvailable = false;
 
-  /// Đọc thẻ công việc dán ở cửa phòng, rồi mở dialog tạo công việc đã điền
-  /// sẵn phòng + loại việc.
-  ///
-  /// Đây là lý do tồn tại của thẻ: công nhân đứng trước Room 10, chạm thẻ, là
-  /// vào thẳng việc — không phải cuộn tìm phòng trong danh sách 66 phòng khi
-  /// đang đeo găng.
+  /// Scans NFC room tag and opens job creation dialog with pre-filled room + job type.
   Future<void> _scanJobTag(BuildContext context) async {
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
-      const SnackBar(content: Text('Chạm máy vào thẻ công việc...')),
+      const SnackBar(content: Text('Hold device near job tag...')),
     );
     try {
       final tag = await JobTagService.read();
@@ -659,12 +654,11 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Đọc thẻ công việc dán ở cửa phòng — đây là lý do tồn tại
-                  // của việc ghi thẻ. Không có nút này thì ghi thẻ vô nghĩa.
+                  // Read job tag at room entrance.
                   if (_jobTagNfcAvailable)
                     OutlinedButton.icon(
                       icon: const Icon(Icons.nfc_rounded, size: 18),
-                      label: const Text('Chạm thẻ'),
+                      label: const Text('Tap Tag'),
                       onPressed: () => _scanJobTag(context),
                     ),
                   if (_jobTagNfcAvailable) const SizedBox(width: 8),
@@ -1224,7 +1218,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
   }
 
   Color _getStageColor(String stage) {
-    // Ưu tiên tra cứu màu động từ cấu hình mushroom_job_types (giải lỗi F1)
+    // Lookup dynamic color from mushroom_job_types configuration
     final dynamicColor = MushroomsRepository.resolveDynamicColor(stage);
     if (dynamicColor != null) {
       return dynamicColor;
@@ -1749,8 +1743,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
 
   // Dialog: Add New Job
   //
-  // presetRoomName / presetJobType: điền sẵn khi mở từ thẻ NFC. Công nhân chạm
-  // thẻ ở cửa phòng là dialog đã đúng phòng, đúng loại việc.
+  // presetRoomName / presetJobType: pre-filled when opened via NFC tag.
   Future<void> _showNewJobDialog(
     BuildContext context, {
     String? presetRoomName,
@@ -1838,9 +1831,8 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
     DateTime checkInTime = DateTime.now();
     DateTime? checkOutTime;
 
-    // ── Thẻ NFC (NTAG213) ────────────────────────────────────────────────
-    // Giữ trạng thái Ở ĐÂY chứ không trong widget con: StatefulBuilder dựng
-    // lại cây con mỗi lần setDialogState nên widget con không giữ được giá trị.
+    // ── NFC Tag (NTAG213) ────────────────────────────────────────────────
+    // Retain state here across dialog rebuilds.
     bool writeNfcTag = false;
     String nfcTagLabel = '';
 
@@ -2141,7 +2133,7 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         onChanged: (val) => notes = val,
                       ),
 
-                      // ── Tuỳ chọn ghi thẻ NFC ──────────────────────────
+                      // ── NFC Tag Write Option ──────────────────────────
                       JobTagOption(
                         enabled: writeNfcTag,
                         onChanged: (v) =>
@@ -2171,30 +2163,21 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: FarmColors.forestGreen),
                   onPressed: () async {
-                    // Alone Worker BẮT BUỘC có phiên làm việc (G1): cảnh báo
-                    // an toàn phải nói được ĐÍCH DANH ai đang trong phòng, chứ
-                    // không phải "máy nào". Chặn ở đây để mở luôn màn hình
-                    // điểm danh thay vì để server trả lỗi 409 khó hiểu.
+                    // Alone Worker requires an active work session.
                     final isSolo =
                         jobType == 'alone_worker' || isSoloJobType(jobType);
                     if (isSolo) {
                       final ok = await ensureCheckedIn(
                         context,
-                        // Người cần đang trong ca là NGƯỜI ĐƯỢC GIAO VIỆC, chứ
-                        // không phải người đang bấm nút. Truyền assignee vào
-                        // để không chặn nhầm quản lý đang ngồi laptop.
                         assignee: assignee,
-                        reason: 'Công việc "Làm việc một mình" cần biết chính xác ai '
-                            'đang trong phòng để cảnh báo an toàn có ý nghĩa. '
-                            'Vui lòng điểm danh trước.',
+                        reason: 'Alone Worker jobs require shift check-in to verify personnel safety. '
+                            'Please check in first.',
                       );
                       if (!ok) return;
                     }
                     if (!context.mounted) return;
 
-                    // Tạo công việc TRƯỚC, ghi thẻ sau. Nếu thẻ hỏng hoặc
-                    // người dùng bỏ giữa chừng thì công việc vẫn được tạo —
-                    // thẻ chỉ là lối tắt, không phải điều kiện bắt buộc.
+                    // Create job first, then write NFC tag if requested.
                     widget.onJobCreated(
                       roomSelected,
                       jobType,
@@ -2230,9 +2213,9 @@ class _GrowingTabScreenState extends State<GrowingTabScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(ok
-                                ? 'Đã tạo công việc và ghi thẻ NFC.'
-                                : 'Đã tạo công việc. Chưa ghi được thẻ NFC — '
-                                    'có thể ghi lại sau.'),
+                                ? 'Created job and wrote NFC tag.'
+                                : 'Created job. NFC tag not written — '
+                                    'can be written later.'),
                           ),
                         );
                       }

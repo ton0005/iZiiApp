@@ -230,7 +230,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
               return true;
             }).toList();
 
-            // Sắp xếp theo thứ tự: 1, 2, 3, 4, 5, 6, 6A, 6B, 7, 8, ...
+            // Sort rooms in natural order: 1, 2, 3, 4, 5, 6, 6A, 6B, 7, 8, ...
             filteredRooms.sort((a, b) => PlantRoomService.compareRoomNames(
                 a['name'] as String? ?? '', b['name'] as String? ?? ''));
 
@@ -551,7 +551,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                                                     child: Text(
                                                       currentStage ==
                                                               'alone_timeout'
-                                                          ? 'CẢNH BÁO AN TOÀN'
+                                                          ? 'SAFETY ALERT'
                                                           : context.tr(
                                                               'mushrooms_has_solo_job'),
                                                       maxLines: 1,
@@ -659,7 +659,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
           Expanded(
             child: _buildPlantTabButton(
               title: 'Plant M1',
-              subtitle: 'Phòng 1-32 ($m1Count)',
+              subtitle: 'Rooms 1-32 ($m1Count)',
               isSelected: _selectedPlant == 'M1',
               activeColor: const Color(0xFF10B981),
               onTap: () => setState(() => _selectedPlant = 'M1'),
@@ -670,7 +670,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
           Expanded(
             child: _buildPlantTabButton(
               title: 'Plant M2',
-              subtitle: 'Phòng 33-66 ($m2Count)',
+              subtitle: 'Rooms 33-66 ($m2Count)',
               isSelected: _selectedPlant == 'M2',
               activeColor: const Color(0xFF8B5CF6),
               onTap: () => setState(() => _selectedPlant = 'M2'),
@@ -680,7 +680,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
           const SizedBox(width: 6),
           Expanded(
             child: _buildPlantTabButton(
-              title: 'Tất cả',
+              title: 'All',
               subtitle: 'All ($totalCount)',
               isSelected: _selectedPlant == 'all',
               activeColor: const Color(0xFF0EA5E9),
@@ -820,7 +820,7 @@ class _MushroomsDashboardScreenState extends State<MushroomsDashboardScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                        'Đã gửi yêu cầu reset trạng thái phòng ${room['name']}'),
+                        'Reset request sent for room ${room['name']}'),
                     backgroundColor: Colors.redAccent,
                   ),
                 );
@@ -1495,9 +1495,8 @@ class _NewJobDialogContentState extends State<_NewJobDialogContent> {
                     final ok = await ensureCheckedIn(
                       context,
                       assignee: assignedWorker,
-                      reason: 'Công việc "Làm việc một mình" cần biết chính xác ai '
-                          'đang trong phòng để cảnh báo an toàn có ý nghĩa. '
-                          'Vui lòng điểm danh trước.',
+                      reason: 'Alone Worker jobs require shift check-in to verify personnel safety. '
+                          'Please check in first.',
                     );
                     if (!ok) return;
                     if (!context.mounted) return;
@@ -1592,17 +1591,15 @@ class _RoomDetailsSheet extends StatefulWidget {
 class _RoomDetailsSheetState extends State<_RoomDetailsSheet> {
   Timer? _countdownTimer;
 
-  /// Chỉ trả về job THỰC SỰ thuộc phòng đang mở.
+  /// Returns only jobs that ACTUALLY belong to the currently open room.
   ///
-  /// Lớp phòng thủ: trước đây màn hình đọc thẳng `state.selectedRoomJobs` mà
-  /// không đối chiếu `widget.roomId`, nên khi state còn giữ job của phòng cũ
-  /// thì phòng nào cũng hiển thị y hệt nhau. Hai điều kiện dưới đây chặn cả
-  /// hai khả năng: state chưa kịp trỏ sang phòng này, và bản ghi lẫn phòng.
+  /// Defensive guard: ensures jobs match `widget.roomId` and avoids stale
+  /// jobs from previously selected room state.
   List<Map<String, dynamic>> _jobsForThisRoom(MushroomsState state) {
     if (state.selectedRoomId != widget.roomId) {
       return const <Map<String, dynamic>>[];
     }
-    // Fail-CLOSED: job thiếu room_id thì loại, không mặc định cho qua.
+    // Fail-CLOSED: exclude job if room_id is missing.
     return state.selectedRoomJobs.where((j) {
       final jRoomId = j['room_id'] ?? j['roomId'];
       return jRoomId != null && jRoomId == widget.roomId;

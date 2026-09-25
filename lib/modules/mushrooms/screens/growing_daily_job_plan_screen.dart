@@ -356,7 +356,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                           child: Row(
                             children: [
                               ChoiceChip(
-                                label: Text('Tất cả (${_rooms.length})'),
+                                label: Text('All (${_rooms.length})'),
                                 selected: dialogPlantFilter == 'all',
                                 onSelected: (val) {
                                   if (val) {
@@ -433,7 +433,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                                   fontWeight: FontWeight.bold)),
                                         ),
                                         const SizedBox(width: 8),
-                                        Text('Plant M1 (Phòng 1-32)',
+                                        Text('Plant M1 (Rooms 1-32)',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 13,
@@ -472,8 +472,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                       child: Text(
                                         m1Rooms.every((r) =>
                                                 selectedRoomIds.contains(r.id))
-                                            ? 'Bỏ chọn M1'
-                                            : 'Chọn tất cả M1',
+                                            ? 'Deselect M1'
+                                            : 'Select All M1',
                                         style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600),
@@ -558,7 +558,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                                   fontWeight: FontWeight.bold)),
                                         ),
                                         const SizedBox(width: 8),
-                                        Text('Plant M2 (Phòng 33-66)',
+                                        Text('Plant M2 (Rooms 33-66)',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 13,
@@ -597,8 +597,8 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                       child: Text(
                                         m2Rooms.every((r) =>
                                                 selectedRoomIds.contains(r.id))
-                                            ? 'Bỏ chọn M2'
-                                            : 'Chọn tất cả M2',
+                                            ? 'Deselect M2'
+                                            : 'Select All M2',
                                         style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600),
@@ -1154,7 +1154,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Quy chuẩn an toàn Alone Worker: Chỉ hiển thị nhân viên phòng ban Growing đã Check-in ca làm việc.',
+                              'Alone Worker Safety Protocol: Only showing checked-in Growing staff on shift.',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -1208,7 +1208,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                     size: 13, color: Color(0xFF2A78D6)),
                                 SizedBox(width: 4),
                                 Text(
-                                  'Department: Growing (Đã khóa)',
+                                  'Department: Growing (Locked)',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
@@ -1255,12 +1255,12 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                       title: const Text(
-                        'Bắt đầu việc ngay & chuyển phòng sang màu Cam',
+                        'Start job immediately & turn room Orange',
                         style: TextStyle(
                             fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       subtitle: const Text(
-                        'Kích hoạt trạng thái Alone Worker và đếm ngược an toàn',
+                        'Activate Alone Worker status and safety countdown',
                         style: TextStyle(fontSize: 11),
                       ),
                       value: startJobImmediately,
@@ -1290,7 +1290,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                   const SizedBox(height: 8),
                                   Text(
                                     isSolo
-                                        ? 'Không có nhân viên phòng ban Growing nào đã Check-in ca làm việc.'
+                                        ? 'No checked-in employees in Growing department.'
                                         : 'No employees match search.',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -1300,7 +1300,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
                                   if (isSolo) ...[
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Vui lòng yêu cầu nhân viên Check-in hoặc dùng tính năng Batch Team Attendance trước khi giao việc.',
+                                      'Please ask employees to check in or use Batch Team Attendance before assigning.',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize: 12, color: ink2),
@@ -1440,7 +1440,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
           SnackBar(
             backgroundColor: Colors.red,
             content: Text(
-                'Nhân viên "$workerName" chưa điểm danh đầu ca. Không thể giao việc Alone Worker.'),
+                'Employee "$workerName" has not checked in for shift. Cannot assign Alone Worker job.'),
           ),
         );
         return;
@@ -1456,7 +1456,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         SnackBar(
           backgroundColor: const Color(0xFF10B981),
           content: Text(startImmediately
-              ? 'Đã giao việc & Bắt đầu Alone Worker cho $workerName (Phòng đã chuyển sang màu Cam)'
+              ? 'Assigned & Started Alone Worker for $workerName (Room is now Orange)'
               : 'Assigned job to $workerName'),
         ),
       );
@@ -1504,7 +1504,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
           SnackBar(
             backgroundColor: Colors.red,
             content: Text(
-                'Nhân viên "${job.assignee}" chưa điểm danh đầu ca. Không thể bắt đầu Alone Worker Job.'),
+                'Employee "${job.assignee}" has not checked in for shift. Cannot start Alone Worker job.'),
           ),
         );
         return;
@@ -1826,7 +1826,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
           Expanded(
             child: _buildPlantFilterChip(
               title: 'Plant M1',
-              subtitle: 'Phòng 1-32 ($m1Count jobs)',
+              subtitle: 'Rooms 1-32 ($m1Count jobs)',
               isSelected: _selectedPlant == 'M1',
               activeColor: const Color(0xFF10B981),
               onTap: () => setState(() => _selectedPlant = 'M1'),
@@ -1839,7 +1839,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
           Expanded(
             child: _buildPlantFilterChip(
               title: 'Plant M2',
-              subtitle: 'Phòng 33-66 ($m2Count jobs)',
+              subtitle: 'Rooms 33-66 ($m2Count jobs)',
               isSelected: _selectedPlant == 'M2',
               activeColor: const Color(0xFF8B5CF6),
               onTap: () => setState(() => _selectedPlant = 'M2'),
@@ -1851,7 +1851,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
           const SizedBox(width: 8),
           Expanded(
             child: _buildPlantFilterChip(
-              title: 'Tất cả Plants',
+              title: 'All Plants',
               subtitle: 'All ($totalCount jobs)',
               isSelected: _selectedPlant == 'all',
               activeColor: const Color(0xFF2A78D6),
@@ -2058,7 +2058,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         if (sortedM1RoomIds.isNotEmpty) ...[
           if (_selectedPlant == 'all')
             _buildPlantSectionHeader(
-              title: 'Plant M1 (Phòng 1-32)',
+              title: 'Plant M1 (Rooms 1-32)',
               jobCount: sortedM1RoomIds.fold<int>(
                   0, (sum, id) => sum + (m1JobsByRoom[id]?.length ?? 0)),
               roomCount: sortedM1RoomIds.length,
@@ -2076,7 +2076,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
         if (sortedM2RoomIds.isNotEmpty) ...[
           if (_selectedPlant == 'all')
             _buildPlantSectionHeader(
-              title: 'Plant M2 (Phòng 33-66)',
+              title: 'Plant M2 (Rooms 33-66)',
               jobCount: sortedM2RoomIds.fold<int>(
                   0, (sum, id) => sum + (m2JobsByRoom[id]?.length ?? 0)),
               roomCount: sortedM2RoomIds.length,
@@ -2132,7 +2132,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
             ],
           ),
           Text(
-            '$roomCount phòng · $jobCount jobs',
+            '$roomCount rooms · $jobCount jobs',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -2421,7 +2421,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
       return true;
     }).toList();
 
-    // Sắp xếp các jobs theo thứ tự phòng tự nhiên: 1, 2, ..., 6, 6A, 6B, 7, 8...
+    // Sort jobs in natural room order: 1, 2, ..., 6, 6A, 6B, 7, 8...
     filteredJobs.sort((a, b) {
       final roomA = _getRoomName(a.roomId);
       final roomB = _getRoomName(b.roomId);

@@ -10,48 +10,47 @@ import 'package:izii_app/core/session/work_session_service.dart';
 import 'employee_service.dart';
 
 abstract class JobListService {
-  /// Stream theo dõi danh sách tất cả các công việc.
+  /// Stream of all jobs.
   Stream<List<Map<String, dynamic>>> watchJobs();
 
-  /// Stream theo dõi danh sách công việc của một phòng trồng cụ thể.
+  /// Stream of jobs for a specific grow room.
   Stream<List<Map<String, dynamic>>> watchJobsByRoom(String roomId);
 
-  /// Stream theo dõi danh sách công việc theo trạng thái/giai đoạn (e.g. pending, in_progress, review, completed).
+  /// Stream of jobs filtered by status/stage (e.g. pending, in_progress, review, completed).
   Stream<List<Map<String, dynamic>>> watchJobsByStage(String status);
 
-  /// Lấy danh sách toàn bộ công việc.
+  /// Retrieve all jobs.
   Future<List<Map<String, dynamic>>> getJobs();
 
-  /// Lấy danh sách công việc của một phòng.
+  /// Retrieve jobs for a specific room.
   Future<List<Map<String, dynamic>>> getJobsByRoom(String roomId);
 
-  /// Thêm một công việc mới vào hàng đợi công việc chung.
+  /// Add a new job to general queue.
   Future<void> createJob(Map<String, dynamic> jobData);
 
-  /// Bổ sung một công việc vào phòng trồng cụ thể, tự động tính toán thứ tự (sequence/priority).
+  /// Add a job to a specific grow room, automatically calculating priority/sequence.
   Future<void> addJobToRoom({required String roomId, required Map<String, dynamic> jobData});
 
-  /// Cập nhật trạng thái công việc và đồng bộ trạng thái Task liên kết.
-  /// [onTimeOverride]: khi hoàn thành trễ (Sup xác nhận dồn), cho phép ghi đè
-  /// thủ công kết quả đúng giờ/quá giờ hiển thị trên Performance Board.
+  /// Updates job status and syncs linked Task status.
+  /// [onTimeOverride]: allows supervisor to manually override on-time/overdue status.
   Future<void> updateJobStatus(String jobId, String status, {bool? onTimeOverride});
 
-  /// Đánh dấu hoàn thành một công việc.
+  /// Mark a job as completed.
   Future<void> completeJob(String jobId, {bool? onTimeOverride});
 
-  /// Đăng ký điểm danh hoặc thoát chế độ làm việc một mình
+  /// Check-in or exit alone worker mode.
   Future<void> checkInSoloJob(String jobId);
 
-  /// Kiểm tra xem có bất kỳ còi báo động an toàn nào đang kêu
+  /// Check if any safety alarms are active.
   Future<bool> isAnySoloAlarmActive();
 
-  /// Quét định kỳ kiểm tra Solo Job quá giờ
+  /// Periodically check for overdue solo jobs.
   Future<void> checkSoloJobsAlarms();
 
-  /// Lấy danh sách Solo Job đang kêu chuông cảnh báo
+  /// Get list of active triggered solo jobs.
   Future<List<Map<String, dynamic>>> getActiveTriggeredSoloJobs();
 
-  /// Giao công việc làm một mình kèm cấu hình an toàn
+  /// Assign alone worker job with safety parameters.
   Future<void> addSpecialSoloJob(
     String roomId,
     String title,
@@ -64,7 +63,7 @@ abstract class JobListService {
     String jobType,
   });
 
-  /// Giao công việc custom
+  /// Assign custom mushroom job.
   Future<void> addCustomMushroomJob({
     required String roomId,
     required String name,
@@ -168,7 +167,7 @@ class JobListServiceImpl implements JobListService {
     final currentEmpId = await _employeeService.getCurrentEmployeeId() ?? '555555';
     final hasPerm = await _employeeService.hasPermission(currentEmpId, 'createJob');
     if (!hasPerm) {
-      throw Exception('Nhân viên không có quyền tạo công việc.');
+      throw Exception('Employee lacks permission to create job.');
     }
 
     final String jobId = jobData['id'] ?? const Uuid().v4();
@@ -284,11 +283,11 @@ class JobListServiceImpl implements JobListService {
   Future<void> updateJobStatus(String jobId, String status, {bool? onTimeOverride}) async {
     final currentEmpId = await _employeeService.getCurrentEmployeeId();
     if (currentEmpId == null) {
-      throw Exception('Chưa đăng nhập nhân viên.');
+      throw Exception('Employee not logged in.');
     }
     final hasPerm = await _employeeService.hasPermission(currentEmpId, 'updateJobStatus');
     if (!hasPerm) {
-      throw Exception('Nhân viên không có quyền cập nhật trạng thái công việc.');
+      throw Exception('Employee lacks permission to update job status.');
     }
     await _repository.updateJobStatus(jobId, status, onTimeOverride: onTimeOverride);
   }
@@ -298,7 +297,7 @@ class JobListServiceImpl implements JobListService {
     final currentEmpId = await _employeeService.getCurrentEmployeeId() ?? '555555';
     final hasPerm = await _employeeService.hasPermission(currentEmpId, 'updateJobStatus');
     if (!hasPerm) {
-      throw Exception('Nhân viên không có quyền hoàn thành công việc.');
+      throw Exception('Employee lacks permission to complete job.');
     }
     await _repository.completeJob(jobId, onTimeOverride: onTimeOverride);
   }
@@ -338,11 +337,11 @@ class JobListServiceImpl implements JobListService {
     final currentEmpId = await _employeeService.getCurrentEmployeeId() ?? '555555';
     final hasPerm = await _employeeService.hasPermission(currentEmpId, 'createJob');
     if (!hasPerm) {
-      throw Exception('Nhân viên không có quyền tạo công việc.');
+      throw Exception('Employee lacks permission to create job.');
     }
     final onShift = await WorkSessionService().isPersonOnShift(assignee);
     if (!onShift) {
-      throw Exception('Nhân viên "$assignee" chưa điểm danh đầu ca. Không thể giao việc Làm việc một mình.');
+      throw Exception('Employee "$assignee" has not checked in for shift. Cannot assign Alone Worker job.');
     }
     await _repository.addSpecialSoloJob(
       roomId,
@@ -373,7 +372,7 @@ class JobListServiceImpl implements JobListService {
     final currentEmpId = await _employeeService.getCurrentEmployeeId() ?? '555555';
     final hasPerm = await _employeeService.hasPermission(currentEmpId, 'createJob');
     if (!hasPerm) {
-      throw Exception('Nhân viên không có quyền tạo công việc.');
+      throw Exception('Employee lacks permission to create job.');
     }
     await _repository.addCustomMushroomJob(
       roomId: roomId,
