@@ -77,6 +77,7 @@ part 'app_database.g.dart';
   MushroomBreakPolicies,
   MushroomDailyTimesheets,
   MushroomPayrollCalculations,
+  MushroomWindowIssues,
   ChatConversations,
   ChatParticipants,
   ChatMessages,
@@ -101,7 +102,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 31;
+  int get schemaVersion => 32;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -481,6 +482,11 @@ class AppDatabase extends _$AppDatabase {
               await customStatement("ALTER TABLE mushroom_job_types ADD COLUMN department TEXT DEFAULT 'Growing';");
             } catch (_) {}
           }
+          if (from < 32) {
+            try {
+              await m.createTable(mushroomWindowIssues);
+            } catch (_) {}
+          }
         },
         beforeOpen: (details) async {
           // Bảo đảm các cột color, label, icon, sort_order, department luôn tồn tại trên SQLite
@@ -508,6 +514,31 @@ class AppDatabase extends _$AppDatabase {
           } catch (_) {}
           try {
             await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN completed_at TEXT;');
+          } catch (_) {}
+          // Bảo đảm bảng mushroom_window_issues luôn tồn tại
+          try {
+            await customStatement('''
+              CREATE TABLE IF NOT EXISTS mushroom_window_issues (
+                id TEXT NOT NULL PRIMARY KEY,
+                room_name TEXT NOT NULL,
+                rack_index INTEGER NOT NULL DEFAULT 0,
+                level_index INTEGER NOT NULL DEFAULT 0,
+                window_index INTEGER NOT NULL DEFAULT 0,
+                window_code TEXT NOT NULL,
+                category TEXT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT DEFAULT '',
+                severity TEXT NOT NULL DEFAULT 'normal',
+                reporter_name TEXT DEFAULT 'Staff',
+                status TEXT NOT NULL DEFAULT 'open',
+                temperature REAL NOT NULL DEFAULT 19.0,
+                humidity REAL NOT NULL DEFAULT 90.0,
+                co2 REAL NOT NULL DEFAULT 1150.0,
+                casing_temp REAL NOT NULL DEFAULT 19.5,
+                created_at INTEGER NOT NULL,
+                updated_at INTEGER
+              );
+            ''');
           } catch (_) {}
         },
       );

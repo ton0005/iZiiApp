@@ -321,4 +321,30 @@ class MushroomPayrollCalculations extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Báo cáo sự cố / hành động theo ô luống Window (Window Action)
+class MushroomWindowIssues extends Table {
+  TextColumn get id => text()(); // e.g. "ACT-20260917-001"
+  TextColumn get roomName => text()(); // e.g. "Room 33"
+  IntColumn get rackIndex => integer().withDefault(const Constant(0))();
+  IntColumn get levelIndex => integer().withDefault(const Constant(0))();
+  IntColumn get windowIndex => integer().withDefault(const Constant(0))();
+  TextColumn get windowCode => text()(); // e.g. "R1-L2-W4"
+  TextColumn get category => text()(); // disease, safety, qa, working, maintenance
+  TextColumn get title => text()();
+  TextColumn get description => text().nullable().withDefault(const Constant(''))();
+  TextColumn get severity => text().withDefault(const Constant('normal'))(); // low, normal, high, critical
+  TextColumn get reporterName => text().nullable().withDefault(const Constant('Staff'))();
+  TextColumn get status => text().withDefault(const Constant('open'))(); // open, in_progress, resolved
+  RealColumn get temperature => real().withDefault(const Constant(19.0))();
+  RealColumn get humidity => real().withDefault(const Constant(90.0))();
+  RealColumn get co2 => real().withDefault(const Constant(1150.0))();
+  RealColumn get casingTemp => real().withDefault(const Constant(19.5))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+
 

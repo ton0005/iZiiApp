@@ -94,6 +94,7 @@ TABLES = [
     ("picker_teams",                  "id"),
     ("departments",                   "id"),
     ("chat_messages",                 "id"),
+    ("mushroom_window_issues",        "id"),
     # Phase 2: Module System & Model Registry (3 tables)
     ("tenant_modules",                "tenant_id, module_name"),
     ("model_registry",                "tenant_id, model_name"),

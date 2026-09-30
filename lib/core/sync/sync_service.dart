@@ -80,6 +80,7 @@ class SyncService {
   // Sync completion event stream to notify UI BLoCs
   final _syncEventController = StreamController<SyncEvent>.broadcast();
   Stream<SyncEvent> get syncEventStream => _syncEventController.stream;
+  Stream<SyncEvent> get syncEvents => _syncEventController.stream;
 
   bool get isSyncing => _isSyncing;
 
@@ -769,6 +770,16 @@ class SyncService {
 
     _log('   🔄 $table → ${operation ?? 'upsert'}: id=${data['id'] ?? 'N/A'}');
 
+    if (operation == 'delete') {
+      final id = data['id'] as String?;
+      if (id != null && id.isNotEmpty) {
+        if (table == 'mushroom_window_issues') {
+          await (_db.delete(_db.mushroomWindowIssues)..where((t) => t.id.equals(id))).go();
+          return true;
+        }
+      }
+    }
+
     switch (table) {
       case 'leads':
         return _upsertLead(data);
@@ -831,6 +842,8 @@ class SyncService {
         return _upsertMushroomBreakPolicy(data);
       case 'mushroom_payroll_calculations':
         return _upsertMushroomPayrollCalculation(data);
+      case 'mushroom_window_issues':
+        return _upsertMushroomWindowIssue(data);
       default:
         _log('   ⚠️ The "$table" table is not supported for PULL synchronization.');
         return false;
@@ -2072,6 +2085,47 @@ class SyncService {
         createdAt: (data['created_at'] ?? data['createdAt']) != null
             ? DateTime.tryParse((data['created_at'] ?? data['createdAt']).toString()) ?? DateTime.now()
             : DateTime.now(),
+      ),
+    );
+    return true;
+  }
+
+  Future<bool> _upsertMushroomWindowIssue(Map<String, dynamic> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) return false;
+
+    final createdAt = (data['created_at'] ?? data['createdAt']) != null
+        ? DateTime.tryParse((data['created_at'] ?? data['createdAt']).toString()) ?? DateTime.now()
+        : DateTime.now();
+    final updatedAt = (data['updated_at'] ?? data['updatedAt']) != null
+        ? DateTime.tryParse((data['updated_at'] ?? data['updatedAt']).toString())
+        : null;
+
+    final rackIndex = ((data['rack_index'] ?? data['rackIndex']) as num?)?.toInt() ?? 0;
+    final levelIndex = ((data['level_index'] ?? data['levelIndex']) as num?)?.toInt() ?? 0;
+    final windowIndex = ((data['window_index'] ?? data['windowIndex']) as num?)?.toInt() ?? 0;
+    final defaultCode = 'R${rackIndex + 1}-L${levelIndex + 1}-W${windowIndex + 1}';
+
+    await _db.into(_db.mushroomWindowIssues).insertOnConflictUpdate(
+      MushroomWindowIssue(
+        id: id,
+        roomName: (data['room_name'] ?? data['roomName']) as String? ?? 'Room 33',
+        rackIndex: rackIndex,
+        levelIndex: levelIndex,
+        windowIndex: windowIndex,
+        windowCode: (data['window_code'] ?? data['windowCode']) as String? ?? defaultCode,
+        category: (data['category'] as String?) ?? 'disease',
+        title: (data['title'] as String?) ?? 'Window Issue',
+        description: (data['description'] as String?) ?? '',
+        severity: (data['severity'] as String?) ?? 'normal',
+        reporterName: (data['reporter_name'] ?? data['reporterName']) as String? ?? 'Staff',
+        status: (data['status'] as String?) ?? 'open',
+        temperature: ((data['temperature']) as num?)?.toDouble() ?? 19.0,
+        humidity: ((data['humidity']) as num?)?.toDouble() ?? 90.0,
+        co2: ((data['co2']) as num?)?.toDouble() ?? 1150.0,
+        casingTemp: ((data['casing_temp'] ?? data['casingTemp']) as num?)?.toDouble() ?? 19.5,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
       ),
     );
     return true;

@@ -535,6 +535,28 @@ def init_db():
     )""")
 
     cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_window_issues (
+        id TEXT PRIMARY KEY,
+        room_name TEXT NOT NULL,
+        rack_index INTEGER DEFAULT 0,
+        level_index INTEGER DEFAULT 0,
+        window_index INTEGER DEFAULT 0,
+        window_code TEXT NOT NULL,
+        category TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        severity TEXT DEFAULT 'normal',
+        reporter_name TEXT,
+        status TEXT DEFAULT 'open',
+        temperature REAL DEFAULT 19.0,
+        humidity REAL DEFAULT 90.0,
+        co2 REAL DEFAULT 1150.0,
+        casing_temp REAL DEFAULT 19.5,
+        created_at TEXT,
+        updated_at TEXT
+    )""")
+
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS picker_teams (
         id TEXT PRIMARY KEY,
         plan_id TEXT,
@@ -571,7 +593,7 @@ def init_db():
         "mushroom_attendance_events", "mushroom_daily_timesheets",
         "mushroom_break_policies", "mushroom_shifts", "mushroom_payroll_calculations",
         "mushroom_job_safety_configs", "mushroom_safety_checkin_logs",
-        "picker_teams", "departments", "chat_messages",
+        "picker_teams", "departments", "chat_messages", "mushroom_window_issues",
     ]
     for tbl in domain_tables:
         cursor.execute(f"PRAGMA table_info({tbl})")

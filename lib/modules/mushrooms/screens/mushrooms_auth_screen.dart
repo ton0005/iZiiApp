@@ -67,7 +67,8 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
     super.dispose();
   }
 
-  // ═══════════════════════════════════════════════════════════�  Future<void> _handleSignIn() async {
+  // ═══════════════════════════════════════════════════════════
+  Future<void> _handleSignIn() async {
     final empId = _signInIdController.text.trim();
     final pass = _signInPasswordController.text;
 
@@ -329,7 +330,7 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
                                   width: 22,
                                   height: 22,
                                   child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
-                                ),
+                                )
                               : Text(
                                   _isSignUp ? 'Register Account' : 'Sign In',
                                   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, letterSpacing: 0.3),
@@ -563,76 +564,6 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
         _buildInputField(
           controller: _signUpConfirmPasswordController,
           hint: 'Re-enter password',
-          icon: Icons.lock_outline_rounded,
-          isDark: isDark,
-          textColor: textColor,
-          subTextColor: subTextColor,
-          primaryColor: primaryColor,
-          obscure: _obscureSignUpConfirm,
-          suffixIcon: IconButton(
-            icon: Icon(
-              _obscureSignUpConfirm ? Icons.visibility_off_rounded : Icons.visibility_rounded,
-              size: 20,
-              color: subTextColor,
-            ),
-            onPressed: () => setState(() => _obscureSignUpConfirm = !_obscureSignUpConfirm),
-          ),
-          onSubmitted: (_) => _handleSignUp(),
-        ),
-      ],
-    );
-  }            ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildLabel('Phòng Ban', subTextColor),
-                  const SizedBox(height: 6),
-                  _buildDropdown<String>(
-                    value: _selectedDepartment,
-                    items: _departments,
-                    isDark: isDark,
-                    textColor: textColor,
-                    primaryColor: primaryColor,
-                    onChanged: (v) => setState(() => _selectedDepartment = v!),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-
-        _buildLabel('Mật Khẩu', subTextColor),
-        const SizedBox(height: 6),
-        _buildInputField(
-          controller: _signUpPasswordController,
-          hint: 'Tối thiểu 6 ký tự',
-          icon: Icons.lock_rounded,
-          isDark: isDark,
-          textColor: textColor,
-          subTextColor: subTextColor,
-          primaryColor: primaryColor,
-          obscure: _obscureSignUp,
-          suffixIcon: IconButton(
-            icon: Icon(
-              _obscureSignUp ? Icons.visibility_off_rounded : Icons.visibility_rounded,
-              size: 20,
-              color: subTextColor,
-            ),
-            onPressed: () => setState(() => _obscureSignUp = !_obscureSignUp),
-          ),
-        ),
-        const SizedBox(height: 14),
-
-        _buildLabel('Xác Nhận Mật Khẩu', subTextColor),
-        const SizedBox(height: 6),
-        _buildInputField(
-          controller: _signUpConfirmPasswordController,
-          hint: 'Nhập lại mật khẩu',
           icon: Icons.lock_outline_rounded,
           isDark: isDark,
           textColor: textColor,

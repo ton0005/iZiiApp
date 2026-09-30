@@ -336,6 +336,29 @@ DDL_STATEMENTS = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS mushroom_window_issues (
+        id               TEXT PRIMARY KEY,
+        room_name        TEXT NOT NULL,
+        rack_index       INT DEFAULT 0,
+        level_index      INT DEFAULT 0,
+        window_index     INT DEFAULT 0,
+        window_code      TEXT NOT NULL,
+        category         TEXT NOT NULL,
+        title            TEXT NOT NULL,
+        description      TEXT,
+        severity         TEXT DEFAULT 'normal',
+        reporter_name    TEXT,
+        status           TEXT DEFAULT 'open',
+        temperature      REAL DEFAULT 19.0,
+        humidity         REAL DEFAULT 90.0,
+        co2              REAL DEFAULT 1150.0,
+        casing_temp      REAL DEFAULT 19.5,
+        created_at       TEXT,
+        updated_at       TEXT
+    )
+    """,
+    'CREATE INDEX IF NOT EXISTS idx_win_issues_room ON mushroom_window_issues(room_name, status)',
+    """
     CREATE TABLE IF NOT EXISTS mushroom_jobs (
         id              TEXT PRIMARY KEY,
         room_id         TEXT,
@@ -526,6 +549,7 @@ DOMAIN_TABLES = [
     "mushroom_payroll_calculations",
     "mushroom_job_safety_configs",
     "mushroom_safety_checkin_logs",
+    "mushroom_window_issues",
     "picker_teams",
     "departments",
     "chat_messages",

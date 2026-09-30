@@ -24119,6 +24119,852 @@ class MushroomPayrollCalculationsCompanion
   }
 }
 
+class $MushroomWindowIssuesTable extends MushroomWindowIssues
+    with TableInfo<$MushroomWindowIssuesTable, MushroomWindowIssue> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MushroomWindowIssuesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _roomNameMeta =
+      const VerificationMeta('roomName');
+  @override
+  late final GeneratedColumn<String> roomName = GeneratedColumn<String>(
+      'room_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _rackIndexMeta =
+      const VerificationMeta('rackIndex');
+  @override
+  late final GeneratedColumn<int> rackIndex = GeneratedColumn<int>(
+      'rack_index', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _levelIndexMeta =
+      const VerificationMeta('levelIndex');
+  @override
+  late final GeneratedColumn<int> levelIndex = GeneratedColumn<int>(
+      'level_index', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _windowIndexMeta =
+      const VerificationMeta('windowIndex');
+  @override
+  late final GeneratedColumn<int> windowIndex = GeneratedColumn<int>(
+      'window_index', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _windowCodeMeta =
+      const VerificationMeta('windowCode');
+  @override
+  late final GeneratedColumn<String> windowCode = GeneratedColumn<String>(
+      'window_code', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+      'category', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _severityMeta =
+      const VerificationMeta('severity');
+  @override
+  late final GeneratedColumn<String> severity = GeneratedColumn<String>(
+      'severity', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('normal'));
+  static const VerificationMeta _reporterNameMeta =
+      const VerificationMeta('reporterName');
+  @override
+  late final GeneratedColumn<String> reporterName = GeneratedColumn<String>(
+      'reporter_name', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Staff'));
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('open'));
+  static const VerificationMeta _temperatureMeta =
+      const VerificationMeta('temperature');
+  @override
+  late final GeneratedColumn<double> temperature = GeneratedColumn<double>(
+      'temperature', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(19.0));
+  static const VerificationMeta _humidityMeta =
+      const VerificationMeta('humidity');
+  @override
+  late final GeneratedColumn<double> humidity = GeneratedColumn<double>(
+      'humidity', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(90.0));
+  static const VerificationMeta _co2Meta = const VerificationMeta('co2');
+  @override
+  late final GeneratedColumn<double> co2 = GeneratedColumn<double>(
+      'co2', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(1150.0));
+  static const VerificationMeta _casingTempMeta =
+      const VerificationMeta('casingTemp');
+  @override
+  late final GeneratedColumn<double> casingTemp = GeneratedColumn<double>(
+      'casing_temp', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(19.5));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        roomName,
+        rackIndex,
+        levelIndex,
+        windowIndex,
+        windowCode,
+        category,
+        title,
+        description,
+        severity,
+        reporterName,
+        status,
+        temperature,
+        humidity,
+        co2,
+        casingTemp,
+        createdAt,
+        updatedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mushroom_window_issues';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MushroomWindowIssue> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('room_name')) {
+      context.handle(_roomNameMeta,
+          roomName.isAcceptableOrUnknown(data['room_name']!, _roomNameMeta));
+    } else if (isInserting) {
+      context.missing(_roomNameMeta);
+    }
+    if (data.containsKey('rack_index')) {
+      context.handle(_rackIndexMeta,
+          rackIndex.isAcceptableOrUnknown(data['rack_index']!, _rackIndexMeta));
+    }
+    if (data.containsKey('level_index')) {
+      context.handle(
+          _levelIndexMeta,
+          levelIndex.isAcceptableOrUnknown(
+              data['level_index']!, _levelIndexMeta));
+    }
+    if (data.containsKey('window_index')) {
+      context.handle(
+          _windowIndexMeta,
+          windowIndex.isAcceptableOrUnknown(
+              data['window_index']!, _windowIndexMeta));
+    }
+    if (data.containsKey('window_code')) {
+      context.handle(
+          _windowCodeMeta,
+          windowCode.isAcceptableOrUnknown(
+              data['window_code']!, _windowCodeMeta));
+    } else if (isInserting) {
+      context.missing(_windowCodeMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('severity')) {
+      context.handle(_severityMeta,
+          severity.isAcceptableOrUnknown(data['severity']!, _severityMeta));
+    }
+    if (data.containsKey('reporter_name')) {
+      context.handle(
+          _reporterNameMeta,
+          reporterName.isAcceptableOrUnknown(
+              data['reporter_name']!, _reporterNameMeta));
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('temperature')) {
+      context.handle(
+          _temperatureMeta,
+          temperature.isAcceptableOrUnknown(
+              data['temperature']!, _temperatureMeta));
+    }
+    if (data.containsKey('humidity')) {
+      context.handle(_humidityMeta,
+          humidity.isAcceptableOrUnknown(data['humidity']!, _humidityMeta));
+    }
+    if (data.containsKey('co2')) {
+      context.handle(
+          _co2Meta, co2.isAcceptableOrUnknown(data['co2']!, _co2Meta));
+    }
+    if (data.containsKey('casing_temp')) {
+      context.handle(
+          _casingTempMeta,
+          casingTemp.isAcceptableOrUnknown(
+              data['casing_temp']!, _casingTempMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MushroomWindowIssue map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MushroomWindowIssue(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      roomName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}room_name'])!,
+      rackIndex: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}rack_index'])!,
+      levelIndex: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}level_index'])!,
+      windowIndex: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}window_index'])!,
+      windowCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}window_code'])!,
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      severity: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}severity'])!,
+      reporterName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}reporter_name']),
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      temperature: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}temperature'])!,
+      humidity: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}humidity'])!,
+      co2: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}co2'])!,
+      casingTemp: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}casing_temp'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at']),
+    );
+  }
+
+  @override
+  $MushroomWindowIssuesTable createAlias(String alias) {
+    return $MushroomWindowIssuesTable(attachedDatabase, alias);
+  }
+}
+
+class MushroomWindowIssue extends DataClass
+    implements Insertable<MushroomWindowIssue> {
+  final String id;
+  final String roomName;
+  final int rackIndex;
+  final int levelIndex;
+  final int windowIndex;
+  final String windowCode;
+  final String category;
+  final String title;
+  final String? description;
+  final String severity;
+  final String? reporterName;
+  final String status;
+  final double temperature;
+  final double humidity;
+  final double co2;
+  final double casingTemp;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  const MushroomWindowIssue(
+      {required this.id,
+      required this.roomName,
+      required this.rackIndex,
+      required this.levelIndex,
+      required this.windowIndex,
+      required this.windowCode,
+      required this.category,
+      required this.title,
+      this.description,
+      required this.severity,
+      this.reporterName,
+      required this.status,
+      required this.temperature,
+      required this.humidity,
+      required this.co2,
+      required this.casingTemp,
+      required this.createdAt,
+      this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['room_name'] = Variable<String>(roomName);
+    map['rack_index'] = Variable<int>(rackIndex);
+    map['level_index'] = Variable<int>(levelIndex);
+    map['window_index'] = Variable<int>(windowIndex);
+    map['window_code'] = Variable<String>(windowCode);
+    map['category'] = Variable<String>(category);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['severity'] = Variable<String>(severity);
+    if (!nullToAbsent || reporterName != null) {
+      map['reporter_name'] = Variable<String>(reporterName);
+    }
+    map['status'] = Variable<String>(status);
+    map['temperature'] = Variable<double>(temperature);
+    map['humidity'] = Variable<double>(humidity);
+    map['co2'] = Variable<double>(co2);
+    map['casing_temp'] = Variable<double>(casingTemp);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    return map;
+  }
+
+  MushroomWindowIssuesCompanion toCompanion(bool nullToAbsent) {
+    return MushroomWindowIssuesCompanion(
+      id: Value(id),
+      roomName: Value(roomName),
+      rackIndex: Value(rackIndex),
+      levelIndex: Value(levelIndex),
+      windowIndex: Value(windowIndex),
+      windowCode: Value(windowCode),
+      category: Value(category),
+      title: Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      severity: Value(severity),
+      reporterName: reporterName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reporterName),
+      status: Value(status),
+      temperature: Value(temperature),
+      humidity: Value(humidity),
+      co2: Value(co2),
+      casingTemp: Value(casingTemp),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+    );
+  }
+
+  factory MushroomWindowIssue.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MushroomWindowIssue(
+      id: serializer.fromJson<String>(json['id']),
+      roomName: serializer.fromJson<String>(json['roomName']),
+      rackIndex: serializer.fromJson<int>(json['rackIndex']),
+      levelIndex: serializer.fromJson<int>(json['levelIndex']),
+      windowIndex: serializer.fromJson<int>(json['windowIndex']),
+      windowCode: serializer.fromJson<String>(json['windowCode']),
+      category: serializer.fromJson<String>(json['category']),
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
+      severity: serializer.fromJson<String>(json['severity']),
+      reporterName: serializer.fromJson<String?>(json['reporterName']),
+      status: serializer.fromJson<String>(json['status']),
+      temperature: serializer.fromJson<double>(json['temperature']),
+      humidity: serializer.fromJson<double>(json['humidity']),
+      co2: serializer.fromJson<double>(json['co2']),
+      casingTemp: serializer.fromJson<double>(json['casingTemp']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'roomName': serializer.toJson<String>(roomName),
+      'rackIndex': serializer.toJson<int>(rackIndex),
+      'levelIndex': serializer.toJson<int>(levelIndex),
+      'windowIndex': serializer.toJson<int>(windowIndex),
+      'windowCode': serializer.toJson<String>(windowCode),
+      'category': serializer.toJson<String>(category),
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String?>(description),
+      'severity': serializer.toJson<String>(severity),
+      'reporterName': serializer.toJson<String?>(reporterName),
+      'status': serializer.toJson<String>(status),
+      'temperature': serializer.toJson<double>(temperature),
+      'humidity': serializer.toJson<double>(humidity),
+      'co2': serializer.toJson<double>(co2),
+      'casingTemp': serializer.toJson<double>(casingTemp),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+    };
+  }
+
+  MushroomWindowIssue copyWith(
+          {String? id,
+          String? roomName,
+          int? rackIndex,
+          int? levelIndex,
+          int? windowIndex,
+          String? windowCode,
+          String? category,
+          String? title,
+          Value<String?> description = const Value.absent(),
+          String? severity,
+          Value<String?> reporterName = const Value.absent(),
+          String? status,
+          double? temperature,
+          double? humidity,
+          double? co2,
+          double? casingTemp,
+          DateTime? createdAt,
+          Value<DateTime?> updatedAt = const Value.absent()}) =>
+      MushroomWindowIssue(
+        id: id ?? this.id,
+        roomName: roomName ?? this.roomName,
+        rackIndex: rackIndex ?? this.rackIndex,
+        levelIndex: levelIndex ?? this.levelIndex,
+        windowIndex: windowIndex ?? this.windowIndex,
+        windowCode: windowCode ?? this.windowCode,
+        category: category ?? this.category,
+        title: title ?? this.title,
+        description: description.present ? description.value : this.description,
+        severity: severity ?? this.severity,
+        reporterName:
+            reporterName.present ? reporterName.value : this.reporterName,
+        status: status ?? this.status,
+        temperature: temperature ?? this.temperature,
+        humidity: humidity ?? this.humidity,
+        co2: co2 ?? this.co2,
+        casingTemp: casingTemp ?? this.casingTemp,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+      );
+  MushroomWindowIssue copyWithCompanion(MushroomWindowIssuesCompanion data) {
+    return MushroomWindowIssue(
+      id: data.id.present ? data.id.value : this.id,
+      roomName: data.roomName.present ? data.roomName.value : this.roomName,
+      rackIndex: data.rackIndex.present ? data.rackIndex.value : this.rackIndex,
+      levelIndex:
+          data.levelIndex.present ? data.levelIndex.value : this.levelIndex,
+      windowIndex:
+          data.windowIndex.present ? data.windowIndex.value : this.windowIndex,
+      windowCode:
+          data.windowCode.present ? data.windowCode.value : this.windowCode,
+      category: data.category.present ? data.category.value : this.category,
+      title: data.title.present ? data.title.value : this.title,
+      description:
+          data.description.present ? data.description.value : this.description,
+      severity: data.severity.present ? data.severity.value : this.severity,
+      reporterName: data.reporterName.present
+          ? data.reporterName.value
+          : this.reporterName,
+      status: data.status.present ? data.status.value : this.status,
+      temperature:
+          data.temperature.present ? data.temperature.value : this.temperature,
+      humidity: data.humidity.present ? data.humidity.value : this.humidity,
+      co2: data.co2.present ? data.co2.value : this.co2,
+      casingTemp:
+          data.casingTemp.present ? data.casingTemp.value : this.casingTemp,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomWindowIssue(')
+          ..write('id: $id, ')
+          ..write('roomName: $roomName, ')
+          ..write('rackIndex: $rackIndex, ')
+          ..write('levelIndex: $levelIndex, ')
+          ..write('windowIndex: $windowIndex, ')
+          ..write('windowCode: $windowCode, ')
+          ..write('category: $category, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('severity: $severity, ')
+          ..write('reporterName: $reporterName, ')
+          ..write('status: $status, ')
+          ..write('temperature: $temperature, ')
+          ..write('humidity: $humidity, ')
+          ..write('co2: $co2, ')
+          ..write('casingTemp: $casingTemp, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      roomName,
+      rackIndex,
+      levelIndex,
+      windowIndex,
+      windowCode,
+      category,
+      title,
+      description,
+      severity,
+      reporterName,
+      status,
+      temperature,
+      humidity,
+      co2,
+      casingTemp,
+      createdAt,
+      updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MushroomWindowIssue &&
+          other.id == this.id &&
+          other.roomName == this.roomName &&
+          other.rackIndex == this.rackIndex &&
+          other.levelIndex == this.levelIndex &&
+          other.windowIndex == this.windowIndex &&
+          other.windowCode == this.windowCode &&
+          other.category == this.category &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.severity == this.severity &&
+          other.reporterName == this.reporterName &&
+          other.status == this.status &&
+          other.temperature == this.temperature &&
+          other.humidity == this.humidity &&
+          other.co2 == this.co2 &&
+          other.casingTemp == this.casingTemp &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class MushroomWindowIssuesCompanion
+    extends UpdateCompanion<MushroomWindowIssue> {
+  final Value<String> id;
+  final Value<String> roomName;
+  final Value<int> rackIndex;
+  final Value<int> levelIndex;
+  final Value<int> windowIndex;
+  final Value<String> windowCode;
+  final Value<String> category;
+  final Value<String> title;
+  final Value<String?> description;
+  final Value<String> severity;
+  final Value<String?> reporterName;
+  final Value<String> status;
+  final Value<double> temperature;
+  final Value<double> humidity;
+  final Value<double> co2;
+  final Value<double> casingTemp;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  final Value<int> rowid;
+  const MushroomWindowIssuesCompanion({
+    this.id = const Value.absent(),
+    this.roomName = const Value.absent(),
+    this.rackIndex = const Value.absent(),
+    this.levelIndex = const Value.absent(),
+    this.windowIndex = const Value.absent(),
+    this.windowCode = const Value.absent(),
+    this.category = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.severity = const Value.absent(),
+    this.reporterName = const Value.absent(),
+    this.status = const Value.absent(),
+    this.temperature = const Value.absent(),
+    this.humidity = const Value.absent(),
+    this.co2 = const Value.absent(),
+    this.casingTemp = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MushroomWindowIssuesCompanion.insert({
+    required String id,
+    required String roomName,
+    this.rackIndex = const Value.absent(),
+    this.levelIndex = const Value.absent(),
+    this.windowIndex = const Value.absent(),
+    required String windowCode,
+    required String category,
+    required String title,
+    this.description = const Value.absent(),
+    this.severity = const Value.absent(),
+    this.reporterName = const Value.absent(),
+    this.status = const Value.absent(),
+    this.temperature = const Value.absent(),
+    this.humidity = const Value.absent(),
+    this.co2 = const Value.absent(),
+    this.casingTemp = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        roomName = Value(roomName),
+        windowCode = Value(windowCode),
+        category = Value(category),
+        title = Value(title);
+  static Insertable<MushroomWindowIssue> custom({
+    Expression<String>? id,
+    Expression<String>? roomName,
+    Expression<int>? rackIndex,
+    Expression<int>? levelIndex,
+    Expression<int>? windowIndex,
+    Expression<String>? windowCode,
+    Expression<String>? category,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<String>? severity,
+    Expression<String>? reporterName,
+    Expression<String>? status,
+    Expression<double>? temperature,
+    Expression<double>? humidity,
+    Expression<double>? co2,
+    Expression<double>? casingTemp,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (roomName != null) 'room_name': roomName,
+      if (rackIndex != null) 'rack_index': rackIndex,
+      if (levelIndex != null) 'level_index': levelIndex,
+      if (windowIndex != null) 'window_index': windowIndex,
+      if (windowCode != null) 'window_code': windowCode,
+      if (category != null) 'category': category,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (severity != null) 'severity': severity,
+      if (reporterName != null) 'reporter_name': reporterName,
+      if (status != null) 'status': status,
+      if (temperature != null) 'temperature': temperature,
+      if (humidity != null) 'humidity': humidity,
+      if (co2 != null) 'co2': co2,
+      if (casingTemp != null) 'casing_temp': casingTemp,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MushroomWindowIssuesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? roomName,
+      Value<int>? rackIndex,
+      Value<int>? levelIndex,
+      Value<int>? windowIndex,
+      Value<String>? windowCode,
+      Value<String>? category,
+      Value<String>? title,
+      Value<String?>? description,
+      Value<String>? severity,
+      Value<String?>? reporterName,
+      Value<String>? status,
+      Value<double>? temperature,
+      Value<double>? humidity,
+      Value<double>? co2,
+      Value<double>? casingTemp,
+      Value<DateTime>? createdAt,
+      Value<DateTime?>? updatedAt,
+      Value<int>? rowid}) {
+    return MushroomWindowIssuesCompanion(
+      id: id ?? this.id,
+      roomName: roomName ?? this.roomName,
+      rackIndex: rackIndex ?? this.rackIndex,
+      levelIndex: levelIndex ?? this.levelIndex,
+      windowIndex: windowIndex ?? this.windowIndex,
+      windowCode: windowCode ?? this.windowCode,
+      category: category ?? this.category,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      severity: severity ?? this.severity,
+      reporterName: reporterName ?? this.reporterName,
+      status: status ?? this.status,
+      temperature: temperature ?? this.temperature,
+      humidity: humidity ?? this.humidity,
+      co2: co2 ?? this.co2,
+      casingTemp: casingTemp ?? this.casingTemp,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (roomName.present) {
+      map['room_name'] = Variable<String>(roomName.value);
+    }
+    if (rackIndex.present) {
+      map['rack_index'] = Variable<int>(rackIndex.value);
+    }
+    if (levelIndex.present) {
+      map['level_index'] = Variable<int>(levelIndex.value);
+    }
+    if (windowIndex.present) {
+      map['window_index'] = Variable<int>(windowIndex.value);
+    }
+    if (windowCode.present) {
+      map['window_code'] = Variable<String>(windowCode.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (severity.present) {
+      map['severity'] = Variable<String>(severity.value);
+    }
+    if (reporterName.present) {
+      map['reporter_name'] = Variable<String>(reporterName.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (temperature.present) {
+      map['temperature'] = Variable<double>(temperature.value);
+    }
+    if (humidity.present) {
+      map['humidity'] = Variable<double>(humidity.value);
+    }
+    if (co2.present) {
+      map['co2'] = Variable<double>(co2.value);
+    }
+    if (casingTemp.present) {
+      map['casing_temp'] = Variable<double>(casingTemp.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MushroomWindowIssuesCompanion(')
+          ..write('id: $id, ')
+          ..write('roomName: $roomName, ')
+          ..write('rackIndex: $rackIndex, ')
+          ..write('levelIndex: $levelIndex, ')
+          ..write('windowIndex: $windowIndex, ')
+          ..write('windowCode: $windowCode, ')
+          ..write('category: $category, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('severity: $severity, ')
+          ..write('reporterName: $reporterName, ')
+          ..write('status: $status, ')
+          ..write('temperature: $temperature, ')
+          ..write('humidity: $humidity, ')
+          ..write('co2: $co2, ')
+          ..write('casingTemp: $casingTemp, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ChatConversationsTable extends ChatConversations
     with TableInfo<$ChatConversationsTable, ChatConversation> {
   @override
@@ -27919,6 +28765,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MushroomDailyTimesheetsTable(this);
   late final $MushroomPayrollCalculationsTable mushroomPayrollCalculations =
       $MushroomPayrollCalculationsTable(this);
+  late final $MushroomWindowIssuesTable mushroomWindowIssues =
+      $MushroomWindowIssuesTable(this);
   late final $ChatConversationsTable chatConversations =
       $ChatConversationsTable(this);
   late final $ChatParticipantsTable chatParticipants =
@@ -27994,6 +28842,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         mushroomBreakPolicies,
         mushroomDailyTimesheets,
         mushroomPayrollCalculations,
+        mushroomWindowIssues,
         chatConversations,
         chatParticipants,
         chatMessages,
@@ -40064,6 +40913,381 @@ typedef $$MushroomPayrollCalculationsTableProcessedTableManager
         ),
         MushroomPayrollCalculation,
         PrefetchHooks Function()>;
+typedef $$MushroomWindowIssuesTableCreateCompanionBuilder
+    = MushroomWindowIssuesCompanion Function({
+  required String id,
+  required String roomName,
+  Value<int> rackIndex,
+  Value<int> levelIndex,
+  Value<int> windowIndex,
+  required String windowCode,
+  required String category,
+  required String title,
+  Value<String?> description,
+  Value<String> severity,
+  Value<String?> reporterName,
+  Value<String> status,
+  Value<double> temperature,
+  Value<double> humidity,
+  Value<double> co2,
+  Value<double> casingTemp,
+  Value<DateTime> createdAt,
+  Value<DateTime?> updatedAt,
+  Value<int> rowid,
+});
+typedef $$MushroomWindowIssuesTableUpdateCompanionBuilder
+    = MushroomWindowIssuesCompanion Function({
+  Value<String> id,
+  Value<String> roomName,
+  Value<int> rackIndex,
+  Value<int> levelIndex,
+  Value<int> windowIndex,
+  Value<String> windowCode,
+  Value<String> category,
+  Value<String> title,
+  Value<String?> description,
+  Value<String> severity,
+  Value<String?> reporterName,
+  Value<String> status,
+  Value<double> temperature,
+  Value<double> humidity,
+  Value<double> co2,
+  Value<double> casingTemp,
+  Value<DateTime> createdAt,
+  Value<DateTime?> updatedAt,
+  Value<int> rowid,
+});
+
+class $$MushroomWindowIssuesTableFilterComposer
+    extends Composer<_$AppDatabase, $MushroomWindowIssuesTable> {
+  $$MushroomWindowIssuesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get roomName => $composableBuilder(
+      column: $table.roomName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get rackIndex => $composableBuilder(
+      column: $table.rackIndex, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get levelIndex => $composableBuilder(
+      column: $table.levelIndex, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get windowIndex => $composableBuilder(
+      column: $table.windowIndex, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get windowCode => $composableBuilder(
+      column: $table.windowCode, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get severity => $composableBuilder(
+      column: $table.severity, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get reporterName => $composableBuilder(
+      column: $table.reporterName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get temperature => $composableBuilder(
+      column: $table.temperature, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get humidity => $composableBuilder(
+      column: $table.humidity, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get co2 => $composableBuilder(
+      column: $table.co2, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get casingTemp => $composableBuilder(
+      column: $table.casingTemp, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$MushroomWindowIssuesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MushroomWindowIssuesTable> {
+  $$MushroomWindowIssuesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get roomName => $composableBuilder(
+      column: $table.roomName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get rackIndex => $composableBuilder(
+      column: $table.rackIndex, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get levelIndex => $composableBuilder(
+      column: $table.levelIndex, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get windowIndex => $composableBuilder(
+      column: $table.windowIndex, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get windowCode => $composableBuilder(
+      column: $table.windowCode, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get severity => $composableBuilder(
+      column: $table.severity, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get reporterName => $composableBuilder(
+      column: $table.reporterName,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get temperature => $composableBuilder(
+      column: $table.temperature, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get humidity => $composableBuilder(
+      column: $table.humidity, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get co2 => $composableBuilder(
+      column: $table.co2, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get casingTemp => $composableBuilder(
+      column: $table.casingTemp, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$MushroomWindowIssuesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MushroomWindowIssuesTable> {
+  $$MushroomWindowIssuesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get roomName =>
+      $composableBuilder(column: $table.roomName, builder: (column) => column);
+
+  GeneratedColumn<int> get rackIndex =>
+      $composableBuilder(column: $table.rackIndex, builder: (column) => column);
+
+  GeneratedColumn<int> get levelIndex => $composableBuilder(
+      column: $table.levelIndex, builder: (column) => column);
+
+  GeneratedColumn<int> get windowIndex => $composableBuilder(
+      column: $table.windowIndex, builder: (column) => column);
+
+  GeneratedColumn<String> get windowCode => $composableBuilder(
+      column: $table.windowCode, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get severity =>
+      $composableBuilder(column: $table.severity, builder: (column) => column);
+
+  GeneratedColumn<String> get reporterName => $composableBuilder(
+      column: $table.reporterName, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<double> get temperature => $composableBuilder(
+      column: $table.temperature, builder: (column) => column);
+
+  GeneratedColumn<double> get humidity =>
+      $composableBuilder(column: $table.humidity, builder: (column) => column);
+
+  GeneratedColumn<double> get co2 =>
+      $composableBuilder(column: $table.co2, builder: (column) => column);
+
+  GeneratedColumn<double> get casingTemp => $composableBuilder(
+      column: $table.casingTemp, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$MushroomWindowIssuesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MushroomWindowIssuesTable,
+    MushroomWindowIssue,
+    $$MushroomWindowIssuesTableFilterComposer,
+    $$MushroomWindowIssuesTableOrderingComposer,
+    $$MushroomWindowIssuesTableAnnotationComposer,
+    $$MushroomWindowIssuesTableCreateCompanionBuilder,
+    $$MushroomWindowIssuesTableUpdateCompanionBuilder,
+    (
+      MushroomWindowIssue,
+      BaseReferences<_$AppDatabase, $MushroomWindowIssuesTable,
+          MushroomWindowIssue>
+    ),
+    MushroomWindowIssue,
+    PrefetchHooks Function()> {
+  $$MushroomWindowIssuesTableTableManager(
+      _$AppDatabase db, $MushroomWindowIssuesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MushroomWindowIssuesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MushroomWindowIssuesTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MushroomWindowIssuesTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> roomName = const Value.absent(),
+            Value<int> rackIndex = const Value.absent(),
+            Value<int> levelIndex = const Value.absent(),
+            Value<int> windowIndex = const Value.absent(),
+            Value<String> windowCode = const Value.absent(),
+            Value<String> category = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String> severity = const Value.absent(),
+            Value<String?> reporterName = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<double> temperature = const Value.absent(),
+            Value<double> humidity = const Value.absent(),
+            Value<double> co2 = const Value.absent(),
+            Value<double> casingTemp = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomWindowIssuesCompanion(
+            id: id,
+            roomName: roomName,
+            rackIndex: rackIndex,
+            levelIndex: levelIndex,
+            windowIndex: windowIndex,
+            windowCode: windowCode,
+            category: category,
+            title: title,
+            description: description,
+            severity: severity,
+            reporterName: reporterName,
+            status: status,
+            temperature: temperature,
+            humidity: humidity,
+            co2: co2,
+            casingTemp: casingTemp,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String roomName,
+            Value<int> rackIndex = const Value.absent(),
+            Value<int> levelIndex = const Value.absent(),
+            Value<int> windowIndex = const Value.absent(),
+            required String windowCode,
+            required String category,
+            required String title,
+            Value<String?> description = const Value.absent(),
+            Value<String> severity = const Value.absent(),
+            Value<String?> reporterName = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<double> temperature = const Value.absent(),
+            Value<double> humidity = const Value.absent(),
+            Value<double> co2 = const Value.absent(),
+            Value<double> casingTemp = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MushroomWindowIssuesCompanion.insert(
+            id: id,
+            roomName: roomName,
+            rackIndex: rackIndex,
+            levelIndex: levelIndex,
+            windowIndex: windowIndex,
+            windowCode: windowCode,
+            category: category,
+            title: title,
+            description: description,
+            severity: severity,
+            reporterName: reporterName,
+            status: status,
+            temperature: temperature,
+            humidity: humidity,
+            co2: co2,
+            casingTemp: casingTemp,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$MushroomWindowIssuesTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $MushroomWindowIssuesTable,
+        MushroomWindowIssue,
+        $$MushroomWindowIssuesTableFilterComposer,
+        $$MushroomWindowIssuesTableOrderingComposer,
+        $$MushroomWindowIssuesTableAnnotationComposer,
+        $$MushroomWindowIssuesTableCreateCompanionBuilder,
+        $$MushroomWindowIssuesTableUpdateCompanionBuilder,
+        (
+          MushroomWindowIssue,
+          BaseReferences<_$AppDatabase, $MushroomWindowIssuesTable,
+              MushroomWindowIssue>
+        ),
+        MushroomWindowIssue,
+        PrefetchHooks Function()>;
 typedef $$ChatConversationsTableCreateCompanionBuilder
     = ChatConversationsCompanion Function({
   required String id,
@@ -42114,6 +43338,8 @@ class $AppDatabaseManager {
       get mushroomPayrollCalculations =>
           $$MushroomPayrollCalculationsTableTableManager(
               _db, _db.mushroomPayrollCalculations);
+  $$MushroomWindowIssuesTableTableManager get mushroomWindowIssues =>
+      $$MushroomWindowIssuesTableTableManager(_db, _db.mushroomWindowIssues);
   $$ChatConversationsTableTableManager get chatConversations =>
       $$ChatConversationsTableTableManager(_db, _db.chatConversations);
   $$ChatParticipantsTableTableManager get chatParticipants =>

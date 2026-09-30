@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:izii_app/core/sync/sync_service.dart';
+import '../../../core/database/app_database.dart';
 import '../repository.dart';
 
 /// 5 nhóm phân loại sự cố / hành động theo quy trình nuôi trồng nấm
@@ -208,13 +210,84 @@ class WindowIssueReport {
       casingTemp: casingTemp,
     );
   }
+
+  factory WindowIssueReport.fromDb(MushroomWindowIssue row) {
+    return WindowIssueReport(
+      id: row.id,
+      roomName: row.roomName,
+      rackIndex: row.rackIndex,
+      levelIndex: row.levelIndex,
+      windowIndex: row.windowIndex,
+      windowCode: row.windowCode,
+      category: WindowIssueCategory.values.firstWhere(
+        (c) => c.name == row.category,
+        orElse: () => WindowIssueCategory.disease,
+      ),
+      title: row.title,
+      description: row.description ?? '',
+      severity: row.severity,
+      reporterName: row.reporterName ?? 'Staff',
+      createdAt: row.createdAt,
+      status: row.status,
+      temperature: row.temperature,
+      humidity: row.humidity,
+      co2: row.co2,
+      casingTemp: row.casingTemp,
+    );
+  }
+
+  MushroomWindowIssue toDb() {
+    return MushroomWindowIssue(
+      id: id,
+      roomName: roomName,
+      rackIndex: rackIndex,
+      levelIndex: levelIndex,
+      windowIndex: windowIndex,
+      windowCode: windowCode,
+      category: category.name,
+      title: title,
+      description: description,
+      severity: severity,
+      reporterName: reporterName,
+      status: status,
+      temperature: temperature,
+      humidity: humidity,
+      co2: co2,
+      casingTemp: casingTemp,
+      createdAt: createdAt,
+      updatedAt: DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toSnakeCaseJson() => {
+        'id': id,
+        'room_name': roomName,
+        'rack_index': rackIndex,
+        'level_index': levelIndex,
+        'window_index': windowIndex,
+        'window_code': windowCode,
+        'category': category.name,
+        'title': title,
+        'description': description,
+        'severity': severity,
+        'reporter_name': reporterName,
+        'status': status,
+        'temperature': temperature,
+        'humidity': humidity,
+        'co2': co2,
+        'casing_temp': casingTemp,
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      };
 }
 
 /// Dịch vụ quản lý, lưu trữ và phát thông báo sự cố / hành động trên các ô Window
 class WindowActionService {
   static final WindowActionService _instance = WindowActionService._internal();
   factory WindowActionService() => _instance;
-  WindowActionService._internal();
+  WindowActionService._internal() {
+    _initWatch();
+  }
 
   static const String _prefKey = 'izii_grow_room_window_issues_v1';
   final _issuesController =
@@ -224,8 +297,31 @@ class WindowActionService {
 
   List<WindowIssueReport> _cachedIssues = [];
   bool _isInitialized = false;
+  StreamSubscription? _dbSubscription;
+  StreamSubscription? _syncSubscription;
 
-  /// Khởi tạo và nạp dữ liệu từ lưu trữ
+  void _initWatch() {
+    _dbSubscription?.cancel();
+    _dbSubscription = MushroomsRepository().watchWindowIssues().listen((rows) {
+      _cachedIssues = rows.map((r) => WindowIssueReport.fromDb(r)).toList();
+      _notify();
+    });
+
+    _syncSubscription?.cancel();
+    _syncSubscription = SyncService().syncEventStream.listen((event) {
+      if (event.tables.contains('mushroom_window_issues')) {
+        _reloadFromDb();
+      }
+    });
+  }
+
+  Future<void> _reloadFromDb() async {
+    final rows = await MushroomsRepository().getWindowIssues();
+    _cachedIssues = rows.map((r) => WindowIssueReport.fromDb(r)).toList();
+    _notify();
+  }
+
+  /// Khởi tạo và nạp dữ liệu từ SQLite DB (và tự động chuyển giao từ SharedPreferences nếu có)
   Future<List<WindowIssueReport>> getIssues({String? roomName}) async {
     if (!_isInitialized) {
       await _loadFromStorage();
@@ -250,37 +346,57 @@ class WindowActionService {
     return active.length;
   }
 
-  /// Nạp danh sách từ SharedPreferences (hoặc gieo mầm dữ liệu mẫu nếu trống)
+  /// Nạp danh sách từ SQLite DB, tự động migrate từ SharedPreferences hoặc gieo mầm nếu DB trống
   Future<void> _loadFromStorage() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonStr = prefs.getString(_prefKey);
-      if (jsonStr != null && jsonStr.isNotEmpty) {
-        final List list = jsonDecode(jsonStr);
-        _cachedIssues =
-            list.map((e) => WindowIssueReport.fromJson(e)).toList();
-      } else {
-        // Gieo mầm các sự cố mẫu thực tế để kiểm tra ngay
-        _cachedIssues = _createSeedIssues();
-        await _saveToStorage();
+      final repo = MushroomsRepository();
+      var rows = await repo.getWindowIssues();
+
+      if (rows.isEmpty) {
+        // Kiểm tra xem SharedPreferences có dữ liệu cũ cần migrate không
+        final prefs = await SharedPreferences.getInstance();
+        final jsonStr = prefs.getString(_prefKey);
+        if (jsonStr != null && jsonStr.isNotEmpty) {
+          try {
+            final List list = jsonDecode(jsonStr);
+            final legacyReports = list.map((e) => WindowIssueReport.fromJson(e)).toList();
+            for (final report in legacyReports) {
+              await repo.saveWindowIssue(report.toDb());
+              await SyncService().queueMutation(
+                'mushroom_window_issues',
+                'insert',
+                report.toSnakeCaseJson(),
+              );
+            }
+            unawaited(SyncService().flushOutbox());
+          } catch (_) {}
+        } else {
+          // Gieo mầm các sự cố mẫu ban đầu vào DB và đồng bộ lên server
+          final seed = _createSeedIssues();
+          for (final report in seed) {
+            await repo.saveWindowIssue(report.toDb());
+            await SyncService().queueMutation(
+              'mushroom_window_issues',
+              'insert',
+              report.toSnakeCaseJson(),
+            );
+          }
+          unawaited(SyncService().flushOutbox());
+        }
+        rows = await repo.getWindowIssues();
       }
+
+      _cachedIssues = rows.map((r) => WindowIssueReport.fromDb(r)).toList();
     } catch (_) {
       _cachedIssues = _createSeedIssues();
     }
     _notify();
   }
 
-  Future<void> _saveToStorage() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonStr = jsonEncode(_cachedIssues.map((e) => e.toJson()).toList());
-      await prefs.setString(_prefKey, jsonStr);
-    } catch (_) {}
-    _notify();
-  }
-
   void _notify() {
-    _issuesController.add(List.unmodifiable(_cachedIssues));
+    if (!_issuesController.isClosed) {
+      _issuesController.add(List.unmodifiable(_cachedIssues));
+    }
   }
 
   /// Báo cáo sự cố mới cho một Window
@@ -330,8 +446,20 @@ class WindowActionService {
       casingTemp: casingTemp,
     );
 
+    // Lưu vào SQLite DB
+    await MushroomsRepository().saveWindowIssue(report.toDb());
+
+    // Đẩy mutation đồng bộ lên iZiiServer (PostgreSQL) cho các thiết bị khác (iPad/Samsung/PC)
+    await SyncService().queueMutation(
+      'mushroom_window_issues',
+      'insert',
+      report.toSnakeCaseJson(),
+    );
+    unawaited(SyncService().flushOutbox());
+
+    _cachedIssues.removeWhere((i) => i.id == issueId);
     _cachedIssues.insert(0, report);
-    await _saveToStorage();
+    _notify();
 
     // Nếu sự cố thuộc nhóm Maintenance, tự động đồng bộ tạo Maintenance Ticket trong DB
     if (category == WindowIssueCategory.maintenance) {
@@ -352,17 +480,39 @@ class WindowActionService {
 
   /// Cập nhật trạng thái sự cố ("open", "in_progress", "resolved")
   Future<void> updateIssueStatus(String issueId, String newStatus) async {
+    await MushroomsRepository().updateWindowIssueStatus(issueId, newStatus);
+
+    await SyncService().queueMutation(
+      'mushroom_window_issues',
+      'update',
+      {
+        'id': issueId,
+        'status': newStatus,
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+    );
+    unawaited(SyncService().flushOutbox());
+
     final idx = _cachedIssues.indexWhere((i) => i.id == issueId);
     if (idx != -1) {
       _cachedIssues[idx] = _cachedIssues[idx].copyWith(status: newStatus);
-      await _saveToStorage();
+      _notify();
     }
   }
 
   /// Xóa sự cố
   Future<void> deleteIssue(String issueId) async {
+    await MushroomsRepository().deleteWindowIssue(issueId);
+
+    await SyncService().queueMutation(
+      'mushroom_window_issues',
+      'delete',
+      {'id': issueId},
+    );
+    unawaited(SyncService().flushOutbox());
+
     _cachedIssues.removeWhere((i) => i.id == issueId);
-    await _saveToStorage();
+    _notify();
   }
 
   /// Lấy bản đồ các ô đang có sự cố chưa xử lý theo phòng

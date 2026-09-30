@@ -83,6 +83,8 @@ class iZiiEventEngine:
             "service_items": "service.item_created",
             "accounts": "financial.account_updated",
             "journal_entries": "financial.journal_posted",
+            "mushroom_window_issues": "mushroom.window_issue_created" if op in ("insert", "create") else "mushroom.window_issue_updated",
+            "window_issues": "mushroom.window_issue_created" if op in ("insert", "create") else "mushroom.window_issue_updated",
         }
         
         return mapping.get(table, f"{table}.{op}")

@@ -49,6 +49,7 @@ class SyncConfigRepository {
     'mushroom_payroll_calculations': 'mushroom_farm',
     'mushroom_yield_surveys': 'mushroom_farm',
     'mushroom_employee_department_roles': 'mushroom_farm',
+    'mushroom_window_issues': 'mushroom_farm',
   };
 
   /// Lists of modules and metadata

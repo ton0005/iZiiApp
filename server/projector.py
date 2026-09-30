@@ -25,6 +25,7 @@ TABLE_ALIASES = {
     "daily_timesheets": "mushroom_daily_timesheets",
     "safety_configs": "mushroom_job_safety_configs",
     "safety_logs": "mushroom_safety_checkin_logs",
+    "window_issues": "mushroom_window_issues",
 }
 
 BOOLEAN_COLS = {

@@ -2922,4 +2922,43 @@ class MushroomsRepository {
       };
     }
   }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // Window Issues (Window Action & 3D Grow Room Alerts)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  Future<List<MushroomWindowIssue>> getWindowIssues({String? roomName}) async {
+    final query = _db.select(_db.mushroomWindowIssues)
+      ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]);
+    if (roomName != null && roomName.isNotEmpty) {
+      query.where((t) => t.roomName.equals(roomName));
+    }
+    return await query.get();
+  }
+
+  Stream<List<MushroomWindowIssue>> watchWindowIssues({String? roomName}) {
+    final query = _db.select(_db.mushroomWindowIssues)
+      ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]);
+    if (roomName != null && roomName.isNotEmpty) {
+      query.where((t) => t.roomName.equals(roomName));
+    }
+    return query.watch();
+  }
+
+  Future<void> saveWindowIssue(MushroomWindowIssue issue) async {
+    await _db.into(_db.mushroomWindowIssues).insertOnConflictUpdate(issue);
+  }
+
+  Future<void> updateWindowIssueStatus(String id, String status) async {
+    await (_db.update(_db.mushroomWindowIssues)..where((t) => t.id.equals(id))).write(
+      MushroomWindowIssuesCompanion(
+        status: Value(status),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<void> deleteWindowIssue(String id) async {
+    await (_db.delete(_db.mushroomWindowIssues)..where((t) => t.id.equals(id))).go();
+  }
 }
