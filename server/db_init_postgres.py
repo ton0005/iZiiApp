@@ -416,7 +416,12 @@ DDL_STATEMENTS = [
         id              TEXT PRIMARY KEY,
         conversation_id TEXT,
         sender_id       TEXT,
+        type            TEXT DEFAULT 'text',
         content         TEXT,
+        sent_at         TEXT,
+        delivered_at    TEXT,
+        read_at         TEXT,
+        is_deleted      BOOLEAN DEFAULT FALSE,
         created_at      TEXT,
         is_seed         BOOLEAN DEFAULT FALSE
     )
@@ -488,6 +493,11 @@ ALTER_STATEMENTS = [
     'ALTER TABLE picker_teams ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE',
     'ALTER TABLE departments ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE',
     'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE',
+    "ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'text'",
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS sent_at TEXT',
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS delivered_at TEXT',
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS read_at TEXT',
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE',
     # Idempotent conversion of columns to native BOOLEAN
     """
     DO $$

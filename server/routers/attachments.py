@@ -32,6 +32,7 @@ async def upload_attachment(file: UploadFile = File(...)):
                 buffer.write(contents)
             
         file_size = len(contents)
+        print(f"📥 [ATTACHMENT] Đã nhận tệp: {original_name} ({file_size} bytes) -> {unique_filename}")
         
         # Return attachment info. URL is relative, client can prepend the server base URL.
         return {
@@ -42,4 +43,5 @@ async def upload_attachment(file: UploadFile = File(...)):
             "size": file_size
         }
     except Exception as e:
+        print(f"❌ [ATTACHMENT] Lỗi tải lên tệp đính kèm: {e}")
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")

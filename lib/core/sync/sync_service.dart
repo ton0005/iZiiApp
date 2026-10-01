@@ -454,7 +454,15 @@ class SyncService {
     void Function(int sent, int total)? onProgress,
   }) async {
     try {
-      final url = await _settingsService.getSyncServerUrl();
+      var url = (await _settingsService.getSyncServerUrl()).trim();
+      while (url.endsWith('/')) {
+        url = url.substring(0, url.length - 1);
+      }
+      if (url.isEmpty) {
+        _log('⚠️ [ATTACHMENT] Chưa cấu hình địa chỉ máy chủ (Sync Server URL rỗng)');
+        return null;
+      }
+
       final token = await _settingsService.getSyncToken();
       
       final file = await MultipartFile.fromFile(filePath);
@@ -462,21 +470,42 @@ class SyncService {
         'file': file,
       });
       
+      final uploadUrl = '$url/api/v1/attachments/upload';
+      _log('📤 [ATTACHMENT] Đang gửi tệp đính kèm tới $uploadUrl ($filePath)');
+      
       final response = await _dio.post(
-        '$url/api/v1/attachments/upload',
+        uploadUrl,
         data: formData,
         onSendProgress: onProgress,
-        options: Options(headers: {
-          if (token.isNotEmpty) 'Authorization': 'Bearer $token',
-        }),
+        options: Options(
+          headers: {
+            if (token.isNotEmpty) ...{
+              'Authorization': 'Bearer $token',
+              'X-Server-Secret': token,
+            },
+          },
+          validateStatus: (code) => code != null && code < 500,
+        ),
       );
       
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = response.data as Map<String, dynamic>;
-        return data['url'] as String?;
+        Map<String, dynamic> data;
+        if (response.data is Map) {
+          data = Map<String, dynamic>.from(response.data as Map);
+        } else if (response.data is String) {
+          data = Map<String, dynamic>.from(jsonDecode(response.data as String) as Map);
+        } else {
+          _log('❌ [ATTACHMENT] Phản hồi upload không đúng định dạng: ${response.data}');
+          return null;
+        }
+        final remoteUrl = data['url'] as String?;
+        _log('✅ [ATTACHMENT] Tải lên thành công: $remoteUrl');
+        return remoteUrl;
+      } else {
+        _log('❌ [ATTACHMENT] Server trả về mã lỗi: ${response.statusCode}, body: ${response.data}');
       }
-    } catch (e) {
-      _log('Lỗi tải tệp đính kèm: $e');
+    } catch (e, stack) {
+      _log('❌ [ATTACHMENT] Lỗi tải tệp đính kèm: $e\n$stack');
     }
     return null;
   }
@@ -513,7 +542,11 @@ class SyncService {
   Future<void> _uploadPendingAttachments() async {
     try {
       final pendingMessages = await (_db.select(_db.chatMessages)
-        ..where((tbl) => tbl.type.equals('file') & tbl.content.contains('pending')))
+        ..where((tbl) =>
+            tbl.type.equals('file') &
+            (tbl.content.contains('pending') |
+                tbl.content.contains('failed') |
+                tbl.content.contains('uploading'))))
         .get();
       if (pendingMessages.isEmpty) return;
 

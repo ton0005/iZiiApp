@@ -1,0 +1,422 @@
+I/flutter (13821): [SyncService] 📤 [ATTACHMENT] Đang gửi tệp đính kèm tới https://costa-mushroom.iziiapp.com/api/v1/attachments/upload (/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790896194788_1000014822.jpg)
+I/flutter (13821): [Call] ICE servers: [{urls: [stun:stun.l.google.com:19302, stun:stun1.l.google.com:19302]}, {urls: [stun:stun2.l.google.com:19302, stun:stun3.l.google.com:19302]}, {urls: [stun:stun4.l.google.com:19302]}]
+I/flutter (13821): [Call] ICE servers: [{urls: [stun:stun.l.google.com:19302, stun:stun1.l.google.com:19302]}, {urls: [stun:stun2.l.google.com:19302, stun:stun3.l.google.com:19302]}, {urls: [stun:stun4.l.google.com:19302]}]
+D/FlutterWebRTCPlugin(13821): peerConnectionSetLocalDescription(): WEBRTC_SET_LOCAL_DESCRIPTION_ERROR: Failed to set local offer sdp: Failed to apply the description for m= section with mid='0': Local fingerprint does not match identity. Expected: sha-256 E2:2C:BD:C8:45:53:39:22:9B:F5:27:C3:C9:D9:5D:F7:EB:2D:5C:28:29:98:41:F6:66:E4:8E:15:5D:24:B9:54 Got: sha-256 B4:BA:A5:F4:D3:15:11:27:29:38:11:35:27:D3:D8:15:77:20:6A:0B:38:F7:09:10:75:40:08:5D:54:86:EB:3D
+D/FlutterWebRTCPlugin(13821): peerConnectionSetLocalDescription(): WEBRTC_SET_LOCAL_DESCRIPTION_ERROR: Session error code: ERROR_CONTENT. Session error description: Failed to apply the description for m= section with mid='0': Local fingerprint does not match identity. Expected: sha-256 E2:2C:BD:C8:45:53:39:22:9B:F5:27:C3:C9:D9:5D:F7:EB:2D:5C:28:29:98:41:F6:66:E4:8E:15:5D:24:B9:54 Got: sha-256 B4:BA:A5:F4:D3:15:11:27:29:38:11:35:27:D3:D8:15:77:20:6A:0B:38:F7:09:10:75:40:08:5D:54:86:EB:3D.
+D/FlutterWebRTCPlugin(13821): onConnectionChangeCLOSED
+I/flutter (13821): [Call] ICE connection → RTCIceConnectionState.RTCIceConnectionStateClosed
+I/flutter (13821): [Call] PeerConnection → RTCPeerConnectionState.RTCPeerConnectionStateClosed
+D/FlutterWebRTCPlugin(13821): trackDispose() track is null
+W/FlutterWebRTCPlugin(13821): FlutterRTCVideoRenderer.setVideoTrack, set video track to null
+D/FlutterWebRTCPlugin(13821): CameraEventsHandler.waitForCameraClosed
+D/FlutterWebRTCPlugin(13821): CameraEventsHandler.onFirstFrameAvailable
+D/FlutterWebRTCPlugin(13821): trackDispose() track is null
+D/FlutterWebRTCPlugin(13821): streamDispose() mediaStream is null
+I/flutter (13821): [SyncService] ❌ [ATTACHMENT] Lỗi tải tệp đính kèm: DioException [bad response]: This exception was thrown because the response has a status code of 500 and RequestOptions.validateStatus was configured to throw for this status code.
+I/flutter (13821): The status code of 500 has the following meaning: "Server error - the server failed to fulfil an apparently valid request"
+I/flutter (13821): Read more about status codes at https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+I/flutter (13821): In order to resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.
+I/flutter (13821): 
+I/flutter (13821): #0      DioMixin.fetch (package:dio/src/dio_mixin.dart:598)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #1      SyncService.uploadAttachment (package:izii_app/core/sync/sync_service.dart:476)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #2      SyncService._uploadPendingAttachments (package:izii_app/core/sync/sync_service.dart:575)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #3      SyncService.triggerSync (package:izii_app/core/sync/sync_service.dart:317)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [SyncService] No new updates from the server.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [ChatWS] Sent event: heartbeat
+I/flutter (13821): [ChatWS] Received event: heartbeat
+I/flutter (13821): [Presence] heartbeat  izii-d-8d80e49c → onlineSynced
+I/flutter (13821): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [DeviceUser] name no change izii-d-dd43cd39, display name → "Vinh Phan (305629) · iZii-android-mrrx5uiz"
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Tải lên tệp đính kèm chưa hoàn thành cho tin nhắn 2c4d2668-e21b-46fb-a050-f474235bdeb0: 1000014822.jpg
+I/flutter (13821): [SyncService] 📤 [ATTACHMENT] Đang gửi tệp đính kèm tới https://costa-mushroom.iziiapp.com/api/v1/attachments/upload (/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790894499138_1000014822.jpg)
+I/flutter (13821): [SyncService] ❌ [ATTACHMENT] Lỗi tải tệp đính kèm: DioException [bad response]: This exception was thrown because the response has a status code of 500 and RequestOptions.validateStatus was configured to throw for this status code.
+I/flutter (13821): The status code of 500 has the following meaning: "Server error - the server failed to fulfil an apparently valid request"
+I/flutter (13821): Read more about status codes at https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+I/flutter (13821): In order to resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.
+I/flutter (13821): 
+I/flutter (13821): #0      DioMixin.fetch (package:dio/src/dio_mixin.dart:598)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #1      SyncService.uploadAttachment (package:izii_app/core/sync/sync_service.dart:476)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #2      SyncService._uploadPendingAttachments (package:izii_app/core/sync/sync_service.dart:575)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #3      SyncService.triggerSync (package:izii_app/core/sync/sync_service.dart:317)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): [SyncService] Tải lên tệp đính kèm chưa hoàn thành cho tin nhắn 6e9088fe-75b4-4a89-b37a-c86dc72356cb: 1000014822.jpg
+I/flutter (13821): [SyncService] 📤 [ATTACHMENT] Đang gửi tệp đính kèm tới https://costa-mushroom.iziiapp.com/api/v1/attachments/upload (/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790896194788_1000014822.jpg)
+I/flutter (13821): [SyncService] ❌ [ATTACHMENT] Lỗi tải tệp đính kèm: DioException [bad response]: This exception was thrown because the response has a status code of 500 and RequestOptions.validateStatus was configured to throw for this status code.
+I/flutter (13821): The status code of 500 has the following meaning: "Server error - the server failed to fulfil an apparently valid request"
+I/flutter (13821): Read more about status codes at https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+I/flutter (13821): In order to resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.
+I/flutter (13821): 
+I/flutter (13821): #0      DioMixin.fetch (package:dio/src/dio_mixin.dart:598)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #1      SyncService.uploadAttachment (package:izii_app/core/sync/sync_service.dart:476)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #2      SyncService._uploadPendingAttachments (package:izii_app/core/sync/sync_service.dart:575)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #3      SyncService.triggerSync (package:izii_app/core/sync/sync_service.dart:317)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [SyncService] No new updates from the server.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Tải lên tệp đính kèm chưa hoàn thành cho tin nhắn 2c4d2668-e21b-46fb-a050-f474235bdeb0: 1000014822.jpg
+I/flutter (13821): [SyncService] 📤 [ATTACHMENT] Đang gửi tệp đính kèm tới https://costa-mushroom.iziiapp.com/api/v1/attachments/upload (/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790894499138_1000014822.jpg)
+I/flutter (13821): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (13821): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (13821): [Presence]    · device_id=izii-d-8d80e49c user_id=izii-d-8d80e49c
+I/flutter (13821): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [ChatWS] Sent event: heartbeat
+I/flutter (13821): [SyncService] ❌ [ATTACHMENT] Lỗi tải tệp đính kèm: DioException [bad response]: This exception was thrown because the response has a status code of 500 and RequestOptions.validateStatus was configured to throw for this status code.
+I/flutter (13821): The status code of 500 has the following meaning: "Server error - the server failed to fulfil an apparently valid request"
+I/flutter (13821): Read more about status codes at https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+I/flutter (13821): In order to resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.
+I/flutter (13821): 
+I/flutter (13821): #0      DioMixin.fetch (package:dio/src/dio_mixin.dart:598)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #1      SyncService.uploadAttachment (package:izii_app/core/sync/sync_service.dart:476)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #2      SyncService._uploadPendingAttachments (package:izii_app/core/sync/sync_service.dart:575)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #3      SyncService.triggerSync (package:izii_app/core/sync/sync_service.dart:317)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): [SyncService] Tải lên tệp đính kèm chưa hoàn thành cho tin nhắn 6e9088fe-75b4-4a89-b37a-c86dc72356cb: 1000014822.jpg
+I/flutter (13821): [SyncService] 📤 [ATTACHMENT] Đang gửi tệp đính kèm tới https://costa-mushroom.iziiapp.com/api/v1/attachments/upload (/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790896194788_1000014822.jpg)
+I/flutter (13821): [SyncService] ❌ [ATTACHMENT] Lỗi tải tệp đính kèm: DioException [bad response]: This exception was thrown because the response has a status code of 500 and RequestOptions.validateStatus was configured to throw for this status code.
+I/flutter (13821): The status code of 500 has the following meaning: "Server error - the server failed to fulfil an apparently valid request"
+I/flutter (13821): Read more about status codes at https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+I/flutter (13821): In order to resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.
+I/flutter (13821): 
+I/flutter (13821): #0      DioMixin.fetch (package:dio/src/dio_mixin.dart:598)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #1      SyncService.uploadAttachment (package:izii_app/core/sync/sync_service.dart:476)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #2      SyncService._uploadPendingAttachments (package:izii_app/core/sync/sync_service.dart:575)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #3      SyncService.triggerSync (package:izii_app/core/sync/sync_service.dart:317)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [SyncService] No new updates from the server.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [ChatWS] Received event: heartbeat
+I/flutter (13821): [Presence] heartbeat  izii-d-8d80e49c → onlineSynced
+I/flutter (13821): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [SyncService] 📤 [ATTACHMENT] Đang gửi tệp đính kèm tới https://costa-mushroom.iziiapp.com/api/v1/attachments/upload (/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790894499138_1000014822.jpg)
+I/flutter (13821): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (13821): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (13821): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (13821): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [SyncService] ❌ [ATTACHMENT] Lỗi tải tệp đính kèm: DioException [connection error]: The connection errored: Failed host lookup: 'costa-mushroom.iziiapp.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (13821): Error: SocketException: Failed host lookup: 'costa-mushroom.iziiapp.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (13821): #0      DioMixin.fetch (package:dio/src/dio_mixin.dart:598)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #1      SyncService.uploadAttachment (package:izii_app/core/sync/sync_service.dart:476)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #2      SyncService._uploadPendingAttachments (package:izii_app/core/sync/sync_service.dart:575)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #3      SyncService.triggerSync (package:izii_app/core/sync/sync_service.dart:317)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): [SyncService] Tải lên tệp đính kèm chưa hoàn thành cho tin nhắn 6e9088fe-75b4-4a89-b37a-c86dc72356cb: 1000014822.jpg
+I/flutter (13821): [SyncService] 📤 [ATTACHMENT] Đang gửi tệp đính kèm tới https://costa-mushroom.iziiapp.com/api/v1/attachments/upload (/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790896194788_1000014822.jpg)
+I/flutter (13821): [SyncService] ❌ [ATTACHMENT] Lỗi tải tệp đính kèm: DioException [connection error]: The connection errored: Failed host lookup: 'costa-mushroom.iziiapp.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (13821): Error: SocketException: Failed host lookup: 'costa-mushroom.iziiapp.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (13821): #0      DioMixin.fetch (package:dio/src/dio_mixin.dart:598)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #1      SyncService.uploadAttachment (package:izii_app/core/sync/sync_service.dart:476)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #2      SyncService._uploadPendingAttachments (package:izii_app/core/sync/sync_service.dart:575)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): #3      SyncService.triggerSync (package:izii_app/core/sync/sync_service.dart:317)
+I/flutter (13821): <asynchronous suspension>
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [SyncService] ! Cannot fetch data from Server: The connection errored: Failed host lookup: 'costa-mushroom.iziiapp.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [DeviceUser] name no change izii-d-dd43cd39, display name → "Vinh Phan (305629) · iZii-android-mrrx5uiz"
+I/flutter (13821): [Call] Đã kết nối kênh tín hiệu /call/ws/izii-d-dd43cd39 thành công.
+I/flutter (13821): [Call] Kênh tín hiệu đã mở cho "izii-d-dd43cd39" — sẵn sàng nhận cuộc gọi.
+I/flutter (13821): [ChatWS] Connecting to wss://costa-mushroom.iziiapp.com/chat?token=iZii... ...
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Tải lên tệp đính kèm chưa hoàn thành cho tin nhắn 2c4d2668-e21b-46fb-a050-f474235bdeb0: 1000014822.jpg
+I/flutter (13821): [SyncService] 📤 [ATTACHMENT] Đang gửi tệp đính kèm tới https://costa-mushroom.iziiapp.com/api/v1/attachments/upload (/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790894499138_1000014822.jpg)
+I/flutter (13821): [ChatWS] Connected successfully.
+I/flutter (13821): [ChatWS] Sent event: presence_update
+I/flutter (13821): [ChatWS] Received event: call_invite
+I/flutter (13821): [ChatWS] Real-time call_invite received via WebSocket: {target_id: izii-d-dd43cd39, call_id: call_1790896445999, caller_id: izii-d-8d80e49c, caller_name: Me, callee_id: izii-d-dd43cd39, call_type: audio, room_id: null}
+I/flutter (13821): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (13821): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (13821): [Presence]    · device_id=izii-d-8d80e49c user_id=izii-d-8d80e49c
+I/flutter (13821): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [ChatWS] Retrying connection (attempt 0 after 12s)...
+I/FlutterWebRTCPlugin(13821): getUserMedia(audio): mandatory: [], optional: [googNoiseSuppression: true, googEchoCancellation: true, echoCancellation: true, googEchoCancellation2: true, googDAEchoCancellation: true]
+D/FlutterWebRTCPlugin(13821): MediaStream id: 4b37e617-62b3-4308-ac76-4aca7bc8c729
+I/flutter (13821): [Call] ICE servers: [{urls: [stun:stun.l.google.com:19302, stun:stun1.l.google.com:19302]}, {urls: [stun:stun2.l.google.com:19302, stun:stun3.l.google.com:19302]}, {urls: [stun:stun4.l.google.com:19302]}]
+I/flutter (13821): [ChatWS] Sent event: call_accept
+I/flutter (13821): [SyncService] ✅ [ATTACHMENT] Tải lên thành công: /uploads/b9e98f750d6400de7c2fef53f65c8a3a3ba7e5bbc7ce54aeda4f4d974bfcb6c2.jpg
+I/flutter (13821): [SyncService] Đã tải lên thành công tệp đính kèm và xếp hàng đồng bộ tin nhắn 2c4d2668-e21b-46fb-a050-f474235bdeb0
+I/flutter (13821): [SyncService] Tải lên tệp đính kèm chưa hoàn thành cho tin nhắn 6e9088fe-75b4-4a89-b37a-c86dc72356cb: 1000014822.jpg
+I/flutter (13821): [SyncService] 📤 [ATTACHMENT] Đang gửi tệp đính kèm tới https://costa-mushroom.iziiapp.com/api/v1/attachments/upload (/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790896194788_1000014822.jpg)
+I/flutter (13821): [SyncService] ✅ [ATTACHMENT] Tải lên thành công: /uploads/b9e98f750d6400de7c2fef53f65c8a3a3ba7e5bbc7ce54aeda4f4d974bfcb6c2.jpg
+I/flutter (13821): [SyncService] Đã tải lên thành công tệp đính kèm và xếp hàng đồng bộ tin nhắn 6e9088fe-75b4-4a89-b37a-c86dc72356cb
+I/flutter (13821): [SyncService] Đang gửi 2 thay đổi lên server...
+I/flutter (13821): [SyncService]    📦 chat_messages → insert
+I/flutter (13821): [SyncService]    📦 chat_messages → insert
+I/flutter (13821): [SyncService] ✅ PUSH thành công! Server đã nhận 2 thay đổi.
+I/flutter (13821): [ChatWS] Received event: event_reaction
+I/flutter (13821): [ChatWS] Received event: event_reaction
+I/flutter (13821): [ChatWS] Real-time event reaction received: {id: 2c4d2668-e21b-46fb-a050-f474235bdeb0, conversation_id: direct_izii-d-8d80e49c_izii-d-dd43cd39, sender_id: izii-d-dd43cd39, type: file, content: {"text":"","attachments":[{"id":"file_1790894499151_7011","name":"1000014822.jpg","mime_type":"image/jpg","file_size":11556554,"local_uri":"/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790894499138_1000014822.jpg","upload_status":"success","remote_url":"/uploads/b9e98f750d6400de7c2fef53f65c8a3a3ba7e5bbc7ce54aeda4f4d974bfcb6c2.jpg"}]}, sent_at: 2026-10-02T08:11:40.000}
+I/flutter (13821): [ChatWS] Received event: sync_trigger
+I/flutter (13821): [ChatWS] Real-time event reaction received: {id: 6e9088fe-75b4-4a89-b37a-c86dc72356cb, conversation_id: direct_izii-d-8d80e49c_izii-d-dd43cd39, sender_id: izii-d-dd43cd39, type: file, content: {"text":"","attachments":[{"id":"file_1790896194802_7011","name":"1000014822.jpg","mime_type":"image/jpg","file_size":11556554,"local_uri":"/data/user/0/com.izii.izii_app/app_flutter/chat_files/1790896194788_1000014822.jpg","upload_status":"success","remote_url":"/uploads/b9e98f750d6400de7c2fef53f65c8a3a3ba7e5bbc7ce54aeda4f4d974bfcb6c2.jpg"}]}, sent_at: 2026-10-02T08:39:55.000}
+I/flutter (13821): [ChatWS] Sync trigger received from WebSocket. Pulling updates (debounced)...
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=1ef997e6-a457-4d38-826a-73c8ee989341
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=0804cc53-db96-4089-a1af-a3c85893da89
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=c38afc7e-1853-49b0-a7b6-e9a3eb60d394
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=becb60b9-087e-4de3-ab33-b2a46494e032
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=eb7f6af2-0ea1-4f79-ba6d-b4256cb1f799
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=a54976e8-4107-47f1-9290-eea7c86d3f45
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=99d35e43-b9d2-4ce2-8af1-76779d1e029d
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=122ed0d8-9f86-4aaf-9601-348d19c6c58f
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=bb5c8b2d-d8f3-43d2-b13c-8006f863a269
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=7c588a99-fec7-4c82-93d9-77d923d4fb94
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=ed5f7826-e240-42a8-9aae-4670b588078a
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=229aa1bb-04ec-42fe-bc88-ec1c9cb8f32c
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=633c02a1-2e53-4b24-b717-66985a83e193
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=591c687f-a860-4b13-ae26-7264e8a2b0c9
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=2c4d2668-e21b-46fb-a050-f474235bdeb0
+I/flutter (13821): [SyncService]    🔄 chat_messages → insert: id=6e9088fe-75b4-4a89-b37a-c86dc72356cb
+I/flutter (13821): [SyncService] 📥 Page 1: received 16 updates
+I/flutter (13821): [SyncService] ✅ Applied 16 records to the local database (skipped/filtered 0).
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [SyncService] No new updates from the server.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [ChatWS] Received event: heartbeat
+I/flutter (13821): [Presence] heartbeat  izii-d-8d80e49c → onlineSynced
+I/flutter (13821): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [SyncService] No new updates from the server.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [DeviceUser] name no change izii-d-dd43cd39, display name → "Vinh Phan (305629) · iZii-android-mrrx5uiz"
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [SyncService] No new updates from the server.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [ChatWS] Sent event: call_end
+D/FlutterWebRTCPlugin(13821): onConnectionChangeCLOSED
+I/flutter (13821): [Call] ICE connection → RTCIceConnectionState.RTCIceConnectionStateClosed
+I/flutter (13821): [Call] PeerConnection → RTCPeerConnectionState.RTCPeerConnectionStateClosed
+I/flutter (13821): [ChatWS] Sent event: heartbeat
+I/flutter (13821): [ChatWS] Received event: call_invite
+I/flutter (13821): [ChatWS] Real-time call_invite received via WebSocket: {target_id: izii-d-dd43cd39, call_id: call_1790896468498, caller_id: izii-d-8d80e49c, caller_name: Me, callee_id: izii-d-dd43cd39, call_type: audio, room_id: null}
+I/FlutterWebRTCPlugin(13821): getUserMedia(audio): mandatory: [], optional: [googNoiseSuppression: true, googEchoCancellation: true, echoCancellation: true, googEchoCancellation2: true, googDAEchoCancellation: true]
+D/FlutterWebRTCPlugin(13821): MediaStream id: 0b48f3bb-4a9c-4614-a010-1810b4f0c012
+I/flutter (13821): [Call] ICE servers: [{urls: [stun:stun.l.google.com:19302, stun:stun1.l.google.com:19302]}, {urls: [stun:stun2.l.google.com:19302, stun:stun3.l.google.com:19302]}, {urls: [stun:stun4.l.google.com:19302]}]
+I/flutter (13821): [ChatWS] Sent event: call_accept
+I/flutter (13821): [ChatWS] Received event: sdp_offer
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onAddTrack
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onIceGatheringChangeGATHERING
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: sdp_offer
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: sdp_answer
+I/flutter (13821): [Call] ICE connection → RTCIceConnectionState.RTCIceConnectionStateChecking
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [Call] ICE gathering → RTCIceGatheringState.RTCIceGatheringStateGathering | đã thu: {}
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: heartbeat
+I/flutter (13821): [Presence] heartbeat  izii-d-8d80e49c → onlineSynced
+I/flutter (13821): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+D/FlutterWebRTCPlugin(13821): onConnectionChangeCONNECTING
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [ChatWS] Received event: ice_candidate
+I/flutter (13821): [Call] PeerConnection → RTCPeerConnectionState.RTCPeerConnectionStateConnecting
+I/flutter (13821): [Call] ICE candidate đầu tiên loại "host": candidate:2090634295 1 udp 2122194687 192.0.0.8 41193 typ host generation 0 ufrag g/Hp network-id 7 network-cost 50
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [Call] ICE candidate đầu tiên loại "srflx": candidate:3987343426 1 udp 1685793023 2405:6e00:2845:87ce:b481:301e:2bfe:9625 38465 typ srflx raddr 2405:6e00:2845:87ce:b481:301e:2bfe:9625 rport 38465 generation 0 ufrag g/Hp network-id 5 network-cost 900
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): peerConnectionSetLocalDescription(): WEBRTC_SET_LOCAL_DESCRIPTION_ERROR: Failed to set local answer sdp: Called in wrong state: stable
+D/FlutterWebRTCPlugin(13821): peerConnectionCreateAnswer(): WEBRTC_CREATE_ANSWER_ERROR: PeerConnection cannot create an answer in a state other than have-remote-offer or have-local-pranswer.
+I/flutter (13821): [ChatWS] Sent event: sdp_answer
+I/flutter (13821): [Call] Lỗi xử lý sdp_offer: Unable to RTCPeerConnection::setLocalDescription: peerConnectionSetLocalDescription(): WEBRTC_SET_LOCAL_DESCRIPTION_ERROR: Failed to set local answer sdp: Called in wrong state: stable
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [Call] Lỗi xử lý sdp_offer: Unable to RTCPeerConnection::createAnswer: peerConnectionCreateAnswer(): WEBRTC_CREATE_ANSWER_ERROR: PeerConnection cannot create an answer in a state other than have-remote-offer or have-local-pranswer.
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+D/FlutterWebRTCPlugin(13821): onIceCandidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+I/flutter (13821): [ChatWS] Sent event: ice_candidate
+D/FlutterWebRTCPlugin(13821): onSelectedCandidatePairChanged
+D/FlutterWebRTCPlugin(13821): onConnectionChangeCONNECTED
+I/flutter (13821): [Call] PeerConnection → RTCPeerConnectionState.RTCPeerConnectionStateConnected
+I/flutter (13821): [Call] ICE connection → RTCIceConnectionState.RTCIceConnectionStateConnected
+D/FlutterWebRTCPlugin(13821): onIceGatheringChangeCOMPLETE
+I/flutter (13821): [Call] ICE gathering → RTCIceGatheringState.RTCIceGatheringStateComplete | đã thu: {host: 22, srflx: 4}
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (13821): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (13821): [Presence]    · device_id=izii-d-8d80e49c user_id=izii-d-8d80e49c
+I/flutter (13821): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [SyncService] No new updates from the server.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [ChatWS] Sent event: heartbeat
+I/flutter (13821): [ChatWS] Received event: heartbeat
+I/flutter (13821): [Presence] heartbeat  izii-d-8d80e49c → onlineSynced
+I/flutter (13821): [Presence] bản đồ hiện tại: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [ChatWS] Sent event: heartbeat
+I/flutter (13821): [Presence] 🔄 làm mới: server báo 2 máy trực tuyến · xoá 0 mục · tô xanh 2 mục
+I/flutter (13821): [Presence]    · device_id=izii-d-2a129af8 user_id=izii-d-2a129af8
+I/flutter (13821): [Presence]    · device_id=izii-d-8d80e49c user_id=izii-d-8d80e49c
+I/flutter (13821): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [SyncService] No new updates from the server.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [Call] Kênh tín hiệu đóng (onDone).
+I/flutter (13821): [ChatWS] Connection closed.
+I/flutter (13821): [Call] Đang tự động kết nối lại kênh tín hiệu (lần 1 sau 2s)...
+I/flutter (13821): [ChatWS] Retrying connection (attempt 1 after 2s)...
+I/flutter (13821): [ChatWS] Connecting to wss://costa-mushroom.iziiapp.com/chat?token=iZii... ...
+I/flutter (13821): [Call] Không thể kết nối kênh tín hiệu: WebSocketChannelException: SocketException: Failed host lookup: 'costa-mushroom.iziiapp.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (13821): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'costa-mushroom.iziiapp.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (13821): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (13821): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (13821): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [SyncService] ! Cannot fetch data from Server: The connection errored: Failed host lookup: 'costa-mushroom.iziiapp.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [DeviceDiscovery] ! Heartbeat failed: Connection error – is the server running?
+D/FlutterWebRTCPlugin(13821): onConnectionChangeDISCONNECTED
+I/flutter (13821): [Call] ICE connection → RTCIceConnectionState.RTCIceConnectionStateDisconnected
+I/flutter (13821): [Call] PeerConnection → RTCPeerConnectionState.RTCPeerConnectionStateDisconnected
+I/flutter (13821): [Call] Mất kết nối tạm thời — chờ ICE tự khôi phục.
+I/flutter (13821): [Call] Đang tự động kết nối lại kênh tín hiệu (lần 2 sau 4s)...
+I/flutter (13821): [ChatWS] Retrying connection (attempt 2 after 4s)...
+I/flutter (13821): [ChatWS] Connecting to wss://costa-mushroom.iziiapp.com/chat?token=iZii... ...
+I/flutter (13821): [Call] Không thể kết nối kênh tín hiệu: WebSocketChannelException: SocketException: Failed host lookup: 'costa-mushroom.iziiapp.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (13821): [ChatWS] Failed to connect: WebSocketChannelException: SocketException: Failed host lookup: 'costa-mushroom.iziiapp.com' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [DeviceDiscovery] ❌ Failed to fetch online devices: Connection error – is the server running?
+I/flutter (13821): [Presence] 🔄 làm mới: server báo 0 máy trực tuyến · xoá 0 mục · tô xanh 0 mục
+I/flutter (13821): [Presence] bản đồ sau khi làm mới: izii-d-2a129af8=onlineSynced, izii-d-8d80e49c=onlineSynced
+I/flutter (13821): [DeviceDiscovery] ❌ Failed to pull pending messages: Connection error – is the server running?
+I/flutter (13821): [SyncService] ! Cannot fetch data from Server: The connection errored: Failed host lookup: 'costa-mushroom.iziiapp.com' This indicates an error which most likely cannot be solved by the library.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+D/FlutterWebRTCPlugin(13821): onConnectionChangeCONNECTED
+I/flutter (13821): [Call] ICE connection → RTCIceConnectionState.RTCIceConnectionStateConnected
+I/flutter (13821): [Call] PeerConnection → RTCPeerConnectionState.RTCPeerConnectionStateConnected
+I/flutter (13821): [DeviceUser] name no change izii-d-dd43cd39, display name → "Vinh Phan (305629) · iZii-android-mrrx5uiz"
+I/flutter (13821): [Call] Đang tự động kết nối lại kênh tín hiệu (lần 3 sau 6s)...
+I/flutter (13821): [ChatWS] Retrying connection (attempt 3 after 6s)...
+I/flutter (13821): [ChatWS] Connecting to wss://costa-mushroom.iziiapp.com/chat?token=iZii... ...
+I/flutter (13821): [ChatWS] Connected successfully.
+I/flutter (13821): [ChatWS] Sent event: presence_update
+I/flutter (13821): [Call] Kênh tín hiệu đã mở cho "izii-d-dd43cd39" — sẵn sàng nhận cuộc gọi.
+I/flutter (13821): [Call] Đã kết nối kênh tín hiệu /call/ws/izii-d-dd43cd39 thành công.
+I/flutter (13821): [Call] Kênh tín hiệu đã mở cho "izii-d-dd43cd39" — sẵn sàng nhận cuộc gọi.
+I/flutter (13821): [SyncService] Đang kết nối tới server: https://costa-mushroom.iziiapp.com ...
+I/flutter (13821): [SyncService] Không có thay đổi nào cần đồng bộ lên server.
+I/flutter (13821): [SyncService] Fetching new updates from the server...
+I/flutter (13821): [SyncService] No new updates from the server.
+I/flutter (13821): [SyncService] 🎉 Hoàn thành đồng bộ dữ liệu đa nền tảng!
+I/flutter (13821): [Call] ICE connection → RTCIceConnectionState.RTCIceConnectionStateDisconnected
+I/flutter (13821): [ChatWS] Received event: call_end
+D/FlutterWebRTCPlugin(13821): onConnectionChangeCLOSED
+I/flutter (13821): [Call] ICE connection → RTCIceConnectionState.RTCIceConnectionStateClosed
+I/flutter (13821): [Call] PeerConnection → RTCPeerConnectionState.RTCPeerConnectionStateClosed
+D/FlutterWebRTCPlugin(13821): trackDispose() track is null
+D/FlutterWebRTCPlugin(13821): streamDispose() mediaStream is null

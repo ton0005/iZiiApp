@@ -151,6 +151,13 @@ class SendMessageWithAttachmentsEvent extends ChatEvent {
   List<Object?> get props => [conversationId, text];
 }
 
+class RetryUploadAttachmentEvent extends ChatEvent {
+  final ChatMessage message;
+  const RetryUploadAttachmentEvent(this.message);
+  @override
+  List<Object?> get props => [message];
+}
+
 // --- States ---
 class ChatState extends Equatable {
   final List<ChatConversation> conversations;
@@ -285,6 +292,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<RemoveAttachmentEvent>(_onRemoveAttachment);
     on<UploadProgressTickEvent>(_onUploadProgressTick);
     on<SendMessageWithAttachmentsEvent>(_onSendMessageWithAttachments);
+    on<RetryUploadAttachmentEvent>(_onRetryUploadAttachment);
 
     _init();
   }
@@ -1306,6 +1314,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     _uploadAttachmentsAndSend(chatMsg, attachments);
   }
 
+  Future<void> _onRetryUploadAttachment(
+    RetryUploadAttachmentEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    try {
+      final content = ChatMessageContent.fromJson(event.message.content);
+      if (content.attachments != null && content.attachments!.isNotEmpty) {
+        _uploadAttachmentsAndSend(event.message, content.attachments!);
+      }
+    } catch (e) {
+      print('[ChatBloc] Error retrying attachment upload: $e');
+    }
+  }
+
   Future<void> _uploadAttachmentsAndSend(
     ChatMessage message,
     List<AttachmentFile> attachments,
@@ -1314,6 +1336,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     bool hasFailure = false;
 
     for (var att in attachments) {
+      if (att.remoteUrl != null &&
+          att.remoteUrl!.isNotEmpty &&
+          att.uploadStatus == 'success') {
+        updatedAttachments.add(att);
+        continue;
+      }
+
       // Set to uploading status
       add(UploadProgressTickEvent(message.id, att.id, 0.0));
 
@@ -1385,13 +1414,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       add(OpenConversationEvent(message.conversationId));
     }
 
+    // Always queue message in offline outbox so SyncService can sync/retry upload
+    await _chatRepository.queueMessageOffline(updatedMsg);
+
     if (hasFailure) {
-      print('[ChatBloc] Some attachments failed to upload. Message is saved locally. Will retry on sync.');
+      print('[ChatBloc] Some attachments failed to upload. Message is saved locally and queued in outbox. Will retry on sync.');
+      SyncService().triggerSync();
       return;
     }
-
-    // Upload succeeded! Now queue message offline in outbox & broadcast
-    await _chatRepository.queueMessageOffline(updatedMsg);
 
     // Broadcast via WS
     if (_wsService.isConnected) {

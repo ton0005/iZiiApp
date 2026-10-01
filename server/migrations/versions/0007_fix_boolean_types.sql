@@ -99,3 +99,11 @@ BEGIN
         ALTER TABLE mushroom_job_safety_configs ALTER COLUMN auto_start_on_job_begin SET DEFAULT true;
     END IF;
 END $$;
+
+-- 7. Ensure chat_messages columns for attachments and message status
+ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'text';
+ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS sent_at TEXT;
+ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS delivered_at TEXT;
+ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS read_at TEXT;
+ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
+

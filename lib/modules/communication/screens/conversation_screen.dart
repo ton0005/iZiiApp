@@ -255,18 +255,46 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final permission = source == ImageSource.camera ? Permission.camera : Permission.photos;
-      final granted = await permission.request().isGranted;
-      if (!granted && source == ImageSource.camera) {
-        _showPermissionWarning('Quyền truy cập Máy ảnh bị từ chối.');
+      final isDesktop = Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+      
+      // On Windows/Desktop: camera might not be supported via image_picker
+      if (isDesktop && source == ImageSource.camera) {
+        _showErrorSnackBar('Máy ảnh không hỗ trợ trực tiếp trên máy tính. Vui lòng chọn ảnh từ Thư viện ảnh (Gallery/Files).');
         return;
       }
+
+      if (!isDesktop) {
+        final permission = source == ImageSource.camera ? Permission.camera : Permission.photos;
+        final granted = await permission.request().isGranted;
+        if (!granted && source == ImageSource.camera) {
+          _showPermissionWarning('Quyền truy cập Máy ảnh bị từ chối.');
+          return;
+        }
+      }
       
-      final XFile? image = await _picker.pickImage(source: source);
-      if (image == null) return;
+      String? pickedPath;
+      String? pickedName;
+
+      if (isDesktop) {
+        // Use FilePicker for native desktop file selection without mobile permission issues
+        final result = await FilePicker.pickFiles(
+          type: FileType.image,
+          allowMultiple: false,
+        );
+        if (result == null || result.files.isEmpty) return;
+        pickedPath = result.files.first.path;
+        pickedName = result.files.first.name;
+      } else {
+        final XFile? image = await _picker.pickImage(source: source);
+        if (image == null) return;
+        pickedPath = image.path;
+        pickedName = image.name;
+      }
+
+      if (pickedPath == null) return;
       
       // Check size limit: 20MB
-      final File file = File(image.path);
+      final File file = File(pickedPath);
       final size = await file.length();
       if (size > 20 * 1024 * 1024) {
         _showErrorSnackBar('Dung lượng tệp vượt quá giới hạn 20MB.');
@@ -274,12 +302,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
       }
       
       // Save permanently to local app storage
-      final savedFile = await _saveFileToLocalChatDir(file, image.name);
+      final savedFile = await _saveFileToLocalChatDir(file, pickedName ?? 'image.jpg');
       
       final att = AttachmentFile(
-        id: 'file_${DateTime.now().millisecondsSinceEpoch}_${image.name.hashCode % 10000}',
-        name: image.name,
-        mimeType: _getMimeType(image.path),
+        id: 'file_${DateTime.now().millisecondsSinceEpoch}_${(pickedName ?? 'img').hashCode % 10000}',
+        name: pickedName ?? 'image.jpg',
+        mimeType: _getMimeType(pickedPath),
         fileSize: size,
         localUri: savedFile.path,
         uploadStatus: 'pending',
@@ -297,7 +325,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       final result = await FilePicker.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'txt', 'zip'],
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'txt', 'zip'],
       );
       
       if (result == null || result.files.isEmpty) return;
@@ -779,7 +807,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ),
               if (bubbleAttachments.isNotEmpty)
                 _buildBubbleAttachments(
-                    message.id, bubbleAttachments, isMe, isDark),
+                    message, bubbleAttachments, isMe, isDark),
               const SizedBox(height: 6),
               Align(
                 alignment: Alignment.bottomRight,
@@ -1213,7 +1241,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Widget _buildBubbleAttachments(
-    String messageId,
+    ChatMessage message,
     List<AttachmentFile> attachments,
     bool isMe,
     bool isDark,
@@ -1229,7 +1257,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
           return BlocBuilder<ChatBloc, ChatState>(
             builder: (context, state) {
-              final progressKey = '${messageId}_${file.id}';
+              final progressKey = '${message.id}_${file.id}';
               final progress = state.uploadProgressMap[progressKey];
               final isUploading = file.uploadStatus == 'uploading' ||
                   (progress != null &&
@@ -1355,19 +1383,49 @@ class _ConversationScreenState extends State<ConversationScreen> {
                       ),
 
                     if (file.uploadStatus == 'failed')
-                      const Padding(
+                      Padding(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         child: Row(
                           children: [
-                            Icon(Icons.error_outline_rounded,
+                            const Icon(Icons.error_outline_rounded,
                                 color: Colors.redAccent, size: 14),
-                            SizedBox(width: 4),
-                            Text(
-                              'Tải lên thất bại. Sẽ thử lại khi trực tuyến.',
-                              style: TextStyle(
-                                  color: Colors.redAccent, fontSize: 10),
+                            const SizedBox(width: 4),
+                            const Expanded(
+                              child: Text(
+                                'Tải lên thất bại. Sẽ thử lại khi trực tuyến.',
+                                style: TextStyle(
+                                    color: Colors.redAccent, fontSize: 10),
+                              ),
                             ),
+                            if (isMe)
+                              InkWell(
+                                onTap: () {
+                                  context
+                                      .read<ChatBloc>()
+                                      .add(RetryUploadAttachmentEvent(message));
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 4, vertical: 2),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.refresh,
+                                          color: Colors.cyanAccent, size: 14),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        'Thử lại',
+                                        style: TextStyle(
+                                          color: Colors.cyanAccent,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
