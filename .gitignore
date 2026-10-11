@@ -59,3 +59,6 @@ _reset_backup_20260803-130428/
 # Windows installer build artifacts & redistributables
 /windows/installer/Output/
 /windows/installer/redist/
+
+/docs/Fastapi
+/plan/Hytera

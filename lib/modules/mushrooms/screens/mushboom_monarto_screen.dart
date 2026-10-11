@@ -1737,7 +1737,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
 
     final effectiveRoom = room;
     if (jobType == 'alone_worker' || isSoloJob) {
-      if (effectiveRoom != null && effectiveRoom.isNotEmpty) {
+      if (effectiveRoom.isNotEmpty) {
         setState(() {
           effectiveRoom['current_stage'] = 'alone_worker';
           effectiveRoom['status'] = 'active';

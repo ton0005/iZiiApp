@@ -1495,7 +1495,7 @@ class _GrowingDailyJobPlanScreenState extends State<GrowingDailyJobPlanScreen>
             job.jobType == 'alone_worker' ||
             job.name.toLowerCase().contains('alone worker'));
 
-    if (isSolo && job?.assignee != null && job!.assignee!.trim().isNotEmpty) {
+    if (isSolo && job.assignee != null && job.assignee!.trim().isNotEmpty) {
       final onShift =
           await WorkSessionService().isPersonOnShift(job.assignee!);
       if (!onShift) {

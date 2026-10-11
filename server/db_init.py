@@ -489,6 +489,57 @@ def init_db():
     )""")
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_safety_logs_job ON mushroom_safety_checkin_logs(job_id)')
 
+    # Tích hợp bộ đàm Hytera (DMR / TETRA) cho Alone Worker — xem
+    # routers/radio_gateway.py. radio_devices: bộ đàm nào đang giao cho ai.
+    # radio_events: nhật ký cảnh báo BẤT BIẾN (chỉ cập nhật trạng thái xử lý),
+    # phục vụ kiểm toán an toàn lao động.
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS radio_devices (
+        radio_id         TEXT PRIMARY KEY,
+        system           TEXT DEFAULT 'dmr',
+        model            TEXT,
+        label            TEXT,
+        employee_id      TEXT,
+        employee_name    TEXT,
+        active           INTEGER DEFAULT 1,
+        last_seen_at     TEXT,
+        last_event_type  TEXT,
+        last_latitude    REAL,
+        last_longitude   REAL,
+        last_located_at  TEXT,
+        last_battery     REAL,
+        created_at       TEXT,
+        updated_at       TEXT,
+        updated_by       TEXT
+    )""")
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS radio_events (
+        id               TEXT PRIMARY KEY,
+        event_key        TEXT UNIQUE,
+        radio_id         TEXT NOT NULL,
+        system           TEXT,
+        event_type       TEXT NOT NULL,
+        raw_event_type   TEXT,
+        is_alarm         INTEGER DEFAULT 0,
+        status           TEXT NOT NULL,
+        occurred_at      TEXT,
+        received_at      TEXT NOT NULL,
+        last_received_at TEXT,
+        repeat_count     INTEGER DEFAULT 0,
+        latitude         REAL,
+        longitude        REAL,
+        employee_id      TEXT,
+        employee_name    TEXT,
+        job_id           TEXT,
+        room_id          TEXT,
+        acked_at         TEXT,
+        acked_by         TEXT,
+        ack_note         TEXT,
+        payload          TEXT
+    )""")
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_radio_events_open ON radio_events(radio_id, event_type, status)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_radio_events_received ON radio_events(received_at)')
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS grow_rooms (
         id TEXT PRIMARY KEY,

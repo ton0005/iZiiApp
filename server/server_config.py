@@ -122,6 +122,16 @@ class ServerConfig:
     server_secret: str = ""
     admin_secret: str = ""
     ws_secret: str = ""
+    # radio_gateway_secret : CHỈ dùng cho POST /api/v1/radio/events — phần mềm
+    # điều phối bộ đàm (Hytera SmartDispatch / TRBOnet / gateway TETRA) đẩy
+    # cảnh báo SOS / Man Down / Lone Worker vào. Gateway là hệ thống bên thứ
+    # ba nên không được cầm admin hay server secret. Fail-closed: để trống thì
+    # endpoint từ chối mọi request.
+    radio_gateway_secret: str = ""
+    # Hytera phát lại gói báo động nhiều lần (Emergency "Tx Cycles", thường
+    # 3–5 lần). Trong cửa sổ này, cùng bộ đàm + cùng loại báo động được gộp
+    # vào cảnh báo đang mở thay vì tạo cảnh báo mới.
+    radio_alarm_dedup_seconds: int = 120
 
     # Bật thì /sync/* yêu cầu device token hợp lệ. Mặc định TẮT để bản app cũ
     # chưa enroll vẫn chạy; bật sau khi toàn bộ thiết bị đã đăng ký xong.
@@ -252,6 +262,8 @@ def load_server_config() -> ServerConfig:
         server_secret=secret,
         admin_secret=admin_secret,
         ws_secret=ws_secret,
+        radio_gateway_secret=os.environ.get("IZIIAPP_RADIO_GATEWAY_SECRET", "").strip(),
+        radio_alarm_dedup_seconds=_int_env("IZIIAPP_RADIO_ALARM_DEDUP_SECONDS", 120),
         require_device_token=require_device_token,
         enrollment_token_ttl=_int_env("IZIIAPP_ENROLLMENT_TOKEN_TTL", 600),
         db_backend=db_backend,

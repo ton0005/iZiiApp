@@ -118,7 +118,7 @@ from security_tls import httpx_client_kwargs, uvicorn_ssl_kwargs, describe as de
 from routers import (
     sync, devices, messages, notifications, attachments,
     peer_sync, call, webhooks, admin, enrollment, sessions,
-    workforce, metadata,
+    workforce, metadata, agv_gateway, radio_gateway,
 )
 from security_auth import describe_scopes
 from event_engine import iZiiEventEngine, close_http_client
@@ -459,6 +459,8 @@ app.include_router(sessions.router)    # /sessions/* — điểm danh đầu ca 
 
 app.include_router(workforce.router)   # /api/v1/workforce/* — chấm công & timesheets (P5)
 app.include_router(metadata.router)    # /api/v1/meta/* & /api/v1/settings (P3)
+app.include_router(agv_gateway.router) # /api/v1/agv/* — VDA 5050 AGV & Door Interlock (Phase 3)
+app.include_router(radio_gateway.router) # /api/v1/radio/* — bộ đàm Hytera ↔ Alone Worker (X-iZii-Radio-Token)
 
 # Cho admin router chạm tới con trỏ sync đang nằm trong RAM, để lệnh reset xoá
 # được cả bộ nhớ chứ không chỉ bảng known_servers dưới đĩa.

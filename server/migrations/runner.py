@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # server/migrations/runner.py
 """
 Versioned Migration Runner for iZiiServer (Phase 1 - P1.2).
@@ -178,20 +179,28 @@ def main():
     args = parser.parse_args()
 
     print(f"⚙️  DB Backend: {CONFIG.db_backend}")
-    if args.status or not args.migrate:
-        print("\nMigration Status:")
-        statuses = get_migration_status()
-        for s in statuses:
-            mark = "✅ Applied" if s["applied"] else "⏳ Pending"
-            print(f"  {mark:12} {s['name']}")
+    try:
+        if args.status or not args.migrate:
+            print("\nMigration Status:")
+            statuses = get_migration_status()
+            for s in statuses:
+                mark = "✅ Applied" if s["applied"] else "⏳ Pending"
+                print(f"  {mark:12} {s['name']}")
 
-    if args.migrate:
-        print("\nApplying pending migrations...")
-        applied = run_migrations()
-        if not applied:
-            print("Everything up-to-date!")
-        else:
-            print(f"Successfully applied {len(applied)} migration(s).")
+        if args.migrate:
+            print("\nApplying pending migrations...")
+            applied = run_migrations()
+            if not applied:
+                print("Everything up-to-date!")
+            else:
+                print(f"Successfully applied {len(applied)} migration(s).")
+    finally:
+        if CONFIG.db_backend == "postgres":
+            try:
+                from db_postgres import close_pool
+                close_pool()
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":

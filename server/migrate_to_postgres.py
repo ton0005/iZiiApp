@@ -88,6 +88,8 @@ TABLES = [
     ("mushroom_payroll_calculations", "id"),
     ("mushroom_job_safety_configs",   "id"),
     ("mushroom_safety_checkin_logs",  "id"),
+    ("radio_devices",                 "radio_id"),
+    ("radio_events",                  "id"),
     ("grow_rooms",                    "id"),
     ("mushroom_jobs",                 "id"),
     ("tasks",                         "id"),
@@ -102,6 +104,25 @@ TABLES = [
     # Phase 3: Settings & Record Rules (2 tables)
     ("settings",                      "scope, scope_id, key"),
     ("record_rules",                  "tenant_id, rule_name"),
+    # Phase 6: Industrial WMS & Multi-Warehouse, Pharma (18 tables)
+    ("products",                      "id"),
+    ("locations",                     "id"),
+    ("product_uoms",                  "id"),
+    ("product_packagings",            "id"),
+    ("stock_lots",                    "id"),
+    ("stock_lpns",                    "id"),
+    ("stock_lpn_contents",            "id"),
+    ("stock_quants",                  "id"),
+    ("stock_moves",                   "id"),
+    ("stock_pickings",                "id"),
+    ("stock_picking_lines",           "id"),
+    ("stock_serial_numbers",          "id"),
+    ("pharma_controlled_approvals",   "id"),
+    ("pharma_dispensing_logs",        "id"),
+    ("iot_devices",                   "id"),
+    ("sensor_readings",               "id"),
+    ("automation_rules",              "id"),
+    ("automation_events",             "id"),
 ]
 
 BATCH = 500

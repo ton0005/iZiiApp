@@ -14,6 +14,7 @@ import '../../modules/accountant/database/tables.dart';
 import '../community/database/tables.dart';
 import '../../modules/mushrooms/database/tables.dart';
 import '../../modules/communication/database/tables.dart';
+import '../../modules/warehouse_automation/database/tables.dart';
 
 import 'core_tables.dart';
 
@@ -32,6 +33,21 @@ part 'app_database.g.dart';
   Products,
   StockQuants,
   StockMoves,
+  ProductUoms,
+  ProductPackagings,
+  StockLots,
+  StockLpns,
+  StockLpnContents,
+  StockPickings,
+  StockPickingLines,
+  StockSerialNumbers,
+  PharmaControlledApprovals,
+  PharmaDispensingLogs,
+  Locations,
+  IotDevices,
+  SensorReadings,
+  AutomationRules,
+  AutomationEvents,
   TrustScores,
   Referrals,
   ServiceListings,
@@ -102,7 +118,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 32;
+  int get schemaVersion => 33;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -485,6 +501,80 @@ class AppDatabase extends _$AppDatabase {
           if (from < 32) {
             try {
               await m.createTable(mushroomWindowIssues);
+            } catch (_) {}
+          }
+          if (from < 33) {
+            try {
+              await m.createTable(locations);
+            } catch (_) {}
+            try {
+              await m.createTable(productUoms);
+            } catch (_) {}
+            try {
+              await m.createTable(productPackagings);
+            } catch (_) {}
+            try {
+              await m.createTable(stockLots);
+            } catch (_) {}
+            try {
+              await m.createTable(stockLpns);
+            } catch (_) {}
+            try {
+              await m.createTable(stockLpnContents);
+            } catch (_) {}
+            try {
+              await m.createTable(stockPickings);
+            } catch (_) {}
+            try {
+              await m.createTable(stockPickingLines);
+            } catch (_) {}
+            try {
+              await m.createTable(stockSerialNumbers);
+            } catch (_) {}
+            try {
+              await m.createTable(pharmaControlledApprovals);
+            } catch (_) {}
+            try {
+              await m.createTable(pharmaDispensingLogs);
+            } catch (_) {}
+            try {
+              await m.createTable(iotDevices);
+            } catch (_) {}
+            try {
+              await m.createTable(sensorReadings);
+            } catch (_) {}
+            try {
+              await m.createTable(automationRules);
+            } catch (_) {}
+            try {
+              await m.createTable(automationEvents);
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_quants ADD COLUMN lot_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_quants ADD COLUMN lpn_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_quants ADD COLUMN reserved_qty REAL DEFAULT 0.0;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_quants ADD COLUMN available_qty REAL DEFAULT 0.0;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_moves ADD COLUMN picking_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_moves ADD COLUMN picking_line_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_moves ADD COLUMN lot_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_moves ADD COLUMN lpn_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement("ALTER TABLE stock_moves ADD COLUMN transport_type TEXT DEFAULT 'forklift';");
             } catch (_) {}
           }
         },

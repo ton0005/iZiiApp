@@ -8,6 +8,18 @@ import 'add_product_from_image_screen.dart';
 import 'edit_product_screen.dart';
 import 'barcode_scanner_screen.dart';
 import 'product_info_screen.dart';
+import 'pallet_scale_station_screen.dart';
+import 'forklift_scan_screen.dart';
+import '../../warehouse_automation/screens/central_conveyor_screen.dart';
+import '../../warehouse_automation/screens/fefo_outbound_screen.dart';
+import '../../warehouse_automation/screens/qc_inspection_screen.dart';
+import '../../warehouse_automation/screens/blind_cycle_count_screen.dart';
+import '../../warehouse_automation/screens/wave_picking_screen.dart';
+import '../../warehouse_automation/screens/packout_scale_audit_screen.dart';
+import '../../warehouse_automation/screens/cold_chain_telemetry_screen.dart';
+import '../../warehouse_automation/screens/driver_pod_screen.dart';
+import '../../warehouse_automation/screens/agv_fleet_dispatch_screen.dart';
+import '../../warehouse_automation/screens/warehouse_3d_layout_screen.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -29,6 +41,181 @@ class ProductsScreen extends StatelessWidget {
                 ),
               ),
               actions: [
+                IconButton(
+                  icon: const Icon(Icons.fact_check_outlined),
+                  tooltip: 'Cổng Kiểm Định QC (QC Gate)',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const QcInspectionScreen(),
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.inventory_outlined),
+                  tooltip: 'Kiểm Kê Mù Liên Tục (Blind Cycle Count)',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const BlindCycleCountScreen(),
+                      ),
+                    );
+                  },
+                ),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  tooltip: 'Tự Động Hóa Kho & Logistics (WMS)',
+                  onSelected: (value) {
+                    if (value == 'scale') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const PalletScaleStationScreen()),
+                      );
+                    } else if (value == 'forklift') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const ForkliftScanScreen()),
+                      );
+                    } else if (value == 'conveyor') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const CentralConveyorScreen()),
+                      );
+                    } else if (value == 'qc') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const QcInspectionScreen()),
+                      );
+                    } else if (value == 'fefo') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const FefoOutboundScreen()),
+                      );
+                    } else if (value == 'cycle_count') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const BlindCycleCountScreen()),
+                      );
+                    } else if (value == 'wave') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const WavePickingScreen()),
+                      );
+                    } else if (value == 'packout_audit') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const PackoutScaleAuditScreen()),
+                      );
+                    } else if (value == 'cold_chain') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const ColdChainTelemetryScreen()),
+                      );
+                    } else if (value == 'pod') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const DriverPodScreen()),
+                      );
+                    } else if (value == 'agv') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const AgvFleetDispatchScreen()),
+                      );
+                    } else if (value == 'wh_3d') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const Warehouse3dLayoutScreen()),
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'wh_3d',
+                      child: ListTile(
+                        leading: Icon(Icons.view_in_ar, color: Colors.cyanAccent),
+                        title: Text('3D WH Layout'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'scale',
+                      child: ListTile(
+                        leading: Icon(Icons.scale, color: Colors.teal),
+                        title: Text('LPN Scale Station (Pallet Scale)'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'forklift',
+                      child: ListTile(
+                        leading: Icon(Icons.forklift, color: Colors.blue),
+                        title: Text('Forklift Scan (Directed Putaway & Pick)'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'conveyor',
+                      child: ListTile(
+                        leading: Icon(Icons.conveyor_belt, color: Colors.indigo),
+                        title: Text('Conveyor Line'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'qc',
+                      child: ListTile(
+                        leading: Icon(Icons.fact_check, color: Color(0xFF0F766E)),
+                        title: Text('QC (Quality Gate)'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'fefo',
+                      child: ListTile(
+                        leading: Icon(Icons.outbox, color: Colors.amber),
+                        title: Text('FEFO Outbound (First Expired First Out)'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'cycle_count',
+                      child: ListTile(
+                        leading: Icon(Icons.inventory, color: Color(0xFF1E293B)),
+                        title: Text('Cycle Count (Blind Cycle Count)'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'wave',
+                      child: ListTile(
+                        leading: Icon(Icons.alt_route, color: Color(0xFF1E3A8A)),
+                        title: Text('Wave Consolidation (S-Shape Routing)'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'packout_audit',
+                      child: ListTile(
+                        leading: Icon(Icons.monitor_weight, color: Colors.cyan),
+                        title: Text('Packout Audit (Weight Verification)'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'cold_chain',
+                      child: ListTile(
+                        leading: Icon(Icons.thermostat, color: Color(0xFF2563EB)),
+                        title: Text('Cold Chain Monitoring (BLE Telemetry)'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'pod',
+                      child: ListTile(
+                        leading: Icon(Icons.assignment_turned_in, color: Color(0xFF10B981)),
+                        title: Text('Electronic e-PoD (Sign on Glass)'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'agv',
+                      child: ListTile(
+                        leading: Icon(Icons.smart_toy, color: Color(0xFF4338CA)),
+                        title: Text('VDA 5050 AGV Dispatch & FAT Commissioning'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ],
+                ),
                 IconButton(
                   icon: const Icon(Icons.qr_code_scanner),
                   tooltip: context.tr('inv_scanner_tooltip'),
