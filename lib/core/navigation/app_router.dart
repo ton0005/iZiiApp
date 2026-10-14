@@ -29,6 +29,18 @@ import '../modules/module_dashboard_screen.dart';
 import '../modules/module_directory_screen.dart';
 import '../modules/module_registry.dart';
 import '../../modules/supply_chain/screens/products_screen.dart';
+import '../../modules/supply_chain/screens/pallet_scale_station_screen.dart';
+import '../../modules/supply_chain/screens/forklift_scan_screen.dart';
+import '../../modules/warehouse_automation/screens/central_conveyor_screen.dart';
+import '../../modules/warehouse_automation/screens/fefo_outbound_screen.dart';
+import '../../modules/warehouse_automation/screens/qc_inspection_screen.dart';
+import '../../modules/warehouse_automation/screens/blind_cycle_count_screen.dart';
+import '../../modules/warehouse_automation/screens/wave_picking_screen.dart';
+import '../../modules/warehouse_automation/screens/packout_scale_audit_screen.dart';
+import '../../modules/warehouse_automation/screens/cold_chain_telemetry_screen.dart';
+import '../../modules/warehouse_automation/screens/driver_pod_screen.dart';
+import '../../modules/warehouse_automation/screens/agv_fleet_dispatch_screen.dart';
+import '../../modules/warehouse_automation/screens/warehouse_3d_layout_screen.dart';
 import '../../modules/services/screens/services_screen.dart';
 import '../../modules/services/screens/bookings_screen.dart';
 import '../settings/settings_screen.dart';
@@ -230,6 +242,72 @@ final appRouter = GoRouter(
           return const ProductsScreen();
         },
       ),
+    ),
+    GoRoute(
+      path: '/inventory/pallet-station',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.supply_chain'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const PalletScaleStationScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/inventory/forklift',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.supply_chain'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const ForkliftScanScreen();
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/warehouse/conveyor',
+      builder: (context, state) => const CentralConveyorScreen(),
+    ),
+    GoRoute(
+      path: '/warehouse/fefo',
+      builder: (context, state) => const FefoOutboundScreen(),
+    ),
+    GoRoute(
+      path: '/warehouse/qc',
+      builder: (context, state) => const QcInspectionScreen(),
+    ),
+    GoRoute(
+      path: '/warehouse/cycle-count',
+      builder: (context, state) => const BlindCycleCountScreen(),
+    ),
+    GoRoute(
+      path: '/warehouse/wave-picking',
+      builder: (context, state) => const WavePickingScreen(),
+    ),
+    GoRoute(
+      path: '/warehouse/packout-audit',
+      builder: (context, state) => const PackoutScaleAuditScreen(),
+    ),
+    GoRoute(
+      path: '/warehouse/cold-chain',
+      builder: (context, state) => const ColdChainTelemetryScreen(),
+    ),
+    GoRoute(
+      path: '/warehouse/pod',
+      builder: (context, state) => const DriverPodScreen(),
+    ),
+    GoRoute(
+      path: '/warehouse/agv',
+      builder: (context, state) => const AgvFleetDispatchScreen(),
+    ),
+    GoRoute(
+      path: '/warehouse/3d',
+      builder: (context, state) => const Warehouse3dLayoutScreen(),
     ),
     GoRoute(
       path: '/settings',

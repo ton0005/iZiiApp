@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  izii_server:
+    build: .
+    container_name: izii_server
+    restart: always
+    network_mode: "host" # Required for mDNS Zeroconf discovery across local subnet
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data

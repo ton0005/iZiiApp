@@ -297,14 +297,27 @@ async def device_directory(request: Request):
                 raise HTTPException(401, "Device token không hợp lệ hoặc đã bị thu hồi.")
 
     with open_connection() as conn:
-        rows = conn.execute(
-            "SELECT dt.device_id, dt.device_name, dt.user_id, dt.issued_at, "
-            "       dt.last_used_at, d.platform "
-            "FROM device_tokens dt "
-            "LEFT JOIN devices d ON d.device_id = dt.device_id "
-            "WHERE dt.revoked_at IS NULL "
-            "ORDER BY dt.device_name, dt.device_id"
-        ).fetchall()
+        if CONFIG.require_device_token:
+            rows = conn.execute(
+                "SELECT dt.device_id, dt.device_name, dt.user_id, dt.issued_at, "
+                "       dt.last_used_at, d.platform "
+                "FROM device_tokens dt "
+                "LEFT JOIN devices d ON d.device_id = dt.device_id "
+                "WHERE dt.revoked_at IS NULL "
+                "ORDER BY dt.device_name, dt.device_id"
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT d.device_id, "
+                "       COALESCE(dt.device_name, d.device_name, d.device_id) as device_name, "
+                "       COALESCE(dt.user_id, d.user_id, d.device_id) as user_id, "
+                "       COALESCE(dt.issued_at, CAST(d.registered_at AS TEXT)) as issued_at, "
+                "       COALESCE(dt.last_used_at, CAST(d.last_seen_at AS TEXT)) as last_used_at, "
+                "       d.platform "
+                "FROM devices d "
+                "LEFT JOIN device_tokens dt ON d.device_id = dt.device_id AND dt.revoked_at IS NULL "
+                "ORDER BY device_name, d.device_id"
+            ).fetchall()
 
     return {
         "server_id": CONFIG.server_id,

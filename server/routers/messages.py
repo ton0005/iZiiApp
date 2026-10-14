@@ -10,7 +10,7 @@ Handles encrypted message sending, retrieval, and acknowledgment:
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from dependencies import get_message_repo, get_notification_repo
 from repository.interface import IMessageRepository, INotificationRepository
@@ -43,7 +43,7 @@ class MessageAckPayload(BaseModel):
 async def message_send(body: MessageSendPayload,
                         msg_repo: IMessageRepository = Depends(get_message_repo),
                         notif_repo: INotificationRepository = Depends(get_notification_repo)):
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     try:
         # Convert pydantic payloads to plain dicts for repository
@@ -119,7 +119,7 @@ async def messages_pending(device_id: str,
 @router.post("/ack")
 async def message_ack(body: MessageAckPayload,
                        repo: IMessageRepository = Depends(get_message_repo)):
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     try:
         acked_count = repo.acknowledge(body.message_ids, now) if body.message_ids else 0

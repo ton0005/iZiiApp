@@ -1,0 +1,23 @@
+﻿{
+  "name": "field_ops",
+  "version": "1.0.0",
+  "display_name": { "vi": "Vận hành hiện trường", "en": "Field Operations" },
+  "depends": ["core", "workforce"],
+  "owns_tables": [
+    "grow_rooms",
+    "mushroom_jobs",
+    "mushroom_job_safety_configs",
+    "mushroom_safety_checkin_logs"
+  ],
+  "models": [
+    { "model_name": "grow_room", "table_name": "grow_rooms", "label": { "vi": "Phòng trồng", "en": "Grow Room" } },
+    { "model_name": "job", "table_name": "mushroom_jobs", "label": { "vi": "Công việc hiện trường", "en": "Field Job" } },
+    { "model_name": "job_safety_config", "table_name": "mushroom_job_safety_configs", "label": { "vi": "Cấu hình an toàn", "en": "Job Safety Config" } },
+    { "model_name": "safety_checkin_log", "table_name": "mushroom_safety_checkin_logs", "label": { "vi": "Nhật ký an toàn", "en": "Safety Checkin Log" } }
+  ],
+  "extends": [
+    { "model_name": "work_session", "add_fields": ["current_room_id"] }
+  ],
+  "min_client_schema_version": 12,
+  "enabled_by_default": true
+}

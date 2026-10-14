@@ -1,0 +1,139 @@
+Đổi pass POSTGRESQL:
+sudo -u postgres psql -c "ALTER ROLE postgres PASSWORD 'Admin';"
+sudo systemctl daemon-reload && sudo systemctl restart iziiserver
+
+In iziiserver_restore.sh, DB_APP_PASS="" means the script does not set/change the postgres role's password (iziiserver_restore.sh:226-228) — it only creates a fresh postgres role via apt install postgresql, which has no password set. But the systemd service file restored from backup (iziiserver.service.backup) still carries the old DSN with the old password. Fresh role password ≠ DSN password → password authentication failed for user "postgres".
+
+Fix — pick one:
+
+Make the DB password match the DSN already in the service (simplest, no app config change). SSH in and run:
+
+
+gcloud compute ssh iziiserver-costa-mushroom --project iziisolution --zone asia-southeast2-a --command \
+  "sudo systemctl show iziiserver -p Environment; sudo cat /etc/systemd/system/iziiserver.service | grep -i IZIIAPP_PG_DSN"
+That reveals the password baked into the DSN. Then set the role to match:
+
+
+sudo -u postgres psql -c "ALTER ROLE postgres PASSWORD '<password-from-dsn>';"
+sudo systemctl restart iziiserver
+Or set a new password and update the DSN to match — edit IZIIAPP_PG_DSN wherever it's defined (an .env file referenced via EnvironmentFile= in the unit, or an Environment= line directly in iziiserver.service), then:
+
+
+sudo -u postgres psql -c "ALTER ROLE postgres PASSWORD 'new-password';"
+sudo systemctl daemon-reload && sudo systemctl restart iziiserver
+
+
+c#237-237
+cp call.py /opt/izii_server/routers
+cp: cannot create regular file '/opt/izii_server/routers/call.py': Permission denied
+That directory is owned by the service account (set via chown -R "$SVC_USER" in the restore script), not your login user. Use sudo:
+
+
+sudo cp call.py /opt/izii_server/routers/
+sudo chown $(sudo grep -m1 -E '^\s*User=' /etc/systemd/system/iziiserver.service | cut -d= -f2) /opt/izii_server/routers/call.py
+The chown step matters — if you just sudo cp, the file lands owned by root while the rest of /opt/izii_server is owned by the service user (e.g. iziiserver), which can cause the app to fail loading it depending on how it's run. After copying, restart the service to pick it up:
+
+
+sudo systemctl restart iziiserver
+
+
+
+downlod file tu gloud: gcloud compute scp my-vm:/home/vinhphan88_vn/iziiserver_restore/latency.log C:\Users\CHANH\Project --zone=australia-southeast2-a
+
+sudo apt-get update && sudo apt-get install -y nginx
+
+sudo tee /etc/nginx/sites-available/iziiserver > /dev/null <<'EOF'
+server {
+    listen 80;
+    server_name costa-mushroom.iziiapp.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket support (cần cho /chat)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+EOF
+
+
+
+
+NGINX:
+===============================
+Muốn subdomain trỏ về VM mà không cần gõ :8080 thì cần thêm reverse proxy (nginx) lắng nghe ở port 80/443 rồi chuyển tiếp vào 127.0.0.1:8080 — trình duyệt mặc định dùng port 80 (http) / 443 (https), nên chỉ đổi DNS thôi sẽ không đủ.
+
+1. Trỏ DNS — ở nhà cung cấp domain, tạo bản ghi:
+
+
+A   api.yourdomain.com   →   34.129.21.244
+2. Mở firewall GCP cho port 80/443:
+
+
+gcloud compute firewall-rules create allow-izii-http --project iziisolution \
+  --network default --allow tcp:80,tcp:443 --target-tags izii-server --source-ranges 0.0.0.0/0
+3. Cài nginx trên VM và cấu hình reverse proxy:
+
+
+sudo apt-get update && sudo apt-get install -y nginx
+
+sudo tee /etc/nginx/sites-available/iziiserver > /dev/null <<'EOF'
+server {
+    listen 80;
+    server_name api.yourdomain.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket support (cần cho /chat)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+EOF
+
+sudo ln -sf /etc/nginx/sites-available/iziiserver /etc/nginx/sites-enabled/iziiserver
+sudo nginx -t && sudo systemctl restart nginx
+4. (Khuyến nghị) Bật HTTPS miễn phí bằng certbot:
+
+
+sudo apt-get install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d api.yourdomain.com
+Certbot sẽ tự sửa file nginx ở trên để redirect http→https và gia hạn cert tự động.
+
+Sau bước này, http://api.yourdomain.com (hoặc https:// nếu dùng certbot) sẽ trỏ đúng vào app đang chạy ở port 8080 mà không cần gõ số port. Bạn có domain thật chưa hay cần tư vấn thêm về DNS provider đang dùng?
+
+=================================
+sudo ln -sf /etc/nginx/sites-available/iziiserver /etc/nginx/sites-enabled/iziiserver
+sudo nginx -t && sudo systemctl restart nginx
+
+
+
+
+sudo apt-get install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d costa-mushroom.iziiapp.com
+
+gỡ bỏ trang defauft nginx
+
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx
+
+ ls -la /etc/nginx/sites-enabled/
+total 8
+drwxr-xr-x 2 root root 4096 Sep 19 17:09 .
+drwxr-xr-x 8 root root 4096 Sep 19 17:03 ..
+lrwxrwxrwx 1 root root   37 Sep 19 17:02 iziiserver -> /etc/nginx/sites-available/iziiserver
+
+
+3. **Lỗi Crash Cron Chấm Công 22:00**: `compute_and_save_daily_timesheets` chỉ nhận tối đa 1 tham số nhưng `app.py` truyền 2 tham số (`conn, today_str`), gây vỡ luồng cron lúc 22:00.

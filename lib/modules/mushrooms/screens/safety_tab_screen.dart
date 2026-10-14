@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+import 'radio_safety_screen.dart';
+
 class SafetyTabScreen extends StatefulWidget {
   final bool isDark;
   final List<Map<String, dynamic>> safetyLogs;
@@ -58,6 +60,9 @@ class _SafetyTabScreenState extends State<SafetyTabScreen> {
             width: 340,
             child: Column(
               children: [
+                // Hytera radio SOS / Man Down / Lone Worker alarms
+                const RadioAlarmBanner(),
+                const SizedBox(height: 12),
                 // Alarms panel card
                 Container(
                   padding: const EdgeInsets.all(16),

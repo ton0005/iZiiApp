@@ -302,12 +302,12 @@ class _MushroomsAuthScreenState extends State<MushroomsAuthScreen>
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.check_circle_outline_rounded, color: primaryColor, size: 18),
+                              const Icon(Icons.check_circle_outline_rounded, color: primaryColor, size: 18),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   _successMessage!,
-                                  style: TextStyle(color: primaryColor, fontSize: 12, fontWeight: FontWeight.w600),
+                                  style: const TextStyle(color: primaryColor, fontSize: 12, fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ],

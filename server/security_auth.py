@@ -289,4 +289,5 @@ def describe_scopes() -> str:
     parts.append(
         "device=" + ("BẮT BUỘC" if CONFIG.require_device_token else "tuỳ chọn")
     )
+    parts.append("radio=" + ("có" if CONFIG.radio_gateway_secret else "TẮT"))
     return "🔑 [AUTH] Phạm vi bí mật — " + " · ".join(parts)

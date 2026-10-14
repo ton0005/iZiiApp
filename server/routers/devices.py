@@ -11,7 +11,7 @@ Handles device registration, heartbeats, and key lookups:
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from database import sql
 from dependencies import get_device_repo, open_connection
@@ -37,9 +37,9 @@ class DeviceHeartbeat(BaseModel):
 
 
 @router.post("/register")
-async def device_register(body: DeviceRegister, 
-                           repo: IDeviceRepository = Depends(get_device_repo)):
-    now = datetime.now().isoformat()
+def device_register(body: DeviceRegister, 
+                    repo: IDeviceRepository = Depends(get_device_repo)):
+    now = datetime.now(timezone.utc).isoformat()
     
     try:
         device = repo.register(body.model_dump(), now)
@@ -55,9 +55,9 @@ async def device_register(body: DeviceRegister,
 
 
 @router.post("/heartbeat")
-async def device_heartbeat(body: DeviceHeartbeat,
-                            repo: IDeviceRepository = Depends(get_device_repo)):
-    now = datetime.now().isoformat()
+def device_heartbeat(body: DeviceHeartbeat,
+                     repo: IDeviceRepository = Depends(get_device_repo)):
+    now = datetime.now(timezone.utc).isoformat()
     
     found = repo.heartbeat(body.device_id, now)
     if not found:
@@ -72,8 +72,8 @@ class DisplayNamePayload(BaseModel):
 
 
 @router.post("/display-name")
-async def set_display_name(body: DisplayNamePayload,
-                            repo: IDeviceRepository = Depends(get_device_repo)):
+def set_display_name(body: DisplayNamePayload,
+                     repo: IDeviceRepository = Depends(get_device_repo)):
     """
     Đổi TÊN HIỂN THỊ của một thiết bị — dùng khi có người đăng nhập.
 
@@ -109,21 +109,18 @@ async def set_display_name(body: DisplayNamePayload,
 
 
 @router.get("/online")
-async def devices_online(user_id: Optional[str] = None,
-                          exclude_device_id: Optional[str] = None,
-                          repo: IDeviceRepository = Depends(get_device_repo)):
+def devices_online(user_id: Optional[str] = None,
+                   exclude_device_id: Optional[str] = None,
+                   repo: IDeviceRepository = Depends(get_device_repo)):
     devices = repo.get_online(user_id, exclude_device_id)
-    
-    print(f"\n📡 [ONLINE] Queried online devices → {len(devices)} active")
     return {"devices": devices}
 
 
 @router.get("/{device_id}/key")
-async def device_key_lookup(device_id: str,
-                             repo: IDeviceRepository = Depends(get_device_repo)):
+def device_key_lookup(device_id: str,
+                      repo: IDeviceRepository = Depends(get_device_repo)):
     device = repo.get_key(device_id)
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     
-    print(f"\n🔑 [KEY] Key lookup for device: {device['device_name']} DID: {device_id[:16]}...")
     return device

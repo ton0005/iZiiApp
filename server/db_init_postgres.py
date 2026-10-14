@@ -68,7 +68,7 @@ DDL_STATEMENTS = [
         push_token         TEXT,
         fingerprint        TEXT,
         registered_at      TEXT,
-        last_seen_at       TEXT
+        last_seen_at       TIMESTAMPTZ
     )
     """,
 
@@ -212,6 +212,220 @@ DDL_STATEMENTS = [
         detail     TEXT
     )
     """,
+
+    # ── 11. Phase 5 — Field domain tables: attendance, safety, jobs, rooms ─
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_job_types (
+        id          TEXT PRIMARY KEY,
+        name        TEXT NOT NULL,
+        plan_minutes INT DEFAULT 0,
+        is_solo_job BOOLEAN DEFAULT FALSE,
+        is_custom   BOOLEAN DEFAULT FALSE,
+        is_active   BOOLEAN DEFAULT TRUE,
+        color       TEXT,
+        label       JSONB,
+        icon        TEXT,
+        sort_order  INT DEFAULT 100,
+        created_at  TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_attendance_events (
+        id          TEXT PRIMARY KEY,
+        employee_id TEXT NOT NULL,
+        employee_name TEXT,
+        plan_id     TEXT,
+        event_type  TEXT NOT NULL,
+        timestamp   TEXT NOT NULL,
+        source      TEXT NOT NULL,
+        location    TEXT,
+        created_at  TEXT
+    )
+    """,
+    'CREATE INDEX IF NOT EXISTS idx_att_events_emp ON mushroom_attendance_events(employee_id, timestamp)',
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_break_policies (
+        id                     TEXT PRIMARY KEY,
+        standard_break_minutes INT DEFAULT 30,
+        grace_minutes          INT DEFAULT 5,
+        extra_break_rule       TEXT DEFAULT 'unpaid'
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_daily_timesheets (
+        id                             TEXT PRIMARY KEY,
+        employee_id                    TEXT NOT NULL,
+        employee_name                  TEXT,
+        plan_date                      TEXT NOT NULL,
+        check_in_time                  TEXT,
+        check_out_time                 TEXT,
+        total_break_taken_minutes      INT DEFAULT 0,
+        standard_break_allowed_minutes INT DEFAULT 0,
+        extra_break_minutes            INT DEFAULT 0,
+        gross_worked_minutes           INT DEFAULT 0,
+        paid_minutes                   INT DEFAULT 0,
+        overtime_minutes               INT DEFAULT 0,
+        assigned_team_color            TEXT,
+        assigned_rooms_json            TEXT,
+        status                         TEXT DEFAULT 'normal',
+        created_at                     TEXT,
+        updated_at                     TEXT
+    )
+    """,
+    'CREATE INDEX IF NOT EXISTS idx_timesheets_emp_date ON mushroom_daily_timesheets(employee_id, plan_date)',
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_shifts (
+        id                  TEXT PRIMARY KEY,
+        plan_id             TEXT,
+        role                TEXT,
+        employee_id         TEXT,
+        start_time          TEXT,
+        shed_room_list_json TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_payroll_calculations (
+        id                   TEXT PRIMARY KEY,
+        employee_id          TEXT NOT NULL,
+        pay_period           TEXT NOT NULL,
+        total_paid_hours     REAL DEFAULT 0.0,
+        total_overtime_hours REAL DEFAULT 0.0,
+        base_pay             REAL DEFAULT 0.0,
+        overtime_pay         REAL DEFAULT 0.0,
+        total_pay            REAL DEFAULT 0.0,
+        created_at           TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_job_safety_configs (
+        id                        TEXT PRIMARY KEY,
+        job_id                    TEXT NOT NULL,
+        check_in_interval_minutes INT DEFAULT 30,
+        grace_period_minutes      INT DEFAULT 5,
+        escalation_target         TEXT DEFAULT 'supervisor',
+        auto_start_on_job_begin   BOOLEAN DEFAULT TRUE,
+        alarm_type                TEXT DEFAULT 'push_inapp',
+        created_at                TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_safety_checkin_logs (
+        id                    TEXT PRIMARY KEY,
+        job_id                TEXT NOT NULL,
+        worker_id             TEXT NOT NULL,
+        event_type            TEXT NOT NULL,
+        gps_latitude          REAL,
+        gps_longitude         REAL,
+        response_time_seconds INT,
+        notes                 TEXT,
+        timestamp             TEXT NOT NULL
+    )
+    """,
+    'CREATE INDEX IF NOT EXISTS idx_safety_logs_job ON mushroom_safety_checkin_logs(job_id)',
+    """
+    CREATE TABLE IF NOT EXISTS grow_rooms (
+        id            TEXT PRIMARY KEY,
+        name          TEXT,
+        status        TEXT,
+        current_stage TEXT,
+        day_in_cycle  INT DEFAULT 0,
+        target_yield  REAL DEFAULT 0.0,
+        picked_yield  REAL DEFAULT 0.0,
+        created_at    TEXT,
+        updated_at    TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_window_issues (
+        id               TEXT PRIMARY KEY,
+        room_name        TEXT NOT NULL,
+        rack_index       INT DEFAULT 0,
+        level_index      INT DEFAULT 0,
+        window_index     INT DEFAULT 0,
+        window_code      TEXT NOT NULL,
+        category         TEXT NOT NULL,
+        title            TEXT NOT NULL,
+        description      TEXT,
+        severity         TEXT DEFAULT 'normal',
+        reporter_name    TEXT,
+        status           TEXT DEFAULT 'open',
+        temperature      REAL DEFAULT 19.0,
+        humidity         REAL DEFAULT 90.0,
+        co2              REAL DEFAULT 1150.0,
+        casing_temp      REAL DEFAULT 19.5,
+        created_at       TEXT,
+        updated_at       TEXT
+    )
+    """,
+    'CREATE INDEX IF NOT EXISTS idx_win_issues_room ON mushroom_window_issues(room_name, status)',
+    """
+    CREATE TABLE IF NOT EXISTS mushroom_jobs (
+        id              TEXT PRIMARY KEY,
+        room_id         TEXT,
+        job_type        TEXT,
+        name            TEXT,
+        status          TEXT,
+        assignee        TEXT,
+        priority        TEXT,
+        scheduled_at    TEXT,
+        started_at      TEXT,
+        completed_at    TEXT,
+        plan_details    TEXT,
+        prochloraz_rate TEXT,
+        linked_task_id  TEXT,
+        is_solo_job     BOOLEAN DEFAULT FALSE,
+        created_at      TEXT,
+        updated_at      TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS tasks (
+        id          TEXT PRIMARY KEY,
+        project_id  TEXT,
+        title       TEXT,
+        description TEXT,
+        status      TEXT,
+        priority    TEXT,
+        due_date    TEXT,
+        created_at  TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS picker_teams (
+        id               TEXT PRIMARY KEY,
+        plan_id          TEXT,
+        color_code       TEXT,
+        team_leader_id   TEXT,
+        headcount        INT DEFAULT 0,
+        rate_estimate    REAL DEFAULT 0.0,
+        member_ids_json  TEXT,
+        is_seed          BOOLEAN DEFAULT FALSE
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS departments (
+        id          TEXT PRIMARY KEY,
+        name        TEXT,
+        description TEXT,
+        created_at  TEXT,
+        is_seed     BOOLEAN DEFAULT FALSE
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS chat_messages (
+        id              TEXT PRIMARY KEY,
+        conversation_id TEXT,
+        sender_id       TEXT,
+        type            TEXT DEFAULT 'text',
+        content         TEXT,
+        sent_at         TEXT,
+        delivered_at    TEXT,
+        read_at         TEXT,
+        is_deleted      BOOLEAN DEFAULT FALSE,
+        created_at      TEXT,
+        is_seed         BOOLEAN DEFAULT FALSE
+    )
+    """,
 ]
 
 # Migration bổ sung cột cho database Postgres đã tồn tại từ trước.
@@ -231,11 +445,233 @@ ALTER_STATEMENTS = [
     # Hàng đợi tin nhắn: chống kẹt vô hạn khi máy nhận không giải mã được.
     'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS failed_attempts INT NOT NULL DEFAULT 0',
     'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS last_error TEXT',
-    'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS dead_lettered_at TIMESTAMPTZ',
+    'ALTER TABLE message_queue ADD COLUMN IF NOT EXISTS dead_lettered_at TEXT',
+    # Sửa các database PostgreSQL đã lỡ tạo cột này ở kiểu TIMESTAMPTZ.
+    """
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 FROM information_schema.columns
+            WHERE table_schema = 'public'
+              AND table_name   = 'message_queue'
+              AND column_name  = 'dead_lettered_at'
+              AND data_type   <> 'text'
+        ) THEN
+            ALTER TABLE message_queue
+                ALTER COLUMN dead_lettered_at TYPE TEXT USING dead_lettered_at::text;
+            RAISE NOTICE 'Da doi message_queue.dead_lettered_at sang TEXT.';
+        END IF;
+    END $$;
+    """,
+    """
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 FROM information_schema.columns
+            WHERE table_name = 'devices' AND column_name = 'last_seen_at' AND data_type = 'text'
+        ) THEN
+            ALTER TABLE devices
+                ALTER COLUMN last_seen_at TYPE TIMESTAMPTZ USING (
+                    CASE
+                        WHEN last_seen_at IS NULL OR trim(last_seen_at) = '' THEN NULL
+                        ELSE last_seen_at::timestamptz
+                    END
+                );
+            RAISE NOTICE 'Da doi devices.last_seen_at sang TIMESTAMPTZ.';
+        END IF;
+    END $$;
+    """,
     "ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS profile TEXT DEFAULT 'shared'",
     'ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS owner_user_id TEXT',
     'ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS owner_user_name TEXT',
     'ALTER TABLE enrollment_tokens ADD COLUMN IF NOT EXISTS session_max_hours INT',
+    # Phase 5 columns on existing tables
+    'ALTER TABLE mushroom_job_types ADD COLUMN IF NOT EXISTS color TEXT',
+    'ALTER TABLE mushroom_job_types ADD COLUMN IF NOT EXISTS label JSONB',
+    'ALTER TABLE mushroom_job_types ADD COLUMN IF NOT EXISTS icon TEXT',
+    'ALTER TABLE mushroom_job_types ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 100',
+    'ALTER TABLE picker_teams ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE',
+    'ALTER TABLE departments ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE',
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE',
+    "ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'text'",
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS sent_at TEXT',
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS delivered_at TEXT',
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS read_at TEXT',
+    'ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE',
+    # Idempotent conversion of columns to native BOOLEAN
+    """
+    DO $$
+    BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'departments' AND column_name = 'is_seed' AND data_type = 'integer') THEN
+            ALTER TABLE departments ALTER COLUMN is_seed DROP DEFAULT;
+            ALTER TABLE departments ALTER COLUMN is_seed TYPE boolean USING (is_seed::int != 0);
+            ALTER TABLE departments ALTER COLUMN is_seed SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'picker_teams' AND column_name = 'is_seed' AND data_type = 'integer') THEN
+            ALTER TABLE picker_teams ALTER COLUMN is_seed DROP DEFAULT;
+            ALTER TABLE picker_teams ALTER COLUMN is_seed TYPE boolean USING (is_seed::int != 0);
+            ALTER TABLE picker_teams ALTER COLUMN is_seed SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'chat_messages' AND column_name = 'is_seed' AND data_type = 'integer') THEN
+            ALTER TABLE chat_messages ALTER COLUMN is_seed DROP DEFAULT;
+            ALTER TABLE chat_messages ALTER COLUMN is_seed TYPE boolean USING (is_seed::int != 0);
+            ALTER TABLE chat_messages ALTER COLUMN is_seed SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_job_types' AND column_name = 'is_solo_job' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_solo_job DROP DEFAULT;
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_solo_job TYPE boolean USING (is_solo_job::int != 0);
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_solo_job SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_job_types' AND column_name = 'is_active' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_active DROP DEFAULT;
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_active TYPE boolean USING (is_active::int != 0);
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_active SET DEFAULT true;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_job_types' AND column_name = 'is_custom' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_custom DROP DEFAULT;
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_custom TYPE boolean USING (is_custom::int != 0);
+            ALTER TABLE mushroom_job_types ALTER COLUMN is_custom SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_jobs' AND column_name = 'is_solo_job' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_jobs ALTER COLUMN is_solo_job DROP DEFAULT;
+            ALTER TABLE mushroom_jobs ALTER COLUMN is_solo_job TYPE boolean USING (is_solo_job::int != 0);
+            ALTER TABLE mushroom_jobs ALTER COLUMN is_solo_job SET DEFAULT false;
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'mushroom_job_safety_configs' AND column_name = 'auto_start_on_job_begin' AND data_type = 'integer') THEN
+            ALTER TABLE mushroom_job_safety_configs ALTER COLUMN auto_start_on_job_begin DROP DEFAULT;
+            ALTER TABLE mushroom_job_safety_configs ALTER COLUMN auto_start_on_job_begin TYPE boolean USING (auto_start_on_job_begin::int != 0);
+            ALTER TABLE mushroom_job_safety_configs ALTER COLUMN auto_start_on_job_begin SET DEFAULT true;
+        END IF;
+    END $$;
+    """,
+]
+
+# ── Phase 1: Nền tảng: Audit, RLS, Tenant isolation & Text Search ─────────────
+DOMAIN_TABLES = [
+    "tasks",
+    "mushroom_jobs",
+    "grow_rooms",
+    "mushroom_job_types",
+    "mushroom_attendance_events",
+    "mushroom_daily_timesheets",
+    "mushroom_break_policies",
+    "mushroom_shifts",
+    "mushroom_payroll_calculations",
+    "mushroom_job_safety_configs",
+    "mushroom_safety_checkin_logs",
+    "mushroom_window_issues",
+    "picker_teams",
+    "departments",
+    "chat_messages",
+]
+
+PHASE1_STATEMENTS = [
+    "CREATE EXTENSION IF NOT EXISTS unaccent",
+    """
+    DO $$
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_ts_config WHERE cfgname = 'vi') THEN
+            CREATE TEXT SEARCH CONFIGURATION vi (COPY = simple);
+            ALTER TEXT SEARCH CONFIGURATION vi
+                ALTER MAPPING FOR hword, hword_part, word
+                WITH unaccent, simple;
+        END IF;
+    END $$;
+    """,
+]
+
+for tbl in DOMAIN_TABLES:
+    PHASE1_STATEMENTS.extend([
+        f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS tenant_id TEXT NOT NULL DEFAULT 'default'",
+        f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS created_by TEXT",
+        f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()",
+        f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS updated_by TEXT",
+        f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now()",
+        f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS last_mutation_id TEXT",
+        f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS last_seq BIGINT NOT NULL DEFAULT 0",
+        f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ",
+        f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS is_seed BOOLEAN NOT NULL DEFAULT FALSE",
+        f"CREATE INDEX IF NOT EXISTS idx_{tbl}_tenant_id ON {tbl}(tenant_id, id)",
+        f"ALTER TABLE {tbl} ENABLE ROW LEVEL SECURITY",
+        f"""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_policies WHERE tablename = '{tbl}' AND policyname = 'tenant_isolation_policy'
+            ) THEN
+                CREATE POLICY tenant_isolation_policy ON {tbl}
+                USING (
+                    current_setting('app.tenant_id', true) IS NULL
+                    OR current_setting('app.tenant_id', true) = ''
+                    OR current_setting('app.tenant_id', true) = '*'
+                    OR tenant_id = current_setting('app.tenant_id', true)
+                )
+                WITH CHECK (
+                    current_setting('app.tenant_id', true) IS NULL
+                    OR current_setting('app.tenant_id', true) = ''
+                    OR current_setting('app.tenant_id', true) = '*'
+                    OR tenant_id = current_setting('app.tenant_id', true)
+                );
+            END IF;
+        END $$;
+        """,
+    ])
+
+
+# ── Phase 2: Module System, Tenant Modules & Model Registry (Q2) ─────────────
+PHASE2_STATEMENTS = [
+    """
+    CREATE TABLE IF NOT EXISTS tenant_modules (
+        tenant_id    TEXT NOT NULL,
+        module_name  TEXT NOT NULL,
+        version      TEXT NOT NULL,
+        enabled      BOOLEAN NOT NULL DEFAULT TRUE,
+        installed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        settings     JSONB NOT NULL DEFAULT '{}',
+        PRIMARY KEY (tenant_id, module_name)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS model_registry (
+        tenant_id     TEXT NOT NULL,
+        model_name    TEXT NOT NULL,
+        module_name   TEXT NOT NULL,
+        table_name    TEXT NOT NULL,
+        label         JSONB NOT NULL,
+        is_syncable   BOOLEAN NOT NULL DEFAULT TRUE,
+        PRIMARY KEY (tenant_id, model_name)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS field_registry (
+        tenant_id     TEXT NOT NULL,
+        model_name    TEXT NOT NULL,
+        field_name    TEXT NOT NULL,
+        data_type     TEXT NOT NULL,
+        is_required   BOOLEAN NOT NULL DEFAULT FALSE,
+        is_custom     BOOLEAN NOT NULL DEFAULT FALSE,
+        label         JSONB NOT NULL,
+        enum_values   JSONB,
+        ui            JSONB NOT NULL DEFAULT '{}',
+        PRIMARY KEY (tenant_id, model_name, field_name)
+    )
+    """,
+]
+
+
+STANDARD_GROW_ROOMS = [
+    # Plant M1
+    'Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6', 'Room 6A', 'Room 6B',
+    'Room 7', 'Room 8', 'Room 9', 'Room 10', 'Room 11', 'Room 12', 'Room 13', 'Room 14',
+    'Room 15', 'Room 16', 'Room 17', 'Room 18', 'Room 19', 'Room 20', 'Room 21', 'Room 22',
+    'Room 22A', 'Room 23', 'Room 24', 'Room 25', 'Room 26', 'Room 27', 'Room 28', 'Room 29',
+    'Room 30', 'Room 31', 'Room 32',
+    # Plant M2
+    'Room 33', 'Room 34', 'Room 35', 'Room 36', 'Room 37', 'Room 38', 'Room 39', 'Room 40',
+    'Room 41', 'Room 42', 'Room 43', 'Room 44', 'Room 45', 'Room 46', 'Room 47', 'Room 48',
+    'Room 49', 'Room 50', 'Room 51', 'Room 52', 'Room 52A', 'Room 53', 'Room 54', 'Room 55',
+    'Room 56', 'Room 57', 'Room 58', 'Room 59', 'Room 60', 'Room 61', 'Room 62', 'Room 63',
+    'Room 64', 'Room 65', 'Room 66'
 ]
 
 
@@ -248,8 +684,54 @@ def init_db_postgres() -> None:
                 conn.execute(stmt)
             except Exception as e:
                 print(f"⚠️  [PG] Bỏ qua ALTER: {e}")
+        # Phase 1 statements (Audit, RLS, Text Search)
+        for stmt in PHASE1_STATEMENTS:
+            try:
+                conn.execute(stmt)
+            except Exception as e:
+                print(f"⚠️  [PG] Bỏ qua PHASE1: {e}")
+        # Phase 2 statements (Module System & Model Registry)
+        for stmt in PHASE2_STATEMENTS:
+            try:
+                conn.execute(stmt)
+            except Exception as e:
+                print(f"⚠️  [PG] Bỏ qua PHASE2: {e}")
+        # Ensure default break policy exists
+        try:
+            conn.execute(
+                "INSERT INTO mushroom_break_policies (id, standard_break_minutes, grace_minutes, extra_break_rule) "
+                "VALUES ('default_policy', 30, 5, 'unpaid') ON CONFLICT (id) DO NOTHING"
+            )
+        except Exception:
+            pass
+
+        # Ensure standard grow rooms exist
+        try:
+            from datetime import datetime, timezone
+            now_iso = datetime.now(timezone.utc)
+            for r_name in STANDARD_GROW_ROOMS:
+                r_id = r_name.lower().replace(' ', '_')
+                conn.execute(
+                    """
+                    INSERT INTO grow_rooms (
+                        id, name, status, current_stage, day_in_cycle,
+                        target_yield, picked_yield, created_at, updated_at,
+                        tenant_id, is_seed
+                    ) VALUES (
+                        %s, %s, 'idle', 'idle', 1,
+                        0.0, 0.0, %s, %s,
+                        'default', TRUE
+                    ) ON CONFLICT (id) DO UPDATE SET
+                        name = EXCLUDED.name,
+                        is_seed = TRUE
+                    WHERE grow_rooms.name IS NULL OR grow_rooms.name = ''
+                    """,
+                    (r_id, r_name, now_iso, now_iso),
+                )
+        except Exception as e:
+            print(f"⚠️  [PG] Bỏ qua seed grow_rooms: {e}")
         conn.commit()
-    print("🐘 [PG] Schema PostgreSQL đã sẵn sàng.")
+    print("🐘 [PG] Schema PostgreSQL và cấu hình Phase 1 + Phase 2 đã sẵn sàng.")
 
 
 def prune_old_mutations_postgres(days: int = 30) -> int:
@@ -264,3 +746,35 @@ def prune_old_mutations_postgres(days: int = 30) -> int:
     if deleted > 0:
         print(f"🧹 [PG] Đã dọn {deleted} mutation cũ hơn {days} ngày.")
     return deleted
+
+
+def prune_message_queue_postgres(delivered_days: int = 7, stuck_days: int = 3) -> int:
+    """Bản PostgreSQL của prune_message_queue — xem db_init.py:491 để biết lý do."""
+    from datetime import datetime, timezone, timedelta
+
+    now = datetime.now(timezone.utc)
+    delivered_cutoff = (now - timedelta(days=delivered_days)).isoformat()
+    stuck_cutoff = (now - timedelta(days=stuck_days)).isoformat()
+
+    with pg_connection() as conn:
+        cur = conn.execute(
+            "DELETE FROM message_queue "
+            "WHERE delivered_at IS NOT NULL AND delivered_at < %s",
+            (delivered_cutoff,),
+        )
+        deleted = cur.rowcount
+
+        cur = conn.execute(
+            "UPDATE message_queue SET dead_lettered_at = %s, "
+            "       last_error = COALESCE(last_error, 'stuck_too_long') "
+            "WHERE delivered_at IS NULL AND dead_lettered_at IS NULL "
+            "  AND sent_at < %s",
+            (now.isoformat(), stuck_cutoff),
+        )
+        dead = cur.rowcount
+        conn.commit()
+
+    if deleted or dead:
+        print(f"🧹 [PG][MSG-QUEUE] Xoá {deleted} tin đã giao cũ, dead-letter {dead} tin kẹt.")
+    return deleted + dead
+

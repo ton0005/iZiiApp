@@ -1,0 +1,21 @@
+[Unit]
+Description=iZiiServer Standalone Service
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/izii_server
+EnvironmentFile=/opt/izii_server/.env
+ExecStart=/opt/izii_server/venv/bin/python /opt/izii_server/app.py
+Restart=always
+RestartSec=5s
+
+# Security & limits
+LimitNOFILE=65535
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

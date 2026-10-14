@@ -8,6 +8,8 @@ import 'bloc/inventory_bloc.dart';
 import 'repository.dart';
 import 'screens/products_screen.dart';
 import 'screens/barcode_scanner_screen.dart';
+import 'screens/pallet_scale_station_screen.dart';
+import 'screens/forklift_scan_screen.dart';
 
 class SupplyChainModule implements IZiiModule {
   @override
@@ -107,6 +109,8 @@ class SupplyChainModule implements IZiiModule {
         '/inventory': (context) => const Center(child: Text('Inventory')),
         '/inventory/products': (context) => const ProductsScreen(),
         '/inventory/scan': (context) => const BarcodeScannerScreen(),
+        '/inventory/pallet-station': (context) => const PalletScaleStationScreen(),
+        '/inventory/forklift': (context) => const ForkliftScanScreen(),
       };
 
   @override

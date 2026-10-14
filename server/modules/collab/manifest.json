@@ -1,0 +1,17 @@
+﻿{
+  "name": "collab",
+  "version": "1.0.0",
+  "display_name": { "vi": "Trao đổi & Công việc", "en": "Collaboration & Tasks" },
+  "depends": ["core"],
+  "owns_tables": [
+    "tasks",
+    "chat_messages"
+  ],
+  "models": [
+    { "model_name": "task", "table_name": "tasks", "label": { "vi": "Nhiệm vụ", "en": "Task" } },
+    { "model_name": "chat_message", "table_name": "chat_messages", "label": { "vi": "Tin nhắn", "en": "Chat Message" } }
+  ],
+  "extends": [],
+  "min_client_schema_version": 1,
+  "enabled_by_default": true
+}

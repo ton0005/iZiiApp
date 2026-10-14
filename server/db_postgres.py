@@ -68,16 +68,26 @@ def get_pool():
 
 
 @contextmanager
-def pg_connection():
+def pg_connection(tenant_id: Optional[str] = None):
     """
     Mượn connection từ pool, tự trả lại khi xong.
-
-    Lưu ý khác biệt với SQLite: connection ở đây được TRẢ VỀ POOL chứ không
-    đóng hẳn. Không được gọi conn.close() thủ công.
+    Hỗ trợ thiết lập session variable 'app.tenant_id' phục vụ Row-Level Security (RLS).
     """
     pool = get_pool()
     with pool.connection() as conn:
-        yield conn
+        if tenant_id:
+            try:
+                conn.execute("SELECT set_config('app.tenant_id', %s, false)", (str(tenant_id),))
+            except Exception as e:
+                pass
+        try:
+            yield conn
+        finally:
+            if tenant_id:
+                try:
+                    conn.execute("SELECT set_config('app.tenant_id', '', false)")
+                except Exception:
+                    pass
 
 
 def close_pool() -> None:

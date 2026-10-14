@@ -16,6 +16,27 @@ class GrowRooms extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Catalog of Job Types available when creating a Growing job — CRUD-managed
+/// from the "Job Types" screen (Level 2+ only). Seeded with the built-in
+/// pipeline steps (filling, watering, prochloraz, ...); anything beyond that
+/// is a custom type added by a manager.
+class MushroomJobTypes extends Table {
+  TextColumn get id => text()(); // slug, e.g. 'filling' or 'custom_deep_clean'
+  TextColumn get name => text()(); // Display name
+  IntColumn get planMinutes => integer().withDefault(const Constant(30))(); // standard/target duration
+  BoolColumn get isSoloJob => boolean().withDefault(const Constant(false))(); // requires Alone Worker safety flow
+  BoolColumn get isCustom => boolean().withDefault(const Constant(true))(); // false for the seeded built-ins
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))(); // inactive = hidden from new-job dropdown
+  TextColumn get color => text().nullable()(); // hex color e.g. #EB6834 for stage & job rendering (solves F1)
+  TextColumn get label => text().nullable()(); // multilingual label JSON e.g. {"vi":"...","en":"..."}
+  TextColumn get department => text().withDefault(const Constant('Growing'))(); // Department: Growing, Harvest, Maintenance, Sales, Purchasing
+  IntColumn get sortOrder => integer().withDefault(const Constant(100))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class MushroomJobs extends Table {
   TextColumn get id => text()(); // UUID
   TextColumn get roomId => text()();
@@ -27,6 +48,14 @@ class MushroomJobs extends Table {
   TextColumn get prochlorazRate => text().nullable()(); // e.g. "1.3g/m2"
   DateTimeColumn get completedAt => dateTime().nullable()();
   TextColumn get linkedTaskId => text().nullable()(); // Project & Task integration ID
+
+  // Manual on-time review, set from the "Mark Done" confirmation when
+  // completing late would otherwise look like Over Standard on the
+  // Performance Board (e.g. a Supervisor batch-confirming jobs finished
+  // earlier in the field). null = no review, use the automatic
+  // actual-vs-plan calculation; true/false = Supervisor-confirmed verdict,
+  // takes priority over the automatic calculation.
+  BoolColumn get onTimeOverride => boolean().nullable()();
 
   // --- Solo Safety System Fields ---
   BoolColumn get isSoloJob => boolean().withDefault(const Constant(false))();
@@ -90,6 +119,9 @@ class MushroomMaintenanceTickets extends Table {
   TextColumn get priority => text()(); // low, normal, high
   TextColumn get status => text().withDefault(const Constant('todo'))(); // todo, inprog, done
   TextColumn get notes => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().nullable().withDefault(currentDateAndTime)();
+  DateTimeColumn get dueDate => dateTime().nullable()();
+  DateTimeColumn get completedAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -288,5 +320,31 @@ class MushroomPayrollCalculations extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+/// Báo cáo sự cố / hành động theo ô luống Window (Window Action)
+class MushroomWindowIssues extends Table {
+  TextColumn get id => text()(); // e.g. "ACT-20260917-001"
+  TextColumn get roomName => text()(); // e.g. "Room 33"
+  IntColumn get rackIndex => integer().withDefault(const Constant(0))();
+  IntColumn get levelIndex => integer().withDefault(const Constant(0))();
+  IntColumn get windowIndex => integer().withDefault(const Constant(0))();
+  TextColumn get windowCode => text()(); // e.g. "R1-L2-W4"
+  TextColumn get category => text()(); // disease, safety, qa, working, maintenance
+  TextColumn get title => text()();
+  TextColumn get description => text().nullable().withDefault(const Constant(''))();
+  TextColumn get severity => text().withDefault(const Constant('normal'))(); // low, normal, high, critical
+  TextColumn get reporterName => text().nullable().withDefault(const Constant('Staff'))();
+  TextColumn get status => text().withDefault(const Constant('open'))(); // open, in_progress, resolved
+  RealColumn get temperature => real().withDefault(const Constant(19.0))();
+  RealColumn get humidity => real().withDefault(const Constant(90.0))();
+  RealColumn get co2 => real().withDefault(const Constant(1150.0))();
+  RealColumn get casingTemp => real().withDefault(const Constant(19.5))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 
 

@@ -112,6 +112,35 @@ class ISyncRepository(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_record(self, table: str, record_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieve the latest accumulated state of a record from sync_mutations.
+        Replays all mutations for (table, record_id) in sequential order.
+        Returns None if record does not exist or was deleted.
+        """
+        pass
+
+    @abstractmethod
+    def get_table_snapshot(
+        self,
+        table: str,
+        limit: int = 1000,
+        tenant_id: Optional[str] = None,
+        after_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        P4.5 Snapshot API: Return active rows and the current max_seq with keyset pagination.
+        """
+        pass
+
+    @abstractmethod
+    def get_record_history(self, table: str, record_id: str) -> List[Dict[str, Any]]:
+        """
+        P4.7 Record History API: Return all mutation events for this entity.
+        """
+        pass
+
 
 class IDeviceRepository(ABC):
     """Repository interface for Track 2 — Device Identity operations."""

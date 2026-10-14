@@ -143,6 +143,15 @@ hiddenimports += [
     'routers.admin',
     'routers.enrollment',
     'routers.sessions',
+    'modules.module_manager',
+    'services.timesheet_service',
+    'scripts.phase5_cleanup_and_restore',
+]
+
+datas += [
+    ('modules', 'modules'),
+    ('seeds', 'seeds'),
+    ('migrations', 'migrations'),
 ]
 
 

@@ -122,6 +122,16 @@ class ServerConfig:
     server_secret: str = ""
     admin_secret: str = ""
     ws_secret: str = ""
+    # radio_gateway_secret : CHỈ dùng cho POST /api/v1/radio/events — phần mềm
+    # điều phối bộ đàm (Hytera SmartDispatch / TRBOnet / gateway TETRA) đẩy
+    # cảnh báo SOS / Man Down / Lone Worker vào. Gateway là hệ thống bên thứ
+    # ba nên không được cầm admin hay server secret. Fail-closed: để trống thì
+    # endpoint từ chối mọi request.
+    radio_gateway_secret: str = ""
+    # Hytera phát lại gói báo động nhiều lần (Emergency "Tx Cycles", thường
+    # 3–5 lần). Trong cửa sổ này, cùng bộ đàm + cùng loại báo động được gộp
+    # vào cảnh báo đang mở thay vì tạo cảnh báo mới.
+    radio_alarm_dedup_seconds: int = 120
 
     # Bật thì /sync/* yêu cầu device token hợp lệ. Mặc định TẮT để bản app cũ
     # chưa enroll vẫn chạy; bật sau khi toàn bộ thiết bị đã đăng ký xong.
@@ -134,7 +144,7 @@ class ServerConfig:
     db_backend: str = "sqlite"
     pg_dsn: str = ""
     pg_pool_min: int = 1
-    pg_pool_max: int = 10
+    pg_pool_max: int = 20
 
     # ── 6.4 — TLS / mTLS ─────────────────────────────────────────────────────
     # Bật khi có đủ 3 đường dẫn. Không set thì server chạy HTTP như cũ.
@@ -252,12 +262,14 @@ def load_server_config() -> ServerConfig:
         server_secret=secret,
         admin_secret=admin_secret,
         ws_secret=ws_secret,
+        radio_gateway_secret=os.environ.get("IZIIAPP_RADIO_GATEWAY_SECRET", "").strip(),
+        radio_alarm_dedup_seconds=_int_env("IZIIAPP_RADIO_ALARM_DEDUP_SECONDS", 120),
         require_device_token=require_device_token,
         enrollment_token_ttl=_int_env("IZIIAPP_ENROLLMENT_TOKEN_TTL", 600),
         db_backend=db_backend,
         pg_dsn=pg_dsn,
         pg_pool_min=_int_env("IZIIAPP_PG_POOL_MIN", 1),
-        pg_pool_max=_int_env("IZIIAPP_PG_POOL_MAX", 10),
+        pg_pool_max=_int_env("IZIIAPP_PG_POOL_MAX", 20),
         tls_cert_file=tls_cert,
         tls_key_file=tls_key,
         tls_ca_file=tls_ca,
@@ -271,3 +283,14 @@ def load_server_config() -> ServerConfig:
 
 
 CONFIG = load_server_config()
+
+
+def is_port_in_use(port: int = 8080, host: str = "127.0.0.1") -> bool:
+    """Kiểm tra xem port có đang bị chiếm dụng bởi tiến trình khác hay không (P1.10)."""
+    import socket
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            return s.connect_ex((host, port)) == 0
+    except Exception:
+        return False

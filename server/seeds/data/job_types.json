@@ -1,0 +1,67 @@
+﻿[
+  {
+    "id": "clean_bed",
+    "name": "Clean Bed",
+    "plan_minutes": 30,
+    "is_solo_job": 0,
+    "is_custom": 0,
+    "is_active": 1,
+    "color": "#4CAF50",
+    "label": "{\"vi\":\"Dọn luống\",\"en\":\"Clean Bed\"}",
+    "icon": "cleaning_services",
+    "sort_order": 10,
+    "noupdate": true
+  },
+  {
+    "id": "clean_room",
+    "name": "Clean Room",
+    "plan_minutes": 60,
+    "is_solo_job": 0,
+    "is_custom": 0,
+    "is_active": 1,
+    "color": "#2196F3",
+    "label": "{\"vi\":\"Dọn phòng\",\"en\":\"Clean Room\"}",
+    "icon": "meeting_room",
+    "sort_order": 20,
+    "noupdate": true
+  },
+  {
+    "id": "wicks",
+    "name": "Wicks",
+    "plan_minutes": 10,
+    "is_solo_job": 0,
+    "is_custom": 1,
+    "is_active": 1,
+    "color": "#FF9800",
+    "label": "{\"vi\":\"Wicks\",\"en\":\"Wicks\"}",
+    "icon": "water_drop",
+    "sort_order": 30,
+    "noupdate": true
+  },
+  {
+    "id": "sanimush",
+    "name": "Sanimush",
+    "plan_minutes": 50,
+    "is_solo_job": 0,
+    "is_custom": 1,
+    "is_active": 1,
+    "color": "#9C27B0",
+    "label": "{\"vi\":\"Sanimush\",\"en\":\"Sanimush\"}",
+    "icon": "sanitizer",
+    "sort_order": 40,
+    "noupdate": true
+  },
+  {
+    "id": "alone_worker",
+    "name": "Alone Worker",
+    "plan_minutes": 45,
+    "is_solo_job": 1,
+    "is_custom": 0,
+    "is_active": 1,
+    "color": "#E91E63",
+    "label": "{\"vi\":\"Làm việc một mình\",\"en\":\"Alone Worker\"}",
+    "icon": "person",
+    "sort_order": 50,
+    "noupdate": true
+  }
+]

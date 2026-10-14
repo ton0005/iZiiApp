@@ -1,0 +1,9 @@
+﻿[
+  {
+    "id": "default_policy",
+    "standard_break_minutes": 30,
+    "grace_minutes": 5,
+    "extra_break_rule": "unpaid",
+    "noupdate": true
+  }
+]

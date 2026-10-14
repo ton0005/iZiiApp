@@ -221,6 +221,132 @@ def get_active_session_for_person(conn, identifier: str) -> Optional[Dict[str, A
     if not ident:
         return None
 
+    needle = ident.casefold()
+    now_utc = datetime.now(timezone.utc)
+
+    # Trích xuất mã nhân viên trong ngoặc nếu có dạng "Tên (Mã)"
+    import re
+    extracted_id = ""
+    m_bracket = re.search(r'\(([^)]+)\)', ident)
+    if m_bracket:
+        extracted_id = m_bracket.group(1).strip().casefold()
+    clean_name = re.sub(r'\(.*?\)', '', ident).strip().casefold()
+
+    # ── 1. ƯU TIÊN: Tra cứu Điểm danh do Manager thực hiện (Batch Team Attendance) ──
+    try:
+        # A. Tra cứu trong mushroom_daily_timesheets (đang trong ca, chưa checkout)
+        cur_ts = conn.execute(
+            sql(
+                "SELECT id, employee_id, employee_name, plan_date, check_in_time, check_out_time, assigned_team_color, status "
+                "FROM mushroom_daily_timesheets "
+                "WHERE check_in_time IS NOT NULL AND check_out_time IS NULL "
+                "ORDER BY check_in_time DESC"
+            )
+        )
+        ts_rows = cur_ts.fetchall()
+        for r in ts_rows:
+            emp_id = (r.get("employee_id") or "").strip().casefold()
+            emp_name = (r.get("employee_name") or "").strip().casefold()
+            is_match = (
+                (emp_id and emp_id == needle)
+                or (extracted_id and emp_id and emp_id == extracted_id)
+                or (emp_id and len(emp_id) >= 2 and emp_id in needle)
+                or (clean_name and emp_id and emp_id == clean_name)
+                or (emp_name and (
+                    emp_name == needle
+                    or (clean_name and emp_name == clean_name)
+                    or (clean_name and len(clean_name) >= 3 and len(emp_name) >= 3 and (clean_name in emp_name or emp_name in clean_name))
+                ))
+            )
+            if not is_match:
+                # Tra cứu chéo tên trong device_tokens nếu có
+                try:
+                    cur_dev = conn.execute(
+                        sql("SELECT owner_user_name FROM device_tokens WHERE owner_user_id ILIKE %s LIMIT 1"),
+                        (emp_id,)
+                    ).fetchone()
+                    if cur_dev and cur_dev["owner_user_name"]:
+                        d_name = cur_dev["owner_user_name"].strip().casefold()
+                        if clean_name and len(clean_name) >= 3 and len(d_name) >= 3 and (clean_name == d_name or clean_name in d_name or d_name in clean_name):
+                            is_match = True
+                except Exception:
+                    pass
+
+            if is_match:
+                chk_time_str = r["check_in_time"]
+                try:
+                    chk_dt = datetime.fromisoformat(str(chk_time_str).replace("Z", "+00:00"))
+                    if chk_dt.tzinfo is None:
+                        chk_dt = chk_dt.replace(tzinfo=timezone.utc)
+                    if now_utc - chk_dt > timedelta(hours=18):
+                        continue
+                except Exception:
+                    pass
+
+                return {
+                    "id": f"batch_ts_{r['id']}",
+                    "device_id": "manager_batch_terminal",
+                    "user_id": r["employee_id"],
+                    "user_name": r.get("employee_name") or ident,
+                    "department": r.get("assigned_team_color") or "growing",
+                    "zone": "M1",
+                    "method": "manager_batch_attendance",
+                    "started_at": str(chk_time_str),
+                }
+
+        # B. Tra cứu trong mushroom_attendance_events (CHECK_IN gần nhất chưa CHECK_OUT)
+        cur_ev = conn.execute(
+            sql(
+                "SELECT id, employee_id, employee_name, event_type, timestamp, source, location "
+                "FROM mushroom_attendance_events "
+                "ORDER BY timestamp DESC LIMIT 300"
+            )
+        )
+        ev_rows = cur_ev.fetchall()
+        latest_by_emp = {}
+        for ev in ev_rows:
+            e_id = (ev.get("employee_id") or "").strip().casefold()
+            if e_id and e_id not in latest_by_emp:
+                latest_by_emp[e_id] = ev
+
+        for e_id, ev in latest_by_emp.items():
+            emp_name = (ev.get("employee_name") or "").strip().casefold()
+            is_match = (
+                (e_id and e_id == needle)
+                or (extracted_id and e_id and e_id == extracted_id)
+                or (e_id and len(e_id) >= 2 and e_id in needle)
+                or (clean_name and e_id and e_id == clean_name)
+                or (emp_name and (
+                    emp_name == needle
+                    or (clean_name and emp_name == clean_name)
+                    or (clean_name and len(clean_name) >= 3 and len(emp_name) >= 3 and (clean_name in emp_name or emp_name in clean_name))
+                ))
+            )
+            if is_match and ev["event_type"] in ("CHECK_IN", "BREAK_END"):
+                ev_time_str = str(ev["timestamp"])
+                try:
+                    ev_dt = datetime.fromisoformat(ev_time_str.replace("Z", "+00:00"))
+                    if ev_dt.tzinfo is None:
+                        ev_dt = ev_dt.replace(tzinfo=timezone.utc)
+                    if now_utc - ev_dt > timedelta(hours=18):
+                        continue
+                except Exception:
+                    pass
+
+                return {
+                    "id": f"batch_att_{ev['id']}",
+                    "device_id": ev.get("location") or "manager_batch_terminal",
+                    "user_id": ev["employee_id"],
+                    "user_name": ev.get("employee_name") or ident,
+                    "department": "growing",
+                    "zone": "M1",
+                    "method": ev.get("source") or "manager_batch_attendance",
+                    "started_at": ev_time_str,
+                }
+    except Exception:
+        pass
+
+    # ── 2. Tra cứu trong work_sessions (Cá nhân tự đăng nhập trên thiết bị) ──────
     rows = conn.execute(
         sql(
             "SELECT id, device_id, user_id, user_name, department, zone, method, started_at "
@@ -229,11 +355,15 @@ def get_active_session_for_person(conn, identifier: str) -> Optional[Dict[str, A
         )
     ).fetchall()
 
-    needle = ident.casefold()
     for row in rows:
         uid = (row["user_id"] or "").strip()
         uname = (row["user_name"] or "").strip()
-        if uid.casefold() != needle and uname.casefold() != needle:
+        if (
+            uid.casefold() != needle
+            and uname.casefold() != needle
+            and (not extracted_id or uid.casefold() != extracted_id)
+            and (not clean_name or uname.casefold() != clean_name)
+        ):
             continue
 
         # Phiên quá giờ coi như không tồn tại, kể cả khi tác vụ dọn chưa chạy.
@@ -431,12 +561,66 @@ async def list_active_sessions(
             "ORDER BY ws.started_at DESC"
         ).fetchall()
 
+        # Bổ sung nhân sự đang trong ca từ bảng điểm danh theo nhóm (mushroom_daily_timesheets)
+        now_utc = datetime.now(timezone.utc)
+        active_uids = {str(r.get("user_id") or "").strip().casefold() for r in rows if r.get("user_id")}
+        active_unames = {str(r.get("user_name") or "").strip().casefold() for r in rows if r.get("user_name")}
+
+        try:
+            cur_ts = conn.execute(
+                sql(
+                    "SELECT id, employee_id, employee_name, check_in_time, assigned_team_color "
+                    "FROM mushroom_daily_timesheets "
+                    "WHERE check_in_time IS NOT NULL AND check_out_time IS NULL "
+                    "ORDER BY check_in_time DESC"
+                )
+            )
+            for ts in cur_ts.fetchall():
+                emp_id = str(ts.get("employee_id") or "").strip()
+                emp_name = str(ts.get("employee_name") or "").strip() or emp_id
+                if not emp_id:
+                    continue
+
+                if emp_id.casefold() in active_uids or (emp_name and emp_name.casefold() in active_unames):
+                    continue
+
+                chk_time_str = str(ts["check_in_time"])
+                try:
+                    chk_dt = datetime.fromisoformat(chk_time_str.replace("Z", "+00:00"))
+                    if chk_dt.tzinfo is None:
+                        chk_dt = chk_dt.replace(tzinfo=timezone.utc)
+                    if now_utc - chk_dt > timedelta(hours=18):
+                        continue
+                except Exception:
+                    pass
+
+                active_uids.add(emp_id.casefold())
+                if emp_name:
+                    active_unames.add(emp_name.casefold())
+
+                rows.append({
+                    "id": f"batch_ts_{ts['id']}",
+                    "device_id": "manager_batch_terminal",
+                    "user_id": emp_id,
+                    "user_name": emp_name,
+                    "department": ts.get("assigned_team_color") or "Harvest",
+                    "zone": CONFIG.zone,
+                    "method": "manager_batch_attendance",
+                    "started_at": chk_time_str,
+                    "device_name": "Manager Batch Terminal",
+                })
+        except Exception as e:
+            logger.warning(f"Error querying batch timesheets for active sessions: {e}")
+
     now = datetime.now(timezone.utc)
     sessions: List[Dict[str, Any]] = []
     for r in rows:
         minutes = None
         try:
-            minutes = int((now - datetime.fromisoformat(r["started_at"])).total_seconds() // 60)
+            started = datetime.fromisoformat(str(r["started_at"]).replace("Z", "+00:00"))
+            if started.tzinfo is None:
+                started = started.replace(tzinfo=timezone.utc)
+            minutes = int((now - started).total_seconds() // 60)
         except Exception:
             pass
         sessions.append({

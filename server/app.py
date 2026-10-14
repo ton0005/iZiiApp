@@ -118,6 +118,7 @@ from security_tls import httpx_client_kwargs, uvicorn_ssl_kwargs, describe as de
 from routers import (
     sync, devices, messages, notifications, attachments,
     peer_sync, call, webhooks, admin, enrollment, sessions,
+    workforce, metadata, agv_gateway, radio_gateway,
 )
 from security_auth import describe_scopes
 from event_engine import iZiiEventEngine, close_http_client
@@ -250,6 +251,49 @@ async def _peer_sync_loop() -> None:
             await asyncio.sleep(CONFIG.sync_interval_seconds)
 
 
+async def _daily_timesheet_cron_loop() -> None:
+    """
+    P5.2 / B4: Tác vụ nền chạy tự động vào 22:00 hằng ngày để tổng hợp bảng chấm công
+    (compute_and_save_daily_timesheets) cho ngày hiện tại.
+    """
+    from datetime import datetime, timezone, timedelta
+    from services.timesheet_service import compute_and_save_daily_timesheets
+
+    while True:
+        try:
+            now = datetime.now()
+            # Tính thời điểm 22:00 hôm nay
+            target = now.replace(hour=22, minute=0, second=0, microsecond=0)
+            if now >= target:
+                # Nếu đã quá 22:00 hôm nay, hẹn 22:00 ngày mai
+                target += timedelta(days=1)
+
+            wait_seconds = (target - now).total_seconds()
+            print(f"⏰ [CRON-TIMESHEET] Lên lịch tổng hợp chấm công 22:00 tiếp theo vào {target.strftime('%Y-%m-%d %H:%M:%S')} (sau {int(wait_seconds)}s)")
+            await asyncio.sleep(wait_seconds)
+
+            today_str = datetime.now().strftime("%Y-%m-%d")
+            print(f"🕒 [CRON-TIMESHEET] Bắt đầu tổng hợp bảng chấm công tự động ngày {today_str} lúc 22:00...")
+            count = await asyncio.to_thread(compute_and_save_daily_timesheets, today_str)
+            print(f"✅ [CRON-TIMESHEET] Hoàn tất tổng hợp ngày {today_str}: {count} nhân viên.")
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            print(f"⚠️  [CRON-TIMESHEET] Lỗi trong vòng lặp chấm công 22:00: {e}")
+            await asyncio.sleep(60)
+
+
+async def _maintenance_loop() -> None:
+    """Vòng lặp bảo trì chạy mỗi 24h: dọn mutation cũ và dead-letter tin nhắn kẹt."""
+    while True:
+        await asyncio.sleep(24 * 3600)
+        try:
+            prune_old_mutations(days=30)
+            prune_message_queue()
+        except Exception as e:
+            print(f"⚠️  [MAINT] Lỗi job dọn dẹp định kỳ: {e}")
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 #  Application Lifespan (replaces deprecated @app.on_event)
 # ══════════════════════════════════════════════════════════════════════════════
@@ -303,17 +347,37 @@ async def lifespan(app: FastAPI):
     global discovery
     # Startup
     init_db()
+    try:
+        from migrations.runner import run_migrations
+        applied_migs = run_migrations()
+        if applied_migs:
+            print(f"🚀 [MIGRATIONS] Đã tự động áp dụng {len(applied_migs)} migrations: {applied_migs}")
+    except Exception as e:
+        print(f"⚠️  [MIGRATIONS] Lỗi khi chạy migration tự động: {e}")
+
+    try:
+        from seeds.seed_loader import load_seeds
+        load_seeds(force_update=False)
+        print("🌱 [SEEDS] Đã nạp declarative seeds thành công.")
+    except Exception as e:
+        print(f"⚠️  [SEEDS] Lỗi khi nạp seeds: {e}")
+
     prune_old_mutations(days=30)
-    # Dọn hàng đợi tin nhắn: xoá tin đã giao cũ, dead-letter tin kẹt quá lâu.
-    # Chỉ chạy trên SQLite — bản PostgreSQL dùng job riêng.
-    if CONFIG.db_backend != "postgres":
-        prune_message_queue()
-    print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
-    print(f"✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB")
+    if CONFIG.db_backend == "sqlite":
+        print(f"✅ Database auto-initialized successfully at: {os.path.abspath(DB_PATH)}")
+        print(f"✅ Production PRAGMAs applied: WAL, NORMAL sync, busy_timeout=5000, cache=64MB, mmap=256MB")
+    else:
+        print(f"✅ PostgreSQL backend initialized with connection pool ({CONFIG.pg_pool_min}-{CONFIG.pg_pool_max} connections)")
     print(f"🌐 Server identity: server_id={CONFIG.server_id} zone={CONFIG.zone}")
     print(f"🗄️  Database backend: {CONFIG.db_backend}")
     print(describe_tls())
     print(describe_scopes())
+    try:
+        from modules.module_manager import MODULE_MANAGER
+        MODULE_MANAGER.initialize_default_modules("default")
+        print(f"📦 [MODULES] Đã nạp {len(MODULE_MANAGER.sorted_modules)} modules: {MODULE_MANAGER.sorted_modules}")
+    except Exception as e:
+        print(f"⚠️  [MODULES] Lỗi khi nạp modules: {e}")
     _print_reachable_urls()
 
     discovery = ServerDiscovery(port=8080)
@@ -328,10 +392,14 @@ async def lifespan(app: FastAPI):
               f"Vẫn dùng peer tĩnh khai báo trong IZIIAPP_PEERS.")
 
     peer_sync_task = asyncio.create_task(_peer_sync_loop())
+    maintenance_task = asyncio.create_task(_maintenance_loop())
+    timesheet_cron_task = asyncio.create_task(_daily_timesheet_cron_loop())
 
     yield
     # Shutdown
     peer_sync_task.cancel()
+    maintenance_task.cancel()
+    timesheet_cron_task.cancel()
     if discovery:
         await discovery.close()
     # Đóng httpx.AsyncClient dùng chung của event engine (webhook dispatch)
@@ -388,6 +456,11 @@ app.include_router(webhooks.event_router)
 app.include_router(admin.router)       # /admin/* — cần X-iZii-Admin-Token
 app.include_router(enrollment.router)  # /devices/enroll — công khai, gác bằng vé mời
 app.include_router(sessions.router)    # /sessions/* — điểm danh đầu ca (G1)
+
+app.include_router(workforce.router)   # /api/v1/workforce/* — chấm công & timesheets (P5)
+app.include_router(metadata.router)    # /api/v1/meta/* & /api/v1/settings (P3)
+app.include_router(agv_gateway.router) # /api/v1/agv/* — VDA 5050 AGV & Door Interlock (Phase 3)
+app.include_router(radio_gateway.router) # /api/v1/radio/* — bộ đàm Hytera ↔ Alone Worker (X-iZii-Radio-Token)
 
 # Cho admin router chạm tới con trỏ sync đang nằm trong RAM, để lệnh reset xoá
 # được cả bộ nhớ chứ không chỉ bảng known_servers dưới đĩa.
@@ -448,8 +521,11 @@ def _write_latency_sync(event_type: str, sent_at_str: str):
     try:
         if not sent_at_str:
             return
-        client_dt = datetime.fromisoformat(sent_at_str.replace('Z', '+00:00'))
-        server_dt = datetime.now(client_dt.tzinfo)
+        clean_str = sent_at_str.replace('Z', '+00:00')
+        client_dt = datetime.fromisoformat(clean_str)
+        if client_dt.tzinfo is None:
+            client_dt = client_dt.replace(tzinfo=timezone.utc)
+        server_dt = datetime.now(timezone.utc)
         diff = server_dt - client_dt
         latency_ms = diff.total_seconds() * 1000
         
@@ -478,19 +554,29 @@ _ws_background_tasks: set = set()
 #   - header:       X-iZii-WS-Token: <secret>
 # (query param tiện cho Flutter/web vì WebSocket API của trình duyệt không
 #  cho phép set header tuỳ ý khi handshake).
-WS_SECRET = CONFIG.ws_secret or CONFIG.server_secret
+def _get_valid_ws_secrets() -> list[str]:
+    secrets = []
+    if CONFIG.ws_secret:
+        secrets.append(CONFIG.ws_secret)
+    if CONFIG.server_secret and CONFIG.server_secret not in secrets:
+        secrets.append(CONFIG.server_secret)
+    return secrets
 
 
 def _ws_token_is_valid(token: Optional[str]) -> bool:
-    if not token or not WS_SECRET:
+    if not token:
         return False
-    return hmac.compare_digest(token, WS_SECRET)
+    valid_secrets = _get_valid_ws_secrets()
+    if not valid_secrets:
+        return False
+    return any(hmac.compare_digest(token, s) for s in valid_secrets)
 
 
 @app.websocket("/chat")
 async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(None)):
+    valid_secrets = _get_valid_ws_secrets()
     # Không cấu hình secret => từ chối tất cả, thay vì âm thầm mở toang.
-    if not WS_SECRET:
+    if not valid_secrets:
         print(
             "⛔ [WS] Từ chối kết nối: chưa cấu hình IZIIAPP_WS_SECRET "
             "(hoặc IZIIAPP_SERVER_SECRET). Set biến môi trường rồi khởi động lại."
@@ -499,30 +585,58 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(
         return
 
     supplied = token or websocket.headers.get("X-iZii-WS-Token")
+    if not supplied:
+        print(f"⛔ [WS] Từ chối kết nối từ {websocket.client}: thiếu token xác thực.")
+        await websocket.close(code=1008, reason="Missing token")
+        return
+
+    # Kiểm tra nếu client gửi nhầm admin secret (F10/F11 diagnostic)
+    if CONFIG.admin_secret and hmac.compare_digest(supplied, CONFIG.admin_secret):
+        if not any(hmac.compare_digest(supplied, s) for s in valid_secrets):
+            print(
+                f"⛔ [WS] Từ chối kết nối từ {websocket.client}: Client gửi nhầm ADMIN SECRET ({supplied[:6]}...) "
+                f"thay vì WS_SECRET/SERVER_SECRET. Cần cấu hình client dùng IZIIAPP_WS_SECRET."
+            )
+            await websocket.close(code=1008, reason="Admin secret cannot be used for WebSocket. Use IZIIAPP_WS_SECRET.")
+            return
+
     if not _ws_token_is_valid(supplied):
-        print(f"⛔ [WS] Từ chối kết nối từ {websocket.client}: token thiếu hoặc sai.")
-        await websocket.close(code=1008, reason="Invalid or missing token")
+        print(f"⛔ [WS] Từ chối kết nối từ {websocket.client}: token không hợp lệ ({supplied[:6]}...).")
+        await websocket.close(code=1008, reason="Invalid token")
         return
 
     await ws_manager.connect(websocket)
     try:
         while True:
             data = await websocket.receive_text()
-            print(f"💬 [WS] Broadcast message: {data[:120]}...")
-            
-            # Log latency measurement asynchronously for events containing 'sent_at' or 'timestamp'
+            if data == "ping":
+                await websocket.send_text(json.dumps({"event": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}))
+                continue
+
             try:
                 payload = json.loads(data)
                 event = payload.get("event")
-                msg_data = payload.get("data", {})
-                if isinstance(msg_data, dict):
-                    sent_at = msg_data.get("sent_at") or msg_data.get("timestamp")
-                    if sent_at:
-                        _t = asyncio.create_task(log_latency(f"WS_{event}", sent_at))
-                        _ws_background_tasks.add(_t)
-                        _t.add_done_callback(_ws_background_tasks.discard)
+                if event == "ping":
+                    await websocket.send_text(json.dumps({"event": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}))
+                    continue
             except Exception:
-                pass
+                payload = None
+                event = None
+
+            print(f"💬 [WS] Broadcast message: {data[:120]}...")
+            
+            # Log latency measurement asynchronously for events containing 'sent_at' or 'timestamp'
+            if payload and isinstance(payload, dict):
+                try:
+                    msg_data = payload.get("data", {})
+                    if isinstance(msg_data, dict):
+                        sent_at = msg_data.get("sent_at") or msg_data.get("timestamp")
+                        if sent_at:
+                            _t = asyncio.create_task(log_latency(f"WS_{event}", sent_at))
+                            _ws_background_tasks.add(_t)
+                            _t.add_done_callback(_ws_background_tasks.discard)
+                except Exception:
+                    pass
                 
             await ws_manager.broadcast(data, exclude=websocket)
     except WebSocketDisconnect:
@@ -561,22 +675,31 @@ if __name__ == '__main__':
     # chạy HTTP thuần y như trước.
     ssl_kwargs = uvicorn_ssl_kwargs()
 
-    if is_frozen:
-        print("\n🚀 Starting iZiiApp Standalone Server v2.0 in Bundled Mode...")
-        uvicorn.run(
-            app,
-            host="0.0.0.0",
-            port=8080,
-            **ssl_kwargs,
-        )
-    else:
-        print("\n🚀 Starting iZiiApp Standalone Server v2.0 in Development Mode...")
+    target_port = int(os.environ.get("IZIIAPP_PORT", 8080))
+    from server_config import is_port_in_use
+    if is_port_in_use(target_port):
+        print(f"\n⛔ DỪNG (Port Guard P1.10): Cổng {target_port} đang bị chiếm dụng bởi tiến trình khác.")
+        print(f"   Vui lòng dừng dịch vụ izii_server đang chạy hoặc đổi biến IZIIAPP_PORT.\n")
+        sys.exit(1)
+
+    dev_reload = os.environ.get("IZIIAPP_DEV_RELOAD", "0").lower() in ("1", "true", "yes")
+    if dev_reload and not is_frozen:
+        print("\n🚀 Starting iZiiApp Standalone Server v2.0 in Dev-Reload Mode (IZIIAPP_DEV_RELOAD=1)...")
         uvicorn.run(
             "app:app",
             host="0.0.0.0",
-            port=8080,
+            port=target_port,
             reload=True,
             reload_dirs=["./"],  # Watch server directory
-            reload_excludes=["build", ".dart_tool", ".git", "data", "__pycache__", "certs"],
+            reload_excludes=["build", ".dart_tool", ".git", "data", "__pycache__", "certs", "logs"],
+            **ssl_kwargs,
+        )
+    else:
+        mode_str = "Bundled" if is_frozen else "Standard Production"
+        print(f"\n🚀 Starting iZiiApp Standalone Server v2.0 in {mode_str} Mode (Reload Disabled)...")
+        uvicorn.run(
+            app,
+            host="0.0.0.0",
+            port=target_port,
             **ssl_kwargs,
         )

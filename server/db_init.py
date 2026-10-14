@@ -366,6 +366,379 @@ def init_db():
         detail TEXT
     )""")
 
+    # 14. Phase 5 — Miền hiện trường: Chấm công, An toàn, Job types, và Read Models
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_job_types (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        plan_minutes INTEGER DEFAULT 0,
+        is_solo_job INTEGER DEFAULT 0,
+        is_custom INTEGER DEFAULT 0,
+        is_active INTEGER DEFAULT 1,
+        color TEXT,
+        label TEXT,
+        icon TEXT,
+        sort_order INTEGER DEFAULT 100,
+        created_at TEXT
+    )""")
+    cursor.execute('PRAGMA table_info(mushroom_job_types)')
+    mjt_cols = {row[1] for row in cursor.fetchall()}
+    for col, ddl in (
+        ("color", "ALTER TABLE mushroom_job_types ADD COLUMN color TEXT"),
+        ("label", "ALTER TABLE mushroom_job_types ADD COLUMN label TEXT"),
+        ("icon", "ALTER TABLE mushroom_job_types ADD COLUMN icon TEXT"),
+        ("sort_order", "ALTER TABLE mushroom_job_types ADD COLUMN sort_order INTEGER DEFAULT 100"),
+    ):
+        if col not in mjt_cols:
+            cursor.execute(ddl)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_attendance_events (
+        id TEXT PRIMARY KEY,
+        employee_id TEXT NOT NULL,
+        employee_name TEXT,
+        plan_id TEXT,
+        event_type TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        source TEXT NOT NULL,
+        location TEXT,
+        created_at TEXT
+    )""")
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_att_events_emp ON mushroom_attendance_events(employee_id, timestamp)')
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_break_policies (
+        id TEXT PRIMARY KEY,
+        standard_break_minutes INTEGER DEFAULT 30,
+        grace_minutes INTEGER DEFAULT 5,
+        extra_break_rule TEXT DEFAULT 'unpaid'
+    )""")
+    cursor.execute("""
+    INSERT OR IGNORE INTO mushroom_break_policies (id, standard_break_minutes, grace_minutes, extra_break_rule)
+    VALUES ('default_policy', 30, 5, 'unpaid')
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_daily_timesheets (
+        id TEXT PRIMARY KEY,
+        employee_id TEXT NOT NULL,
+        employee_name TEXT,
+        plan_date TEXT NOT NULL,
+        check_in_time TEXT,
+        check_out_time TEXT,
+        total_break_taken_minutes INTEGER DEFAULT 0,
+        standard_break_allowed_minutes INTEGER DEFAULT 0,
+        extra_break_minutes INTEGER DEFAULT 0,
+        gross_worked_minutes INTEGER DEFAULT 0,
+        paid_minutes INTEGER DEFAULT 0,
+        overtime_minutes INTEGER DEFAULT 0,
+        assigned_team_color TEXT,
+        assigned_rooms_json TEXT,
+        status TEXT DEFAULT 'normal',
+        created_at TEXT,
+        updated_at TEXT
+    )""")
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_timesheets_emp_date ON mushroom_daily_timesheets(employee_id, plan_date)')
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_shifts (
+        id TEXT PRIMARY KEY,
+        plan_id TEXT,
+        role TEXT,
+        employee_id TEXT,
+        start_time TEXT,
+        shed_room_list_json TEXT
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_payroll_calculations (
+        id TEXT PRIMARY KEY,
+        employee_id TEXT NOT NULL,
+        pay_period TEXT NOT NULL,
+        total_paid_hours REAL DEFAULT 0.0,
+        total_overtime_hours REAL DEFAULT 0.0,
+        base_pay REAL DEFAULT 0.0,
+        overtime_pay REAL DEFAULT 0.0,
+        total_pay REAL DEFAULT 0.0,
+        created_at TEXT
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_job_safety_configs (
+        id TEXT PRIMARY KEY,
+        job_id TEXT NOT NULL,
+        check_in_interval_minutes INTEGER DEFAULT 30,
+        grace_period_minutes INTEGER DEFAULT 5,
+        escalation_target TEXT DEFAULT 'supervisor',
+        auto_start_on_job_begin INTEGER DEFAULT 1,
+        alarm_type TEXT DEFAULT 'push_inapp',
+        created_at TEXT
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_safety_checkin_logs (
+        id TEXT PRIMARY KEY,
+        job_id TEXT NOT NULL,
+        worker_id TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        gps_latitude REAL,
+        gps_longitude REAL,
+        response_time_seconds INTEGER,
+        notes TEXT,
+        timestamp TEXT NOT NULL
+    )""")
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_safety_logs_job ON mushroom_safety_checkin_logs(job_id)')
+
+    # Tích hợp bộ đàm Hytera (DMR / TETRA) cho Alone Worker — xem
+    # routers/radio_gateway.py. radio_devices: bộ đàm nào đang giao cho ai.
+    # radio_events: nhật ký cảnh báo BẤT BIẾN (chỉ cập nhật trạng thái xử lý),
+    # phục vụ kiểm toán an toàn lao động.
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS radio_devices (
+        radio_id         TEXT PRIMARY KEY,
+        system           TEXT DEFAULT 'dmr',
+        model            TEXT,
+        label            TEXT,
+        employee_id      TEXT,
+        employee_name    TEXT,
+        active           INTEGER DEFAULT 1,
+        last_seen_at     TEXT,
+        last_event_type  TEXT,
+        last_latitude    REAL,
+        last_longitude   REAL,
+        last_located_at  TEXT,
+        last_battery     REAL,
+        created_at       TEXT,
+        updated_at       TEXT,
+        updated_by       TEXT
+    )""")
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS radio_events (
+        id               TEXT PRIMARY KEY,
+        event_key        TEXT UNIQUE,
+        radio_id         TEXT NOT NULL,
+        system           TEXT,
+        event_type       TEXT NOT NULL,
+        raw_event_type   TEXT,
+        is_alarm         INTEGER DEFAULT 0,
+        status           TEXT NOT NULL,
+        occurred_at      TEXT,
+        received_at      TEXT NOT NULL,
+        last_received_at TEXT,
+        repeat_count     INTEGER DEFAULT 0,
+        latitude         REAL,
+        longitude        REAL,
+        employee_id      TEXT,
+        employee_name    TEXT,
+        job_id           TEXT,
+        room_id          TEXT,
+        acked_at         TEXT,
+        acked_by         TEXT,
+        ack_note         TEXT,
+        payload          TEXT
+    )""")
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_radio_events_open ON radio_events(radio_id, event_type, status)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_radio_events_received ON radio_events(received_at)')
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS grow_rooms (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        status TEXT,
+        current_stage TEXT,
+        day_in_cycle INTEGER DEFAULT 0,
+        target_yield REAL DEFAULT 0.0,
+        picked_yield REAL DEFAULT 0.0,
+        created_at TEXT,
+        updated_at TEXT
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_jobs (
+        id TEXT PRIMARY KEY,
+        room_id TEXT,
+        job_type TEXT,
+        name TEXT,
+        status TEXT,
+        assignee TEXT,
+        priority TEXT,
+        scheduled_at TEXT,
+        started_at TEXT,
+        completed_at TEXT,
+        plan_details TEXT,
+        prochloraz_rate TEXT,
+        linked_task_id TEXT,
+        is_solo_job INTEGER DEFAULT 0,
+        created_at TEXT,
+        updated_at TEXT
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS tasks (
+        id TEXT PRIMARY KEY,
+        project_id TEXT,
+        title TEXT,
+        description TEXT,
+        status TEXT,
+        priority TEXT,
+        due_date TEXT,
+        created_at TEXT
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mushroom_window_issues (
+        id TEXT PRIMARY KEY,
+        room_name TEXT NOT NULL,
+        rack_index INTEGER DEFAULT 0,
+        level_index INTEGER DEFAULT 0,
+        window_index INTEGER DEFAULT 0,
+        window_code TEXT NOT NULL,
+        category TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        severity TEXT DEFAULT 'normal',
+        reporter_name TEXT,
+        status TEXT DEFAULT 'open',
+        temperature REAL DEFAULT 19.0,
+        humidity REAL DEFAULT 90.0,
+        co2 REAL DEFAULT 1150.0,
+        casing_temp REAL DEFAULT 19.5,
+        created_at TEXT,
+        updated_at TEXT
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS picker_teams (
+        id TEXT PRIMARY KEY,
+        plan_id TEXT,
+        color_code TEXT,
+        team_leader_id TEXT,
+        headcount INTEGER DEFAULT 0,
+        rate_estimate REAL DEFAULT 0.0,
+        member_ids_json TEXT,
+        is_seed INTEGER DEFAULT 0
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS departments (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        description TEXT,
+        created_at TEXT,
+        is_seed INTEGER DEFAULT 0
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS chat_messages (
+        id TEXT PRIMARY KEY,
+        conversation_id TEXT,
+        sender_id TEXT,
+        content TEXT,
+        created_at TEXT,
+        is_seed INTEGER DEFAULT 0
+    )""")
+
+    # Phase 1: Audit columns & tenant_id for domain tables (SQLite compatibility)
+    domain_tables = [
+        "tasks", "mushroom_jobs", "grow_rooms", "mushroom_job_types",
+        "mushroom_attendance_events", "mushroom_daily_timesheets",
+        "mushroom_break_policies", "mushroom_shifts", "mushroom_payroll_calculations",
+        "mushroom_job_safety_configs", "mushroom_safety_checkin_logs",
+        "picker_teams", "departments", "chat_messages", "mushroom_window_issues",
+    ]
+    for tbl in domain_tables:
+        cursor.execute(f"PRAGMA table_info({tbl})")
+        existing_cols = {row[1] for row in cursor.fetchall()}
+        for col, ddl in (
+            ("tenant_id",        f"ALTER TABLE {tbl} ADD COLUMN tenant_id TEXT NOT NULL DEFAULT 'default'"),
+            ("created_by",       f"ALTER TABLE {tbl} ADD COLUMN created_by TEXT"),
+            ("created_at",       f"ALTER TABLE {tbl} ADD COLUMN created_at TEXT"),
+            ("updated_by",       f"ALTER TABLE {tbl} ADD COLUMN updated_by TEXT"),
+            ("updated_at",       f"ALTER TABLE {tbl} ADD COLUMN updated_at TEXT"),
+            ("last_mutation_id", f"ALTER TABLE {tbl} ADD COLUMN last_mutation_id TEXT"),
+            ("last_seq",         f"ALTER TABLE {tbl} ADD COLUMN last_seq INTEGER DEFAULT 0"),
+            ("deleted_at",       f"ALTER TABLE {tbl} ADD COLUMN deleted_at TEXT"),
+            ("is_seed",          f"ALTER TABLE {tbl} ADD COLUMN is_seed INTEGER DEFAULT 0"),
+        ):
+            if col not in existing_cols:
+                try:
+                    cursor.execute(ddl)
+                except Exception:
+                    pass
+        cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{tbl}_tenant_id ON {tbl}(tenant_id, id)")
+
+    # Phase 2: Module System, Tenant Modules & Model Registry (Q2)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS tenant_modules (
+        tenant_id    TEXT NOT NULL,
+        module_name  TEXT NOT NULL,
+        version      TEXT NOT NULL,
+        enabled      INTEGER NOT NULL DEFAULT 1,
+        installed_at TEXT,
+        settings     TEXT DEFAULT '{}',
+        PRIMARY KEY (tenant_id, module_name)
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS model_registry (
+        tenant_id     TEXT NOT NULL,
+        model_name    TEXT NOT NULL,
+        module_name   TEXT NOT NULL,
+        table_name    TEXT NOT NULL,
+        label         TEXT NOT NULL,
+        is_syncable   INTEGER NOT NULL DEFAULT 1,
+        PRIMARY KEY (tenant_id, model_name)
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS field_registry (
+        tenant_id     TEXT NOT NULL,
+        model_name    TEXT NOT NULL,
+        field_name    TEXT NOT NULL,
+        data_type     TEXT NOT NULL,
+        is_required   INTEGER NOT NULL DEFAULT 0,
+        is_custom     INTEGER NOT NULL DEFAULT 0,
+        label         TEXT NOT NULL,
+        enum_values   TEXT,
+        ui            TEXT DEFAULT '{}',
+        PRIMARY KEY (tenant_id, model_name, field_name)
+    )""")
+
+    # Ensure standard 66 grow rooms exist
+    try:
+        from datetime import datetime, timezone
+        standard_rooms = [
+            'Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6', 'Room 6A', 'Room 6B',
+            'Room 7', 'Room 8', 'Room 9', 'Room 10', 'Room 11', 'Room 12', 'Room 13', 'Room 14',
+            'Room 15', 'Room 16', 'Room 17', 'Room 18', 'Room 19', 'Room 20', 'Room 21', 'Room 22',
+            'Room 22A', 'Room 23', 'Room 24', 'Room 25', 'Room 26', 'Room 27', 'Room 28', 'Room 29',
+            'Room 30', 'Room 31', 'Room 32',
+            'Room 33', 'Room 34', 'Room 35', 'Room 36', 'Room 37', 'Room 38', 'Room 39', 'Room 40',
+            'Room 41', 'Room 42', 'Room 43', 'Room 44', 'Room 45', 'Room 46', 'Room 47', 'Room 48',
+            'Room 49', 'Room 50', 'Room 51', 'Room 52', 'Room 52A', 'Room 53', 'Room 54', 'Room 55',
+            'Room 56', 'Room 57', 'Room 58', 'Room 59', 'Room 60', 'Room 61', 'Room 62', 'Room 63',
+            'Room 64', 'Room 65', 'Room 66'
+        ]
+        now_iso = datetime.now(timezone.utc).isoformat()
+        for r_name in standard_rooms:
+            r_id = r_name.lower().replace(' ', '_')
+            row = cursor.execute("SELECT id, name FROM grow_rooms WHERE id = ?", (r_id,)).fetchone()
+            if row is None:
+                cursor.execute(
+                    """
+                    INSERT INTO grow_rooms (
+                        id, name, status, current_stage, day_in_cycle,
+                        target_yield, picked_yield, created_at, updated_at,
+                        tenant_id, is_seed
+                    ) VALUES (?, ?, 'idle', 'idle', 1, 0.0, 0.0, ?, ?, 'default', 1)
+                    """,
+                    (r_id, r_name, now_iso, now_iso),
+                )
+            elif not row[1] or row[1].strip() == '':
+                cursor.execute("UPDATE grow_rooms SET name = ?, is_seed = 1 WHERE id = ?", (r_name, r_id))
+    except Exception as e:
+        print(f"⚠️  [SQLite] Bỏ qua seed grow_rooms: {e}")
+
     conn.commit()
 
     _run_data_migrations(conn)
@@ -501,6 +874,11 @@ def prune_message_queue(delivered_days: int = 7, stuck_days: int = 3) -> int:
 
     Tin dead-letter KHÔNG bị xoá — vẫn nằm trong bảng để điều tra.
     """
+    from server_config import CONFIG
+    if CONFIG.db_backend == "postgres":
+        from db_init_postgres import prune_message_queue_postgres
+        return prune_message_queue_postgres(delivered_days, stuck_days)
+
     from datetime import datetime, timezone, timedelta
 
     now = datetime.now(timezone.utc)

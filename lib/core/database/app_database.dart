@@ -15,6 +15,7 @@ import '../community/database/tables.dart';
 import '../../modules/mushrooms/database/tables.dart';
 import '../../modules/communication/database/tables.dart';
 import '../../modules/clinic_pharma/database/tables.dart';
+import '../../modules/warehouse_automation/database/tables.dart';
 
 import 'core_tables.dart';
 
@@ -33,6 +34,21 @@ part 'app_database.g.dart';
   Products,
   StockQuants,
   StockMoves,
+  ProductUoms,
+  ProductPackagings,
+  StockLots,
+  StockLpns,
+  StockLpnContents,
+  StockPickings,
+  StockPickingLines,
+  StockSerialNumbers,
+  PharmaControlledApprovals,
+  PharmaDispensingLogs,
+  Locations,
+  IotDevices,
+  SensorReadings,
+  AutomationRules,
+  AutomationEvents,
   TrustScores,
   Referrals,
   ServiceListings,
@@ -59,6 +75,8 @@ part 'app_database.g.dart';
   UserShareModuleDefaults,
   GrowRooms,
   MushroomJobs,
+  MushroomJobTypes,
+  MushroomWindowIssues,
   MushroomJobSafetyConfigs,
   MushroomSafetyCheckinLogs,
   MushroomMaintenanceTickets,
@@ -108,7 +126,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 27;
+  int get schemaVersion => 33;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -468,6 +486,173 @@ class AppDatabase extends _$AppDatabase {
               await m.createTable(prescriptionItems);
             } catch (_) {}
           }
+          if (from < 28) {
+            try {
+              await m.addColumn(mushroomJobs, mushroomJobs.onTimeOverride);
+            } catch (_) {}
+          }
+          if (from < 29) {
+            try {
+              await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN color TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN label TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN icon TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN sort_order INTEGER DEFAULT 100;');
+            } catch (_) {}
+          }
+          if (from < 30) {
+            try {
+              await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN created_at TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN due_date TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN completed_at TEXT;');
+            } catch (_) {}
+          }
+          if (from < 31) {
+            try {
+              await customStatement("ALTER TABLE mushroom_job_types ADD COLUMN department TEXT DEFAULT 'Growing';");
+            } catch (_) {}
+          }
+          if (from < 32) {
+            try {
+              await m.createTable(mushroomWindowIssues);
+            } catch (_) {}
+          }
+          if (from < 33) {
+            try {
+              await m.createTable(locations);
+            } catch (_) {}
+            try {
+              await m.createTable(productUoms);
+            } catch (_) {}
+            try {
+              await m.createTable(productPackagings);
+            } catch (_) {}
+            try {
+              await m.createTable(stockLots);
+            } catch (_) {}
+            try {
+              await m.createTable(stockLpns);
+            } catch (_) {}
+            try {
+              await m.createTable(stockLpnContents);
+            } catch (_) {}
+            try {
+              await m.createTable(stockPickings);
+            } catch (_) {}
+            try {
+              await m.createTable(stockPickingLines);
+            } catch (_) {}
+            try {
+              await m.createTable(stockSerialNumbers);
+            } catch (_) {}
+            try {
+              await m.createTable(pharmaControlledApprovals);
+            } catch (_) {}
+            try {
+              await m.createTable(pharmaDispensingLogs);
+            } catch (_) {}
+            try {
+              await m.createTable(iotDevices);
+            } catch (_) {}
+            try {
+              await m.createTable(sensorReadings);
+            } catch (_) {}
+            try {
+              await m.createTable(automationRules);
+            } catch (_) {}
+            try {
+              await m.createTable(automationEvents);
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_quants ADD COLUMN lot_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_quants ADD COLUMN lpn_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_quants ADD COLUMN reserved_qty REAL DEFAULT 0.0;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_quants ADD COLUMN available_qty REAL DEFAULT 0.0;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_moves ADD COLUMN picking_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_moves ADD COLUMN picking_line_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_moves ADD COLUMN lot_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE stock_moves ADD COLUMN lpn_id TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement("ALTER TABLE stock_moves ADD COLUMN transport_type TEXT DEFAULT 'forklift';");
+            } catch (_) {}
+          }
+        },
+        beforeOpen: (details) async {
+          // Bảo đảm các cột color, label, icon, sort_order, department luôn tồn tại trên SQLite
+          try {
+            await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN color TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN label TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN icon TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_job_types ADD COLUMN sort_order INTEGER DEFAULT 100;');
+          } catch (_) {}
+          try {
+            await customStatement("ALTER TABLE mushroom_job_types ADD COLUMN department TEXT DEFAULT 'Growing';");
+          } catch (_) {}
+          // Bảo đảm các cột created_at, due_date, completed_at luôn tồn tại trên mushroom_maintenance_tickets
+          try {
+            await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN created_at TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN due_date TEXT;');
+          } catch (_) {}
+          try {
+            await customStatement('ALTER TABLE mushroom_maintenance_tickets ADD COLUMN completed_at TEXT;');
+          } catch (_) {}
+          // Bảo đảm bảng mushroom_window_issues luôn tồn tại
+          try {
+            await customStatement('''
+              CREATE TABLE IF NOT EXISTS mushroom_window_issues (
+                id TEXT NOT NULL PRIMARY KEY,
+                room_name TEXT NOT NULL,
+                rack_index INTEGER NOT NULL DEFAULT 0,
+                level_index INTEGER NOT NULL DEFAULT 0,
+                window_index INTEGER NOT NULL DEFAULT 0,
+                window_code TEXT NOT NULL,
+                category TEXT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT DEFAULT '',
+                severity TEXT NOT NULL DEFAULT 'normal',
+                reporter_name TEXT DEFAULT 'Staff',
+                status TEXT NOT NULL DEFAULT 'open',
+                temperature REAL NOT NULL DEFAULT 19.0,
+                humidity REAL NOT NULL DEFAULT 90.0,
+                co2 REAL NOT NULL DEFAULT 1150.0,
+                casing_temp REAL NOT NULL DEFAULT 19.5,
+                created_at INTEGER NOT NULL,
+                updated_at INTEGER
+              );
+            ''');
+          } catch (_) {}
         },
       );
 }

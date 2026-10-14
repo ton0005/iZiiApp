@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from typing import Dict, List, Optional
 import json
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 
 router = APIRouter(prefix="/call", tags=["WebRTC Call Engine"])
 
@@ -51,7 +51,7 @@ async def invite_call(invite: CallInviteModel):
     payload = {
         "event": "call_invite",
         "data": invite.model_dump(),
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
     
     if target_ws:
@@ -76,9 +76,17 @@ async def call_signaling_ws(websocket: WebSocket, client_id: str):
     try:
         while True:
             raw_data = await websocket.receive_text()
+            if raw_data == "ping":
+                await websocket.send_text(json.dumps({"event": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}))
+                continue
+
             try:
                 msg = json.loads(raw_data)
                 event_type = msg.get("event")
+                if event_type == "ping":
+                    await websocket.send_text(json.dumps({"event": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}))
+                    continue
+
                 target_id = msg.get("target_id")
                 data = msg.get("data", {})
                 
@@ -95,7 +103,7 @@ async def call_signaling_ws(websocket: WebSocket, client_id: str):
                     "event": event_type,
                     "target_id": target_id,
                     "data": data,
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now(timezone.utc).isoformat()
                 })
 
                 # Ghi lại tiến độ thương lượng. Không có dòng này thì log server
