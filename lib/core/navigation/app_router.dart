@@ -53,6 +53,7 @@ import '../../features/sharing/community_feed_screen.dart';
 import '../../modules/communication/screens/chat_inbox_screen.dart';
 import '../../modules/communication/screens/conversation_screen.dart';
 import '../../modules/clinic_pharma/clinic_pharma_module.dart';
+import '../../modules/clinic_pharma/screens/clinic_workspace_screen.dart';
 import '../../modules/clinic_pharma/screens/patients_list_screen.dart';
 import '../../modules/clinic_pharma/screens/patient_form_screen.dart';
 import '../../modules/clinic_pharma/screens/doctors_list_screen.dart';
@@ -566,6 +567,19 @@ final appRouter = GoRouter(
                 body: Center(child: CircularProgressIndicator()));
           }
           return const ModuleDashboardScreen(moduleId: 'izii.clinic_pharma');
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/clinic/workspace',
+      builder: (context, state) => FutureBuilder(
+        future: _moduleRegistry.installModule('izii.clinic_pharma'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          return const ClinicWorkspaceScreen();
         },
       ),
     ),

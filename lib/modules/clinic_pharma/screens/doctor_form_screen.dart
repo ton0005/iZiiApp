@@ -16,11 +16,16 @@ class _DoctorFormScreenState extends State<DoctorFormScreen> {
   final _specialtyController = TextEditingController();
   final _phoneController = TextEditingController();
 
+  final _cchnController = TextEditingController();
+  String _dtqgStatus = 'pending';
+  bool _duocKeDon = true;
+
   @override
   void dispose() {
     _nameController.dispose();
     _specialtyController.dispose();
     _phoneController.dispose();
+    _cchnController.dispose();
     super.dispose();
   }
 
@@ -33,6 +38,9 @@ class _DoctorFormScreenState extends State<DoctorFormScreen> {
       'phone': _phoneController.text.trim().isEmpty
           ? null
           : _phoneController.text.trim(),
+      'so_cchn': _cchnController.text.trim(),
+      'dtqg_status': _dtqgStatus,
+      'duoc_ke_don': _duocKeDon,
     });
     if (mounted) Navigator.of(context).pop(true);
   }
@@ -76,6 +84,37 @@ class _DoctorFormScreenState extends State<DoctorFormScreen> {
                 prefixIcon: const Icon(Icons.phone_outlined),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _cchnController,
+              decoration: InputDecoration(
+                labelText: 'Số chứng chỉ hành nghề (CCHN)',
+                prefixIcon: const Icon(Icons.badge_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              initialValue: _dtqgStatus,
+              decoration: InputDecoration(
+                labelText: 'Trạng thái mã liên thông (donthuocquocgia.vn)',
+                prefixIcon: const Icon(Icons.verified_user_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              items: const [
+                DropdownMenuItem(value: 'pending', child: Text('Chờ duyệt')),
+                DropdownMenuItem(value: 'active', child: Text('Đã được duyệt')),
+                DropdownMenuItem(value: 'paused', child: Text('Tạm dừng')),
+                DropdownMenuItem(value: 'revoked', child: Text('Đã hủy')),
+              ],
+              onChanged: (v) => setState(() => _dtqgStatus = v ?? 'pending'),
+            ),
+            SwitchListTile(
+              value: _duocKeDon,
+              onChanged: (v) => setState(() => _duocKeDon = v),
+              title: const Text('Được phân công kê đơn'),
+              contentPadding: EdgeInsets.zero,
             ),
             const SizedBox(height: 32),
             Container(

@@ -112,13 +112,14 @@ part 'app_database.g.dart';
   MedicalVisits,
   Prescriptions,
   PrescriptionItems,
+  ClinicFacility,
 ])
 class AppDatabase extends _$AppDatabase {
   static AppDatabase _instance = AppDatabase._internal();
   factory AppDatabase() => _instance;
 
   // Constructor for testing with in-memory or mock database executor
-  AppDatabase.forTesting(QueryExecutor e) : super(e);
+  AppDatabase.forTesting(super.e);
 
   // Set test instance override
   static set testInstance(AppDatabase db) => _instance = db;
@@ -126,7 +127,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 33;
+  int get schemaVersion => 35;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -598,6 +599,91 @@ class AppDatabase extends _$AppDatabase {
             } catch (_) {}
             try {
               await customStatement("ALTER TABLE stock_moves ADD COLUMN transport_type TEXT DEFAULT 'forklift';");
+            } catch (_) {}
+          }
+          if (from < 34) {
+            try {
+              await customStatement('ALTER TABLE doctors ADD COLUMN so_cchn TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE doctors ADD COLUMN ma_lien_thong_dtqg TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE doctors ADD COLUMN duoc_ke_don INTEGER NOT NULL DEFAULT 1 CHECK (duoc_ke_don IN (0, 1));');
+            } catch (_) {}
+            try {
+              await customStatement("ALTER TABLE doctors ADD COLUMN dtqg_status TEXT NOT NULL DEFAULT 'pending';");
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE patients ADD COLUMN ma_dinh_danh_yte TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE patients ADD COLUMN so_cccd TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE patients ADD COLUMN ma_the_bhyt TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE patients ADD COLUMN guardian_name TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE patients ADD COLUMN guardian_phone TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE patients ADD COLUMN guardian_address TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescriptions ADD COLUMN ma_don_thuoc TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement("ALTER TABLE prescriptions ADD COLUMN loai_don TEXT NOT NULL DEFAULT 'c';");
+            } catch (_) {}
+            try {
+              await customStatement("ALTER TABLE prescriptions ADD COLUMN chan_doan_json TEXT NOT NULL DEFAULT '[]';");
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescriptions ADD COLUMN can_nang REAL;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescriptions ADD COLUMN hinh_thuc_dieu_tri INTEGER;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescriptions ADD COLUMN nguoi_giam_ho TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescriptions ADD COLUMN loi_dan TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescriptions ADD COLUMN ngay_tai_kham INTEGER;');
+            } catch (_) {}
+            try {
+              await customStatement("ALTER TABLE prescriptions ADD COLUMN dtqg_status TEXT NOT NULL DEFAULT 'draft';");
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescriptions ADD COLUMN dtqg_sent_at INTEGER;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescriptions ADD COLUMN dtqg_last_error TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescription_items ADD COLUMN ma_thuoc_cuc_qldd TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescription_items ADD COLUMN biet_duoc TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescription_items ADD COLUMN don_vi_tinh TEXT;');
+            } catch (_) {}
+            try {
+              await customStatement('ALTER TABLE prescription_items ADD COLUMN so_luong_ban REAL;');
+            } catch (_) {}
+            try {
+              await m.createTable(clinicFacility);
+            } catch (_) {}
+          }
+          if (from < 35) {
+            try {
+              await customStatement('ALTER TABLE clinic_facility ADD COLUMN ma_dinh_danh_cung_ung TEXT;');
             } catch (_) {}
           }
         },

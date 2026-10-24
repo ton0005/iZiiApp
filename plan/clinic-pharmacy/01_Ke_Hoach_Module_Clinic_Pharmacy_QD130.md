@@ -1,5 +1,8 @@
 # KẾ HOẠCH PHÁT TRIỂN MODULE CLINIC – PHARMACY THEO QĐ 130/QĐ-BYT
 
+> **⚠ ĐÃ THAY THẾ (2026-10-16):** kế hoạch này theo QĐ 130 (BHYT/XML). Phạm vi hiện hành chỉ gồm QĐ 808 và Hướng dẫn Đơn thuốc quốc gia — xem `03_Ke_Hoach_Clinic_Pharmacy_Don_Thuoc_Quoc_Gia_QD808.md`. Giữ lại chỉ để tham khảo.
+
+
 | Mục | Nội dung |
 |---|---|
 | Nhánh | `clinic-pharma-management` |

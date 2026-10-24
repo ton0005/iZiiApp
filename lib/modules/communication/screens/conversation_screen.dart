@@ -212,7 +212,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       return;
     }
 
-    final currentUserName = 'Me';
+    const currentUserName = 'Me';
     final callId = 'call_${DateTime.now().millisecondsSinceEpoch}';
 
     // Dùng LẠI bloc toàn cục thay vì tạo CallBloc mới mỗi lần bấm gọi.

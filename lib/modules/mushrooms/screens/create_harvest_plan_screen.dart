@@ -68,7 +68,7 @@ class _CreateHarvestPlanScreenState extends State<CreateHarvestPlanScreen> {
           }
 
           final List instrs = a['instructions'] is List ? a['instructions'] : [];
-          String instrStr = instrs.isNotEmpty ? instrs.first.toString() : '—';
+          final String instrStr = instrs.isNotEmpty ? instrs.first.toString() : '—';
 
           _roomAssignments.add({
             'roomName': rName,
@@ -222,7 +222,7 @@ class _CreateHarvestPlanScreenState extends State<CreateHarvestPlanScreen> {
                                   }
                                 });
                               },
-                              selectedColor: FarmColors.forestGreen.withOpacity(0.2),
+                              selectedColor: FarmColors.forestGreen.withValues(alpha: 0.2),
                               checkmarkColor: FarmColors.forestGreen,
                             );
                           }).toList(),
@@ -551,7 +551,7 @@ class _CreateHarvestPlanScreenState extends State<CreateHarvestPlanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _planId == null ? 'CREATE HARVEST PLAN' : 'EDIT HARVEST PLAN (${_planId})',
+              _planId == null ? 'CREATE HARVEST PLAN' : 'EDIT HARVEST PLAN ($_planId)',
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textColor),
             ),
             Text(
@@ -623,7 +623,7 @@ class _CreateHarvestPlanScreenState extends State<CreateHarvestPlanScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
-                        color: FarmColors.forestGreen.withOpacity(0.1),
+                        color: FarmColors.forestGreen.withValues(alpha: 0.1),
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                       ),
                       child: Row(
@@ -719,7 +719,7 @@ class _CreateHarvestPlanScreenState extends State<CreateHarvestPlanScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: _status,
+                            initialValue: _status,
                             decoration: const InputDecoration(
                               labelText: 'Initial Status',
                               contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -834,7 +834,7 @@ class _CreateHarvestPlanScreenState extends State<CreateHarvestPlanScreen> {
               Expanded(
                 flex: 2,
                 child: DropdownButtonFormField<int>(
-                  value: item['flush'] as int,
+                  initialValue: item['flush'] as int,
                   decoration: const InputDecoration(labelText: 'Flush', isDense: true, border: OutlineInputBorder()),
                   items: const [
                     DropdownMenuItem(value: 1, child: Text('Flush 1')),

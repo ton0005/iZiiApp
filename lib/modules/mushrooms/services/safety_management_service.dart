@@ -110,7 +110,7 @@ class SafetyManagementService {
 
       DateTime? startedAt;
       DateTime? deadline;
-      int limitMins = (activeSoloJob['time_limit_minutes'] ?? 45) as int;
+      final int limitMins = (activeSoloJob['time_limit_minutes'] ?? 45) as int;
       bool isOverdue = false;
 
       if (startedAtStr != null) {
@@ -171,10 +171,10 @@ class SafetyManagementService {
       case RoomSafetyLevel.ropeSafetyTriggered:
       case RoomSafetyLevel.aloneWorkerTimeout:
       case RoomSafetyLevel.sensorEmergency:
-        return isDark ? Colors.red.withOpacity(0.2) : Colors.red.shade50;
+        return isDark ? Colors.red.withValues(alpha: 0.2) : Colors.red.shade50;
       case RoomSafetyLevel.lightCurtainBreached:
       case RoomSafetyLevel.aloneWorkerStarted:
-        return isDark ? Colors.orange.withOpacity(0.12) : Colors.orange.shade50;
+        return isDark ? Colors.orange.withValues(alpha: 0.12) : Colors.orange.shade50;
       case RoomSafetyLevel.normal:
       default:
         return defaultColor;
@@ -205,7 +205,7 @@ class SafetyManagementService {
       case RoomSafetyLevel.sensorEmergency:
         return [
           BoxShadow(
-            color: Colors.red.withOpacity(0.4),
+            color: Colors.red.withValues(alpha: 0.4),
             blurRadius: 8,
             spreadRadius: 2,
           )
@@ -214,7 +214,7 @@ class SafetyManagementService {
       case RoomSafetyLevel.aloneWorkerStarted:
         return [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.35),
+            color: Colors.orange.withValues(alpha: 0.35),
             blurRadius: 8,
             spreadRadius: 1,
           )
@@ -224,7 +224,7 @@ class SafetyManagementService {
         if (highlightColor != null) {
           return [
             BoxShadow(
-              color: highlightColor.withOpacity(0.3),
+              color: highlightColor.withValues(alpha: 0.3),
               blurRadius: 6,
               spreadRadius: 1,
             )

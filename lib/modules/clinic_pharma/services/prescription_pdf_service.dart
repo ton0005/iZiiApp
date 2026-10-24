@@ -22,6 +22,7 @@ class PrescriptionPdfService {
     required String facilityAuthority,
     required String facilityName,
     required String facilityPhone,
+    String facilityAddress = '',
     required Map<String, dynamic> patient,
     Map<String, dynamic>? doctor,
     required Map<String, dynamic> visit,
@@ -34,7 +35,13 @@ class PrescriptionPdfService {
     await _ensureFonts();
 
     final doc = pw.Document(
-      theme: pw.ThemeData.withFont(base: _regular!, bold: _bold!),
+      theme: pw.ThemeData.withFont(
+        base: _regular!,
+        bold: _bold!,
+        // Không có font nghiêng riêng: dùng font thường để chữ nghiêng (ngày, ghi chú) vẫn có dấu tiếng Việt.
+        italic: _regular!,
+        boldItalic: _bold!,
+      ),
     );
 
     final visitDate = DateTime.tryParse(
@@ -54,6 +61,13 @@ class PrescriptionPdfService {
       age = years.toString();
     }
 
+    final dobText = dob == null
+        ? ''
+        : '${dob.day.toString().padLeft(2, '0')}/${dob.month.toString().padLeft(2, '0')}/${dob.year}';
+    final insuranceNo = ((patient['ma_the_bhyt'] as String?)?.isNotEmpty ?? false)
+        ? patient['ma_the_bhyt'] as String
+        : ((patient['so_cccd'] as String?) ?? (patient['id_number'] as String?) ?? '');
+    final revisitDays = prescription['ngay_tai_kham'] as int?;
     final gender = patient['gender'] as String?;
     final isMale = gender == 'male';
     final isFemale = gender == 'female';
@@ -68,13 +82,31 @@ class PrescriptionPdfService {
             pw.Text(facilityAuthority.toUpperCase(),
                 style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
             pw.Text(facilityName,
-                style: pw.TextStyle(fontSize: 9, decoration: pw.TextDecoration.underline)),
-            pw.Text('ĐT: $facilityPhone', style: pw.TextStyle(fontSize: 9)),
+                style: const pw.TextStyle(fontSize: 9, decoration: pw.TextDecoration.underline)),
+            if (facilityAddress.isNotEmpty)
+              pw.Text('Địa chỉ: $facilityAddress', style: const pw.TextStyle(fontSize: 9)),
+            pw.Text('ĐT: $facilityPhone', style: const pw.TextStyle(fontSize: 9)),
             pw.SizedBox(height: 10),
             pw.Center(
               child: pw.Text('ĐƠN THUỐC',
                   style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
             ),
+            if ((prescription['ma_don_thuoc'] as String?)?.isNotEmpty ?? false)
+              pw.Center(
+                child: pw.Column(children: [
+                  pw.Text('Mã đơn thuốc: ${prescription['ma_don_thuoc']}',
+                      style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                  pw.SizedBox(height: 3),
+                  // Nhà thuốc quét mã này để tra đơn trên Đơn thuốc quốc gia.
+                  pw.BarcodeWidget(
+                    barcode: pw.Barcode.qrCode(),
+                    data: prescription['ma_don_thuoc'] as String,
+                    width: 52,
+                    height: 52,
+                    drawText: false,
+                  ),
+                ]),
+              ),
             pw.SizedBox(height: 12),
             pw.Row(
               crossAxisAlignment: pw.CrossAxisAlignment.end,
@@ -84,6 +116,8 @@ class PrescriptionPdfService {
                   child: _field('Họ tên', (patient['full_name'] as String?) ?? ''),
                 ),
                 pw.SizedBox(width: 8),
+                pw.Expanded(flex: 2, child: _field('Ngày sinh', dobText)),
+                pw.SizedBox(width: 8),
                 pw.Expanded(flex: 1, child: _field('Tuổi', age)),
                 pw.SizedBox(width: 8),
                 pw.Expanded(flex: 1, child: _field('Cân nặng', weight)),
@@ -92,7 +126,7 @@ class PrescriptionPdfService {
             pw.SizedBox(height: 4),
             pw.Row(
               children: [
-                pw.Text('Giới tính: ', style: pw.TextStyle(fontSize: 9)),
+                pw.Text('Giới tính: ', style: const pw.TextStyle(fontSize: 9)),
                 pw.Text('Nam',
                     style: pw.TextStyle(
                         fontSize: 9,
@@ -107,12 +141,19 @@ class PrescriptionPdfService {
               ],
             ),
             pw.SizedBox(height: 6),
-            _field('Mã số thẻ bảo hiểm y tế (nếu có)',
-                (patient['id_number'] as String?) ?? ''),
+            _field('Số thẻ BHYT / số định danh công dân (nếu có)', insuranceNo),
             pw.SizedBox(height: 6),
             _field('Địa chỉ liên hệ', (patient['address'] as String?) ?? ''),
             pw.SizedBox(height: 6),
-            _field('Chẩn đoán', (visit['diagnosis'] as String?) ?? ''),
+            _field('Số điện thoại liên hệ', (patient['phone'] as String?) ?? ''),
+            pw.SizedBox(height: 6),
+            _field(
+                'Chẩn đoán',
+                ((prescription['chan_doan'] as List?)?.isNotEmpty ?? false)
+                    ? (prescription['chan_doan'] as List)
+                        .map((d) => '${d['ten_benh']} (${d['ma_benh']})')
+                        .join('; ')
+                    : (visit['diagnosis'] as String?) ?? ''),
             pw.SizedBox(height: 10),
             pw.Text('Thuốc điều trị:',
                 style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
@@ -128,7 +169,7 @@ class PrescriptionPdfService {
                     pw.Text(
                       '${i + 1}. ${items[i]['medicine_name']}  '
                       'SL: ${_formatQty(items[i]['quantity'])} '
-                      '${(items[i]['dosage_unit'] as String?) ?? ''}',
+                      '${(items[i]['don_vi_tinh'] as String?) ?? (items[i]['dosage_unit'] as String?) ?? ''}',
                       style: pw.TextStyle(fontSize: 9.5, fontWeight: pw.FontWeight.bold),
                     ),
                     pw.Padding(
@@ -137,7 +178,7 @@ class PrescriptionPdfService {
                         (items[i]['dosage_instructions'] as String?)?.isNotEmpty == true
                             ? items[i]['dosage_instructions']
                             : 'Ngày ....... lần, mỗi lần .......',
-                        style: pw.TextStyle(fontSize: 9),
+                        style: const pw.TextStyle(fontSize: 9),
                       ),
                     ),
                   ],
@@ -145,6 +186,10 @@ class PrescriptionPdfService {
               ),
             pw.SizedBox(height: 10),
             _field('Lời dặn', advice),
+            if (revisitDays != null) ...[
+              pw.SizedBox(height: 4),
+              _field('Tái khám sau (ngày)', revisitDays.toString()),
+            ],
             pw.SizedBox(height: 16),
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.end,
@@ -163,7 +208,7 @@ class PrescriptionPdfService {
                         style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
                     pw.SizedBox(height: 36),
                     pw.Text((doctor?['name'] as String?) != null ? 'BS. ${doctor!['name']}' : '',
-                        style: pw.TextStyle(fontSize: 9)),
+                        style: const pw.TextStyle(fontSize: 9)),
                   ],
                 ),
               ],
@@ -175,7 +220,7 @@ class PrescriptionPdfService {
             pw.SizedBox(height: 4),
             pw.Text(
               'Tên bố/mẹ của trẻ hoặc người đưa trẻ đến khám bệnh, chữa bệnh:',
-              style: pw.TextStyle(fontSize: 8.5),
+              style: const pw.TextStyle(fontSize: 8.5),
             ),
             pw.SizedBox(height: 2),
             _field('Họ tên', guardianName, labelSize: 8.5, valueSize: 8.5),

@@ -21,6 +21,9 @@ class _MedicineFormScreenState extends State<MedicineFormScreen> {
   DateTime? _expiryDate;
   bool _requiresPrescription = false;
 
+  final _maThuocController = TextEditingController();
+  final _bietDuocController = TextEditingController();
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -29,6 +32,8 @@ class _MedicineFormScreenState extends State<MedicineFormScreen> {
     _stockController.dispose();
     _batchController.dispose();
     _unitController.dispose();
+    _maThuocController.dispose();
+    _bietDuocController.dispose();
     super.dispose();
   }
 
@@ -59,6 +64,8 @@ class _MedicineFormScreenState extends State<MedicineFormScreen> {
       expiryDate: _expiryDate?.toIso8601String(),
       requiresPrescription: _requiresPrescription,
       dosageUnit: _unitController.text.trim().isEmpty ? 'viên' : _unitController.text.trim(),
+      maThuocCucQldd: _maThuocController.text.trim().isEmpty ? null : _maThuocController.text.trim(),
+      bietDuoc: _bietDuocController.text.trim().isEmpty ? null : _bietDuocController.text.trim(),
     );
     if (mounted) Navigator.of(context).pop(true);
   }
@@ -165,6 +172,25 @@ class _MedicineFormScreenState extends State<MedicineFormScreen> {
               title: Text(context.tr('clinic_medicine_requires_prescription')),
               activeThumbColor: const Color(0xFF0EA5E9),
               contentPadding: EdgeInsets.zero,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _maThuocController,
+              maxLength: 20,
+              decoration: InputDecoration(
+                labelText: 'Mã thuốc (Cục Quản lý Dược, ≤ 20 ký tự)',
+                prefixIcon: const Icon(Icons.qr_code_2_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _bietDuocController,
+              decoration: InputDecoration(
+                labelText: 'Biệt dược / hoạt chất chính',
+                prefixIcon: const Icon(Icons.science_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
             ),
             const SizedBox(height: 24),
             Container(

@@ -123,6 +123,19 @@ TABLES = [
     ("sensor_readings",               "id"),
     ("automation_rules",              "id"),
     ("automation_events",             "id"),
+    # Phase 7: Clinic & Pharmacy (module clinic_pharma) & DtqgGateway (12 tables)
+    ("clinic_doctors",                "id"),
+    ("clinic_patients",               "id"),
+    ("clinic_appointments",           "id"),
+    ("clinic_medical_visits",          "id"),
+    ("clinic_prescriptions",          "id"),
+    ("clinic_prescription_items",     "id"),
+    ("clinic_facility",               "id"),
+    ("dtqg_credentials",              "subject_type, subject_code"),
+    ("dtqg_sessions",                 "subject_type, subject_code"),
+    ("dtqg_doctor_links",             "facility_code, doctor_code"),
+    ("dtqg_submissions",              "id"),
+    ("dtqg_pos_sales",                "id"),
 ]
 
 BATCH = 500

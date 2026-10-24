@@ -171,7 +171,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final primaryColor = const Color(0xFF10B981); // Emerald Green
+    const primaryColor = Color(0xFF10B981); // Emerald Green
     final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
     final textColor = isDark ? Colors.white : Colors.black87;
     final subTextColor = isDark ? Colors.white70 : Colors.black54;
@@ -193,7 +193,7 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
                   shape: BoxShape.circle,
                   border: Border.all(color: primaryColor.withValues(alpha: 0.3), width: 2),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.shield_moon_rounded,
                   size: 46,
                   color: primaryColor,
@@ -213,9 +213,9 @@ class _MushroomsLoginScreenState extends State<MushroomsLoginScreen>
               ).animate().fade(delay: 150.ms).slideY(begin: 0.2, end: 0),
               const SizedBox(height: 6),
 
-              Text(
+              const Text(
                 'iZii-VZKP Zero-Knowledge Security Portal',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: primaryColor,

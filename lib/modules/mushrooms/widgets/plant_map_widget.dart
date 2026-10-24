@@ -208,7 +208,7 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: FarmColors.forestGreen.withOpacity(0.12),
+                      color: FarmColors.forestGreen.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: FarmColors.forestGreen),
                     ),
@@ -301,7 +301,7 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
           CustomPaint(
             size: Size(corridorWidth, 2),
             painter: DashedLinePainter(
-              color: Colors.amber.withOpacity(0.5),
+              color: Colors.amber.withValues(alpha: 0.5),
             ),
           ),
           Positioned(
@@ -395,7 +395,7 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
         ? (widget.isDark ? const Color(0xFF2A2A2A) : Colors.amber.shade50)
         : (widget.isDark ? const Color(0xFF1E1E1E) : Colors.white);
 
-    final Color cardBgColor = customHighlight?.withOpacity(0.15) ??
+    final Color cardBgColor = customHighlight?.withValues(alpha: 0.15) ??
         _safetyService.getCardBackgroundColor(
             safetyStatus, widget.isDark, defaultBg);
 
@@ -484,7 +484,7 @@ class _PlantMapWidgetState extends State<PlantMapWidget> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     decoration: BoxDecoration(
-                      color: stageColor.withOpacity(0.15),
+                      color: stageColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(

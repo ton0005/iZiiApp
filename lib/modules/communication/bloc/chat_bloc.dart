@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
-import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/sync/sync_service.dart';
 import '../../../core/device_identity/device_identity_service.dart';
@@ -17,7 +16,6 @@ import '../../../core/settings/settings_service.dart';
 import '../../../core/enrollment/device_user_service.dart';
 import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../models/ble_models.dart';
-import '../services/ble_transport_service.dart';
 import '../../../core/events/app_event_bus.dart';
 import '../call/incoming_call_service.dart';
 

@@ -26,10 +26,19 @@ TABLE_ALIASES = {
     "safety_configs": "mushroom_job_safety_configs",
     "safety_logs": "mushroom_safety_checkin_logs",
     "window_issues": "mushroom_window_issues",
+    # Clinic & Pharma (migration 0012)
+    "doctors": "clinic_doctors",
+    "patients": "clinic_patients",
+    "appointments": "clinic_appointments",
+    "medical_visits": "clinic_medical_visits",
+    "prescriptions": "clinic_prescriptions",
+    "prescription_items": "clinic_prescription_items",
+    "clinic_facility": "clinic_facility",
 }
 
 BOOLEAN_COLS = {
-    "is_solo_job", "auto_start_on_job_begin", "is_seed", "is_active", "is_custom"
+    "is_solo_job", "auto_start_on_job_begin", "is_seed", "is_active", "is_custom",
+    "duoc_ke_don", "active"
 }
 
 

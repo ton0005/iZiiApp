@@ -19,12 +19,25 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
   DateTime? _dob;
   String? _gender;
 
+  final _maYteController = TextEditingController();
+  final _cccdController = TextEditingController();
+  final _bhytController = TextEditingController();
+  final _guardianNameController = TextEditingController();
+  final _guardianPhoneController = TextEditingController();
+  final _guardianAddressController = TextEditingController();
+
   @override
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
     _idNumberController.dispose();
+    _maYteController.dispose();
+    _cccdController.dispose();
+    _bhytController.dispose();
+    _guardianNameController.dispose();
+    _guardianPhoneController.dispose();
+    _guardianAddressController.dispose();
     super.dispose();
   }
 
@@ -59,6 +72,12 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
       'id_number': _idNumberController.text.trim().isEmpty
           ? null
           : _idNumberController.text.trim(),
+      'so_cccd': _cccdController.text.trim().isEmpty ? null : _cccdController.text.trim(),
+      'ma_the_bhyt': _bhytController.text.trim().isEmpty ? null : _bhytController.text.trim(),
+      'ma_dinh_danh_y_te': _maYteController.text.trim().isEmpty ? null : _maYteController.text.trim(),
+      'guardian_name': _guardianNameController.text.trim().isEmpty ? null : _guardianNameController.text.trim(),
+      'guardian_phone': _guardianPhoneController.text.trim().isEmpty ? null : _guardianPhoneController.text.trim(),
+      'guardian_address': _guardianAddressController.text.trim().isEmpty ? null : _guardianAddressController.text.trim(),
     });
     if (mounted) Navigator.of(context).pop(true);
   }
@@ -138,6 +157,64 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
               decoration: InputDecoration(
                 labelText: context.tr('clinic_patient_id_number'),
                 prefixIcon: const Icon(Icons.badge_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _cccdController,
+              keyboardType: TextInputType.number,
+              maxLength: 12,
+              decoration: InputDecoration(
+                labelText: 'Mã định danh công dân (12 số)',
+                prefixIcon: const Icon(Icons.credit_card_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _bhytController,
+              decoration: InputDecoration(
+                labelText: 'Mã thẻ BHYT (nếu có)',
+                prefixIcon: const Icon(Icons.health_and_safety_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _maYteController,
+              maxLength: 10,
+              decoration: InputDecoration(
+                labelText: 'Mã định danh y tế (≤ 10 ký tự)',
+                prefixIcon: const Icon(Icons.local_hospital_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _guardianNameController,
+              decoration: InputDecoration(
+                labelText: 'Người giám hộ (bắt buộc với trẻ dưới 72 tháng)',
+                prefixIcon: const Icon(Icons.family_restroom_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _guardianPhoneController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                labelText: 'SĐT người giám hộ',
+                prefixIcon: const Icon(Icons.phone_in_talk_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _guardianAddressController,
+              decoration: InputDecoration(
+                labelText: 'Địa chỉ người giám hộ',
+                prefixIcon: const Icon(Icons.home_work_outlined),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../repository.dart';
 import '../services/prescription_pdf_service.dart';
 
 const _kGradient = LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF14B8A6)]);
@@ -34,6 +35,7 @@ class _PrescriptionPrintScreenState extends State<PrescriptionPrintScreen> {
   final _authorityController = TextEditingController(text: 'SỞ Y TẾ');
   final _facilityController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _addressController = TextEditingController();
   final _weightController = TextEditingController();
   final _adviceController = TextEditingController();
   final _guardianController = TextEditingController();
@@ -41,7 +43,23 @@ class _PrescriptionPrintScreenState extends State<PrescriptionPrintScreen> {
   @override
   void initState() {
     super.initState();
-    _adviceController.text = (widget.visit['notes'] as String?) ?? '';
+    final rx = widget.prescription;
+    _adviceController.text =
+        (rx['loi_dan'] as String?) ?? (widget.visit['notes'] as String?) ?? '';
+    final w = rx['can_nang'] as num?;
+    if (w != null) _weightController.text = w.toString();
+    _guardianController.text = (rx['nguoi_giam_ho'] as String?) ?? '';
+    _loadFacility();
+  }
+
+  Future<void> _loadFacility() async {
+    final f = await ClinicPharmaRepository().getFacility();
+    if (!mounted) return;
+    setState(() {
+      if (_facilityController.text.isEmpty) _facilityController.text = f['name'] ?? '';
+      if (_phoneController.text.isEmpty) _phoneController.text = f['phone'] ?? '';
+      if (_addressController.text.isEmpty) _addressController.text = f['address'] ?? '';
+    });
   }
 
   @override
@@ -49,6 +67,7 @@ class _PrescriptionPrintScreenState extends State<PrescriptionPrintScreen> {
     _authorityController.dispose();
     _facilityController.dispose();
     _phoneController.dispose();
+    _addressController.dispose();
     _weightController.dispose();
     _adviceController.dispose();
     _guardianController.dispose();
@@ -63,6 +82,7 @@ class _PrescriptionPrintScreenState extends State<PrescriptionPrintScreen> {
       facilityAuthority: _authorityController.text.trim(),
       facilityName: _facilityController.text.trim(),
       facilityPhone: _phoneController.text.trim(),
+      facilityAddress: _addressController.text.trim(),
       patient: widget.patient,
       doctor: widget.doctor,
       visit: widget.visit,
@@ -145,6 +165,15 @@ class _PrescriptionPrintScreenState extends State<PrescriptionPrintScreen> {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _addressController,
+                  decoration: InputDecoration(
+                    labelText: 'Địa chỉ cơ sở',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    isDense: true,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 TextField(

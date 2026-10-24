@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:izii_app/core/bloc/app_bloc.dart';
 import '../bloc/mushrooms_bloc.dart';
 import '../repository.dart';
 
@@ -69,7 +68,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
   String? _tasksSelectedRoomName;
   String _tasksViewMode = 'kanban'; // kanban or gantt
 
-  String _activeChatContact = 'Growing Crew';
+  final String _activeChatContact = 'Growing Crew';
 
   bool _emergencyActive = false;
 
@@ -232,7 +231,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       final r = role.toLowerCase();
       if (r.contains('manager') ||
           r.contains('site manager') ||
-          r.contains('cool room manager')) return 3;
+          r.contains('cool room manager')) {
+        return 3;
+      }
       if (r.contains('lead') || r.contains('supervisor')) return 2;
       if (r.contains('specialist')) return 1;
       return 0; // picker, box mover, worker, etc.
@@ -639,7 +640,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                     Text(
                       _currentEmployee != null
                           ? '${_currentEmployee!.name} (ID: ${_currentEmployee!.id}) • ${_currentEmployee!.role}'
-                          : 'NV: ${_activeRole}',
+                          : 'NV: $_activeRole',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -705,10 +706,12 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     if (_activeTab == 'tasks') return 'Kanban Board & Gantt Chart Timeline';
     if (_activeTab == 'chat') return 'Offline BLE P2P Chat Simulator';
     if (_activeTab == 'employees') return 'Staff & Specialist Registry';
-    if (_activeTab == 'departments')
+    if (_activeTab == 'departments') {
       return 'Manage business department listings';
-    if (_activeTab == 'settings')
+    }
+    if (_activeTab == 'settings') {
       return 'Server, Sync & Application Preferences';
+    }
     return 'Solo Working Alerts & Incident Manager';
   }
 
@@ -761,9 +764,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
                     ),
                     if (effectiveExpanded) ...[
                       const SizedBox(height: 4),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.call_split, size: 10, color: Colors.grey),
                           SizedBox(width: 4),
                           Flexible(
@@ -1018,7 +1021,7 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
     final Color? bgCol = isActive
         ? (isDark
             ? FarmColors.forestGreen
-            : FarmColors.forestGreenLight.withOpacity(0.4))
+            : FarmColors.forestGreenLight.withValues(alpha: 0.4))
         : null;
 
     final Color textIconCol = isActive
@@ -1540,8 +1543,9 @@ class _MushboomMonartoScreenState extends State<MushboomMonartoScreen> {
       String dbStatus = 'todo';
       if (nextStatus == 'inprog') dbStatus = 'in_progress';
       if (nextStatus == 'review') dbStatus = 'review';
-      if (nextStatus == 'done' || nextStatus == 'completed')
+      if (nextStatus == 'done' || nextStatus == 'completed') {
         dbStatus = 'completed';
+      }
 
       _bloc.add(UpdateJobStatusEvent(
         jobId as String,

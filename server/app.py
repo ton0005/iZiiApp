@@ -118,7 +118,7 @@ from security_tls import httpx_client_kwargs, uvicorn_ssl_kwargs, describe as de
 from routers import (
     sync, devices, messages, notifications, attachments,
     peer_sync, call, webhooks, admin, enrollment, sessions,
-    workforce, metadata, agv_gateway, radio_gateway,
+    workforce, metadata, agv_gateway, radio_gateway, dtqg,
 )
 from security_auth import describe_scopes
 from event_engine import iZiiEventEngine, close_http_client
@@ -283,6 +283,33 @@ async def _daily_timesheet_cron_loop() -> None:
             await asyncio.sleep(60)
 
 
+async def _dtqg_queue_loop() -> None:
+    """Gửi đơn thuốc 'queued' lên Đơn thuốc quốc gia và gửi lại các lần bán POS còn treo."""
+    from dependencies import make_sync_repo, open_connection
+    from dtqg_client import DtqgClient
+    from dtqg_pos import DtqgPos
+    from dtqg_service import DtqgGateway
+
+    def run_once() -> None:
+        with open_connection() as conn:
+            client = DtqgClient(CONFIG.dtqg_api_base, CONFIG.dtqg_web_base, timeout=CONFIG.dtqg_http_timeout_seconds)
+            try:
+                for r in DtqgGateway(conn, make_sync_repo(conn), client).process_queue():
+                    if r["result"] != "skipped":
+                        print(f"[DTQG] {r.get('ma_don_thuoc')}: {r['result']} {r.get('errors') or ''}")
+                if CONFIG.dtqg_pos_app_name and CONFIG.dtqg_pos_app_key:
+                    DtqgPos(conn, client, CONFIG.dtqg_pos_app_name, CONFIG.dtqg_pos_app_key).retry_pending()
+            finally:
+                client.close()
+
+    while True:
+        await asyncio.sleep(max(5, CONFIG.dtqg_queue_interval_seconds))
+        try:
+            await asyncio.get_running_loop().run_in_executor(None, run_once)
+        except Exception as e:
+            print(f"⚠️  [DTQG] Lỗi vòng gửi đơn thuốc: {e}")
+
+
 async def _maintenance_loop() -> None:
     """Vòng lặp bảo trì chạy mỗi 24h: dọn mutation cũ và dead-letter tin nhắn kẹt."""
     while True:
@@ -394,12 +421,17 @@ async def lifespan(app: FastAPI):
     peer_sync_task = asyncio.create_task(_peer_sync_loop())
     maintenance_task = asyncio.create_task(_maintenance_loop())
     timesheet_cron_task = asyncio.create_task(_daily_timesheet_cron_loop())
+    dtqg_task = asyncio.create_task(_dtqg_queue_loop()) if CONFIG.dtqg_enabled else None
+    if CONFIG.dtqg_enabled:
+        print(f"💊 [DTQG] Liên thông Đơn thuốc quốc gia BẬT → {CONFIG.dtqg_api_base}")
 
     yield
     # Shutdown
     peer_sync_task.cancel()
     maintenance_task.cancel()
     timesheet_cron_task.cancel()
+    if dtqg_task:
+        dtqg_task.cancel()
     if discovery:
         await discovery.close()
     # Đóng httpx.AsyncClient dùng chung của event engine (webhook dispatch)
@@ -460,6 +492,7 @@ app.include_router(sessions.router)    # /sessions/* — điểm danh đầu ca 
 app.include_router(workforce.router)   # /api/v1/workforce/* — chấm công & timesheets (P5)
 app.include_router(metadata.router)    # /api/v1/meta/* & /api/v1/settings (P3)
 app.include_router(agv_gateway.router) # /api/v1/agv/* — VDA 5050 AGV & Door Interlock (Phase 3)
+app.include_router(dtqg.router)  # /api/v1/dtqg/* — Đơn thuốc quốc gia QĐ 808 (HIS + POS)
 app.include_router(radio_gateway.router) # /api/v1/radio/* — bộ đàm Hytera ↔ Alone Worker (X-iZii-Radio-Token)
 
 # Cho admin router chạm tới con trỏ sync đang nằm trong RAM, để lệnh reset xoá

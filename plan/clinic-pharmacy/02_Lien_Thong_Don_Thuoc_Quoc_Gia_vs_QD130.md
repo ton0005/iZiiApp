@@ -1,5 +1,8 @@
 # LIÊN THÔNG HỆ THỐNG ĐƠN THUỐC QUỐC GIA — SO SÁNH VỚI QĐ 130
 
+> **⚠ ĐÃ THAY THẾ (2026-10-16):** kế hoạch này theo QĐ 130 (BHYT/XML). Phạm vi hiện hành chỉ gồm QĐ 808 và Hướng dẫn Đơn thuốc quốc gia — xem `03_Ke_Hoach_Clinic_Pharmacy_Don_Thuoc_Quoc_Gia_QD808.md`. Giữ lại chỉ để tham khảo.
+
+
 | Mục | Nội dung |
 |---|---|
 | Nguồn | `huong-dan-su-dung.pdf` — Hướng dẫn sử dụng Hệ thống thông tin quốc gia về quản lý kê đơn thuốc và bán thuốc theo đơn (Bộ Y tế, www.donthuocquocgia.vn) |

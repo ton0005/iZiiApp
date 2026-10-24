@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import '../../../core/theme/izii_colors.dart';
 import '../../settings/settings_service.dart';
 import '../sync_service.dart';
 import '../sync_config_repository.dart';

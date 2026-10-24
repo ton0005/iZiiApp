@@ -38398,6 +38398,35 @@ class $DoctorsTable extends Doctors with TableInfo<$DoctorsTable, Doctor> {
   late final GeneratedColumn<String> email = GeneratedColumn<String>(
       'email', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _soCchnMeta = const VerificationMeta('soCchn');
+  @override
+  late final GeneratedColumn<String> soCchn = GeneratedColumn<String>(
+      'so_cchn', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _maLienThongDtqgMeta =
+      const VerificationMeta('maLienThongDtqg');
+  @override
+  late final GeneratedColumn<String> maLienThongDtqg = GeneratedColumn<String>(
+      'ma_lien_thong_dtqg', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _duocKeDonMeta =
+      const VerificationMeta('duocKeDon');
+  @override
+  late final GeneratedColumn<bool> duocKeDon = GeneratedColumn<bool>(
+      'duoc_ke_don', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("duoc_ke_don" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _dtqgStatusMeta =
+      const VerificationMeta('dtqgStatus');
+  @override
+  late final GeneratedColumn<String> dtqgStatus = GeneratedColumn<String>(
+      'dtqg_status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('pending'));
   static const VerificationMeta _activeMeta = const VerificationMeta('active');
   @override
   late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
@@ -38424,8 +38453,20 @@ class $DoctorsTable extends Doctors with TableInfo<$DoctorsTable, Doctor> {
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, specialty, phone, email, active, customFields, createdAt];
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        specialty,
+        phone,
+        email,
+        soCchn,
+        maLienThongDtqg,
+        duocKeDon,
+        dtqgStatus,
+        active,
+        customFields,
+        createdAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -38458,6 +38499,28 @@ class $DoctorsTable extends Doctors with TableInfo<$DoctorsTable, Doctor> {
     if (data.containsKey('email')) {
       context.handle(
           _emailMeta, email.isAcceptableOrUnknown(data['email']!, _emailMeta));
+    }
+    if (data.containsKey('so_cchn')) {
+      context.handle(_soCchnMeta,
+          soCchn.isAcceptableOrUnknown(data['so_cchn']!, _soCchnMeta));
+    }
+    if (data.containsKey('ma_lien_thong_dtqg')) {
+      context.handle(
+          _maLienThongDtqgMeta,
+          maLienThongDtqg.isAcceptableOrUnknown(
+              data['ma_lien_thong_dtqg']!, _maLienThongDtqgMeta));
+    }
+    if (data.containsKey('duoc_ke_don')) {
+      context.handle(
+          _duocKeDonMeta,
+          duocKeDon.isAcceptableOrUnknown(
+              data['duoc_ke_don']!, _duocKeDonMeta));
+    }
+    if (data.containsKey('dtqg_status')) {
+      context.handle(
+          _dtqgStatusMeta,
+          dtqgStatus.isAcceptableOrUnknown(
+              data['dtqg_status']!, _dtqgStatusMeta));
     }
     if (data.containsKey('active')) {
       context.handle(_activeMeta,
@@ -38492,6 +38555,14 @@ class $DoctorsTable extends Doctors with TableInfo<$DoctorsTable, Doctor> {
           .read(DriftSqlType.string, data['${effectivePrefix}phone']),
       email: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}email']),
+      soCchn: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}so_cchn']),
+      maLienThongDtqg: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}ma_lien_thong_dtqg']),
+      duocKeDon: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}duoc_ke_don'])!,
+      dtqgStatus: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}dtqg_status'])!,
       active: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}active'])!,
       customFields: attachedDatabase.typeMapping
@@ -38513,6 +38584,10 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   final String specialty;
   final String? phone;
   final String? email;
+  final String? soCchn;
+  final String? maLienThongDtqg;
+  final bool duocKeDon;
+  final String dtqgStatus;
   final bool active;
   final String customFields;
   final DateTime createdAt;
@@ -38522,6 +38597,10 @@ class Doctor extends DataClass implements Insertable<Doctor> {
       required this.specialty,
       this.phone,
       this.email,
+      this.soCchn,
+      this.maLienThongDtqg,
+      required this.duocKeDon,
+      required this.dtqgStatus,
       required this.active,
       required this.customFields,
       required this.createdAt});
@@ -38537,6 +38616,14 @@ class Doctor extends DataClass implements Insertable<Doctor> {
     if (!nullToAbsent || email != null) {
       map['email'] = Variable<String>(email);
     }
+    if (!nullToAbsent || soCchn != null) {
+      map['so_cchn'] = Variable<String>(soCchn);
+    }
+    if (!nullToAbsent || maLienThongDtqg != null) {
+      map['ma_lien_thong_dtqg'] = Variable<String>(maLienThongDtqg);
+    }
+    map['duoc_ke_don'] = Variable<bool>(duocKeDon);
+    map['dtqg_status'] = Variable<String>(dtqgStatus);
     map['active'] = Variable<bool>(active);
     map['custom_fields'] = Variable<String>(customFields);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -38552,6 +38639,13 @@ class Doctor extends DataClass implements Insertable<Doctor> {
           phone == null && nullToAbsent ? const Value.absent() : Value(phone),
       email:
           email == null && nullToAbsent ? const Value.absent() : Value(email),
+      soCchn:
+          soCchn == null && nullToAbsent ? const Value.absent() : Value(soCchn),
+      maLienThongDtqg: maLienThongDtqg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maLienThongDtqg),
+      duocKeDon: Value(duocKeDon),
+      dtqgStatus: Value(dtqgStatus),
       active: Value(active),
       customFields: Value(customFields),
       createdAt: Value(createdAt),
@@ -38567,6 +38661,10 @@ class Doctor extends DataClass implements Insertable<Doctor> {
       specialty: serializer.fromJson<String>(json['specialty']),
       phone: serializer.fromJson<String?>(json['phone']),
       email: serializer.fromJson<String?>(json['email']),
+      soCchn: serializer.fromJson<String?>(json['soCchn']),
+      maLienThongDtqg: serializer.fromJson<String?>(json['maLienThongDtqg']),
+      duocKeDon: serializer.fromJson<bool>(json['duocKeDon']),
+      dtqgStatus: serializer.fromJson<String>(json['dtqgStatus']),
       active: serializer.fromJson<bool>(json['active']),
       customFields: serializer.fromJson<String>(json['customFields']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -38581,6 +38679,10 @@ class Doctor extends DataClass implements Insertable<Doctor> {
       'specialty': serializer.toJson<String>(specialty),
       'phone': serializer.toJson<String?>(phone),
       'email': serializer.toJson<String?>(email),
+      'soCchn': serializer.toJson<String?>(soCchn),
+      'maLienThongDtqg': serializer.toJson<String?>(maLienThongDtqg),
+      'duocKeDon': serializer.toJson<bool>(duocKeDon),
+      'dtqgStatus': serializer.toJson<String>(dtqgStatus),
       'active': serializer.toJson<bool>(active),
       'customFields': serializer.toJson<String>(customFields),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -38593,6 +38695,10 @@ class Doctor extends DataClass implements Insertable<Doctor> {
           String? specialty,
           Value<String?> phone = const Value.absent(),
           Value<String?> email = const Value.absent(),
+          Value<String?> soCchn = const Value.absent(),
+          Value<String?> maLienThongDtqg = const Value.absent(),
+          bool? duocKeDon,
+          String? dtqgStatus,
           bool? active,
           String? customFields,
           DateTime? createdAt}) =>
@@ -38602,6 +38708,12 @@ class Doctor extends DataClass implements Insertable<Doctor> {
         specialty: specialty ?? this.specialty,
         phone: phone.present ? phone.value : this.phone,
         email: email.present ? email.value : this.email,
+        soCchn: soCchn.present ? soCchn.value : this.soCchn,
+        maLienThongDtqg: maLienThongDtqg.present
+            ? maLienThongDtqg.value
+            : this.maLienThongDtqg,
+        duocKeDon: duocKeDon ?? this.duocKeDon,
+        dtqgStatus: dtqgStatus ?? this.dtqgStatus,
         active: active ?? this.active,
         customFields: customFields ?? this.customFields,
         createdAt: createdAt ?? this.createdAt,
@@ -38613,6 +38725,13 @@ class Doctor extends DataClass implements Insertable<Doctor> {
       specialty: data.specialty.present ? data.specialty.value : this.specialty,
       phone: data.phone.present ? data.phone.value : this.phone,
       email: data.email.present ? data.email.value : this.email,
+      soCchn: data.soCchn.present ? data.soCchn.value : this.soCchn,
+      maLienThongDtqg: data.maLienThongDtqg.present
+          ? data.maLienThongDtqg.value
+          : this.maLienThongDtqg,
+      duocKeDon: data.duocKeDon.present ? data.duocKeDon.value : this.duocKeDon,
+      dtqgStatus:
+          data.dtqgStatus.present ? data.dtqgStatus.value : this.dtqgStatus,
       active: data.active.present ? data.active.value : this.active,
       customFields: data.customFields.present
           ? data.customFields.value
@@ -38629,6 +38748,10 @@ class Doctor extends DataClass implements Insertable<Doctor> {
           ..write('specialty: $specialty, ')
           ..write('phone: $phone, ')
           ..write('email: $email, ')
+          ..write('soCchn: $soCchn, ')
+          ..write('maLienThongDtqg: $maLienThongDtqg, ')
+          ..write('duocKeDon: $duocKeDon, ')
+          ..write('dtqgStatus: $dtqgStatus, ')
           ..write('active: $active, ')
           ..write('customFields: $customFields, ')
           ..write('createdAt: $createdAt')
@@ -38637,8 +38760,8 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, name, specialty, phone, email, active, customFields, createdAt);
+  int get hashCode => Object.hash(id, name, specialty, phone, email, soCchn,
+      maLienThongDtqg, duocKeDon, dtqgStatus, active, customFields, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -38648,6 +38771,10 @@ class Doctor extends DataClass implements Insertable<Doctor> {
           other.specialty == this.specialty &&
           other.phone == this.phone &&
           other.email == this.email &&
+          other.soCchn == this.soCchn &&
+          other.maLienThongDtqg == this.maLienThongDtqg &&
+          other.duocKeDon == this.duocKeDon &&
+          other.dtqgStatus == this.dtqgStatus &&
           other.active == this.active &&
           other.customFields == this.customFields &&
           other.createdAt == this.createdAt);
@@ -38659,6 +38786,10 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
   final Value<String> specialty;
   final Value<String?> phone;
   final Value<String?> email;
+  final Value<String?> soCchn;
+  final Value<String?> maLienThongDtqg;
+  final Value<bool> duocKeDon;
+  final Value<String> dtqgStatus;
   final Value<bool> active;
   final Value<String> customFields;
   final Value<DateTime> createdAt;
@@ -38669,6 +38800,10 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
     this.specialty = const Value.absent(),
     this.phone = const Value.absent(),
     this.email = const Value.absent(),
+    this.soCchn = const Value.absent(),
+    this.maLienThongDtqg = const Value.absent(),
+    this.duocKeDon = const Value.absent(),
+    this.dtqgStatus = const Value.absent(),
     this.active = const Value.absent(),
     this.customFields = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -38680,6 +38815,10 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
     this.specialty = const Value.absent(),
     this.phone = const Value.absent(),
     this.email = const Value.absent(),
+    this.soCchn = const Value.absent(),
+    this.maLienThongDtqg = const Value.absent(),
+    this.duocKeDon = const Value.absent(),
+    this.dtqgStatus = const Value.absent(),
     this.active = const Value.absent(),
     this.customFields = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -38692,6 +38831,10 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
     Expression<String>? specialty,
     Expression<String>? phone,
     Expression<String>? email,
+    Expression<String>? soCchn,
+    Expression<String>? maLienThongDtqg,
+    Expression<bool>? duocKeDon,
+    Expression<String>? dtqgStatus,
     Expression<bool>? active,
     Expression<String>? customFields,
     Expression<DateTime>? createdAt,
@@ -38703,6 +38846,10 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
       if (specialty != null) 'specialty': specialty,
       if (phone != null) 'phone': phone,
       if (email != null) 'email': email,
+      if (soCchn != null) 'so_cchn': soCchn,
+      if (maLienThongDtqg != null) 'ma_lien_thong_dtqg': maLienThongDtqg,
+      if (duocKeDon != null) 'duoc_ke_don': duocKeDon,
+      if (dtqgStatus != null) 'dtqg_status': dtqgStatus,
       if (active != null) 'active': active,
       if (customFields != null) 'custom_fields': customFields,
       if (createdAt != null) 'created_at': createdAt,
@@ -38716,6 +38863,10 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
       Value<String>? specialty,
       Value<String?>? phone,
       Value<String?>? email,
+      Value<String?>? soCchn,
+      Value<String?>? maLienThongDtqg,
+      Value<bool>? duocKeDon,
+      Value<String>? dtqgStatus,
       Value<bool>? active,
       Value<String>? customFields,
       Value<DateTime>? createdAt,
@@ -38726,6 +38877,10 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
       specialty: specialty ?? this.specialty,
       phone: phone ?? this.phone,
       email: email ?? this.email,
+      soCchn: soCchn ?? this.soCchn,
+      maLienThongDtqg: maLienThongDtqg ?? this.maLienThongDtqg,
+      duocKeDon: duocKeDon ?? this.duocKeDon,
+      dtqgStatus: dtqgStatus ?? this.dtqgStatus,
       active: active ?? this.active,
       customFields: customFields ?? this.customFields,
       createdAt: createdAt ?? this.createdAt,
@@ -38751,6 +38906,18 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
     if (email.present) {
       map['email'] = Variable<String>(email.value);
     }
+    if (soCchn.present) {
+      map['so_cchn'] = Variable<String>(soCchn.value);
+    }
+    if (maLienThongDtqg.present) {
+      map['ma_lien_thong_dtqg'] = Variable<String>(maLienThongDtqg.value);
+    }
+    if (duocKeDon.present) {
+      map['duoc_ke_don'] = Variable<bool>(duocKeDon.value);
+    }
+    if (dtqgStatus.present) {
+      map['dtqg_status'] = Variable<String>(dtqgStatus.value);
+    }
     if (active.present) {
       map['active'] = Variable<bool>(active.value);
     }
@@ -38774,6 +38941,10 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
           ..write('specialty: $specialty, ')
           ..write('phone: $phone, ')
           ..write('email: $email, ')
+          ..write('soCchn: $soCchn, ')
+          ..write('maLienThongDtqg: $maLienThongDtqg, ')
+          ..write('duocKeDon: $duocKeDon, ')
+          ..write('dtqgStatus: $dtqgStatus, ')
           ..write('active: $active, ')
           ..write('customFields: $customFields, ')
           ..write('createdAt: $createdAt, ')
@@ -38826,6 +38997,41 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
   late final GeneratedColumn<String> idNumber = GeneratedColumn<String>(
       'id_number', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _maDinhDanhYteMeta =
+      const VerificationMeta('maDinhDanhYte');
+  @override
+  late final GeneratedColumn<String> maDinhDanhYte = GeneratedColumn<String>(
+      'ma_dinh_danh_yte', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _soCccdMeta = const VerificationMeta('soCccd');
+  @override
+  late final GeneratedColumn<String> soCccd = GeneratedColumn<String>(
+      'so_cccd', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _maTheBhytMeta =
+      const VerificationMeta('maTheBhyt');
+  @override
+  late final GeneratedColumn<String> maTheBhyt = GeneratedColumn<String>(
+      'ma_the_bhyt', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _guardianNameMeta =
+      const VerificationMeta('guardianName');
+  @override
+  late final GeneratedColumn<String> guardianName = GeneratedColumn<String>(
+      'guardian_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _guardianPhoneMeta =
+      const VerificationMeta('guardianPhone');
+  @override
+  late final GeneratedColumn<String> guardianPhone = GeneratedColumn<String>(
+      'guardian_phone', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _guardianAddressMeta =
+      const VerificationMeta('guardianAddress');
+  @override
+  late final GeneratedColumn<String> guardianAddress = GeneratedColumn<String>(
+      'guardian_address', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _customFieldsMeta =
       const VerificationMeta('customFields');
   @override
@@ -38851,6 +39057,12 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
         phone,
         address,
         idNumber,
+        maDinhDanhYte,
+        soCccd,
+        maTheBhyt,
+        guardianName,
+        guardianPhone,
+        guardianAddress,
         customFields,
         createdAt
       ];
@@ -38895,6 +39107,40 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
       context.handle(_idNumberMeta,
           idNumber.isAcceptableOrUnknown(data['id_number']!, _idNumberMeta));
     }
+    if (data.containsKey('ma_dinh_danh_yte')) {
+      context.handle(
+          _maDinhDanhYteMeta,
+          maDinhDanhYte.isAcceptableOrUnknown(
+              data['ma_dinh_danh_yte']!, _maDinhDanhYteMeta));
+    }
+    if (data.containsKey('so_cccd')) {
+      context.handle(_soCccdMeta,
+          soCccd.isAcceptableOrUnknown(data['so_cccd']!, _soCccdMeta));
+    }
+    if (data.containsKey('ma_the_bhyt')) {
+      context.handle(
+          _maTheBhytMeta,
+          maTheBhyt.isAcceptableOrUnknown(
+              data['ma_the_bhyt']!, _maTheBhytMeta));
+    }
+    if (data.containsKey('guardian_name')) {
+      context.handle(
+          _guardianNameMeta,
+          guardianName.isAcceptableOrUnknown(
+              data['guardian_name']!, _guardianNameMeta));
+    }
+    if (data.containsKey('guardian_phone')) {
+      context.handle(
+          _guardianPhoneMeta,
+          guardianPhone.isAcceptableOrUnknown(
+              data['guardian_phone']!, _guardianPhoneMeta));
+    }
+    if (data.containsKey('guardian_address')) {
+      context.handle(
+          _guardianAddressMeta,
+          guardianAddress.isAcceptableOrUnknown(
+              data['guardian_address']!, _guardianAddressMeta));
+    }
     if (data.containsKey('custom_fields')) {
       context.handle(
           _customFieldsMeta,
@@ -38928,6 +39174,18 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
           .read(DriftSqlType.string, data['${effectivePrefix}address']),
       idNumber: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id_number']),
+      maDinhDanhYte: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}ma_dinh_danh_yte']),
+      soCccd: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}so_cccd']),
+      maTheBhyt: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}ma_the_bhyt']),
+      guardianName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}guardian_name']),
+      guardianPhone: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}guardian_phone']),
+      guardianAddress: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}guardian_address']),
       customFields: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}custom_fields'])!,
       createdAt: attachedDatabase.typeMapping
@@ -38949,6 +39207,12 @@ class Patient extends DataClass implements Insertable<Patient> {
   final String? phone;
   final String? address;
   final String? idNumber;
+  final String? maDinhDanhYte;
+  final String? soCccd;
+  final String? maTheBhyt;
+  final String? guardianName;
+  final String? guardianPhone;
+  final String? guardianAddress;
   final String customFields;
   final DateTime createdAt;
   const Patient(
@@ -38959,6 +39223,12 @@ class Patient extends DataClass implements Insertable<Patient> {
       this.phone,
       this.address,
       this.idNumber,
+      this.maDinhDanhYte,
+      this.soCccd,
+      this.maTheBhyt,
+      this.guardianName,
+      this.guardianPhone,
+      this.guardianAddress,
       required this.customFields,
       required this.createdAt});
   @override
@@ -38981,6 +39251,24 @@ class Patient extends DataClass implements Insertable<Patient> {
     if (!nullToAbsent || idNumber != null) {
       map['id_number'] = Variable<String>(idNumber);
     }
+    if (!nullToAbsent || maDinhDanhYte != null) {
+      map['ma_dinh_danh_yte'] = Variable<String>(maDinhDanhYte);
+    }
+    if (!nullToAbsent || soCccd != null) {
+      map['so_cccd'] = Variable<String>(soCccd);
+    }
+    if (!nullToAbsent || maTheBhyt != null) {
+      map['ma_the_bhyt'] = Variable<String>(maTheBhyt);
+    }
+    if (!nullToAbsent || guardianName != null) {
+      map['guardian_name'] = Variable<String>(guardianName);
+    }
+    if (!nullToAbsent || guardianPhone != null) {
+      map['guardian_phone'] = Variable<String>(guardianPhone);
+    }
+    if (!nullToAbsent || guardianAddress != null) {
+      map['guardian_address'] = Variable<String>(guardianAddress);
+    }
     map['custom_fields'] = Variable<String>(customFields);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -39001,6 +39289,23 @@ class Patient extends DataClass implements Insertable<Patient> {
       idNumber: idNumber == null && nullToAbsent
           ? const Value.absent()
           : Value(idNumber),
+      maDinhDanhYte: maDinhDanhYte == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maDinhDanhYte),
+      soCccd:
+          soCccd == null && nullToAbsent ? const Value.absent() : Value(soCccd),
+      maTheBhyt: maTheBhyt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maTheBhyt),
+      guardianName: guardianName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(guardianName),
+      guardianPhone: guardianPhone == null && nullToAbsent
+          ? const Value.absent()
+          : Value(guardianPhone),
+      guardianAddress: guardianAddress == null && nullToAbsent
+          ? const Value.absent()
+          : Value(guardianAddress),
       customFields: Value(customFields),
       createdAt: Value(createdAt),
     );
@@ -39017,6 +39322,12 @@ class Patient extends DataClass implements Insertable<Patient> {
       phone: serializer.fromJson<String?>(json['phone']),
       address: serializer.fromJson<String?>(json['address']),
       idNumber: serializer.fromJson<String?>(json['idNumber']),
+      maDinhDanhYte: serializer.fromJson<String?>(json['maDinhDanhYte']),
+      soCccd: serializer.fromJson<String?>(json['soCccd']),
+      maTheBhyt: serializer.fromJson<String?>(json['maTheBhyt']),
+      guardianName: serializer.fromJson<String?>(json['guardianName']),
+      guardianPhone: serializer.fromJson<String?>(json['guardianPhone']),
+      guardianAddress: serializer.fromJson<String?>(json['guardianAddress']),
       customFields: serializer.fromJson<String>(json['customFields']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -39032,6 +39343,12 @@ class Patient extends DataClass implements Insertable<Patient> {
       'phone': serializer.toJson<String?>(phone),
       'address': serializer.toJson<String?>(address),
       'idNumber': serializer.toJson<String?>(idNumber),
+      'maDinhDanhYte': serializer.toJson<String?>(maDinhDanhYte),
+      'soCccd': serializer.toJson<String?>(soCccd),
+      'maTheBhyt': serializer.toJson<String?>(maTheBhyt),
+      'guardianName': serializer.toJson<String?>(guardianName),
+      'guardianPhone': serializer.toJson<String?>(guardianPhone),
+      'guardianAddress': serializer.toJson<String?>(guardianAddress),
       'customFields': serializer.toJson<String>(customFields),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -39045,6 +39362,12 @@ class Patient extends DataClass implements Insertable<Patient> {
           Value<String?> phone = const Value.absent(),
           Value<String?> address = const Value.absent(),
           Value<String?> idNumber = const Value.absent(),
+          Value<String?> maDinhDanhYte = const Value.absent(),
+          Value<String?> soCccd = const Value.absent(),
+          Value<String?> maTheBhyt = const Value.absent(),
+          Value<String?> guardianName = const Value.absent(),
+          Value<String?> guardianPhone = const Value.absent(),
+          Value<String?> guardianAddress = const Value.absent(),
           String? customFields,
           DateTime? createdAt}) =>
       Patient(
@@ -39055,6 +39378,17 @@ class Patient extends DataClass implements Insertable<Patient> {
         phone: phone.present ? phone.value : this.phone,
         address: address.present ? address.value : this.address,
         idNumber: idNumber.present ? idNumber.value : this.idNumber,
+        maDinhDanhYte:
+            maDinhDanhYte.present ? maDinhDanhYte.value : this.maDinhDanhYte,
+        soCccd: soCccd.present ? soCccd.value : this.soCccd,
+        maTheBhyt: maTheBhyt.present ? maTheBhyt.value : this.maTheBhyt,
+        guardianName:
+            guardianName.present ? guardianName.value : this.guardianName,
+        guardianPhone:
+            guardianPhone.present ? guardianPhone.value : this.guardianPhone,
+        guardianAddress: guardianAddress.present
+            ? guardianAddress.value
+            : this.guardianAddress,
         customFields: customFields ?? this.customFields,
         createdAt: createdAt ?? this.createdAt,
       );
@@ -39067,6 +39401,20 @@ class Patient extends DataClass implements Insertable<Patient> {
       phone: data.phone.present ? data.phone.value : this.phone,
       address: data.address.present ? data.address.value : this.address,
       idNumber: data.idNumber.present ? data.idNumber.value : this.idNumber,
+      maDinhDanhYte: data.maDinhDanhYte.present
+          ? data.maDinhDanhYte.value
+          : this.maDinhDanhYte,
+      soCccd: data.soCccd.present ? data.soCccd.value : this.soCccd,
+      maTheBhyt: data.maTheBhyt.present ? data.maTheBhyt.value : this.maTheBhyt,
+      guardianName: data.guardianName.present
+          ? data.guardianName.value
+          : this.guardianName,
+      guardianPhone: data.guardianPhone.present
+          ? data.guardianPhone.value
+          : this.guardianPhone,
+      guardianAddress: data.guardianAddress.present
+          ? data.guardianAddress.value
+          : this.guardianAddress,
       customFields: data.customFields.present
           ? data.customFields.value
           : this.customFields,
@@ -39084,6 +39432,12 @@ class Patient extends DataClass implements Insertable<Patient> {
           ..write('phone: $phone, ')
           ..write('address: $address, ')
           ..write('idNumber: $idNumber, ')
+          ..write('maDinhDanhYte: $maDinhDanhYte, ')
+          ..write('soCccd: $soCccd, ')
+          ..write('maTheBhyt: $maTheBhyt, ')
+          ..write('guardianName: $guardianName, ')
+          ..write('guardianPhone: $guardianPhone, ')
+          ..write('guardianAddress: $guardianAddress, ')
           ..write('customFields: $customFields, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -39091,8 +39445,22 @@ class Patient extends DataClass implements Insertable<Patient> {
   }
 
   @override
-  int get hashCode => Object.hash(id, fullName, dob, gender, phone, address,
-      idNumber, customFields, createdAt);
+  int get hashCode => Object.hash(
+      id,
+      fullName,
+      dob,
+      gender,
+      phone,
+      address,
+      idNumber,
+      maDinhDanhYte,
+      soCccd,
+      maTheBhyt,
+      guardianName,
+      guardianPhone,
+      guardianAddress,
+      customFields,
+      createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -39104,6 +39472,12 @@ class Patient extends DataClass implements Insertable<Patient> {
           other.phone == this.phone &&
           other.address == this.address &&
           other.idNumber == this.idNumber &&
+          other.maDinhDanhYte == this.maDinhDanhYte &&
+          other.soCccd == this.soCccd &&
+          other.maTheBhyt == this.maTheBhyt &&
+          other.guardianName == this.guardianName &&
+          other.guardianPhone == this.guardianPhone &&
+          other.guardianAddress == this.guardianAddress &&
           other.customFields == this.customFields &&
           other.createdAt == this.createdAt);
 }
@@ -39116,6 +39490,12 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
   final Value<String?> phone;
   final Value<String?> address;
   final Value<String?> idNumber;
+  final Value<String?> maDinhDanhYte;
+  final Value<String?> soCccd;
+  final Value<String?> maTheBhyt;
+  final Value<String?> guardianName;
+  final Value<String?> guardianPhone;
+  final Value<String?> guardianAddress;
   final Value<String> customFields;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
@@ -39127,6 +39507,12 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     this.phone = const Value.absent(),
     this.address = const Value.absent(),
     this.idNumber = const Value.absent(),
+    this.maDinhDanhYte = const Value.absent(),
+    this.soCccd = const Value.absent(),
+    this.maTheBhyt = const Value.absent(),
+    this.guardianName = const Value.absent(),
+    this.guardianPhone = const Value.absent(),
+    this.guardianAddress = const Value.absent(),
     this.customFields = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -39139,6 +39525,12 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     this.phone = const Value.absent(),
     this.address = const Value.absent(),
     this.idNumber = const Value.absent(),
+    this.maDinhDanhYte = const Value.absent(),
+    this.soCccd = const Value.absent(),
+    this.maTheBhyt = const Value.absent(),
+    this.guardianName = const Value.absent(),
+    this.guardianPhone = const Value.absent(),
+    this.guardianAddress = const Value.absent(),
     this.customFields = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -39152,6 +39544,12 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     Expression<String>? phone,
     Expression<String>? address,
     Expression<String>? idNumber,
+    Expression<String>? maDinhDanhYte,
+    Expression<String>? soCccd,
+    Expression<String>? maTheBhyt,
+    Expression<String>? guardianName,
+    Expression<String>? guardianPhone,
+    Expression<String>? guardianAddress,
     Expression<String>? customFields,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
@@ -39164,6 +39562,12 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       if (phone != null) 'phone': phone,
       if (address != null) 'address': address,
       if (idNumber != null) 'id_number': idNumber,
+      if (maDinhDanhYte != null) 'ma_dinh_danh_yte': maDinhDanhYte,
+      if (soCccd != null) 'so_cccd': soCccd,
+      if (maTheBhyt != null) 'ma_the_bhyt': maTheBhyt,
+      if (guardianName != null) 'guardian_name': guardianName,
+      if (guardianPhone != null) 'guardian_phone': guardianPhone,
+      if (guardianAddress != null) 'guardian_address': guardianAddress,
       if (customFields != null) 'custom_fields': customFields,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
@@ -39178,6 +39582,12 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       Value<String?>? phone,
       Value<String?>? address,
       Value<String?>? idNumber,
+      Value<String?>? maDinhDanhYte,
+      Value<String?>? soCccd,
+      Value<String?>? maTheBhyt,
+      Value<String?>? guardianName,
+      Value<String?>? guardianPhone,
+      Value<String?>? guardianAddress,
       Value<String>? customFields,
       Value<DateTime>? createdAt,
       Value<int>? rowid}) {
@@ -39189,6 +39599,12 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       phone: phone ?? this.phone,
       address: address ?? this.address,
       idNumber: idNumber ?? this.idNumber,
+      maDinhDanhYte: maDinhDanhYte ?? this.maDinhDanhYte,
+      soCccd: soCccd ?? this.soCccd,
+      maTheBhyt: maTheBhyt ?? this.maTheBhyt,
+      guardianName: guardianName ?? this.guardianName,
+      guardianPhone: guardianPhone ?? this.guardianPhone,
+      guardianAddress: guardianAddress ?? this.guardianAddress,
       customFields: customFields ?? this.customFields,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
@@ -39219,6 +39635,24 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     if (idNumber.present) {
       map['id_number'] = Variable<String>(idNumber.value);
     }
+    if (maDinhDanhYte.present) {
+      map['ma_dinh_danh_yte'] = Variable<String>(maDinhDanhYte.value);
+    }
+    if (soCccd.present) {
+      map['so_cccd'] = Variable<String>(soCccd.value);
+    }
+    if (maTheBhyt.present) {
+      map['ma_the_bhyt'] = Variable<String>(maTheBhyt.value);
+    }
+    if (guardianName.present) {
+      map['guardian_name'] = Variable<String>(guardianName.value);
+    }
+    if (guardianPhone.present) {
+      map['guardian_phone'] = Variable<String>(guardianPhone.value);
+    }
+    if (guardianAddress.present) {
+      map['guardian_address'] = Variable<String>(guardianAddress.value);
+    }
     if (customFields.present) {
       map['custom_fields'] = Variable<String>(customFields.value);
     }
@@ -39241,6 +39675,12 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
           ..write('phone: $phone, ')
           ..write('address: $address, ')
           ..write('idNumber: $idNumber, ')
+          ..write('maDinhDanhYte: $maDinhDanhYte, ')
+          ..write('soCccd: $soCccd, ')
+          ..write('maTheBhyt: $maTheBhyt, ')
+          ..write('guardianName: $guardianName, ')
+          ..write('guardianPhone: $guardianPhone, ')
+          ..write('guardianAddress: $guardianAddress, ')
           ..write('customFields: $customFields, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
@@ -40232,6 +40672,77 @@ class $PrescriptionsTable extends Prescriptions
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
       'notes', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _maDonThuocMeta =
+      const VerificationMeta('maDonThuoc');
+  @override
+  late final GeneratedColumn<String> maDonThuoc = GeneratedColumn<String>(
+      'ma_don_thuoc', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _loaiDonMeta =
+      const VerificationMeta('loaiDon');
+  @override
+  late final GeneratedColumn<String> loaiDon = GeneratedColumn<String>(
+      'loai_don', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('c'));
+  static const VerificationMeta _chanDoanJsonMeta =
+      const VerificationMeta('chanDoanJson');
+  @override
+  late final GeneratedColumn<String> chanDoanJson = GeneratedColumn<String>(
+      'chan_doan_json', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('[]'));
+  static const VerificationMeta _canNangMeta =
+      const VerificationMeta('canNang');
+  @override
+  late final GeneratedColumn<double> canNang = GeneratedColumn<double>(
+      'can_nang', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _hinhThucDieuTriMeta =
+      const VerificationMeta('hinhThucDieuTri');
+  @override
+  late final GeneratedColumn<int> hinhThucDieuTri = GeneratedColumn<int>(
+      'hinh_thuc_dieu_tri', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _nguoiGiamHoMeta =
+      const VerificationMeta('nguoiGiamHo');
+  @override
+  late final GeneratedColumn<String> nguoiGiamHo = GeneratedColumn<String>(
+      'nguoi_giam_ho', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _loiDanMeta = const VerificationMeta('loiDan');
+  @override
+  late final GeneratedColumn<String> loiDan = GeneratedColumn<String>(
+      'loi_dan', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _ngayTaiKhamMeta =
+      const VerificationMeta('ngayTaiKham');
+  @override
+  late final GeneratedColumn<int> ngayTaiKham = GeneratedColumn<int>(
+      'ngay_tai_kham', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _dtqgStatusMeta =
+      const VerificationMeta('dtqgStatus');
+  @override
+  late final GeneratedColumn<String> dtqgStatus = GeneratedColumn<String>(
+      'dtqg_status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('draft'));
+  static const VerificationMeta _dtqgSentAtMeta =
+      const VerificationMeta('dtqgSentAt');
+  @override
+  late final GeneratedColumn<DateTime> dtqgSentAt = GeneratedColumn<DateTime>(
+      'dtqg_sent_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _dtqgLastErrorMeta =
+      const VerificationMeta('dtqgLastError');
+  @override
+  late final GeneratedColumn<String> dtqgLastError = GeneratedColumn<String>(
+      'dtqg_last_error', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -40249,6 +40760,17 @@ class $PrescriptionsTable extends Prescriptions
         prescriptionDate,
         status,
         notes,
+        maDonThuoc,
+        loaiDon,
+        chanDoanJson,
+        canNang,
+        hinhThucDieuTri,
+        nguoiGiamHo,
+        loiDan,
+        ngayTaiKham,
+        dtqgStatus,
+        dtqgSentAt,
+        dtqgLastError,
         createdAt
       ];
   @override
@@ -40296,6 +40818,66 @@ class $PrescriptionsTable extends Prescriptions
       context.handle(
           _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
     }
+    if (data.containsKey('ma_don_thuoc')) {
+      context.handle(
+          _maDonThuocMeta,
+          maDonThuoc.isAcceptableOrUnknown(
+              data['ma_don_thuoc']!, _maDonThuocMeta));
+    }
+    if (data.containsKey('loai_don')) {
+      context.handle(_loaiDonMeta,
+          loaiDon.isAcceptableOrUnknown(data['loai_don']!, _loaiDonMeta));
+    }
+    if (data.containsKey('chan_doan_json')) {
+      context.handle(
+          _chanDoanJsonMeta,
+          chanDoanJson.isAcceptableOrUnknown(
+              data['chan_doan_json']!, _chanDoanJsonMeta));
+    }
+    if (data.containsKey('can_nang')) {
+      context.handle(_canNangMeta,
+          canNang.isAcceptableOrUnknown(data['can_nang']!, _canNangMeta));
+    }
+    if (data.containsKey('hinh_thuc_dieu_tri')) {
+      context.handle(
+          _hinhThucDieuTriMeta,
+          hinhThucDieuTri.isAcceptableOrUnknown(
+              data['hinh_thuc_dieu_tri']!, _hinhThucDieuTriMeta));
+    }
+    if (data.containsKey('nguoi_giam_ho')) {
+      context.handle(
+          _nguoiGiamHoMeta,
+          nguoiGiamHo.isAcceptableOrUnknown(
+              data['nguoi_giam_ho']!, _nguoiGiamHoMeta));
+    }
+    if (data.containsKey('loi_dan')) {
+      context.handle(_loiDanMeta,
+          loiDan.isAcceptableOrUnknown(data['loi_dan']!, _loiDanMeta));
+    }
+    if (data.containsKey('ngay_tai_kham')) {
+      context.handle(
+          _ngayTaiKhamMeta,
+          ngayTaiKham.isAcceptableOrUnknown(
+              data['ngay_tai_kham']!, _ngayTaiKhamMeta));
+    }
+    if (data.containsKey('dtqg_status')) {
+      context.handle(
+          _dtqgStatusMeta,
+          dtqgStatus.isAcceptableOrUnknown(
+              data['dtqg_status']!, _dtqgStatusMeta));
+    }
+    if (data.containsKey('dtqg_sent_at')) {
+      context.handle(
+          _dtqgSentAtMeta,
+          dtqgSentAt.isAcceptableOrUnknown(
+              data['dtqg_sent_at']!, _dtqgSentAtMeta));
+    }
+    if (data.containsKey('dtqg_last_error')) {
+      context.handle(
+          _dtqgLastErrorMeta,
+          dtqgLastError.isAcceptableOrUnknown(
+              data['dtqg_last_error']!, _dtqgLastErrorMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -40323,6 +40905,28 @@ class $PrescriptionsTable extends Prescriptions
           .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
       notes: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+      maDonThuoc: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}ma_don_thuoc']),
+      loaiDon: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}loai_don'])!,
+      chanDoanJson: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}chan_doan_json'])!,
+      canNang: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}can_nang']),
+      hinhThucDieuTri: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}hinh_thuc_dieu_tri']),
+      nguoiGiamHo: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}nguoi_giam_ho']),
+      loiDan: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}loi_dan']),
+      ngayTaiKham: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}ngay_tai_kham']),
+      dtqgStatus: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}dtqg_status'])!,
+      dtqgSentAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}dtqg_sent_at']),
+      dtqgLastError: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}dtqg_last_error']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -40342,6 +40946,17 @@ class Prescription extends DataClass implements Insertable<Prescription> {
   final DateTime prescriptionDate;
   final String status;
   final String? notes;
+  final String? maDonThuoc;
+  final String loaiDon;
+  final String chanDoanJson;
+  final double? canNang;
+  final int? hinhThucDieuTri;
+  final String? nguoiGiamHo;
+  final String? loiDan;
+  final int? ngayTaiKham;
+  final String dtqgStatus;
+  final DateTime? dtqgSentAt;
+  final String? dtqgLastError;
   final DateTime createdAt;
   const Prescription(
       {required this.id,
@@ -40351,6 +40966,17 @@ class Prescription extends DataClass implements Insertable<Prescription> {
       required this.prescriptionDate,
       required this.status,
       this.notes,
+      this.maDonThuoc,
+      required this.loaiDon,
+      required this.chanDoanJson,
+      this.canNang,
+      this.hinhThucDieuTri,
+      this.nguoiGiamHo,
+      this.loiDan,
+      this.ngayTaiKham,
+      required this.dtqgStatus,
+      this.dtqgSentAt,
+      this.dtqgLastError,
       required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -40365,6 +40991,33 @@ class Prescription extends DataClass implements Insertable<Prescription> {
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || maDonThuoc != null) {
+      map['ma_don_thuoc'] = Variable<String>(maDonThuoc);
+    }
+    map['loai_don'] = Variable<String>(loaiDon);
+    map['chan_doan_json'] = Variable<String>(chanDoanJson);
+    if (!nullToAbsent || canNang != null) {
+      map['can_nang'] = Variable<double>(canNang);
+    }
+    if (!nullToAbsent || hinhThucDieuTri != null) {
+      map['hinh_thuc_dieu_tri'] = Variable<int>(hinhThucDieuTri);
+    }
+    if (!nullToAbsent || nguoiGiamHo != null) {
+      map['nguoi_giam_ho'] = Variable<String>(nguoiGiamHo);
+    }
+    if (!nullToAbsent || loiDan != null) {
+      map['loi_dan'] = Variable<String>(loiDan);
+    }
+    if (!nullToAbsent || ngayTaiKham != null) {
+      map['ngay_tai_kham'] = Variable<int>(ngayTaiKham);
+    }
+    map['dtqg_status'] = Variable<String>(dtqgStatus);
+    if (!nullToAbsent || dtqgSentAt != null) {
+      map['dtqg_sent_at'] = Variable<DateTime>(dtqgSentAt);
+    }
+    if (!nullToAbsent || dtqgLastError != null) {
+      map['dtqg_last_error'] = Variable<String>(dtqgLastError);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -40382,6 +41035,32 @@ class Prescription extends DataClass implements Insertable<Prescription> {
       status: Value(status),
       notes:
           notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      maDonThuoc: maDonThuoc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maDonThuoc),
+      loaiDon: Value(loaiDon),
+      chanDoanJson: Value(chanDoanJson),
+      canNang: canNang == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canNang),
+      hinhThucDieuTri: hinhThucDieuTri == null && nullToAbsent
+          ? const Value.absent()
+          : Value(hinhThucDieuTri),
+      nguoiGiamHo: nguoiGiamHo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nguoiGiamHo),
+      loiDan:
+          loiDan == null && nullToAbsent ? const Value.absent() : Value(loiDan),
+      ngayTaiKham: ngayTaiKham == null && nullToAbsent
+          ? const Value.absent()
+          : Value(ngayTaiKham),
+      dtqgStatus: Value(dtqgStatus),
+      dtqgSentAt: dtqgSentAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dtqgSentAt),
+      dtqgLastError: dtqgLastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dtqgLastError),
       createdAt: Value(createdAt),
     );
   }
@@ -40397,6 +41076,17 @@ class Prescription extends DataClass implements Insertable<Prescription> {
       prescriptionDate: serializer.fromJson<DateTime>(json['prescriptionDate']),
       status: serializer.fromJson<String>(json['status']),
       notes: serializer.fromJson<String?>(json['notes']),
+      maDonThuoc: serializer.fromJson<String?>(json['maDonThuoc']),
+      loaiDon: serializer.fromJson<String>(json['loaiDon']),
+      chanDoanJson: serializer.fromJson<String>(json['chanDoanJson']),
+      canNang: serializer.fromJson<double?>(json['canNang']),
+      hinhThucDieuTri: serializer.fromJson<int?>(json['hinhThucDieuTri']),
+      nguoiGiamHo: serializer.fromJson<String?>(json['nguoiGiamHo']),
+      loiDan: serializer.fromJson<String?>(json['loiDan']),
+      ngayTaiKham: serializer.fromJson<int?>(json['ngayTaiKham']),
+      dtqgStatus: serializer.fromJson<String>(json['dtqgStatus']),
+      dtqgSentAt: serializer.fromJson<DateTime?>(json['dtqgSentAt']),
+      dtqgLastError: serializer.fromJson<String?>(json['dtqgLastError']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -40411,6 +41101,17 @@ class Prescription extends DataClass implements Insertable<Prescription> {
       'prescriptionDate': serializer.toJson<DateTime>(prescriptionDate),
       'status': serializer.toJson<String>(status),
       'notes': serializer.toJson<String?>(notes),
+      'maDonThuoc': serializer.toJson<String?>(maDonThuoc),
+      'loaiDon': serializer.toJson<String>(loaiDon),
+      'chanDoanJson': serializer.toJson<String>(chanDoanJson),
+      'canNang': serializer.toJson<double?>(canNang),
+      'hinhThucDieuTri': serializer.toJson<int?>(hinhThucDieuTri),
+      'nguoiGiamHo': serializer.toJson<String?>(nguoiGiamHo),
+      'loiDan': serializer.toJson<String?>(loiDan),
+      'ngayTaiKham': serializer.toJson<int?>(ngayTaiKham),
+      'dtqgStatus': serializer.toJson<String>(dtqgStatus),
+      'dtqgSentAt': serializer.toJson<DateTime?>(dtqgSentAt),
+      'dtqgLastError': serializer.toJson<String?>(dtqgLastError),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -40423,6 +41124,17 @@ class Prescription extends DataClass implements Insertable<Prescription> {
           DateTime? prescriptionDate,
           String? status,
           Value<String?> notes = const Value.absent(),
+          Value<String?> maDonThuoc = const Value.absent(),
+          String? loaiDon,
+          String? chanDoanJson,
+          Value<double?> canNang = const Value.absent(),
+          Value<int?> hinhThucDieuTri = const Value.absent(),
+          Value<String?> nguoiGiamHo = const Value.absent(),
+          Value<String?> loiDan = const Value.absent(),
+          Value<int?> ngayTaiKham = const Value.absent(),
+          String? dtqgStatus,
+          Value<DateTime?> dtqgSentAt = const Value.absent(),
+          Value<String?> dtqgLastError = const Value.absent(),
           DateTime? createdAt}) =>
       Prescription(
         id: id ?? this.id,
@@ -40432,6 +41144,20 @@ class Prescription extends DataClass implements Insertable<Prescription> {
         prescriptionDate: prescriptionDate ?? this.prescriptionDate,
         status: status ?? this.status,
         notes: notes.present ? notes.value : this.notes,
+        maDonThuoc: maDonThuoc.present ? maDonThuoc.value : this.maDonThuoc,
+        loaiDon: loaiDon ?? this.loaiDon,
+        chanDoanJson: chanDoanJson ?? this.chanDoanJson,
+        canNang: canNang.present ? canNang.value : this.canNang,
+        hinhThucDieuTri: hinhThucDieuTri.present
+            ? hinhThucDieuTri.value
+            : this.hinhThucDieuTri,
+        nguoiGiamHo: nguoiGiamHo.present ? nguoiGiamHo.value : this.nguoiGiamHo,
+        loiDan: loiDan.present ? loiDan.value : this.loiDan,
+        ngayTaiKham: ngayTaiKham.present ? ngayTaiKham.value : this.ngayTaiKham,
+        dtqgStatus: dtqgStatus ?? this.dtqgStatus,
+        dtqgSentAt: dtqgSentAt.present ? dtqgSentAt.value : this.dtqgSentAt,
+        dtqgLastError:
+            dtqgLastError.present ? dtqgLastError.value : this.dtqgLastError,
         createdAt: createdAt ?? this.createdAt,
       );
   Prescription copyWithCompanion(PrescriptionsCompanion data) {
@@ -40445,6 +41171,28 @@ class Prescription extends DataClass implements Insertable<Prescription> {
           : this.prescriptionDate,
       status: data.status.present ? data.status.value : this.status,
       notes: data.notes.present ? data.notes.value : this.notes,
+      maDonThuoc:
+          data.maDonThuoc.present ? data.maDonThuoc.value : this.maDonThuoc,
+      loaiDon: data.loaiDon.present ? data.loaiDon.value : this.loaiDon,
+      chanDoanJson: data.chanDoanJson.present
+          ? data.chanDoanJson.value
+          : this.chanDoanJson,
+      canNang: data.canNang.present ? data.canNang.value : this.canNang,
+      hinhThucDieuTri: data.hinhThucDieuTri.present
+          ? data.hinhThucDieuTri.value
+          : this.hinhThucDieuTri,
+      nguoiGiamHo:
+          data.nguoiGiamHo.present ? data.nguoiGiamHo.value : this.nguoiGiamHo,
+      loiDan: data.loiDan.present ? data.loiDan.value : this.loiDan,
+      ngayTaiKham:
+          data.ngayTaiKham.present ? data.ngayTaiKham.value : this.ngayTaiKham,
+      dtqgStatus:
+          data.dtqgStatus.present ? data.dtqgStatus.value : this.dtqgStatus,
+      dtqgSentAt:
+          data.dtqgSentAt.present ? data.dtqgSentAt.value : this.dtqgSentAt,
+      dtqgLastError: data.dtqgLastError.present
+          ? data.dtqgLastError.value
+          : this.dtqgLastError,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -40459,14 +41207,43 @@ class Prescription extends DataClass implements Insertable<Prescription> {
           ..write('prescriptionDate: $prescriptionDate, ')
           ..write('status: $status, ')
           ..write('notes: $notes, ')
+          ..write('maDonThuoc: $maDonThuoc, ')
+          ..write('loaiDon: $loaiDon, ')
+          ..write('chanDoanJson: $chanDoanJson, ')
+          ..write('canNang: $canNang, ')
+          ..write('hinhThucDieuTri: $hinhThucDieuTri, ')
+          ..write('nguoiGiamHo: $nguoiGiamHo, ')
+          ..write('loiDan: $loiDan, ')
+          ..write('ngayTaiKham: $ngayTaiKham, ')
+          ..write('dtqgStatus: $dtqgStatus, ')
+          ..write('dtqgSentAt: $dtqgSentAt, ')
+          ..write('dtqgLastError: $dtqgLastError, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, visitId, patientId, doctorId,
-      prescriptionDate, status, notes, createdAt);
+  int get hashCode => Object.hash(
+      id,
+      visitId,
+      patientId,
+      doctorId,
+      prescriptionDate,
+      status,
+      notes,
+      maDonThuoc,
+      loaiDon,
+      chanDoanJson,
+      canNang,
+      hinhThucDieuTri,
+      nguoiGiamHo,
+      loiDan,
+      ngayTaiKham,
+      dtqgStatus,
+      dtqgSentAt,
+      dtqgLastError,
+      createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -40478,6 +41255,17 @@ class Prescription extends DataClass implements Insertable<Prescription> {
           other.prescriptionDate == this.prescriptionDate &&
           other.status == this.status &&
           other.notes == this.notes &&
+          other.maDonThuoc == this.maDonThuoc &&
+          other.loaiDon == this.loaiDon &&
+          other.chanDoanJson == this.chanDoanJson &&
+          other.canNang == this.canNang &&
+          other.hinhThucDieuTri == this.hinhThucDieuTri &&
+          other.nguoiGiamHo == this.nguoiGiamHo &&
+          other.loiDan == this.loiDan &&
+          other.ngayTaiKham == this.ngayTaiKham &&
+          other.dtqgStatus == this.dtqgStatus &&
+          other.dtqgSentAt == this.dtqgSentAt &&
+          other.dtqgLastError == this.dtqgLastError &&
           other.createdAt == this.createdAt);
 }
 
@@ -40489,6 +41277,17 @@ class PrescriptionsCompanion extends UpdateCompanion<Prescription> {
   final Value<DateTime> prescriptionDate;
   final Value<String> status;
   final Value<String?> notes;
+  final Value<String?> maDonThuoc;
+  final Value<String> loaiDon;
+  final Value<String> chanDoanJson;
+  final Value<double?> canNang;
+  final Value<int?> hinhThucDieuTri;
+  final Value<String?> nguoiGiamHo;
+  final Value<String?> loiDan;
+  final Value<int?> ngayTaiKham;
+  final Value<String> dtqgStatus;
+  final Value<DateTime?> dtqgSentAt;
+  final Value<String?> dtqgLastError;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const PrescriptionsCompanion({
@@ -40499,6 +41298,17 @@ class PrescriptionsCompanion extends UpdateCompanion<Prescription> {
     this.prescriptionDate = const Value.absent(),
     this.status = const Value.absent(),
     this.notes = const Value.absent(),
+    this.maDonThuoc = const Value.absent(),
+    this.loaiDon = const Value.absent(),
+    this.chanDoanJson = const Value.absent(),
+    this.canNang = const Value.absent(),
+    this.hinhThucDieuTri = const Value.absent(),
+    this.nguoiGiamHo = const Value.absent(),
+    this.loiDan = const Value.absent(),
+    this.ngayTaiKham = const Value.absent(),
+    this.dtqgStatus = const Value.absent(),
+    this.dtqgSentAt = const Value.absent(),
+    this.dtqgLastError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -40510,6 +41320,17 @@ class PrescriptionsCompanion extends UpdateCompanion<Prescription> {
     this.prescriptionDate = const Value.absent(),
     this.status = const Value.absent(),
     this.notes = const Value.absent(),
+    this.maDonThuoc = const Value.absent(),
+    this.loaiDon = const Value.absent(),
+    this.chanDoanJson = const Value.absent(),
+    this.canNang = const Value.absent(),
+    this.hinhThucDieuTri = const Value.absent(),
+    this.nguoiGiamHo = const Value.absent(),
+    this.loiDan = const Value.absent(),
+    this.ngayTaiKham = const Value.absent(),
+    this.dtqgStatus = const Value.absent(),
+    this.dtqgSentAt = const Value.absent(),
+    this.dtqgLastError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
@@ -40523,6 +41344,17 @@ class PrescriptionsCompanion extends UpdateCompanion<Prescription> {
     Expression<DateTime>? prescriptionDate,
     Expression<String>? status,
     Expression<String>? notes,
+    Expression<String>? maDonThuoc,
+    Expression<String>? loaiDon,
+    Expression<String>? chanDoanJson,
+    Expression<double>? canNang,
+    Expression<int>? hinhThucDieuTri,
+    Expression<String>? nguoiGiamHo,
+    Expression<String>? loiDan,
+    Expression<int>? ngayTaiKham,
+    Expression<String>? dtqgStatus,
+    Expression<DateTime>? dtqgSentAt,
+    Expression<String>? dtqgLastError,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -40534,6 +41366,17 @@ class PrescriptionsCompanion extends UpdateCompanion<Prescription> {
       if (prescriptionDate != null) 'prescription_date': prescriptionDate,
       if (status != null) 'status': status,
       if (notes != null) 'notes': notes,
+      if (maDonThuoc != null) 'ma_don_thuoc': maDonThuoc,
+      if (loaiDon != null) 'loai_don': loaiDon,
+      if (chanDoanJson != null) 'chan_doan_json': chanDoanJson,
+      if (canNang != null) 'can_nang': canNang,
+      if (hinhThucDieuTri != null) 'hinh_thuc_dieu_tri': hinhThucDieuTri,
+      if (nguoiGiamHo != null) 'nguoi_giam_ho': nguoiGiamHo,
+      if (loiDan != null) 'loi_dan': loiDan,
+      if (ngayTaiKham != null) 'ngay_tai_kham': ngayTaiKham,
+      if (dtqgStatus != null) 'dtqg_status': dtqgStatus,
+      if (dtqgSentAt != null) 'dtqg_sent_at': dtqgSentAt,
+      if (dtqgLastError != null) 'dtqg_last_error': dtqgLastError,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -40547,6 +41390,17 @@ class PrescriptionsCompanion extends UpdateCompanion<Prescription> {
       Value<DateTime>? prescriptionDate,
       Value<String>? status,
       Value<String?>? notes,
+      Value<String?>? maDonThuoc,
+      Value<String>? loaiDon,
+      Value<String>? chanDoanJson,
+      Value<double?>? canNang,
+      Value<int?>? hinhThucDieuTri,
+      Value<String?>? nguoiGiamHo,
+      Value<String?>? loiDan,
+      Value<int?>? ngayTaiKham,
+      Value<String>? dtqgStatus,
+      Value<DateTime?>? dtqgSentAt,
+      Value<String?>? dtqgLastError,
       Value<DateTime>? createdAt,
       Value<int>? rowid}) {
     return PrescriptionsCompanion(
@@ -40557,6 +41411,17 @@ class PrescriptionsCompanion extends UpdateCompanion<Prescription> {
       prescriptionDate: prescriptionDate ?? this.prescriptionDate,
       status: status ?? this.status,
       notes: notes ?? this.notes,
+      maDonThuoc: maDonThuoc ?? this.maDonThuoc,
+      loaiDon: loaiDon ?? this.loaiDon,
+      chanDoanJson: chanDoanJson ?? this.chanDoanJson,
+      canNang: canNang ?? this.canNang,
+      hinhThucDieuTri: hinhThucDieuTri ?? this.hinhThucDieuTri,
+      nguoiGiamHo: nguoiGiamHo ?? this.nguoiGiamHo,
+      loiDan: loiDan ?? this.loiDan,
+      ngayTaiKham: ngayTaiKham ?? this.ngayTaiKham,
+      dtqgStatus: dtqgStatus ?? this.dtqgStatus,
+      dtqgSentAt: dtqgSentAt ?? this.dtqgSentAt,
+      dtqgLastError: dtqgLastError ?? this.dtqgLastError,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -40586,6 +41451,39 @@ class PrescriptionsCompanion extends UpdateCompanion<Prescription> {
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
+    if (maDonThuoc.present) {
+      map['ma_don_thuoc'] = Variable<String>(maDonThuoc.value);
+    }
+    if (loaiDon.present) {
+      map['loai_don'] = Variable<String>(loaiDon.value);
+    }
+    if (chanDoanJson.present) {
+      map['chan_doan_json'] = Variable<String>(chanDoanJson.value);
+    }
+    if (canNang.present) {
+      map['can_nang'] = Variable<double>(canNang.value);
+    }
+    if (hinhThucDieuTri.present) {
+      map['hinh_thuc_dieu_tri'] = Variable<int>(hinhThucDieuTri.value);
+    }
+    if (nguoiGiamHo.present) {
+      map['nguoi_giam_ho'] = Variable<String>(nguoiGiamHo.value);
+    }
+    if (loiDan.present) {
+      map['loi_dan'] = Variable<String>(loiDan.value);
+    }
+    if (ngayTaiKham.present) {
+      map['ngay_tai_kham'] = Variable<int>(ngayTaiKham.value);
+    }
+    if (dtqgStatus.present) {
+      map['dtqg_status'] = Variable<String>(dtqgStatus.value);
+    }
+    if (dtqgSentAt.present) {
+      map['dtqg_sent_at'] = Variable<DateTime>(dtqgSentAt.value);
+    }
+    if (dtqgLastError.present) {
+      map['dtqg_last_error'] = Variable<String>(dtqgLastError.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -40605,6 +41503,17 @@ class PrescriptionsCompanion extends UpdateCompanion<Prescription> {
           ..write('prescriptionDate: $prescriptionDate, ')
           ..write('status: $status, ')
           ..write('notes: $notes, ')
+          ..write('maDonThuoc: $maDonThuoc, ')
+          ..write('loaiDon: $loaiDon, ')
+          ..write('chanDoanJson: $chanDoanJson, ')
+          ..write('canNang: $canNang, ')
+          ..write('hinhThucDieuTri: $hinhThucDieuTri, ')
+          ..write('nguoiGiamHo: $nguoiGiamHo, ')
+          ..write('loiDan: $loiDan, ')
+          ..write('ngayTaiKham: $ngayTaiKham, ')
+          ..write('dtqgStatus: $dtqgStatus, ')
+          ..write('dtqgSentAt: $dtqgSentAt, ')
+          ..write('dtqgLastError: $dtqgLastError, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -40647,6 +41556,30 @@ class $PrescriptionItemsTable extends PrescriptionItems
   late final GeneratedColumn<String> dosageInstructions =
       GeneratedColumn<String>('dosage_instructions', aliasedName, true,
           type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _maThuocCucQlddMeta =
+      const VerificationMeta('maThuocCucQldd');
+  @override
+  late final GeneratedColumn<String> maThuocCucQldd = GeneratedColumn<String>(
+      'ma_thuoc_cuc_qldd', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _bietDuocMeta =
+      const VerificationMeta('bietDuoc');
+  @override
+  late final GeneratedColumn<String> bietDuoc = GeneratedColumn<String>(
+      'biet_duoc', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _donViTinhMeta =
+      const VerificationMeta('donViTinh');
+  @override
+  late final GeneratedColumn<String> donViTinh = GeneratedColumn<String>(
+      'don_vi_tinh', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _soLuongBanMeta =
+      const VerificationMeta('soLuongBan');
+  @override
+  late final GeneratedColumn<double> soLuongBan = GeneratedColumn<double>(
+      'so_luong_ban', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
   static const VerificationMeta _quantityMeta =
       const VerificationMeta('quantity');
   @override
@@ -40686,6 +41619,10 @@ class $PrescriptionItemsTable extends PrescriptionItems
         productId,
         medicineName,
         dosageInstructions,
+        maThuocCucQldd,
+        bietDuoc,
+        donViTinh,
+        soLuongBan,
         quantity,
         unitPrice,
         totalPrice,
@@ -40734,6 +41671,28 @@ class $PrescriptionItemsTable extends PrescriptionItems
           dosageInstructions.isAcceptableOrUnknown(
               data['dosage_instructions']!, _dosageInstructionsMeta));
     }
+    if (data.containsKey('ma_thuoc_cuc_qldd')) {
+      context.handle(
+          _maThuocCucQlddMeta,
+          maThuocCucQldd.isAcceptableOrUnknown(
+              data['ma_thuoc_cuc_qldd']!, _maThuocCucQlddMeta));
+    }
+    if (data.containsKey('biet_duoc')) {
+      context.handle(_bietDuocMeta,
+          bietDuoc.isAcceptableOrUnknown(data['biet_duoc']!, _bietDuocMeta));
+    }
+    if (data.containsKey('don_vi_tinh')) {
+      context.handle(
+          _donViTinhMeta,
+          donViTinh.isAcceptableOrUnknown(
+              data['don_vi_tinh']!, _donViTinhMeta));
+    }
+    if (data.containsKey('so_luong_ban')) {
+      context.handle(
+          _soLuongBanMeta,
+          soLuongBan.isAcceptableOrUnknown(
+              data['so_luong_ban']!, _soLuongBanMeta));
+    }
     if (data.containsKey('quantity')) {
       context.handle(_quantityMeta,
           quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta));
@@ -40771,6 +41730,14 @@ class $PrescriptionItemsTable extends PrescriptionItems
           .read(DriftSqlType.string, data['${effectivePrefix}medicine_name'])!,
       dosageInstructions: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}dosage_instructions']),
+      maThuocCucQldd: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}ma_thuoc_cuc_qldd']),
+      bietDuoc: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}biet_duoc']),
+      donViTinh: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}don_vi_tinh']),
+      soLuongBan: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}so_luong_ban']),
       quantity: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}quantity'])!,
       unitPrice: attachedDatabase.typeMapping
@@ -40795,6 +41762,10 @@ class PrescriptionItem extends DataClass
   final String productId;
   final String medicineName;
   final String? dosageInstructions;
+  final String? maThuocCucQldd;
+  final String? bietDuoc;
+  final String? donViTinh;
+  final double? soLuongBan;
   final double quantity;
   final double unitPrice;
   final double totalPrice;
@@ -40805,6 +41776,10 @@ class PrescriptionItem extends DataClass
       required this.productId,
       required this.medicineName,
       this.dosageInstructions,
+      this.maThuocCucQldd,
+      this.bietDuoc,
+      this.donViTinh,
+      this.soLuongBan,
       required this.quantity,
       required this.unitPrice,
       required this.totalPrice,
@@ -40818,6 +41793,18 @@ class PrescriptionItem extends DataClass
     map['medicine_name'] = Variable<String>(medicineName);
     if (!nullToAbsent || dosageInstructions != null) {
       map['dosage_instructions'] = Variable<String>(dosageInstructions);
+    }
+    if (!nullToAbsent || maThuocCucQldd != null) {
+      map['ma_thuoc_cuc_qldd'] = Variable<String>(maThuocCucQldd);
+    }
+    if (!nullToAbsent || bietDuoc != null) {
+      map['biet_duoc'] = Variable<String>(bietDuoc);
+    }
+    if (!nullToAbsent || donViTinh != null) {
+      map['don_vi_tinh'] = Variable<String>(donViTinh);
+    }
+    if (!nullToAbsent || soLuongBan != null) {
+      map['so_luong_ban'] = Variable<double>(soLuongBan);
     }
     map['quantity'] = Variable<double>(quantity);
     map['unit_price'] = Variable<double>(unitPrice);
@@ -40835,6 +41822,18 @@ class PrescriptionItem extends DataClass
       dosageInstructions: dosageInstructions == null && nullToAbsent
           ? const Value.absent()
           : Value(dosageInstructions),
+      maThuocCucQldd: maThuocCucQldd == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maThuocCucQldd),
+      bietDuoc: bietDuoc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bietDuoc),
+      donViTinh: donViTinh == null && nullToAbsent
+          ? const Value.absent()
+          : Value(donViTinh),
+      soLuongBan: soLuongBan == null && nullToAbsent
+          ? const Value.absent()
+          : Value(soLuongBan),
       quantity: Value(quantity),
       unitPrice: Value(unitPrice),
       totalPrice: Value(totalPrice),
@@ -40852,6 +41851,10 @@ class PrescriptionItem extends DataClass
       medicineName: serializer.fromJson<String>(json['medicineName']),
       dosageInstructions:
           serializer.fromJson<String?>(json['dosageInstructions']),
+      maThuocCucQldd: serializer.fromJson<String?>(json['maThuocCucQldd']),
+      bietDuoc: serializer.fromJson<String?>(json['bietDuoc']),
+      donViTinh: serializer.fromJson<String?>(json['donViTinh']),
+      soLuongBan: serializer.fromJson<double?>(json['soLuongBan']),
       quantity: serializer.fromJson<double>(json['quantity']),
       unitPrice: serializer.fromJson<double>(json['unitPrice']),
       totalPrice: serializer.fromJson<double>(json['totalPrice']),
@@ -40867,6 +41870,10 @@ class PrescriptionItem extends DataClass
       'productId': serializer.toJson<String>(productId),
       'medicineName': serializer.toJson<String>(medicineName),
       'dosageInstructions': serializer.toJson<String?>(dosageInstructions),
+      'maThuocCucQldd': serializer.toJson<String?>(maThuocCucQldd),
+      'bietDuoc': serializer.toJson<String?>(bietDuoc),
+      'donViTinh': serializer.toJson<String?>(donViTinh),
+      'soLuongBan': serializer.toJson<double?>(soLuongBan),
       'quantity': serializer.toJson<double>(quantity),
       'unitPrice': serializer.toJson<double>(unitPrice),
       'totalPrice': serializer.toJson<double>(totalPrice),
@@ -40880,6 +41887,10 @@ class PrescriptionItem extends DataClass
           String? productId,
           String? medicineName,
           Value<String?> dosageInstructions = const Value.absent(),
+          Value<String?> maThuocCucQldd = const Value.absent(),
+          Value<String?> bietDuoc = const Value.absent(),
+          Value<String?> donViTinh = const Value.absent(),
+          Value<double?> soLuongBan = const Value.absent(),
           double? quantity,
           double? unitPrice,
           double? totalPrice,
@@ -40892,6 +41903,11 @@ class PrescriptionItem extends DataClass
         dosageInstructions: dosageInstructions.present
             ? dosageInstructions.value
             : this.dosageInstructions,
+        maThuocCucQldd:
+            maThuocCucQldd.present ? maThuocCucQldd.value : this.maThuocCucQldd,
+        bietDuoc: bietDuoc.present ? bietDuoc.value : this.bietDuoc,
+        donViTinh: donViTinh.present ? donViTinh.value : this.donViTinh,
+        soLuongBan: soLuongBan.present ? soLuongBan.value : this.soLuongBan,
         quantity: quantity ?? this.quantity,
         unitPrice: unitPrice ?? this.unitPrice,
         totalPrice: totalPrice ?? this.totalPrice,
@@ -40910,6 +41926,13 @@ class PrescriptionItem extends DataClass
       dosageInstructions: data.dosageInstructions.present
           ? data.dosageInstructions.value
           : this.dosageInstructions,
+      maThuocCucQldd: data.maThuocCucQldd.present
+          ? data.maThuocCucQldd.value
+          : this.maThuocCucQldd,
+      bietDuoc: data.bietDuoc.present ? data.bietDuoc.value : this.bietDuoc,
+      donViTinh: data.donViTinh.present ? data.donViTinh.value : this.donViTinh,
+      soLuongBan:
+          data.soLuongBan.present ? data.soLuongBan.value : this.soLuongBan,
       quantity: data.quantity.present ? data.quantity.value : this.quantity,
       unitPrice: data.unitPrice.present ? data.unitPrice.value : this.unitPrice,
       totalPrice:
@@ -40926,6 +41949,10 @@ class PrescriptionItem extends DataClass
           ..write('productId: $productId, ')
           ..write('medicineName: $medicineName, ')
           ..write('dosageInstructions: $dosageInstructions, ')
+          ..write('maThuocCucQldd: $maThuocCucQldd, ')
+          ..write('bietDuoc: $bietDuoc, ')
+          ..write('donViTinh: $donViTinh, ')
+          ..write('soLuongBan: $soLuongBan, ')
           ..write('quantity: $quantity, ')
           ..write('unitPrice: $unitPrice, ')
           ..write('totalPrice: $totalPrice, ')
@@ -40935,8 +41962,20 @@ class PrescriptionItem extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, prescriptionId, productId, medicineName,
-      dosageInstructions, quantity, unitPrice, totalPrice, createdAt);
+  int get hashCode => Object.hash(
+      id,
+      prescriptionId,
+      productId,
+      medicineName,
+      dosageInstructions,
+      maThuocCucQldd,
+      bietDuoc,
+      donViTinh,
+      soLuongBan,
+      quantity,
+      unitPrice,
+      totalPrice,
+      createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -40946,6 +41985,10 @@ class PrescriptionItem extends DataClass
           other.productId == this.productId &&
           other.medicineName == this.medicineName &&
           other.dosageInstructions == this.dosageInstructions &&
+          other.maThuocCucQldd == this.maThuocCucQldd &&
+          other.bietDuoc == this.bietDuoc &&
+          other.donViTinh == this.donViTinh &&
+          other.soLuongBan == this.soLuongBan &&
           other.quantity == this.quantity &&
           other.unitPrice == this.unitPrice &&
           other.totalPrice == this.totalPrice &&
@@ -40958,6 +42001,10 @@ class PrescriptionItemsCompanion extends UpdateCompanion<PrescriptionItem> {
   final Value<String> productId;
   final Value<String> medicineName;
   final Value<String?> dosageInstructions;
+  final Value<String?> maThuocCucQldd;
+  final Value<String?> bietDuoc;
+  final Value<String?> donViTinh;
+  final Value<double?> soLuongBan;
   final Value<double> quantity;
   final Value<double> unitPrice;
   final Value<double> totalPrice;
@@ -40969,6 +42016,10 @@ class PrescriptionItemsCompanion extends UpdateCompanion<PrescriptionItem> {
     this.productId = const Value.absent(),
     this.medicineName = const Value.absent(),
     this.dosageInstructions = const Value.absent(),
+    this.maThuocCucQldd = const Value.absent(),
+    this.bietDuoc = const Value.absent(),
+    this.donViTinh = const Value.absent(),
+    this.soLuongBan = const Value.absent(),
     this.quantity = const Value.absent(),
     this.unitPrice = const Value.absent(),
     this.totalPrice = const Value.absent(),
@@ -40981,6 +42032,10 @@ class PrescriptionItemsCompanion extends UpdateCompanion<PrescriptionItem> {
     required String productId,
     required String medicineName,
     this.dosageInstructions = const Value.absent(),
+    this.maThuocCucQldd = const Value.absent(),
+    this.bietDuoc = const Value.absent(),
+    this.donViTinh = const Value.absent(),
+    this.soLuongBan = const Value.absent(),
     this.quantity = const Value.absent(),
     this.unitPrice = const Value.absent(),
     this.totalPrice = const Value.absent(),
@@ -40996,6 +42051,10 @@ class PrescriptionItemsCompanion extends UpdateCompanion<PrescriptionItem> {
     Expression<String>? productId,
     Expression<String>? medicineName,
     Expression<String>? dosageInstructions,
+    Expression<String>? maThuocCucQldd,
+    Expression<String>? bietDuoc,
+    Expression<String>? donViTinh,
+    Expression<double>? soLuongBan,
     Expression<double>? quantity,
     Expression<double>? unitPrice,
     Expression<double>? totalPrice,
@@ -41008,6 +42067,10 @@ class PrescriptionItemsCompanion extends UpdateCompanion<PrescriptionItem> {
       if (productId != null) 'product_id': productId,
       if (medicineName != null) 'medicine_name': medicineName,
       if (dosageInstructions != null) 'dosage_instructions': dosageInstructions,
+      if (maThuocCucQldd != null) 'ma_thuoc_cuc_qldd': maThuocCucQldd,
+      if (bietDuoc != null) 'biet_duoc': bietDuoc,
+      if (donViTinh != null) 'don_vi_tinh': donViTinh,
+      if (soLuongBan != null) 'so_luong_ban': soLuongBan,
       if (quantity != null) 'quantity': quantity,
       if (unitPrice != null) 'unit_price': unitPrice,
       if (totalPrice != null) 'total_price': totalPrice,
@@ -41022,6 +42085,10 @@ class PrescriptionItemsCompanion extends UpdateCompanion<PrescriptionItem> {
       Value<String>? productId,
       Value<String>? medicineName,
       Value<String?>? dosageInstructions,
+      Value<String?>? maThuocCucQldd,
+      Value<String?>? bietDuoc,
+      Value<String?>? donViTinh,
+      Value<double?>? soLuongBan,
       Value<double>? quantity,
       Value<double>? unitPrice,
       Value<double>? totalPrice,
@@ -41033,6 +42100,10 @@ class PrescriptionItemsCompanion extends UpdateCompanion<PrescriptionItem> {
       productId: productId ?? this.productId,
       medicineName: medicineName ?? this.medicineName,
       dosageInstructions: dosageInstructions ?? this.dosageInstructions,
+      maThuocCucQldd: maThuocCucQldd ?? this.maThuocCucQldd,
+      bietDuoc: bietDuoc ?? this.bietDuoc,
+      donViTinh: donViTinh ?? this.donViTinh,
+      soLuongBan: soLuongBan ?? this.soLuongBan,
       quantity: quantity ?? this.quantity,
       unitPrice: unitPrice ?? this.unitPrice,
       totalPrice: totalPrice ?? this.totalPrice,
@@ -41058,6 +42129,18 @@ class PrescriptionItemsCompanion extends UpdateCompanion<PrescriptionItem> {
     }
     if (dosageInstructions.present) {
       map['dosage_instructions'] = Variable<String>(dosageInstructions.value);
+    }
+    if (maThuocCucQldd.present) {
+      map['ma_thuoc_cuc_qldd'] = Variable<String>(maThuocCucQldd.value);
+    }
+    if (bietDuoc.present) {
+      map['biet_duoc'] = Variable<String>(bietDuoc.value);
+    }
+    if (donViTinh.present) {
+      map['don_vi_tinh'] = Variable<String>(donViTinh.value);
+    }
+    if (soLuongBan.present) {
+      map['so_luong_ban'] = Variable<double>(soLuongBan.value);
     }
     if (quantity.present) {
       map['quantity'] = Variable<double>(quantity.value);
@@ -41085,10 +42168,452 @@ class PrescriptionItemsCompanion extends UpdateCompanion<PrescriptionItem> {
           ..write('productId: $productId, ')
           ..write('medicineName: $medicineName, ')
           ..write('dosageInstructions: $dosageInstructions, ')
+          ..write('maThuocCucQldd: $maThuocCucQldd, ')
+          ..write('bietDuoc: $bietDuoc, ')
+          ..write('donViTinh: $donViTinh, ')
+          ..write('soLuongBan: $soLuongBan, ')
           ..write('quantity: $quantity, ')
           ..write('unitPrice: $unitPrice, ')
           ..write('totalPrice: $totalPrice, ')
           ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ClinicFacilityTable extends ClinicFacility
+    with TableInfo<$ClinicFacilityTable, ClinicFacilityData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ClinicFacilityTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('default'));
+  static const VerificationMeta _maCskcbMeta =
+      const VerificationMeta('maCskcb');
+  @override
+  late final GeneratedColumn<String> maCskcb = GeneratedColumn<String>(
+      'ma_cskcb', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _addressMeta =
+      const VerificationMeta('address');
+  @override
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+      'address', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  @override
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+      'phone', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _maLienThongDtqgMeta =
+      const VerificationMeta('maLienThongDtqg');
+  @override
+  late final GeneratedColumn<String> maLienThongDtqg = GeneratedColumn<String>(
+      'ma_lien_thong_dtqg', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _maDinhDanhCungUngMeta =
+      const VerificationMeta('maDinhDanhCungUng');
+  @override
+  late final GeneratedColumn<String> maDinhDanhCungUng =
+      GeneratedColumn<String>('ma_dinh_danh_cung_ung', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        maCskcb,
+        name,
+        address,
+        phone,
+        maLienThongDtqg,
+        maDinhDanhCungUng,
+        updatedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'clinic_facility';
+  @override
+  VerificationContext validateIntegrity(Insertable<ClinicFacilityData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('ma_cskcb')) {
+      context.handle(_maCskcbMeta,
+          maCskcb.isAcceptableOrUnknown(data['ma_cskcb']!, _maCskcbMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('address')) {
+      context.handle(_addressMeta,
+          address.isAcceptableOrUnknown(data['address']!, _addressMeta));
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+          _phoneMeta, phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta));
+    }
+    if (data.containsKey('ma_lien_thong_dtqg')) {
+      context.handle(
+          _maLienThongDtqgMeta,
+          maLienThongDtqg.isAcceptableOrUnknown(
+              data['ma_lien_thong_dtqg']!, _maLienThongDtqgMeta));
+    }
+    if (data.containsKey('ma_dinh_danh_cung_ung')) {
+      context.handle(
+          _maDinhDanhCungUngMeta,
+          maDinhDanhCungUng.isAcceptableOrUnknown(
+              data['ma_dinh_danh_cung_ung']!, _maDinhDanhCungUngMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ClinicFacilityData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ClinicFacilityData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      maCskcb: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}ma_cskcb'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      address: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}address'])!,
+      phone: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}phone'])!,
+      maLienThongDtqg: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}ma_lien_thong_dtqg']),
+      maDinhDanhCungUng: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}ma_dinh_danh_cung_ung']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $ClinicFacilityTable createAlias(String alias) {
+    return $ClinicFacilityTable(attachedDatabase, alias);
+  }
+}
+
+class ClinicFacilityData extends DataClass
+    implements Insertable<ClinicFacilityData> {
+  final String id;
+  final String maCskcb;
+  final String name;
+  final String address;
+  final String phone;
+  final String? maLienThongDtqg;
+  final String? maDinhDanhCungUng;
+  final DateTime updatedAt;
+  const ClinicFacilityData(
+      {required this.id,
+      required this.maCskcb,
+      required this.name,
+      required this.address,
+      required this.phone,
+      this.maLienThongDtqg,
+      this.maDinhDanhCungUng,
+      required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['ma_cskcb'] = Variable<String>(maCskcb);
+    map['name'] = Variable<String>(name);
+    map['address'] = Variable<String>(address);
+    map['phone'] = Variable<String>(phone);
+    if (!nullToAbsent || maLienThongDtqg != null) {
+      map['ma_lien_thong_dtqg'] = Variable<String>(maLienThongDtqg);
+    }
+    if (!nullToAbsent || maDinhDanhCungUng != null) {
+      map['ma_dinh_danh_cung_ung'] = Variable<String>(maDinhDanhCungUng);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  ClinicFacilityCompanion toCompanion(bool nullToAbsent) {
+    return ClinicFacilityCompanion(
+      id: Value(id),
+      maCskcb: Value(maCskcb),
+      name: Value(name),
+      address: Value(address),
+      phone: Value(phone),
+      maLienThongDtqg: maLienThongDtqg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maLienThongDtqg),
+      maDinhDanhCungUng: maDinhDanhCungUng == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maDinhDanhCungUng),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ClinicFacilityData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ClinicFacilityData(
+      id: serializer.fromJson<String>(json['id']),
+      maCskcb: serializer.fromJson<String>(json['maCskcb']),
+      name: serializer.fromJson<String>(json['name']),
+      address: serializer.fromJson<String>(json['address']),
+      phone: serializer.fromJson<String>(json['phone']),
+      maLienThongDtqg: serializer.fromJson<String?>(json['maLienThongDtqg']),
+      maDinhDanhCungUng:
+          serializer.fromJson<String?>(json['maDinhDanhCungUng']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'maCskcb': serializer.toJson<String>(maCskcb),
+      'name': serializer.toJson<String>(name),
+      'address': serializer.toJson<String>(address),
+      'phone': serializer.toJson<String>(phone),
+      'maLienThongDtqg': serializer.toJson<String?>(maLienThongDtqg),
+      'maDinhDanhCungUng': serializer.toJson<String?>(maDinhDanhCungUng),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  ClinicFacilityData copyWith(
+          {String? id,
+          String? maCskcb,
+          String? name,
+          String? address,
+          String? phone,
+          Value<String?> maLienThongDtqg = const Value.absent(),
+          Value<String?> maDinhDanhCungUng = const Value.absent(),
+          DateTime? updatedAt}) =>
+      ClinicFacilityData(
+        id: id ?? this.id,
+        maCskcb: maCskcb ?? this.maCskcb,
+        name: name ?? this.name,
+        address: address ?? this.address,
+        phone: phone ?? this.phone,
+        maLienThongDtqg: maLienThongDtqg.present
+            ? maLienThongDtqg.value
+            : this.maLienThongDtqg,
+        maDinhDanhCungUng: maDinhDanhCungUng.present
+            ? maDinhDanhCungUng.value
+            : this.maDinhDanhCungUng,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  ClinicFacilityData copyWithCompanion(ClinicFacilityCompanion data) {
+    return ClinicFacilityData(
+      id: data.id.present ? data.id.value : this.id,
+      maCskcb: data.maCskcb.present ? data.maCskcb.value : this.maCskcb,
+      name: data.name.present ? data.name.value : this.name,
+      address: data.address.present ? data.address.value : this.address,
+      phone: data.phone.present ? data.phone.value : this.phone,
+      maLienThongDtqg: data.maLienThongDtqg.present
+          ? data.maLienThongDtqg.value
+          : this.maLienThongDtqg,
+      maDinhDanhCungUng: data.maDinhDanhCungUng.present
+          ? data.maDinhDanhCungUng.value
+          : this.maDinhDanhCungUng,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ClinicFacilityData(')
+          ..write('id: $id, ')
+          ..write('maCskcb: $maCskcb, ')
+          ..write('name: $name, ')
+          ..write('address: $address, ')
+          ..write('phone: $phone, ')
+          ..write('maLienThongDtqg: $maLienThongDtqg, ')
+          ..write('maDinhDanhCungUng: $maDinhDanhCungUng, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, maCskcb, name, address, phone,
+      maLienThongDtqg, maDinhDanhCungUng, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ClinicFacilityData &&
+          other.id == this.id &&
+          other.maCskcb == this.maCskcb &&
+          other.name == this.name &&
+          other.address == this.address &&
+          other.phone == this.phone &&
+          other.maLienThongDtqg == this.maLienThongDtqg &&
+          other.maDinhDanhCungUng == this.maDinhDanhCungUng &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ClinicFacilityCompanion extends UpdateCompanion<ClinicFacilityData> {
+  final Value<String> id;
+  final Value<String> maCskcb;
+  final Value<String> name;
+  final Value<String> address;
+  final Value<String> phone;
+  final Value<String?> maLienThongDtqg;
+  final Value<String?> maDinhDanhCungUng;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const ClinicFacilityCompanion({
+    this.id = const Value.absent(),
+    this.maCskcb = const Value.absent(),
+    this.name = const Value.absent(),
+    this.address = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.maLienThongDtqg = const Value.absent(),
+    this.maDinhDanhCungUng = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ClinicFacilityCompanion.insert({
+    this.id = const Value.absent(),
+    this.maCskcb = const Value.absent(),
+    this.name = const Value.absent(),
+    this.address = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.maLienThongDtqg = const Value.absent(),
+    this.maDinhDanhCungUng = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  static Insertable<ClinicFacilityData> custom({
+    Expression<String>? id,
+    Expression<String>? maCskcb,
+    Expression<String>? name,
+    Expression<String>? address,
+    Expression<String>? phone,
+    Expression<String>? maLienThongDtqg,
+    Expression<String>? maDinhDanhCungUng,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (maCskcb != null) 'ma_cskcb': maCskcb,
+      if (name != null) 'name': name,
+      if (address != null) 'address': address,
+      if (phone != null) 'phone': phone,
+      if (maLienThongDtqg != null) 'ma_lien_thong_dtqg': maLienThongDtqg,
+      if (maDinhDanhCungUng != null) 'ma_dinh_danh_cung_ung': maDinhDanhCungUng,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ClinicFacilityCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? maCskcb,
+      Value<String>? name,
+      Value<String>? address,
+      Value<String>? phone,
+      Value<String?>? maLienThongDtqg,
+      Value<String?>? maDinhDanhCungUng,
+      Value<DateTime>? updatedAt,
+      Value<int>? rowid}) {
+    return ClinicFacilityCompanion(
+      id: id ?? this.id,
+      maCskcb: maCskcb ?? this.maCskcb,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      phone: phone ?? this.phone,
+      maLienThongDtqg: maLienThongDtqg ?? this.maLienThongDtqg,
+      maDinhDanhCungUng: maDinhDanhCungUng ?? this.maDinhDanhCungUng,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (maCskcb.present) {
+      map['ma_cskcb'] = Variable<String>(maCskcb.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (maLienThongDtqg.present) {
+      map['ma_lien_thong_dtqg'] = Variable<String>(maLienThongDtqg.value);
+    }
+    if (maDinhDanhCungUng.present) {
+      map['ma_dinh_danh_cung_ung'] = Variable<String>(maDinhDanhCungUng.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ClinicFacilityCompanion(')
+          ..write('id: $id, ')
+          ..write('maCskcb: $maCskcb, ')
+          ..write('name: $name, ')
+          ..write('address: $address, ')
+          ..write('phone: $phone, ')
+          ..write('maLienThongDtqg: $maLienThongDtqg, ')
+          ..write('maDinhDanhCungUng: $maDinhDanhCungUng, ')
+          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -41228,6 +42753,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PrescriptionsTable prescriptions = $PrescriptionsTable(this);
   late final $PrescriptionItemsTable prescriptionItems =
       $PrescriptionItemsTable(this);
+  late final $ClinicFacilityTable clinicFacility = $ClinicFacilityTable(this);
   late final Index idxLocationsPath = Index('idx_locations_path',
       'CREATE INDEX idx_locations_path ON locations (path)');
   late final Index idxLocationsParent = Index('idx_locations_parent',
@@ -41337,6 +42863,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         medicalVisits,
         prescriptions,
         prescriptionItems,
+        clinicFacility,
         idxLocationsPath,
         idxLocationsParent,
         idxIotDevicesLocation,
@@ -60099,6 +61626,10 @@ typedef $$DoctorsTableCreateCompanionBuilder = DoctorsCompanion Function({
   Value<String> specialty,
   Value<String?> phone,
   Value<String?> email,
+  Value<String?> soCchn,
+  Value<String?> maLienThongDtqg,
+  Value<bool> duocKeDon,
+  Value<String> dtqgStatus,
   Value<bool> active,
   Value<String> customFields,
   Value<DateTime> createdAt,
@@ -60110,6 +61641,10 @@ typedef $$DoctorsTableUpdateCompanionBuilder = DoctorsCompanion Function({
   Value<String> specialty,
   Value<String?> phone,
   Value<String?> email,
+  Value<String?> soCchn,
+  Value<String?> maLienThongDtqg,
+  Value<bool> duocKeDon,
+  Value<String> dtqgStatus,
   Value<bool> active,
   Value<String> customFields,
   Value<DateTime> createdAt,
@@ -60139,6 +61674,19 @@ class $$DoctorsTableFilterComposer
 
   ColumnFilters<String> get email => $composableBuilder(
       column: $table.email, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get soCchn => $composableBuilder(
+      column: $table.soCchn, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get maLienThongDtqg => $composableBuilder(
+      column: $table.maLienThongDtqg,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get duocKeDon => $composableBuilder(
+      column: $table.duocKeDon, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get dtqgStatus => $composableBuilder(
+      column: $table.dtqgStatus, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get active => $composableBuilder(
       column: $table.active, builder: (column) => ColumnFilters(column));
@@ -60174,6 +61722,19 @@ class $$DoctorsTableOrderingComposer
   ColumnOrderings<String> get email => $composableBuilder(
       column: $table.email, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get soCchn => $composableBuilder(
+      column: $table.soCchn, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get maLienThongDtqg => $composableBuilder(
+      column: $table.maLienThongDtqg,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get duocKeDon => $composableBuilder(
+      column: $table.duocKeDon, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get dtqgStatus => $composableBuilder(
+      column: $table.dtqgStatus, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<bool> get active => $composableBuilder(
       column: $table.active, builder: (column) => ColumnOrderings(column));
 
@@ -60208,6 +61769,18 @@ class $$DoctorsTableAnnotationComposer
 
   GeneratedColumn<String> get email =>
       $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get soCchn =>
+      $composableBuilder(column: $table.soCchn, builder: (column) => column);
+
+  GeneratedColumn<String> get maLienThongDtqg => $composableBuilder(
+      column: $table.maLienThongDtqg, builder: (column) => column);
+
+  GeneratedColumn<bool> get duocKeDon =>
+      $composableBuilder(column: $table.duocKeDon, builder: (column) => column);
+
+  GeneratedColumn<String> get dtqgStatus => $composableBuilder(
+      column: $table.dtqgStatus, builder: (column) => column);
 
   GeneratedColumn<bool> get active =>
       $composableBuilder(column: $table.active, builder: (column) => column);
@@ -60247,6 +61820,10 @@ class $$DoctorsTableTableManager extends RootTableManager<
             Value<String> specialty = const Value.absent(),
             Value<String?> phone = const Value.absent(),
             Value<String?> email = const Value.absent(),
+            Value<String?> soCchn = const Value.absent(),
+            Value<String?> maLienThongDtqg = const Value.absent(),
+            Value<bool> duocKeDon = const Value.absent(),
+            Value<String> dtqgStatus = const Value.absent(),
             Value<bool> active = const Value.absent(),
             Value<String> customFields = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
@@ -60258,6 +61835,10 @@ class $$DoctorsTableTableManager extends RootTableManager<
             specialty: specialty,
             phone: phone,
             email: email,
+            soCchn: soCchn,
+            maLienThongDtqg: maLienThongDtqg,
+            duocKeDon: duocKeDon,
+            dtqgStatus: dtqgStatus,
             active: active,
             customFields: customFields,
             createdAt: createdAt,
@@ -60269,6 +61850,10 @@ class $$DoctorsTableTableManager extends RootTableManager<
             Value<String> specialty = const Value.absent(),
             Value<String?> phone = const Value.absent(),
             Value<String?> email = const Value.absent(),
+            Value<String?> soCchn = const Value.absent(),
+            Value<String?> maLienThongDtqg = const Value.absent(),
+            Value<bool> duocKeDon = const Value.absent(),
+            Value<String> dtqgStatus = const Value.absent(),
             Value<bool> active = const Value.absent(),
             Value<String> customFields = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
@@ -60280,6 +61865,10 @@ class $$DoctorsTableTableManager extends RootTableManager<
             specialty: specialty,
             phone: phone,
             email: email,
+            soCchn: soCchn,
+            maLienThongDtqg: maLienThongDtqg,
+            duocKeDon: duocKeDon,
+            dtqgStatus: dtqgStatus,
             active: active,
             customFields: customFields,
             createdAt: createdAt,
@@ -60312,6 +61901,12 @@ typedef $$PatientsTableCreateCompanionBuilder = PatientsCompanion Function({
   Value<String?> phone,
   Value<String?> address,
   Value<String?> idNumber,
+  Value<String?> maDinhDanhYte,
+  Value<String?> soCccd,
+  Value<String?> maTheBhyt,
+  Value<String?> guardianName,
+  Value<String?> guardianPhone,
+  Value<String?> guardianAddress,
   Value<String> customFields,
   Value<DateTime> createdAt,
   Value<int> rowid,
@@ -60324,6 +61919,12 @@ typedef $$PatientsTableUpdateCompanionBuilder = PatientsCompanion Function({
   Value<String?> phone,
   Value<String?> address,
   Value<String?> idNumber,
+  Value<String?> maDinhDanhYte,
+  Value<String?> soCccd,
+  Value<String?> maTheBhyt,
+  Value<String?> guardianName,
+  Value<String?> guardianPhone,
+  Value<String?> guardianAddress,
   Value<String> customFields,
   Value<DateTime> createdAt,
   Value<int> rowid,
@@ -60358,6 +61959,25 @@ class $$PatientsTableFilterComposer
 
   ColumnFilters<String> get idNumber => $composableBuilder(
       column: $table.idNumber, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get maDinhDanhYte => $composableBuilder(
+      column: $table.maDinhDanhYte, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get soCccd => $composableBuilder(
+      column: $table.soCccd, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get maTheBhyt => $composableBuilder(
+      column: $table.maTheBhyt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get guardianName => $composableBuilder(
+      column: $table.guardianName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get guardianPhone => $composableBuilder(
+      column: $table.guardianPhone, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get guardianAddress => $composableBuilder(
+      column: $table.guardianAddress,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get customFields => $composableBuilder(
       column: $table.customFields, builder: (column) => ColumnFilters(column));
@@ -60395,6 +62015,28 @@ class $$PatientsTableOrderingComposer
 
   ColumnOrderings<String> get idNumber => $composableBuilder(
       column: $table.idNumber, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get maDinhDanhYte => $composableBuilder(
+      column: $table.maDinhDanhYte,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get soCccd => $composableBuilder(
+      column: $table.soCccd, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get maTheBhyt => $composableBuilder(
+      column: $table.maTheBhyt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get guardianName => $composableBuilder(
+      column: $table.guardianName,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get guardianPhone => $composableBuilder(
+      column: $table.guardianPhone,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get guardianAddress => $composableBuilder(
+      column: $table.guardianAddress,
+      builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get customFields => $composableBuilder(
       column: $table.customFields,
@@ -60434,6 +62076,24 @@ class $$PatientsTableAnnotationComposer
   GeneratedColumn<String> get idNumber =>
       $composableBuilder(column: $table.idNumber, builder: (column) => column);
 
+  GeneratedColumn<String> get maDinhDanhYte => $composableBuilder(
+      column: $table.maDinhDanhYte, builder: (column) => column);
+
+  GeneratedColumn<String> get soCccd =>
+      $composableBuilder(column: $table.soCccd, builder: (column) => column);
+
+  GeneratedColumn<String> get maTheBhyt =>
+      $composableBuilder(column: $table.maTheBhyt, builder: (column) => column);
+
+  GeneratedColumn<String> get guardianName => $composableBuilder(
+      column: $table.guardianName, builder: (column) => column);
+
+  GeneratedColumn<String> get guardianPhone => $composableBuilder(
+      column: $table.guardianPhone, builder: (column) => column);
+
+  GeneratedColumn<String> get guardianAddress => $composableBuilder(
+      column: $table.guardianAddress, builder: (column) => column);
+
   GeneratedColumn<String> get customFields => $composableBuilder(
       column: $table.customFields, builder: (column) => column);
 
@@ -60471,6 +62131,12 @@ class $$PatientsTableTableManager extends RootTableManager<
             Value<String?> phone = const Value.absent(),
             Value<String?> address = const Value.absent(),
             Value<String?> idNumber = const Value.absent(),
+            Value<String?> maDinhDanhYte = const Value.absent(),
+            Value<String?> soCccd = const Value.absent(),
+            Value<String?> maTheBhyt = const Value.absent(),
+            Value<String?> guardianName = const Value.absent(),
+            Value<String?> guardianPhone = const Value.absent(),
+            Value<String?> guardianAddress = const Value.absent(),
             Value<String> customFields = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -60483,6 +62149,12 @@ class $$PatientsTableTableManager extends RootTableManager<
             phone: phone,
             address: address,
             idNumber: idNumber,
+            maDinhDanhYte: maDinhDanhYte,
+            soCccd: soCccd,
+            maTheBhyt: maTheBhyt,
+            guardianName: guardianName,
+            guardianPhone: guardianPhone,
+            guardianAddress: guardianAddress,
             customFields: customFields,
             createdAt: createdAt,
             rowid: rowid,
@@ -60495,6 +62167,12 @@ class $$PatientsTableTableManager extends RootTableManager<
             Value<String?> phone = const Value.absent(),
             Value<String?> address = const Value.absent(),
             Value<String?> idNumber = const Value.absent(),
+            Value<String?> maDinhDanhYte = const Value.absent(),
+            Value<String?> soCccd = const Value.absent(),
+            Value<String?> maTheBhyt = const Value.absent(),
+            Value<String?> guardianName = const Value.absent(),
+            Value<String?> guardianPhone = const Value.absent(),
+            Value<String?> guardianAddress = const Value.absent(),
             Value<String> customFields = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -60507,6 +62185,12 @@ class $$PatientsTableTableManager extends RootTableManager<
             phone: phone,
             address: address,
             idNumber: idNumber,
+            maDinhDanhYte: maDinhDanhYte,
+            soCccd: soCccd,
+            maTheBhyt: maTheBhyt,
+            guardianName: guardianName,
+            guardianPhone: guardianPhone,
+            guardianAddress: guardianAddress,
             customFields: customFields,
             createdAt: createdAt,
             rowid: rowid,
@@ -61008,6 +62692,17 @@ typedef $$PrescriptionsTableCreateCompanionBuilder = PrescriptionsCompanion
   Value<DateTime> prescriptionDate,
   Value<String> status,
   Value<String?> notes,
+  Value<String?> maDonThuoc,
+  Value<String> loaiDon,
+  Value<String> chanDoanJson,
+  Value<double?> canNang,
+  Value<int?> hinhThucDieuTri,
+  Value<String?> nguoiGiamHo,
+  Value<String?> loiDan,
+  Value<int?> ngayTaiKham,
+  Value<String> dtqgStatus,
+  Value<DateTime?> dtqgSentAt,
+  Value<String?> dtqgLastError,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -61020,6 +62715,17 @@ typedef $$PrescriptionsTableUpdateCompanionBuilder = PrescriptionsCompanion
   Value<DateTime> prescriptionDate,
   Value<String> status,
   Value<String?> notes,
+  Value<String?> maDonThuoc,
+  Value<String> loaiDon,
+  Value<String> chanDoanJson,
+  Value<double?> canNang,
+  Value<int?> hinhThucDieuTri,
+  Value<String?> nguoiGiamHo,
+  Value<String?> loiDan,
+  Value<int?> ngayTaiKham,
+  Value<String> dtqgStatus,
+  Value<DateTime?> dtqgSentAt,
+  Value<String?> dtqgLastError,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -61054,6 +62760,40 @@ class $$PrescriptionsTableFilterComposer
 
   ColumnFilters<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get maDonThuoc => $composableBuilder(
+      column: $table.maDonThuoc, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get loaiDon => $composableBuilder(
+      column: $table.loaiDon, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get chanDoanJson => $composableBuilder(
+      column: $table.chanDoanJson, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get canNang => $composableBuilder(
+      column: $table.canNang, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get hinhThucDieuTri => $composableBuilder(
+      column: $table.hinhThucDieuTri,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nguoiGiamHo => $composableBuilder(
+      column: $table.nguoiGiamHo, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get loiDan => $composableBuilder(
+      column: $table.loiDan, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get ngayTaiKham => $composableBuilder(
+      column: $table.ngayTaiKham, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get dtqgStatus => $composableBuilder(
+      column: $table.dtqgStatus, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dtqgSentAt => $composableBuilder(
+      column: $table.dtqgSentAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get dtqgLastError => $composableBuilder(
+      column: $table.dtqgLastError, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -61090,6 +62830,42 @@ class $$PrescriptionsTableOrderingComposer
   ColumnOrderings<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get maDonThuoc => $composableBuilder(
+      column: $table.maDonThuoc, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get loaiDon => $composableBuilder(
+      column: $table.loaiDon, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get chanDoanJson => $composableBuilder(
+      column: $table.chanDoanJson,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get canNang => $composableBuilder(
+      column: $table.canNang, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get hinhThucDieuTri => $composableBuilder(
+      column: $table.hinhThucDieuTri,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nguoiGiamHo => $composableBuilder(
+      column: $table.nguoiGiamHo, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get loiDan => $composableBuilder(
+      column: $table.loiDan, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get ngayTaiKham => $composableBuilder(
+      column: $table.ngayTaiKham, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get dtqgStatus => $composableBuilder(
+      column: $table.dtqgStatus, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dtqgSentAt => $composableBuilder(
+      column: $table.dtqgSentAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get dtqgLastError => $composableBuilder(
+      column: $table.dtqgLastError,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 }
@@ -61123,6 +62899,39 @@ class $$PrescriptionsTableAnnotationComposer
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get maDonThuoc => $composableBuilder(
+      column: $table.maDonThuoc, builder: (column) => column);
+
+  GeneratedColumn<String> get loaiDon =>
+      $composableBuilder(column: $table.loaiDon, builder: (column) => column);
+
+  GeneratedColumn<String> get chanDoanJson => $composableBuilder(
+      column: $table.chanDoanJson, builder: (column) => column);
+
+  GeneratedColumn<double> get canNang =>
+      $composableBuilder(column: $table.canNang, builder: (column) => column);
+
+  GeneratedColumn<int> get hinhThucDieuTri => $composableBuilder(
+      column: $table.hinhThucDieuTri, builder: (column) => column);
+
+  GeneratedColumn<String> get nguoiGiamHo => $composableBuilder(
+      column: $table.nguoiGiamHo, builder: (column) => column);
+
+  GeneratedColumn<String> get loiDan =>
+      $composableBuilder(column: $table.loiDan, builder: (column) => column);
+
+  GeneratedColumn<int> get ngayTaiKham => $composableBuilder(
+      column: $table.ngayTaiKham, builder: (column) => column);
+
+  GeneratedColumn<String> get dtqgStatus => $composableBuilder(
+      column: $table.dtqgStatus, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dtqgSentAt => $composableBuilder(
+      column: $table.dtqgSentAt, builder: (column) => column);
+
+  GeneratedColumn<String> get dtqgLastError => $composableBuilder(
+      column: $table.dtqgLastError, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -61161,6 +62970,17 @@ class $$PrescriptionsTableTableManager extends RootTableManager<
             Value<DateTime> prescriptionDate = const Value.absent(),
             Value<String> status = const Value.absent(),
             Value<String?> notes = const Value.absent(),
+            Value<String?> maDonThuoc = const Value.absent(),
+            Value<String> loaiDon = const Value.absent(),
+            Value<String> chanDoanJson = const Value.absent(),
+            Value<double?> canNang = const Value.absent(),
+            Value<int?> hinhThucDieuTri = const Value.absent(),
+            Value<String?> nguoiGiamHo = const Value.absent(),
+            Value<String?> loiDan = const Value.absent(),
+            Value<int?> ngayTaiKham = const Value.absent(),
+            Value<String> dtqgStatus = const Value.absent(),
+            Value<DateTime?> dtqgSentAt = const Value.absent(),
+            Value<String?> dtqgLastError = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -61172,6 +62992,17 @@ class $$PrescriptionsTableTableManager extends RootTableManager<
             prescriptionDate: prescriptionDate,
             status: status,
             notes: notes,
+            maDonThuoc: maDonThuoc,
+            loaiDon: loaiDon,
+            chanDoanJson: chanDoanJson,
+            canNang: canNang,
+            hinhThucDieuTri: hinhThucDieuTri,
+            nguoiGiamHo: nguoiGiamHo,
+            loiDan: loiDan,
+            ngayTaiKham: ngayTaiKham,
+            dtqgStatus: dtqgStatus,
+            dtqgSentAt: dtqgSentAt,
+            dtqgLastError: dtqgLastError,
             createdAt: createdAt,
             rowid: rowid,
           ),
@@ -61183,6 +63014,17 @@ class $$PrescriptionsTableTableManager extends RootTableManager<
             Value<DateTime> prescriptionDate = const Value.absent(),
             Value<String> status = const Value.absent(),
             Value<String?> notes = const Value.absent(),
+            Value<String?> maDonThuoc = const Value.absent(),
+            Value<String> loaiDon = const Value.absent(),
+            Value<String> chanDoanJson = const Value.absent(),
+            Value<double?> canNang = const Value.absent(),
+            Value<int?> hinhThucDieuTri = const Value.absent(),
+            Value<String?> nguoiGiamHo = const Value.absent(),
+            Value<String?> loiDan = const Value.absent(),
+            Value<int?> ngayTaiKham = const Value.absent(),
+            Value<String> dtqgStatus = const Value.absent(),
+            Value<DateTime?> dtqgSentAt = const Value.absent(),
+            Value<String?> dtqgLastError = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -61194,6 +63036,17 @@ class $$PrescriptionsTableTableManager extends RootTableManager<
             prescriptionDate: prescriptionDate,
             status: status,
             notes: notes,
+            maDonThuoc: maDonThuoc,
+            loaiDon: loaiDon,
+            chanDoanJson: chanDoanJson,
+            canNang: canNang,
+            hinhThucDieuTri: hinhThucDieuTri,
+            nguoiGiamHo: nguoiGiamHo,
+            loiDan: loiDan,
+            ngayTaiKham: ngayTaiKham,
+            dtqgStatus: dtqgStatus,
+            dtqgSentAt: dtqgSentAt,
+            dtqgLastError: dtqgLastError,
             createdAt: createdAt,
             rowid: rowid,
           ),
@@ -61226,6 +63079,10 @@ typedef $$PrescriptionItemsTableCreateCompanionBuilder
   required String productId,
   required String medicineName,
   Value<String?> dosageInstructions,
+  Value<String?> maThuocCucQldd,
+  Value<String?> bietDuoc,
+  Value<String?> donViTinh,
+  Value<double?> soLuongBan,
   Value<double> quantity,
   Value<double> unitPrice,
   Value<double> totalPrice,
@@ -61239,6 +63096,10 @@ typedef $$PrescriptionItemsTableUpdateCompanionBuilder
   Value<String> productId,
   Value<String> medicineName,
   Value<String?> dosageInstructions,
+  Value<String?> maThuocCucQldd,
+  Value<String?> bietDuoc,
+  Value<String?> donViTinh,
+  Value<double?> soLuongBan,
   Value<double> quantity,
   Value<double> unitPrice,
   Value<double> totalPrice,
@@ -61271,6 +63132,19 @@ class $$PrescriptionItemsTableFilterComposer
   ColumnFilters<String> get dosageInstructions => $composableBuilder(
       column: $table.dosageInstructions,
       builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get maThuocCucQldd => $composableBuilder(
+      column: $table.maThuocCucQldd,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get bietDuoc => $composableBuilder(
+      column: $table.bietDuoc, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get donViTinh => $composableBuilder(
+      column: $table.donViTinh, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get soLuongBan => $composableBuilder(
+      column: $table.soLuongBan, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<double> get quantity => $composableBuilder(
       column: $table.quantity, builder: (column) => ColumnFilters(column));
@@ -61312,6 +63186,19 @@ class $$PrescriptionItemsTableOrderingComposer
       column: $table.dosageInstructions,
       builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get maThuocCucQldd => $composableBuilder(
+      column: $table.maThuocCucQldd,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get bietDuoc => $composableBuilder(
+      column: $table.bietDuoc, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get donViTinh => $composableBuilder(
+      column: $table.donViTinh, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get soLuongBan => $composableBuilder(
+      column: $table.soLuongBan, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<double> get quantity => $composableBuilder(
       column: $table.quantity, builder: (column) => ColumnOrderings(column));
 
@@ -61348,6 +63235,18 @@ class $$PrescriptionItemsTableAnnotationComposer
 
   GeneratedColumn<String> get dosageInstructions => $composableBuilder(
       column: $table.dosageInstructions, builder: (column) => column);
+
+  GeneratedColumn<String> get maThuocCucQldd => $composableBuilder(
+      column: $table.maThuocCucQldd, builder: (column) => column);
+
+  GeneratedColumn<String> get bietDuoc =>
+      $composableBuilder(column: $table.bietDuoc, builder: (column) => column);
+
+  GeneratedColumn<String> get donViTinh =>
+      $composableBuilder(column: $table.donViTinh, builder: (column) => column);
+
+  GeneratedColumn<double> get soLuongBan => $composableBuilder(
+      column: $table.soLuongBan, builder: (column) => column);
 
   GeneratedColumn<double> get quantity =>
       $composableBuilder(column: $table.quantity, builder: (column) => column);
@@ -61395,6 +63294,10 @@ class $$PrescriptionItemsTableTableManager extends RootTableManager<
             Value<String> productId = const Value.absent(),
             Value<String> medicineName = const Value.absent(),
             Value<String?> dosageInstructions = const Value.absent(),
+            Value<String?> maThuocCucQldd = const Value.absent(),
+            Value<String?> bietDuoc = const Value.absent(),
+            Value<String?> donViTinh = const Value.absent(),
+            Value<double?> soLuongBan = const Value.absent(),
             Value<double> quantity = const Value.absent(),
             Value<double> unitPrice = const Value.absent(),
             Value<double> totalPrice = const Value.absent(),
@@ -61407,6 +63310,10 @@ class $$PrescriptionItemsTableTableManager extends RootTableManager<
             productId: productId,
             medicineName: medicineName,
             dosageInstructions: dosageInstructions,
+            maThuocCucQldd: maThuocCucQldd,
+            bietDuoc: bietDuoc,
+            donViTinh: donViTinh,
+            soLuongBan: soLuongBan,
             quantity: quantity,
             unitPrice: unitPrice,
             totalPrice: totalPrice,
@@ -61419,6 +63326,10 @@ class $$PrescriptionItemsTableTableManager extends RootTableManager<
             required String productId,
             required String medicineName,
             Value<String?> dosageInstructions = const Value.absent(),
+            Value<String?> maThuocCucQldd = const Value.absent(),
+            Value<String?> bietDuoc = const Value.absent(),
+            Value<String?> donViTinh = const Value.absent(),
+            Value<double?> soLuongBan = const Value.absent(),
             Value<double> quantity = const Value.absent(),
             Value<double> unitPrice = const Value.absent(),
             Value<double> totalPrice = const Value.absent(),
@@ -61431,6 +63342,10 @@ class $$PrescriptionItemsTableTableManager extends RootTableManager<
             productId: productId,
             medicineName: medicineName,
             dosageInstructions: dosageInstructions,
+            maThuocCucQldd: maThuocCucQldd,
+            bietDuoc: bietDuoc,
+            donViTinh: donViTinh,
+            soLuongBan: soLuongBan,
             quantity: quantity,
             unitPrice: unitPrice,
             totalPrice: totalPrice,
@@ -61458,6 +63373,229 @@ typedef $$PrescriptionItemsTableProcessedTableManager = ProcessedTableManager<
       BaseReferences<_$AppDatabase, $PrescriptionItemsTable, PrescriptionItem>
     ),
     PrescriptionItem,
+    PrefetchHooks Function()>;
+typedef $$ClinicFacilityTableCreateCompanionBuilder = ClinicFacilityCompanion
+    Function({
+  Value<String> id,
+  Value<String> maCskcb,
+  Value<String> name,
+  Value<String> address,
+  Value<String> phone,
+  Value<String?> maLienThongDtqg,
+  Value<String?> maDinhDanhCungUng,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+typedef $$ClinicFacilityTableUpdateCompanionBuilder = ClinicFacilityCompanion
+    Function({
+  Value<String> id,
+  Value<String> maCskcb,
+  Value<String> name,
+  Value<String> address,
+  Value<String> phone,
+  Value<String?> maLienThongDtqg,
+  Value<String?> maDinhDanhCungUng,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$ClinicFacilityTableFilterComposer
+    extends Composer<_$AppDatabase, $ClinicFacilityTable> {
+  $$ClinicFacilityTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get maCskcb => $composableBuilder(
+      column: $table.maCskcb, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get address => $composableBuilder(
+      column: $table.address, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get phone => $composableBuilder(
+      column: $table.phone, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get maLienThongDtqg => $composableBuilder(
+      column: $table.maLienThongDtqg,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get maDinhDanhCungUng => $composableBuilder(
+      column: $table.maDinhDanhCungUng,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$ClinicFacilityTableOrderingComposer
+    extends Composer<_$AppDatabase, $ClinicFacilityTable> {
+  $$ClinicFacilityTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get maCskcb => $composableBuilder(
+      column: $table.maCskcb, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get address => $composableBuilder(
+      column: $table.address, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get phone => $composableBuilder(
+      column: $table.phone, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get maLienThongDtqg => $composableBuilder(
+      column: $table.maLienThongDtqg,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get maDinhDanhCungUng => $composableBuilder(
+      column: $table.maDinhDanhCungUng,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ClinicFacilityTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ClinicFacilityTable> {
+  $$ClinicFacilityTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get maCskcb =>
+      $composableBuilder(column: $table.maCskcb, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<String> get phone =>
+      $composableBuilder(column: $table.phone, builder: (column) => column);
+
+  GeneratedColumn<String> get maLienThongDtqg => $composableBuilder(
+      column: $table.maLienThongDtqg, builder: (column) => column);
+
+  GeneratedColumn<String> get maDinhDanhCungUng => $composableBuilder(
+      column: $table.maDinhDanhCungUng, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ClinicFacilityTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ClinicFacilityTable,
+    ClinicFacilityData,
+    $$ClinicFacilityTableFilterComposer,
+    $$ClinicFacilityTableOrderingComposer,
+    $$ClinicFacilityTableAnnotationComposer,
+    $$ClinicFacilityTableCreateCompanionBuilder,
+    $$ClinicFacilityTableUpdateCompanionBuilder,
+    (
+      ClinicFacilityData,
+      BaseReferences<_$AppDatabase, $ClinicFacilityTable, ClinicFacilityData>
+    ),
+    ClinicFacilityData,
+    PrefetchHooks Function()> {
+  $$ClinicFacilityTableTableManager(
+      _$AppDatabase db, $ClinicFacilityTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ClinicFacilityTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ClinicFacilityTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ClinicFacilityTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> maCskcb = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> address = const Value.absent(),
+            Value<String> phone = const Value.absent(),
+            Value<String?> maLienThongDtqg = const Value.absent(),
+            Value<String?> maDinhDanhCungUng = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ClinicFacilityCompanion(
+            id: id,
+            maCskcb: maCskcb,
+            name: name,
+            address: address,
+            phone: phone,
+            maLienThongDtqg: maLienThongDtqg,
+            maDinhDanhCungUng: maDinhDanhCungUng,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> maCskcb = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> address = const Value.absent(),
+            Value<String> phone = const Value.absent(),
+            Value<String?> maLienThongDtqg = const Value.absent(),
+            Value<String?> maDinhDanhCungUng = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ClinicFacilityCompanion.insert(
+            id: id,
+            maCskcb: maCskcb,
+            name: name,
+            address: address,
+            phone: phone,
+            maLienThongDtqg: maLienThongDtqg,
+            maDinhDanhCungUng: maDinhDanhCungUng,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ClinicFacilityTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ClinicFacilityTable,
+    ClinicFacilityData,
+    $$ClinicFacilityTableFilterComposer,
+    $$ClinicFacilityTableOrderingComposer,
+    $$ClinicFacilityTableAnnotationComposer,
+    $$ClinicFacilityTableCreateCompanionBuilder,
+    $$ClinicFacilityTableUpdateCompanionBuilder,
+    (
+      ClinicFacilityData,
+      BaseReferences<_$AppDatabase, $ClinicFacilityTable, ClinicFacilityData>
+    ),
+    ClinicFacilityData,
     PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
@@ -61650,4 +63788,6 @@ class $AppDatabaseManager {
       $$PrescriptionsTableTableManager(_db, _db.prescriptions);
   $$PrescriptionItemsTableTableManager get prescriptionItems =>
       $$PrescriptionItemsTableTableManager(_db, _db.prescriptionItems);
+  $$ClinicFacilityTableTableManager get clinicFacility =>
+      $$ClinicFacilityTableTableManager(_db, _db.clinicFacility);
 }

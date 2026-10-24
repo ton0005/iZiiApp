@@ -91,8 +91,8 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                         final status = mnt['status'] as String;
                         final priority = mnt['priority'] as String;
 
-                        Color priorityBg = priority == 'high' ? Colors.red.shade100 : Colors.amber.shade100;
-                        Color priorityText = priority == 'high' ? Colors.red : Colors.orange;
+                        final Color priorityBg = priority == 'high' ? Colors.red.shade100 : Colors.amber.shade100;
+                        final Color priorityText = priority == 'high' ? Colors.red : Colors.orange;
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16),
@@ -242,7 +242,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                   child: DropdownButtonFormField<String>(
                     decoration:
                         const InputDecoration(labelText: 'Area / Location'),
-                    value: _plantSelected,
+                    initialValue: _plantSelected,
                     items: const [
                       DropdownMenuItem(value: 'M1', child: Text('Plant M1')),
                       DropdownMenuItem(value: 'M2', child: Text('Plant M2')),
@@ -268,7 +268,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Grow Room'),
-                    value: _roomSelected,
+                    initialValue: _roomSelected,
                     items: _plantSelected == 'CoolRoom'
                         ? const <DropdownMenuItem<String>>[
                             DropdownMenuItem(value: 'CR1', child: Text('CR 1')),
@@ -294,7 +294,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(labelText: 'Assignee'),
-              value: _assignee,
+              initialValue: _assignee,
               items: const [
                 DropdownMenuItem(
                     value: 'Nam T.', child: Text('Nam T. (Maintenance)')),
@@ -310,7 +310,7 @@ class _MaintenanceTabScreenState extends State<MaintenanceTabScreen> {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(labelText: 'Priority'),
-              value: _priority,
+              initialValue: _priority,
               items: const [
                 DropdownMenuItem(value: 'low', child: Text('Low')),
                 DropdownMenuItem(value: 'normal', child: Text('Normal')),

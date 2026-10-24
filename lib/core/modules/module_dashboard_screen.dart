@@ -420,6 +420,12 @@ class ModuleDashboardScreen extends StatelessWidget {
 
     if (moduleId == 'izii.clinic_pharma') {
       return [
+        const _ModuleAction(
+          label: 'Workspace PC / iPad',
+          subtitle: 'Giao diện nhiều khung cho máy tính và máy tính bảng',
+          path: '/clinic/workspace',
+          icon: Icons.dashboard_customize_rounded,
+        ),
         _ModuleAction(
           label: context.tr('clinic_action_patients'),
           subtitle: context.tr('clinic_action_patients_sub'),

@@ -22,3 +22,6 @@ psycopg[binary,pool]>=3.1
 
 # ── Tuỳ chọn: đóng gói thành .exe ───────────────────────────────────────────
 # pyinstaller>=6.3
+
+# ── Đơn thuốc quốc gia: mã hóa mật khẩu liên thông lưu trong DB (Fernet) ─────
+cryptography>=42
