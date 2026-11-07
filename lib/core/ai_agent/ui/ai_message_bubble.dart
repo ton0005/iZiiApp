@@ -153,14 +153,17 @@ class AiMessageBubble extends StatelessWidget {
     Color statusColor;
     IconData statusIcon;
     switch (status) {
+      case 'Negotiating':
       case 'Đang đàm phán':
         statusColor = const Color(0xFFF59E0B);
         statusIcon = Icons.handshake_outlined;
         break;
+      case 'Closed Won':
       case 'Chốt đơn':
         statusColor = const Color(0xFF10B981);
         statusIcon = Icons.check_circle_outline;
         break;
+      case 'New Lead':
       case 'Khách hàng mới':
         statusColor = const Color(0xFF06B6D4);
         statusIcon = Icons.person_add_outlined;
@@ -262,12 +265,15 @@ class AiMessageBubble extends StatelessWidget {
   }) {
     Color statusColor;
     switch (status) {
+      case 'Negotiating':
       case 'Đang đàm phán':
         statusColor = const Color(0xFFF59E0B);
         break;
+      case 'Closed Won':
       case 'Chốt đơn':
         statusColor = const Color(0xFF10B981);
         break;
+      case 'New Lead':
       case 'Khách hàng mới':
         statusColor = const Color(0xFF06B6D4);
         break;
@@ -344,13 +350,13 @@ class AiMessageBubble extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             // Info rows
-            _buildDetailRow(Icons.monetization_on_outlined, 'Trị giá dự kiến',
+            _buildDetailRow(Icons.monetization_on_outlined, 'Estimated Value',
                 revenue, Colors.green),
             if (title.isNotEmpty)
-              _buildDetailRow(Icons.description_outlined, 'Nhu cầu', title,
+              _buildDetailRow(Icons.description_outlined, 'Requirement', title,
                   const Color(0xFF6366F1)),
-            _buildDetailRow(Icons.calendar_today_outlined, 'Ngày tạo',
-                'Hôm nay', Colors.grey),
+            _buildDetailRow(Icons.calendar_today_outlined, 'Created Date',
+                'Today', Colors.grey),
             const SizedBox(height: 24),
             // Actions
             Row(
@@ -359,7 +365,7 @@ class AiMessageBubble extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: () => Navigator.pop(ctx),
                     icon: const Icon(Icons.edit_outlined),
-                    label: const Text('Cập nhật'),
+                    label: const Text('Update'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       side: BorderSide(color: statusColor),
@@ -374,7 +380,7 @@ class AiMessageBubble extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: () => Navigator.pop(ctx),
                     icon: const Icon(Icons.phone_outlined),
-                    label: const Text('Liên hệ'),
+                    label: const Text('Contact'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       backgroundColor: statusColor,

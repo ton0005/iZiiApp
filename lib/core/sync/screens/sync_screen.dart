@@ -26,7 +26,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
 
   bool _isSaving = false;
   bool _isManualSyncing = false;
-  String _connectionStatus = 'Đang kiểm tra...';
+  String _connectionStatus = 'Checking...';
   bool _isOnline = false;
   String? _lastSyncTime;
 
@@ -134,7 +134,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
       setState(() {
         _isOnline = !results.contains(ConnectivityResult.none);
         _connectionStatus =
-            _isOnline ? 'Trực tuyến (Connected)' : 'Ngoại tuyến (Offline)';
+            _isOnline ? 'Online (Connected)' : 'Offline';
       });
     }
   }
@@ -151,7 +151,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
       setState(() => _isSaving = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Đã lưu cấu hình API Server thành công!'),
+          content: Text('API Server configuration saved successfully!'),
           backgroundColor: Color(0xFF10B981),
         ),
       );
@@ -177,8 +177,8 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(success
-              ? 'Đồng bộ hoàn tất!'
-              : 'Đồng bộ thất bại. Vui lòng kiểm tra lại cấu hình.'),
+              ? 'Sync completed!'
+              : 'Sync failed. Please check your configuration.'),
           backgroundColor:
               success ? const Color(0xFF10B981) : const Color(0xFFF43F5E),
         ),
@@ -200,27 +200,27 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
             children: [
               Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
               SizedBox(width: 8),
-              Text('Thay đổi chưa đồng bộ',
+              Text('Unsynced Changes',
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
           content: Text(
-              'Bạn đang có $unsynced thay đổi chưa đồng bộ trong module này. Bạn muốn làm gì trước khi tắt đồng bộ?'),
+              'You have $unsynced unsynced changes in this module. What would you like to do before disabling sync?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, 'cancel'),
-              child: const Text('Hủy', style: TextStyle(color: Colors.grey)),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, 'disable_only'),
-              child: const Text('Tắt & Giữ offline',
+              child: const Text('Disable & Keep Offline',
                   style: TextStyle(color: Colors.red)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6366F1)),
               onPressed: () => Navigator.pop(context, 'sync_then_disable'),
-              child: const Text('Đồng bộ & Tắt',
+              child: const Text('Sync & Disable',
                   style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -328,7 +328,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
   void _showErrorSnackBar(String error) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Lỗi: $error'),
+        content: Text('Error: $error'),
         backgroundColor: const Color(0xFFF43F5E),
       ),
     );
@@ -394,7 +394,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Đồng bộ & Dữ liệu',
+          title: const Text('Sync & Data',
               style: TextStyle(fontWeight: FontWeight.bold)),
           flexibleSpace: Container(
             decoration: const BoxDecoration(
@@ -405,11 +405,11 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
           ),
           bottom: const TabBar(
             tabs: [
-              Tab(icon: Icon(Icons.sync_rounded), text: 'Cấu hình'),
+              Tab(icon: Icon(Icons.sync_rounded), text: 'Configuration'),
               Tab(
                   icon: Icon(Icons.history_toggle_off_rounded),
                   text: 'Audit Log'),
-              Tab(icon: Icon(Icons.warning_amber_rounded), text: 'Xung đột'),
+              Tab(icon: Icon(Icons.warning_amber_rounded), text: 'Conflicts'),
             ],
             indicatorColor: Colors.white,
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -477,7 +477,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Trạng thái kết nối',
+                      const Text('Connection Status',
                           style: TextStyle(color: Colors.grey, fontSize: 13)),
                       const SizedBox(height: 2),
                       Text(_connectionStatus,
@@ -510,10 +510,10 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Lần đồng bộ cuối',
+                    const Text('Last Sync',
                         style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text(_lastSyncTime ?? 'Chưa bao giờ',
+                    Text(_lastSyncTime ?? 'Never',
                         style: const TextStyle(
                             fontWeight: FontWeight.w600, fontSize: 14)),
                   ],
@@ -538,7 +538,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                       ),
                       onPressed: _isManualSyncing ? null : _runSync,
                       icon: const Icon(Icons.sync_rounded, size: 20),
-                      label: const Text('Đồng bộ tất cả',
+                      label: const Text('Sync All',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
@@ -566,7 +566,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
           final metadata = SyncConfigRepository.modulesMetadata.firstWhere(
             (m) => m['key'] == config.moduleKey,
             orElse: () =>
-                {'name_vi': config.moduleKey, 'icon': 'sync_alt_rounded'},
+                {'name_en': config.moduleKey, 'name_vi': config.moduleKey, 'icon': 'sync_alt_rounded'},
           );
 
           final int unsyncedCount = _unsyncedCounts[config.moduleKey] ?? 0;
@@ -585,7 +585,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
                 children: [
                   Expanded(
                     child: Text(
-                      metadata['name_vi'] as String,
+                      (metadata['name_en'] ?? metadata['name_vi']) as String,
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 15),
                     ),
@@ -882,7 +882,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
         final audit = _audits[index];
         final metadata = SyncConfigRepository.modulesMetadata.firstWhere(
           (m) => m['key'] == audit.moduleKey,
-          orElse: () => {'name_vi': audit.moduleKey},
+          orElse: () => {'name_en': audit.moduleKey, 'name_vi': audit.moduleKey},
         );
 
         return Card(
@@ -898,7 +898,7 @@ class _SyncScreenState extends State<SyncScreen> with TickerProviderStateMixin {
               color: const Color(0xFF6366F1),
             ),
             title: Text(
-              '${metadata['name_vi']} - ${audit.actionType.toUpperCase()}',
+              '${metadata['name_en'] ?? metadata['name_vi']} - ${audit.actionType.toUpperCase()}',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             subtitle: Text(

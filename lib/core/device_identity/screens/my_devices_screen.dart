@@ -62,7 +62,7 @@ class _MyDevicesView extends StatelessWidget {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
-          '🔐 Thiết bị tin cậy',
+          '🔐 Trusted Devices',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.w700,
             fontSize: 20,
@@ -72,7 +72,7 @@ class _MyDevicesView extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: _kSecondary),
-            tooltip: 'Làm mới',
+            tooltip: 'Refresh',
             onPressed: () {
               context.read<DeviceDiscoveryBloc>().add(LoadMyDevicesEvent());
             },
@@ -123,7 +123,7 @@ class _MyDevicesView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'Đang tải danh sách thiết bị...',
+            'Loading device list...',
             style: GoogleFonts.inter(
               fontSize: 15,
               color: Colors.white54,
@@ -179,7 +179,7 @@ class _MyDevicesView extends StatelessWidget {
                 context.read<DeviceDiscoveryBloc>().add(LoadMyDevicesEvent());
               },
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Thử lại'),
+              label: const Text('Retry'),
               style: FilledButton.styleFrom(
                 backgroundColor: _kPrimary,
                 foregroundColor: Colors.white,
@@ -301,7 +301,7 @@ class _MyDevicesView extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(
-                          'THIẾT BỊ KHÁC',
+                          'OTHER DEVICES',
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -318,7 +318,7 @@ class _MyDevicesView extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            '${otherDevices.length} thiết bị',
+                            '${otherDevices.length} devices',
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -620,7 +620,7 @@ class _CurrentDeviceCard extends StatelessWidget {
                     const Text('📱', style: TextStyle(fontSize: 12)),
                     const SizedBox(width: 4),
                     Text(
-                      'Thiết bị này',
+                      'This device',
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -809,7 +809,7 @@ class _DeviceCard extends StatelessWidget {
                   size: 14, color: Colors.white.withValues(alpha: 0.3)),
               const SizedBox(width: 6),
               Text(
-                'Đăng ký: ${DateFormat('dd/MM/yyyy').format(device.registeredAt)}',
+                'Registered: ${DateFormat('dd/MM/yyyy').format(device.registeredAt)}',
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   color: Colors.white38,
@@ -831,7 +831,7 @@ class _DeviceCard extends StatelessWidget {
               const Spacer(),
               // Revoke button (disabled)
               Tooltip(
-                message: 'Sắp ra mắt',
+                message: 'Coming soon',
                 child: TextButton.icon(
                   onPressed: null,
                   icon: const Icon(Icons.link_off_rounded, size: 14),

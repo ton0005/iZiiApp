@@ -16,12 +16,20 @@ import json
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status, Depends
 from pydantic import BaseModel, Field
 
 from server_config import CONFIG
+from security_auth import optional_device, require_admin
 
-router = APIRouter(prefix="/api/v1/agv", tags=["VDA 5050 AGV Gateway"])
+# Mức nền: mọi endpoint AGV cần danh tính thiết bị (optional_device — bắt buộc
+# token khi IZIIAPP_REQUIRE_DEVICE_TOKEN=1). Các endpoint ĐIỀU KHIỂN vật lý /
+# điều phối (orders, door-interlock) thêm require_admin ở từng route bên dưới.
+#
+# GHI CHÚ: ingest telemetry /state nên có secret riêng cho gateway AGV (giống
+# radio_gateway_secret) thay vì chỉ device-token — xem đề xuất trong báo cáo.
+router = APIRouter(prefix="/api/v1/agv", tags=["VDA 5050 AGV Gateway"],
+                   dependencies=[Depends(optional_device)])
 
 # In-memory fleet state registry & door interlocks (backed by Postgres/SQLite when available)
 _agv_fleet: Dict[str, Dict[str, Any]] = {
@@ -207,7 +215,8 @@ def get_fleet_status():
     }
 
 
-@router.post("/orders", status_code=status.HTTP_201_CREATED)
+@router.post("/orders", status_code=status.HTTP_201_CREATED,
+             dependencies=[Depends(require_admin)])
 def dispatch_vda5050_order(req: CreateMissionRequest):
     """
     Creates and dispatches a VDA 5050 v2.0 standardized mission to an AGV/AMR robot.
@@ -393,7 +402,7 @@ def ingest_agv_telemetry(state: AgvStateTelemetry):
     return {"status": "ok", "ackTimestamp": datetime.now(timezone.utc).isoformat()}
 
 
-@router.post("/door-interlock/trigger")
+@router.post("/door-interlock/trigger", dependencies=[Depends(require_admin)])
 def trigger_door_interlock(req: DoorInterlockTrigger):
     """
     Manually or programmatically triggers cold room fast-action roll door IoT relay.

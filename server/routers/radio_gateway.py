@@ -612,3 +612,216 @@ async def radio_simulate(body: SimulatePayload, request: Request, actor: str = D
     results = await run_in_threadpool(_ingest_batch, [(ev, raw)])
     await _broadcast(request, results, actor=actor)
     return {"status": "success", **results[0]}
+
+
+# ── Lệnh iZii → bộ đàm (qua radio_bridge) ───────────────────────────────────
+#
+# Server KHÔNG nói chuyện trực tiếp với bộ đàm: nó xếp lệnh vào radio_commands,
+# bridge (gần repeater) lấy lệnh, gửi xuống bộ đàm rồi báo kết quả. Hai lý do:
+# bridge là nơi duy nhất có kết nối HSTRP tới repeater, và hàng đợi trên DB giữ
+# được lệnh khi bridge tạm mất kết nối.
+#
+# Vòng đời: pending → sent (bridge đã nhận, có hạn thuê) → done | failed;
+# pending quá COMMAND_TTL → expired (tin "time out" cũ cả giờ thì gửi cũng vô ích).
+
+COMMANDS = ("lone_worker_status", "lone_worker_enable", "lone_worker_disable", "text_message")
+COMMAND_LEASE = timedelta(seconds=30)
+COMMAND_MAX_ATTEMPTS = 3
+COMMAND_TTL = timedelta(minutes=10)
+MAX_TEXT_LEN = 140
+
+
+def _command_view(row: Dict[str, Any]) -> Dict[str, Any]:
+    out = dict(row)
+    for k in ("params", "result"):
+        try:
+            out[k] = json.loads(out[k]) if out.get(k) else None
+        except (TypeError, ValueError):
+            pass
+    return out
+
+
+def create_command(
+    conn, radio_id: str, command: str, params: Optional[Dict[str, Any]] = None, *,
+    created_by: str, reason: Optional[str] = None, job_id: Optional[str] = None,
+    dedup_key: Optional[str] = None,
+) -> tuple:
+    """Xếp một lệnh. Trả (lệnh, có_tạo_mới). Cùng dedup_key → trả lệnh cũ."""
+    if dedup_key:
+        old = _one(conn, "SELECT * FROM radio_commands WHERE dedup_key = ?", (dedup_key,))
+        if old:
+            return _command_view(old), False
+    row = {
+        "id": f"rcmd_{uuid.uuid4().hex[:16]}",
+        "radio_id": str(radio_id),
+        "command": command,
+        "params": json.dumps(params or {}, ensure_ascii=False),
+        "status": "pending",
+        "dedup_key": dedup_key,
+        "reason": reason,
+        "job_id": job_id,
+        "attempts": 0,
+        "created_at": _now(),
+        "created_by": created_by,
+    }
+    cols = list(row.keys())
+    conn.execute(
+        sql(f"INSERT INTO radio_commands ({', '.join(cols)}) VALUES ({', '.join('?' for _ in cols)})"),
+        tuple(row[c] for c in cols),
+    )
+    conn.commit()
+    return _command_view(row), True
+
+
+def _is_alarm_mutation(m: Dict[str, Any]) -> bool:
+    data = m.get("data") or {}
+    return m.get("table") in ("mushroom_jobs", "jobs") and bool(data.get("id")) and re_._truthy(data.get("alarm_triggered"))
+
+
+def enqueue_timeout_alerts(conn, repo, mutations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Job Alone Worker vừa bị bật alarm_triggered (đồng hồ trong app hết giờ) →
+    nhắn tin xuống bộ đàm của người đang làm job đó. Gọi SAU khi mutation đã
+    được lưu. Báo động do chính bộ đàm gửi lên không đi qua đây (ingest_event
+    đẩy mutation thẳng vào repo), nên không có vòng lặp radio → iZii → radio.
+    """
+    hits = [m for m in mutations if _is_alarm_mutation(m)]
+    if not hits:
+        return []
+    jobs = re_.fold_records(repo.get_mutations_by_table("mushroom_jobs"))
+    radios = _all(conn, "SELECT * FROM radio_devices WHERE active = 1")
+    rooms: Optional[Dict[str, Dict[str, Any]]] = None
+    created: List[Dict[str, Any]] = []
+    for m in hits:
+        job = {**(m.get("data") or {}), **jobs.get(m["data"]["id"], {})}
+        if not (re_._truthy(job.get("is_solo_job")) or str(job.get("job_type", "")).lower() == "alone_worker"):
+            continue
+        assignee = re_._job_assignee(job)
+        targets = [r for r in radios if re_.assignee_matches(assignee, r.get("employee_id"), r.get("employee_name"))]
+        if not targets:
+            print(f"ℹ️  [RADIO] Job {job['id']} time out nhưng '{assignee}' không giữ bộ đàm nào — không nhắn được.")
+            continue
+        if rooms is None:
+            rooms = re_.fold_records(repo.get_mutations_by_table("grow_rooms"))
+        room = (rooms.get(job.get("room_id") or "") or {}).get("name") or job.get("room_id") or "?"
+        text = f"ALONE WORKER TIMEOUT - {room}. Check in now or contact supervisor."[:MAX_TEXT_LEN]
+        for r in targets:
+            cmd, is_new = create_command(
+                conn, r["radio_id"], "text_message", {"text": text},
+                created_by="alone-worker-timeout", reason="alone_worker_timeout", job_id=job["id"],
+                # Mỗi lần đồng hồ chạy lại (check-in đặt lại started_at) là một lần time out mới.
+                dedup_key=f"timeout:{job['id']}:{job.get('started_at') or ''}:{r['radio_id']}",
+            )
+            if is_new:
+                print(f"📟 [RADIO] Xếp tin time out cho bộ đàm {r['radio_id']} ({assignee}), job {job['id']}")
+                created.append(cmd)
+    return created
+
+
+def enqueue_timeout_alerts_for_push(mutations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Điểm gọi từ /sync/push. Lọc rẻ trước khi mở connection."""
+    if not any(_is_alarm_mutation(m) for m in mutations):
+        return []
+    with open_connection() as conn:
+        return enqueue_timeout_alerts(conn, make_sync_repo(conn), mutations)
+
+
+class CommandPayload(BaseModel):
+    command: str
+    params: Optional[Dict[str, Any]] = None
+
+
+@router.post("/devices/{radio_id}/commands")
+def radio_command_create(radio_id: str, body: CommandPayload, actor: str = Depends(require_operator)):
+    if body.command not in COMMANDS:
+        raise HTTPException(400, f"command phải là một trong: {', '.join(COMMANDS)}")
+    params = body.params or {}
+    if body.command == "text_message":
+        text = str(params.get("text") or "").strip()
+        if not text:
+            raise HTTPException(400, "text_message cần params.text")
+        params = {"text": text[:MAX_TEXT_LEN]}
+    with open_connection() as conn:
+        if not _one(conn, "SELECT radio_id FROM radio_devices WHERE radio_id = ?", (radio_id,)):
+            raise HTTPException(404, f"Bộ đàm {radio_id} chưa đăng ký.")
+        cmd, _ = create_command(conn, radio_id, body.command, params, created_by=actor, reason="manual")
+    return {"status": "success", "command": cmd}
+
+
+@router.get("/commands")
+def radio_commands_list(radio_id: Optional[str] = None, limit: int = 50, actor: str = Depends(require_operator)):
+    limit = max(1, min(limit, 200))
+    with open_connection() as conn:
+        if radio_id:
+            rows = _all(conn, "SELECT * FROM radio_commands WHERE radio_id = ? ORDER BY created_at DESC LIMIT ?",
+                        (radio_id, limit))
+        else:
+            rows = _all(conn, "SELECT * FROM radio_commands ORDER BY created_at DESC LIMIT ?", (limit,))
+    return {"commands": [_command_view(r) for r in rows], "count": len(rows)}
+
+
+@router.get("/bridge/commands", dependencies=[Depends(require_radio_gateway)])
+def bridge_commands_claim(limit: int = 20):
+    """Bridge lấy lệnh cần gửi. Lệnh được 'thuê' COMMAND_LEASE; không báo kết quả thì cấp lại."""
+    limit = max(1, min(limit, 100))
+    now_dt = datetime.now(timezone.utc)
+    now = now_dt.isoformat()
+    ttl_cutoff = (now_dt - COMMAND_TTL).isoformat()
+    lease_cutoff = (now_dt - COMMAND_LEASE).isoformat()
+    with open_connection() as conn:
+        conn.execute(
+            sql("UPDATE radio_commands SET status = 'expired', done_at = ?, error = ? "
+                "WHERE status = 'pending' AND created_at < ?"),
+            (now, "Hết hạn trước khi bridge lấy lệnh (bridge không chạy?)", ttl_cutoff),
+        )
+        conn.execute(
+            sql("UPDATE radio_commands SET status = 'failed', done_at = ?, error = ? "
+                "WHERE status = 'sent' AND sent_at < ? AND attempts >= ?"),
+            (now, "Bridge không báo kết quả sau nhiều lần thử", lease_cutoff, COMMAND_MAX_ATTEMPTS),
+        )
+        rows = _all(
+            conn,
+            "SELECT * FROM radio_commands WHERE status = 'pending' OR (status = 'sent' AND sent_at < ?) "
+            "ORDER BY created_at ASC LIMIT ?",
+            (lease_cutoff, limit),
+        )
+        for r in rows:
+            conn.execute(
+                sql("UPDATE radio_commands SET status = 'sent', sent_at = ?, attempts = attempts + 1 WHERE id = ?"),
+                (now, r["id"]),
+            )
+        conn.commit()
+    return {"commands": [_command_view(r) for r in rows]}
+
+
+class CommandResultPayload(BaseModel):
+    ok: bool
+    result: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+
+
+@router.post("/bridge/commands/{command_id}/result", dependencies=[Depends(require_radio_gateway)])
+def bridge_command_result(command_id: str, body: CommandResultPayload):
+    now = _now()
+    with open_connection() as conn:
+        cmd = _one(conn, "SELECT * FROM radio_commands WHERE id = ?", (command_id,))
+        if cmd is None:
+            raise HTTPException(404, "Không tìm thấy lệnh.")
+        conn.execute(
+            sql("UPDATE radio_commands SET status = ?, done_at = ?, result = ?, error = ? WHERE id = ?"),
+            ("done" if body.ok else "failed", now,
+             json.dumps(body.result, ensure_ascii=False) if body.result is not None else None,
+             None if body.ok else (body.error or "failed"), command_id),
+        )
+        if body.ok and cmd["command"].startswith("lone_worker_"):
+            state = (body.result or {}).get("lone_worker")
+            if state not in ("on", "off"):
+                state = {"lone_worker_enable": "on", "lone_worker_disable": "off"}.get(cmd["command"])
+            if state:
+                conn.execute(
+                    sql("UPDATE radio_devices SET lone_worker_state = ?, lone_worker_checked_at = ? WHERE radio_id = ?"),
+                    (state, now, cmd["radio_id"]),
+                )
+        conn.commit()
+        row = _one(conn, "SELECT * FROM radio_commands WHERE id = ?", (command_id,)) or cmd
+    return {"status": "success", "command": _command_view(row)}

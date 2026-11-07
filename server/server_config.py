@@ -136,6 +136,11 @@ class ServerConfig:
     # Bật thì /sync/* yêu cầu device token hợp lệ. Mặc định TẮT để bản app cũ
     # chưa enroll vẫn chạy; bật sau khi toàn bộ thiết bị đã đăng ký xong.
     require_device_token: bool = False
+    # Bật thì /sync/push TỪ CHỐI mutation chat của hội thoại 1-1 (direct_*).
+    # Tin 1-1 phải đi bằng E2EE (/api/v1/messages/*); bản app cũ còn đẩy
+    # plaintext lên đây sẽ bị từ chối thay vì lưu nội dung rõ trên server.
+    # Mặc định TẮT để nâng cấp server không làm gãy chat của máy chưa cập nhật.
+    reject_plaintext_direct_chat: bool = False
     # Thời gian sống của vé mời đăng ký thiết bị (giây).
     enrollment_token_ttl: int = 600
 
@@ -189,6 +194,9 @@ def load_server_config() -> ServerConfig:
 
     require_device_token = os.environ.get(
         "IZIIAPP_REQUIRE_DEVICE_TOKEN", ""
+    ).strip().lower() in ("1", "true", "yes")
+    reject_plaintext_direct_chat = os.environ.get(
+        "IZIIAPP_REJECT_PLAINTEXT_DIRECT_CHAT", ""
     ).strip().lower() in ("1", "true", "yes")
     if not ws_secret and not secret:
         try:
@@ -265,6 +273,7 @@ def load_server_config() -> ServerConfig:
         radio_gateway_secret=os.environ.get("IZIIAPP_RADIO_GATEWAY_SECRET", "").strip(),
         radio_alarm_dedup_seconds=_int_env("IZIIAPP_RADIO_ALARM_DEDUP_SECONDS", 120),
         require_device_token=require_device_token,
+        reject_plaintext_direct_chat=reject_plaintext_direct_chat,
         enrollment_token_ttl=_int_env("IZIIAPP_ENROLLMENT_TOKEN_TTL", 600),
         db_backend=db_backend,
         pg_dsn=pg_dsn,

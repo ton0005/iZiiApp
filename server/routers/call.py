@@ -3,13 +3,19 @@
 WebRTC Voice & Video Call Signaling Router.
 Handles STUN/TURN configuration and Real-time WebSocket SDP/ICE candidate relay.
 """
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 import json
 import asyncio
 from datetime import datetime, timezone
 
+from server_config import CONFIG
+from security_auth import optional_device, lookup_device_by_token
+
+# LƯU Ý: không đặt optional_device ở cấp router vì nó nhận `Request` — route
+# WebSocket /ws sẽ lỗi. Gắn Depends cho từng endpoint HTTP, còn WS tự kiểm token
+# ở dưới.
 router = APIRouter(prefix="/call", tags=["WebRTC Call Engine"])
 
 # Active WebSockets map: client_id -> WebSocket
@@ -28,7 +34,7 @@ class CallInviteModel(BaseModel):
     room_id: Optional[str] = None
 
 
-@router.get("/stun-turn-config")
+@router.get("/stun-turn-config", dependencies=[Depends(optional_device)])
 async def get_stun_turn_config():
     """
     Returns public STUN and TURN server credentials for NAT traversal.
@@ -42,7 +48,7 @@ async def get_stun_turn_config():
     }
 
 
-@router.post("/invite")
+@router.post("/invite", dependencies=[Depends(optional_device)])
 async def invite_call(invite: CallInviteModel):
     """
     HTTP trigger to initiate a call invite if client isn't yet connected on call WebSocket.
@@ -69,6 +75,24 @@ async def call_signaling_ws(websocket: WebSocket, client_id: str):
     """
     Dedicated WebRTC Signaling WebSocket channel for SDP Offers, Answers, and ICE Candidates.
     """
+    # Kiểm token thiết bị. WebSocket không gửi header tiện như HTTP nên nhận token
+    # qua query (?token=...) hoặc header X-iZii-Device-Token nếu client đặt được.
+    # Khi IZIIAPP_REQUIRE_DEVICE_TOKEN=1: thiếu/sai token → từ chối bắt tay (4401).
+    if CONFIG.require_device_token:
+        token = websocket.query_params.get("token") or websocket.headers.get("x-izii-device-token")
+        identity = None
+        if token:
+            try:
+                from dependencies import open_connection
+                with open_connection() as conn:
+                    identity = lookup_device_by_token(conn, token)
+            except Exception as e:
+                print(f"⚠️ [CALL-WS] Lỗi tra device token: {e}")
+        if identity is None:
+            await websocket.close(code=4401)  # ~ 401 cho WebSocket
+            print(f"🚫 [CALL-WS] Từ chối '{client_id}': thiếu/sai device token.")
+            return
+
     await websocket.accept()
     connected_clients[client_id] = websocket
     print(f"📞 [CALL-WS] Client '{client_id}' connected to Call Signaling. Total call clients: {len(connected_clients)}")

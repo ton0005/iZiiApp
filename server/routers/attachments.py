@@ -1,47 +1,104 @@
 # server/routers/attachments.py
-import sys
 import os
-import shutil
-import uuid
 import hashlib
-from fastapi import APIRouter, UploadFile, File, HTTPException
-
-router = APIRouter(prefix="/api/v1/attachments", tags=["Attachments"])
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 
 from database import get_stable_data_dir
+from security_auth import optional_device
+
+# Upload yêu cầu danh tính thiết bị (optional_device): khi
+# IZIIAPP_REQUIRE_DEVICE_TOKEN=1 thì bắt buộc có X-iZii-Device-Token, nếu không
+# vẫn ghi audit được ai upload. Không để endpoint này mở hoàn toàn nữa.
+router = APIRouter(prefix="/api/v1/attachments", tags=["Attachments"],
+                   dependencies=[Depends(optional_device)])
+
+# Giới hạn kích thước: nạp cả file vào RAM nên phải chặn để tránh DoS bộ nhớ/đĩa.
+MAX_UPLOAD_BYTES = 25 * 1024 * 1024  # 25 MB
+
+# Chỉ cho các loại tệp đính kèm hợp lệ. KHÔNG cho .html/.svg/.xml... vì tệp được
+# serve tĩnh cùng origin tại /uploads → tránh stored XSS. Không cho tệp thực thi.
+ALLOWED_EXTENSIONS = {
+    ".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic",
+    ".pdf", ".txt", ".csv",
+    ".doc", ".docx", ".xls", ".xlsx",
+    ".mp4", ".mov", ".m4a", ".aac", ".mp3", ".wav",
+}
+
+# Phần mở rộng thực thi/nguy hiểm — chặn tuyệt đối dù có lọt allowlist vì lý do nào.
+_FORBIDDEN_EXTENSIONS = {
+    ".html", ".htm", ".svg", ".xml", ".xhtml", ".js", ".mjs",
+    ".php", ".phtml", ".py", ".pyc", ".sh", ".bat", ".cmd", ".ps1",
+    ".exe", ".dll", ".so", ".jar", ".com", ".scr", ".vbs", ".hta",
+}
+
 
 @router.post("/upload")
 async def upload_attachment(file: UploadFile = File(...)):
     try:
         uploads_dir = os.path.join(get_stable_data_dir(), "uploads")
         os.makedirs(uploads_dir, exist_ok=True)
-        
-        # Read file contents and compute SHA-256 for content deduplication
-        contents = await file.read()
-        file_hash = hashlib.sha256(contents).hexdigest()
-        
+
+        # Chuẩn hoá & kiểm phần mở rộng TRƯỚC khi đọc nội dung.
         original_name = file.filename or "attachment"
-        file_ext = os.path.splitext(original_name)[1].lower()
+        # Chỉ lấy phần tên cuối, loại mọi thành phần đường dẫn (chống path traversal
+        # trong tên file do client đặt).
+        base_name = os.path.basename(original_name.replace("\\", "/"))
+        file_ext = os.path.splitext(base_name)[1].lower()
+
+        if file_ext in _FORBIDDEN_EXTENSIONS:
+            raise HTTPException(status_code=415, detail=f"Loại tệp bị cấm: {file_ext}")
+        if file_ext not in ALLOWED_EXTENSIONS:
+            raise HTTPException(
+                status_code=415,
+                detail=f"Loại tệp không được hỗ trợ: {file_ext or '(không có đuôi)'}",
+            )
+
+        # Đọc theo chunk, dừng ngay khi vượt giới hạn — không nạp vô hạn vào RAM.
+        hasher = hashlib.sha256()
+        total = 0
+        chunks = []
+        while True:
+            chunk = await file.read(1024 * 1024)  # 1 MB/lần
+            if not chunk:
+                break
+            total += len(chunk)
+            if total > MAX_UPLOAD_BYTES:
+                raise HTTPException(
+                    status_code=413,
+                    detail=f"Tệp vượt giới hạn {MAX_UPLOAD_BYTES // (1024 * 1024)} MB",
+                )
+            hasher.update(chunk)
+            chunks.append(chunk)
+
+        if total == 0:
+            raise HTTPException(status_code=400, detail="Tệp rỗng")
+
+        file_hash = hasher.hexdigest()
+        # Tên lưu = hash (hex, an toàn) + đuôi đã nằm trong allowlist.
         unique_filename = f"{file_hash}{file_ext}"
-        
         file_path = os.path.join(uploads_dir, unique_filename)
-        
-        # Only write if it does not already exist (avoids duplicate disk writes)
+
+        # Chốt chặn cuối: đảm bảo đường dẫn thực vẫn nằm trong uploads_dir.
+        real_uploads = os.path.realpath(uploads_dir)
+        real_target = os.path.realpath(file_path)
+        if os.path.commonpath([real_uploads, real_target]) != real_uploads:
+            raise HTTPException(status_code=400, detail="Đường dẫn tệp không hợp lệ")
+
         if not os.path.exists(file_path):
             with open(file_path, "wb") as buffer:
-                buffer.write(contents)
-            
-        file_size = len(contents)
-        print(f"📥 [ATTACHMENT] Đã nhận tệp: {original_name} ({file_size} bytes) -> {unique_filename}")
-        
-        # Return attachment info. URL is relative, client can prepend the server base URL.
+                for chunk in chunks:
+                    buffer.write(chunk)
+
+        print(f"📥 [ATTACHMENT] Đã nhận tệp: {base_name} ({total} bytes) -> {unique_filename}")
         return {
             "status": "success",
-            "filename": original_name,
+            "filename": base_name,
             "unique_name": unique_filename,
             "url": f"/uploads/{unique_filename}",
-            "size": file_size
+            "size": total,
         }
+    except HTTPException:
+        raise  # giữ nguyên mã lỗi 4xx đã chọn, không bọc thành 500
     except Exception as e:
         print(f"❌ [ATTACHMENT] Lỗi tải lên tệp đính kèm: {e}")
-        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Upload failed")

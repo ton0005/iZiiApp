@@ -8,6 +8,8 @@ Handles encrypted message sending, retrieval, and acknowledgment:
 - POST /api/v1/messages/ack     — Acknowledge message delivery
 """
 from fastapi import APIRouter, Depends, HTTPException
+import chat_access
+from security_auth import DeviceIdentity, optional_device
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 from datetime import datetime, timezone
@@ -31,6 +33,9 @@ class MessageSendPayload(BaseModel):
 
 
 class MessageAckPayload(BaseModel):
+    # Client gửi kèm device_id của mình. Khi máy có device token, giá trị này
+    # (hoặc token) quyết định ai được ack — xem _own_ids().
+    device_id: Optional[str] = None
     message_ids: List[str] = []
     # Tin máy nhận KHÔNG giải mã được. Trước đây client im lặng bỏ qua, nên
     # server tưởng chưa giao và gửi lại mãi — nguyên nhân của 1173 tin kẹt
@@ -39,12 +44,50 @@ class MessageAckPayload(BaseModel):
     failed_reason: Optional[str] = None
 
 
+def _identities(notif_repo: INotificationRepository, device_id: str) -> set:
+    """device_id và mã người dùng đăng ký của thiết bị đó.
+
+    Hội thoại 1-1 cũ đặt tên theo mã người dùng thay vì device_id, nên kiểm tra
+    thành viên phải chấp nhận cả hai.
+    """
+    ids = {device_id}
+    try:
+        info = notif_repo.get_recipient_info(device_id)
+        if info and info.get("user_id"):
+            ids.add(info["user_id"])
+    except Exception:
+        pass
+    return ids
+
+
+def _in_direct_conversation(conversation_id: str, ids: set) -> bool:
+    return any(chat_access.is_direct_member(conversation_id, i) for i in ids)
+
+
 @router.post("/send")
 async def message_send(body: MessageSendPayload,
                         msg_repo: IMessageRepository = Depends(get_message_repo),
-                        notif_repo: INotificationRepository = Depends(get_notification_repo)):
+                        notif_repo: INotificationRepository = Depends(get_notification_repo),
+                        device: Optional[DeviceIdentity] = Depends(optional_device)):
     now = datetime.now(timezone.utc).isoformat()
-    
+
+    # Máy đã xác thực không được gửi mạo danh thiết bị khác. (Máy chưa enroll
+    # vẫn qua được khi IZIIAPP_REQUIRE_DEVICE_TOKEN tắt — xem optional_device.)
+    if device is not None and device.device_id != body.sender_device_id:
+        raise HTTPException(403, "sender_device_id không khớp device token.")
+
+    # Hội thoại 1-1: cả người gửi lẫn mọi thiết bị nhận phải là thành viên.
+    # Không có kiểm tra này, ai cũng nhét được bản mã vào hàng đợi của người
+    # khác (spam, hoặc ép máy nạn nhân xử lý phong bì rác).
+    if chat_access.is_direct(body.conversation_id):
+        if not _in_direct_conversation(
+                body.conversation_id, _identities(notif_repo, body.sender_device_id)):
+            raise HTTPException(403, "Người gửi không thuộc hội thoại này.")
+        for recipient in body.payloads.keys():
+            if not _in_direct_conversation(
+                    body.conversation_id, _identities(notif_repo, recipient)):
+                raise HTTPException(403, f"Thiết bị nhận {recipient} không thuộc hội thoại này.")
+
     try:
         # Convert pydantic payloads to plain dicts for repository
         payloads_dict = {k: v.model_dump() for k, v in body.payloads.items()}
@@ -89,7 +132,8 @@ async def message_send(body: MessageSendPayload,
 @router.get("/pending")
 async def messages_pending(device_id: str,
                             limit: int = 50,
-                            repo: IMessageRepository = Depends(get_message_repo)):
+                            repo: IMessageRepository = Depends(get_message_repo),
+                            device: Optional[DeviceIdentity] = Depends(optional_device)):
     """
     Lấy MỘT LÔ tin chưa giao, cũ trước.
 
@@ -98,6 +142,9 @@ async def messages_pending(device_id: str,
     round-trip trong một vòng poll 5 giây, và vòng poll sau lại chồng lên vòng
     trước — đúng vòng lặp đã quan sát được.
     """
+    if device is not None and device.device_id != device_id:
+        # Đọc hàng đợi của máy khác: bản mã không đọc được nhưng lộ ai nhắn ai.
+        raise HTTPException(403, "device_id không khớp device token.")
     pending = repo.get_pending(device_id, limit=limit)
     remaining = repo.count_pending(device_id)
 
@@ -118,8 +165,18 @@ async def messages_pending(device_id: str,
 
 @router.post("/ack")
 async def message_ack(body: MessageAckPayload,
-                       repo: IMessageRepository = Depends(get_message_repo)):
+                       repo: IMessageRepository = Depends(get_message_repo),
+                       device: Optional[DeviceIdentity] = Depends(optional_device)):
     now = datetime.now(timezone.utc).isoformat()
+
+    if device is not None:
+        if body.device_id and body.device_id != device.device_id:
+            raise HTTPException(403, "device_id không khớp device token.")
+        # Chỉ ack/báo lỗi tin gửi TỚI máy này. Nếu không, máy A ack hộ máy B là
+        # làm B mất tin (server coi là đã giao và không gửi lại).
+        mine = {m["id"] for m in repo.get_pending(device.device_id, limit=200)}
+        body.message_ids = [i for i in body.message_ids if i in mine]
+        body.failed_ids = [i for i in body.failed_ids if i in mine]
 
     try:
         acked_count = repo.acknowledge(body.message_ids, now) if body.message_ids else 0

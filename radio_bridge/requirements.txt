@@ -1,0 +1,3 @@
+# AGPL-3.0 — xem README.md mục Giấy phép trước khi triển khai
+ok-dmrlib>=0.8.0
+httpx>=0.27

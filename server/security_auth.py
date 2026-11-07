@@ -26,9 +26,12 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import ipaddress
 import secrets
+import socket
 from datetime import datetime, timezone
 from typing import Optional
+from urllib.parse import urlparse
 
 from fastapi import Header, HTTPException, Request
 
@@ -291,3 +294,77 @@ def describe_scopes() -> str:
     )
     parts.append("radio=" + ("có" if CONFIG.radio_gateway_secret else "TẮT"))
     return "🔑 [AUTH] Phạm vi bí mật — " + " · ".join(parts)
+
+
+# ── Chống SSRF cho URL do người dùng cung cấp (webhook, callback...) ─────────
+
+def _ip_is_forbidden(ip: ipaddress._BaseAddress) -> bool:
+    """
+    Chặn mọi địa chỉ KHÔNG phải public-unicast: loopback, private (10/8,
+    172.16/12, 192.168/16), link-local (169.254/16 — gồm metadata cloud
+    169.254.169.254), CGNAT, multicast, reserved, unspecified (0.0.0.0).
+    IPv6 cũng chặn ::1, fc00::/7, fe80::/10 và cả IPv4-mapped (::ffff:127.0.0.1).
+    """
+    mapped = getattr(ip, "ipv4_mapped", None)
+    if mapped is not None:
+        ip = mapped
+    return (
+        ip.is_private or ip.is_loopback or ip.is_link_local
+        or ip.is_multicast or ip.is_reserved or ip.is_unspecified
+    )
+
+
+def validate_outbound_url(raw_url: str, *, allowed_hosts: Optional[set] = None) -> str:
+    """
+    Kiểm tra một URL do client gửi TRƯỚC KHI server tự gọi ra (chống SSRF).
+
+    Nguyên tắc (allowlist thắng denylist):
+      1. Chỉ cho http/https.
+      2. Nếu có `allowed_hosts` (allowlist domain) thì host phải nằm trong đó.
+      3. Resolve DNS → MỌI địa chỉ phân giải được đều phải là public-unicast.
+         Chốt luôn IP đã resolve vào URL trả về để tầng gửi dùng đúng IP này,
+         tránh DNS-rebinding (đổi DNS giữa lúc check và lúc gửi).
+
+    Ném HTTPException(400) nếu không hợp lệ. Trả về URL an toàn để gửi.
+    """
+    parsed = urlparse(raw_url)
+    if parsed.scheme not in ("http", "https"):
+        raise HTTPException(400, "URL phải bắt đầu bằng http:// hoặc https://")
+
+    host = (parsed.hostname or "").strip().lower()
+    if not host:
+        raise HTTPException(400, "URL thiếu hostname")
+
+    if allowed_hosts is not None and host not in {h.lower() for h in allowed_hosts}:
+        raise HTTPException(403, f"Host không nằm trong danh sách cho phép: {host}")
+
+    # Nếu host đã là IP literal thì kiểm trực tiếp.
+    try:
+        literal = ipaddress.ip_address(host)
+        if _ip_is_forbidden(literal):
+            raise HTTPException(403, f"Địa chỉ nội bộ/không công khai bị chặn: {host}")
+        return raw_url
+    except ValueError:
+        pass  # không phải IP literal → resolve DNS
+
+    try:
+        infos = socket.getaddrinfo(host, parsed.port or (443 if parsed.scheme == "https" else 80),
+                                   proto=socket.IPPROTO_TCP)
+    except socket.gaierror:
+        raise HTTPException(400, f"Không phân giải được hostname: {host}")
+
+    resolved = set()
+    for family, _type, _proto, _canon, sockaddr in infos:
+        ip_str = sockaddr[0]
+        try:
+            ip_obj = ipaddress.ip_address(ip_str)
+        except ValueError:
+            continue
+        if _ip_is_forbidden(ip_obj):
+            raise HTTPException(403, f"Host '{host}' phân giải ra địa chỉ nội bộ bị chặn: {ip_str}")
+        resolved.add(ip_str)
+
+    if not resolved:
+        raise HTTPException(400, f"Không có địa chỉ hợp lệ cho host: {host}")
+
+    return raw_url

@@ -966,7 +966,7 @@ class BleDeviceDiscoveryService {
           .getSingleOrNull();
       list.add({
         'deviceId': deviceId,
-        'name': peer?.deviceName ?? 'Thiết bị ngoại tuyến',
+        'name': peer?.deviceName ?? 'Offline Device',
         'userId': _deviceToUserMap[deviceId] ?? '',
       });
     }
@@ -1009,15 +1009,15 @@ class BleDeviceDiscoveryService {
       final Map<String, dynamic> shareData =
           jsonDecode(jsonStr) as Map<String, dynamic>;
 
-      final senderName = shareData['sender_name'] as String? ?? 'Ai đó';
+      final senderName = shareData['sender_name'] as String? ?? 'Someone';
       final senderUserId =
           shareData['sender_user_id'] as String? ?? 'unknown_sender';
       final table = shareData['table'] as String;
       final recordData = Map<String, dynamic>.from(shareData['data'] as Map);
 
       final recordName =
-          recordData['name'] ?? recordData['title'] ?? 'Bản ghi không tên';
-      final recordTypeLabel = table == 'leads' ? 'Cơ hội' : 'Dịch vụ';
+          recordData['name'] ?? recordData['title'] ?? 'Untitled record';
+      final recordTypeLabel = table == 'leads' ? 'Lead' : 'Service';
 
       print(
           '[BleDiscovery] Incoming share request from $senderName for $recordTypeLabel: $recordName');
@@ -1034,24 +1034,24 @@ class BleDeviceDiscoveryService {
         builder: (ctx) => AlertDialog(
           backgroundColor: const Color(0xFF1E293B),
           title: const Text(
-            '📥 Chia sẻ ngoại tuyến',
+            '📥 Offline Share',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           content: Text(
-            '$senderName muốn chia sẻ $recordTypeLabel "$recordName" với bạn qua kết nối Bluetooth.\n\nBạn có muốn nhận bản ghi này không?',
+            '$senderName wants to share $recordTypeLabel "$recordName" with you via Bluetooth.\n\nDo you want to accept this record?',
             style: const TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child:
-                  Text('Không cần', style: TextStyle(color: Colors.grey[400])),
+                  Text('Decline', style: TextStyle(color: Colors.grey[400])),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF10B981)),
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Chấp nhận',
+              child: const Text('Accept',
                   style: TextStyle(
                       color: Colors.white, fontWeight: FontWeight.bold)),
             ),
@@ -1109,7 +1109,7 @@ class BleDeviceDiscoveryService {
               SnackBar(
                 backgroundColor: const Color(0xFF10B981),
                 content: Text(
-                    '🎉 Đã chấp nhận và lưu $recordTypeLabel "$recordName"!'),
+                    '🎉 Accepted and saved $recordTypeLabel "$recordName"!'),
               ),
             );
           }
@@ -1117,7 +1117,7 @@ class BleDeviceDiscoveryService {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('🚫 Đã bỏ qua bản ghi chia sẻ từ $senderName.'),
+                content: Text('🚫 Declined shared record from $senderName.'),
               ),
             );
           }
@@ -1157,7 +1157,7 @@ class BleDeviceDiscoveryService {
 
       final table = responseData['table'] as String;
       final status = responseData['status'] as String;
-      final recordTypeLabel = table == 'leads' ? 'Cơ hội' : 'Dịch vụ';
+      final recordTypeLabel = table == 'leads' ? 'Lead' : 'Service';
 
       final context = rootNavigatorKey.currentContext;
       if (context != null && context.mounted) {
@@ -1166,14 +1166,14 @@ class BleDeviceDiscoveryService {
             SnackBar(
               backgroundColor: const Color(0xFF10B981),
               content:
-                  Text('✅ Người nhận đã CHẤP NHẬN chia sẻ $recordTypeLabel!'),
+                  Text('✅ Recipient ACCEPTED shared $recordTypeLabel!'),
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: const Color(0xFFEF4444),
-              content: Text('❌ Người nhận đã BỎ QUA chia sẻ $recordTypeLabel.'),
+              content: Text('❌ Recipient DECLINED shared $recordTypeLabel.'),
             ),
           );
         }

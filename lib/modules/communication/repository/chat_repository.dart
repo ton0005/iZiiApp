@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/enrollment/device_user_service.dart';
+import '../models/chat_envelope.dart';
 
 class ChatRepository {
   final AppDatabase _db;
@@ -25,6 +26,42 @@ class ChatRepository {
       ]);
 
     return query.get();
+  }
+
+  /// Thành viên hội thoại 1-1 `direct_<a>_<b>` — cùng quy tắc với
+  /// `server/chat_access.py` (`is_direct_member`).
+  ///
+  /// Không dùng split('_') vì id có thể chứa '_'. Khớp đầu/cuối vẫn mơ hồ
+  /// (`direct_EMP_007_x` khớp cả "EMP"), nên dựa thêm vào việc
+  /// [getOrCreateDirectConversation] luôn sắp xếp hai id: phần đầu <= phần cuối.
+  static bool isDirectMember(String conversationId, String memberId) {
+    const prefix = 'direct_';
+    if (!conversationId.startsWith(prefix) || memberId.isEmpty) return false;
+    final rest = conversationId.substring(prefix.length);
+    final head = '${memberId}_';
+    final tail = '_$memberId';
+    if (rest.startsWith(head) &&
+        memberId.compareTo(rest.substring(head.length)) <= 0) {
+      return true;
+    }
+    if (rest.endsWith(tail) &&
+        rest.substring(0, rest.length - tail.length).compareTo(memberId) <= 0) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Máy này có thuộc hội thoại [conversationId] không.
+  Future<bool> isLocalMember(String conversationId, String memberId) async {
+    if (conversationId.startsWith('direct_')) {
+      return isDirectMember(conversationId, memberId);
+    }
+    final row = await (_db.select(_db.chatParticipants)
+          ..where((p) =>
+              p.conversationId.equals(conversationId) &
+              p.userId.equals(memberId)))
+        .getSingleOrNull();
+    return row != null;
   }
 
   Future<List<ChatParticipant>> getParticipants(String conversationId) async {
@@ -158,13 +195,30 @@ class ChatRepository {
 
   // === MESSAGES ===
 
+  static const int messagePageSize = 50;
+
+  /// Một trang tin, cũ trước. Truyền [before] (tin cũ nhất đang hiển thị) để
+  /// lấy trang liền trước nó.
+  ///
+  /// Phân trang theo khoá (sent_at, id) chứ không theo offset: tin mới đến
+  /// trong lúc đang cuộn sẽ làm offset lệch và lặp/bỏ sót tin. Có thêm id vì
+  /// nhiều tin có thể trùng sent_at (gửi hàng loạt, đồng bộ lại).
   Future<List<ChatMessage>> getMessages(String conversationId,
-      {int limit = 50, int offset = 0}) async {
+      {int limit = messagePageSize, ChatMessage? before}) async {
     final query = _db.select(_db.chatMessages)
-      ..where((m) => m.conversationId.equals(conversationId))
-      ..orderBy(
-          [(m) => OrderingTerm(expression: m.sentAt, mode: OrderingMode.desc)])
-      ..limit(limit, offset: offset);
+      ..where((m) {
+        final inConvo = m.conversationId.equals(conversationId);
+        if (before == null) return inConvo;
+        return inConvo &
+            (m.sentAt.isSmallerThanValue(before.sentAt) |
+                (m.sentAt.equals(before.sentAt) &
+                    m.id.isSmallerThanValue(before.id)));
+      })
+      ..orderBy([
+        (m) => OrderingTerm(expression: m.sentAt, mode: OrderingMode.desc),
+        (m) => OrderingTerm(expression: m.id, mode: OrderingMode.desc),
+      ])
+      ..limit(limit);
 
     final messages = await query.get();
     // Return in chronological order
@@ -242,9 +296,228 @@ class ChatRepository {
     ));
   }
 
+  // === E2EE ENVELOPES (hội thoại 1-1) ===
+
+  /// Id của đối tác trong hội thoại 1-1; null nếu [myId] không thuộc hội thoại.
+  /// Cùng quy tắc tách với [isDirectMember].
+  static String? directPeer(String conversationId, String myId) {
+    if (!isDirectMember(conversationId, myId)) return null;
+    final rest = conversationId.substring('direct_'.length);
+    final head = '${myId}_';
+    if (rest.startsWith(head) &&
+        myId.compareTo(rest.substring(head.length)) <= 0) {
+      return rest.substring(head.length);
+    }
+    return rest.substring(0, rest.length - '_$myId'.length);
+  }
+
+  Future<void> enqueueE2ee(ChatEnvelope e) async {
+    await _db.into(_db.e2eeOutbox).insert(
+          E2eeOutboxData(
+            id: e.id,
+            conversationId: e.conversationId,
+            envelope: e.toJson(),
+            attempts: 0,
+            createdAt: DateTime.now(),
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
+  }
+
+  /// Phong bì chờ gửi, CŨ TRƯỚC — thứ tự gửi phải giữ nguyên, nếu không sửa/thu
+  /// hồi có thể tới trước tin gốc.
+  Future<List<E2eeOutboxData>> pendingE2ee({int limit = 50}) {
+    return (_db.select(_db.e2eeOutbox)
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.createdAt),
+            (t) => OrderingTerm(expression: t.id),
+          ])
+          ..limit(limit))
+        .get();
+  }
+
+  Future<Set<String>> pendingE2eeIds() async {
+    final rows = await (_db.selectOnly(_db.e2eeOutbox)
+          ..addColumns([_db.e2eeOutbox.id]))
+        .get();
+    return rows.map((r) => r.read(_db.e2eeOutbox.id)!).toSet();
+  }
+
+  Future<void> removeE2ee(String id) =>
+      (_db.delete(_db.e2eeOutbox)..where((t) => t.id.equals(id))).go();
+
+  Future<void> markE2eeFailed(String id, String error) async {
+    final row = await (_db.select(_db.e2eeOutbox)
+          ..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (row == null) return;
+    await (_db.update(_db.e2eeOutbox)..where((t) => t.id.equals(id))).write(
+      E2eeOutboxCompanion(
+        attempts: Value(row.attempts + 1),
+        lastError: Value(error.length > 200 ? error.substring(0, 200) : error),
+      ),
+    );
+  }
+
+  Future<ChatMessage?> getMessageById(String id) => (_db.select(_db.chatMessages)
+        ..where((m) => m.id.equals(id)))
+      .getSingleOrNull();
+
+  Future<List<ChatMessage>> getPinnedMessages(String conversationId) {
+    return (_db.select(_db.chatMessages)
+          ..where((m) =>
+              m.conversationId.equals(conversationId) &
+              m.pinnedAt.isNotNull() &
+              m.isDeleted.equals(false))
+          ..orderBy([
+            (m) => OrderingTerm(expression: m.pinnedAt, mode: OrderingMode.desc)
+          ]))
+        .get();
+  }
+
+  Future<Map<String, List<ChatReaction>>> getReactionsFor(
+      Iterable<String> messageIds) async {
+    final ids = messageIds.toList();
+    if (ids.isEmpty) return {};
+    final rows = await (_db.select(_db.chatReactions)
+          ..where((r) => r.messageId.isIn(ids))
+          ..orderBy([(r) => OrderingTerm(expression: r.reactedAt)]))
+        .get();
+    final result = <String, List<ChatReaction>>{};
+    for (final r in rows) {
+      result.putIfAbsent(r.messageId, () => []).add(r);
+    }
+    return result;
+  }
+
+  /// Áp một phong bì vào DB cục bộ. [senderId] là người GỬI ĐÃ XÁC THỰC (từ
+  /// chữ ký/ECDH), không phải thứ phong bì tự khai.
+  ///
+  /// Quyền: chỉ người gửi gốc mới sửa/thu hồi tin của mình. Thả cảm xúc và ghim
+  /// thì mọi thành viên làm được (đã kiểm tra thành viên ở tầng kênh).
+  /// Hàm idempotent — gửi lại cùng phong bì không đổi kết quả.
+  Future<EnvelopeOutcome> applyEnvelope(
+    ChatEnvelope e, {
+    required String senderId,
+    DateTime? receivedAt,
+  }) async {
+    // Đồng hồ máy gửi lệch/độc hại: không cho tin "đến từ tương lai" ghim lên
+    // cuối danh sách mãi mãi.
+    final now = DateTime.now();
+    final ts = e.ts.isAfter(now.add(const Duration(minutes: 5))) ? now : e.ts;
+
+    if (e.kind == ChatEnvelopeKind.message) {
+      // Tin đã có (kể cả đã thu hồi) → không ghi đè. Nếu không, phát lại một
+      // phong bì cũ sẽ "hồi sinh" tin đã thu hồi.
+      if (await getMessageById(e.id) != null) return EnvelopeOutcome.duplicate;
+      await saveMessage(ChatMessage(
+        id: e.id,
+        conversationId: e.conversationId,
+        senderId: senderId,
+        type: e.type ?? 'text',
+        content: jsonEncode(e.content ?? const {}),
+        sentAt: ts,
+        deliveredAt: receivedAt,
+        isDeleted: false,
+        replyToId: e.replyToId,
+        forwardedFromId: e.forwardedFromId,
+      ));
+      return EnvelopeOutcome.applied;
+    }
+
+    final target = await getMessageById(e.targetId ?? '');
+    if (target == null || target.conversationId != e.conversationId) {
+      // Sự kiện tới trước tin gốc hoặc nhắm sai hội thoại.
+      return EnvelopeOutcome.ignored;
+    }
+    final update = _db.update(_db.chatMessages)
+      ..where((m) => m.id.equals(target.id));
+
+    switch (e.kind) {
+      case ChatEnvelopeKind.edit:
+        if (target.senderId != senderId || target.isDeleted) {
+          return EnvelopeOutcome.ignored;
+        }
+        final prev = target.editedAt;
+        if (prev != null && !ts.isAfter(prev)) return EnvelopeOutcome.ignored;
+        final content = _decodeContent(target.content);
+        content['text'] = e.newText ?? '';
+        await update.write(ChatMessagesCompanion(
+          content: Value(jsonEncode(content)),
+          editedAt: Value(ts),
+        ));
+        return EnvelopeOutcome.applied;
+
+      case ChatEnvelopeKind.revoke:
+        if (target.senderId != senderId) return EnvelopeOutcome.ignored;
+        if (target.isDeleted) return EnvelopeOutcome.duplicate;
+        // Xoá sạch nội dung chứ không chỉ cờ isDeleted: "thu hồi với mọi người"
+        // phải thật sự xoá khỏi máy người nhận.
+        await update.write(const ChatMessagesCompanion(
+          content: Value('{}'),
+          isDeleted: Value(true),
+          pinnedAt: Value(null),
+        ));
+        await (_db.delete(_db.chatReactions)
+              ..where((r) => r.messageId.equals(target.id)))
+            .go();
+        return EnvelopeOutcome.applied;
+
+      case ChatEnvelopeKind.reaction:
+        if (target.isDeleted) return EnvelopeOutcome.ignored;
+        final emoji = e.emoji ?? '';
+        if (emoji.runes.length > 8) return EnvelopeOutcome.ignored;
+        final existing = await (_db.select(_db.chatReactions)
+              ..where((r) =>
+                  r.messageId.equals(target.id) & r.userId.equals(senderId)))
+            .getSingleOrNull();
+        if (existing != null && existing.reactedAt.isAfter(ts)) {
+          return EnvelopeOutcome.ignored;
+        }
+        if (emoji.isEmpty) {
+          await (_db.delete(_db.chatReactions)
+                ..where((r) =>
+                    r.messageId.equals(target.id) & r.userId.equals(senderId)))
+              .go();
+        } else {
+          await _db.into(_db.chatReactions).insertOnConflictUpdate(
+                ChatReaction(
+                    messageId: target.id,
+                    userId: senderId,
+                    emoji: emoji,
+                    reactedAt: ts),
+              );
+        }
+        return EnvelopeOutcome.applied;
+
+      case ChatEnvelopeKind.pin:
+        if (target.isDeleted) return EnvelopeOutcome.ignored;
+        await update.write(ChatMessagesCompanion(
+          pinnedAt: Value((e.pinned ?? false) ? ts : null),
+        ));
+        return EnvelopeOutcome.applied;
+
+      case ChatEnvelopeKind.message:
+        return EnvelopeOutcome.ignored; // đã xử lý ở trên
+    }
+  }
+
+  static Map<String, dynamic> _decodeContent(String raw) {
+    try {
+      final d = jsonDecode(raw);
+      if (d is Map) return Map<String, dynamic>.from(d);
+    } catch (_) {}
+    return <String, dynamic>{};
+  }
+
   // === OUTBOX INTEGRATION ===
 
   Future<void> queueMessageOffline(ChatMessage message) async {
+    // Tin 1-1 chỉ được đi bằng E2EE (xem E2eeOutbox). Đây là chốt chặn cuối:
+    // dù có đường code nào quên và gọi hàm này, plaintext cũng không lên server
+    // qua đồng bộ.
+    if (message.conversationId.startsWith('direct_')) return;
+
     final outboxId = const Uuid().v4();
     final mutation = OutboxMutation(
       id: outboxId,
@@ -257,6 +530,12 @@ class ChatRepository {
         'type': message.type,
         'content': message.content,
         'sent_at': message.sentAt.toIso8601String(),
+        if (message.replyToId != null) 'reply_to_id': message.replyToId,
+        if (message.editedAt != null)
+          'edited_at': message.editedAt!.toIso8601String(),
+        if (message.forwardedFromId != null)
+          'forwarded_from_id': message.forwardedFromId,
+        if (message.isDeleted) 'is_deleted': true,
       }),
       createdAt: DateTime.now(),
       status: 'pending',
@@ -409,4 +688,16 @@ class ChatRepository {
       ..where((d) => d.isRevoked.equals(false));
     return query.get();
   }
+}
+
+/// Kết quả áp một phong bì E2EE vào DB cục bộ.
+enum EnvelopeOutcome {
+  /// Đã thay đổi dữ liệu.
+  applied,
+
+  /// Đã có sẵn / đã áp rồi — bình thường khi gửi lại.
+  duplicate,
+
+  /// Bị bỏ: không đủ quyền, nhắm sai hội thoại, tin gốc chưa tới, hoặc lỗi thời.
+  ignored,
 }

@@ -503,7 +503,7 @@ class _ResponsiveKanbanBoardState<T extends Object>
                                   child: Center(
                                     child: Text(
                                       widget.emptyLaneHint ??
-                                          'Kéo thả thẻ vào đây',
+                                          'Drag and drop cards here',
                                       style: TextStyle(
                                         color: Colors.grey[500],
                                         fontSize: 12,

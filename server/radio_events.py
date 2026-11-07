@@ -245,6 +245,15 @@ def _truthy(v: Any) -> bool:
     return v in (True, 1, "1", "true", "True")
 
 
+def _job_assignee(job: Dict[str, Any]) -> Any:
+    """Cùng các tên trường mà routers.sync._job_assignee chấp nhận."""
+    for key in ("assignee", "assigned_to", "assignee_id", "employee_id", "user_id"):
+        val = job.get(key)
+        if val is not None and str(val).strip():
+            return val
+    return None
+
+
 def find_active_solo_job(
     jobs: Dict[str, Dict[str, Any]],
     employee_id: Optional[str],
@@ -255,7 +264,7 @@ def find_active_solo_job(
         j for j in jobs.values()
         if str(j.get("status", "")).lower() in ("in_progress", "inprog")
         and (_truthy(j.get("is_solo_job")) or str(j.get("job_type", "")).lower() == "alone_worker")
-        and assignee_matches(j.get("assignee"), employee_id, employee_name)
+        and assignee_matches(_job_assignee(j), employee_id, employee_name)
     ]
     if not candidates:
         return None

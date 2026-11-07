@@ -1,7 +1,17 @@
 import 'dart:async';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import '../../../core/device_identity/device_identity_service.dart';
 import '../../../core/settings/settings_service.dart';
 import '../models/chat_models.dart';
+
+/// ⚠️ TODO(production): XOÁ HẰNG NÀY TRƯỚC KHI PHÁT HÀNH.
+///
+/// Secret WS mặc định cứng, chỉ để test app mà chưa cần cấu hình token. Nó nằm
+/// trong mã nguồn nên AI tải được app đều đọc được → coi như không có secret.
+/// Khi lên production: bỏ hằng này, bắt buộc `getWsToken()` có giá trị (nếu
+/// rỗng thì báo "chưa cấu hình server" thay vì dùng secret mặc định), và đặt
+/// IZIIAPP_WS_SECRET riêng cho server. Xem lib/modules/communication/plan/01.md.
+const String _kDevFallbackWsSecret = 'iZiiServerSecretKey2026';
 
 class ChatWebSocketService {
   static final ChatWebSocketService _instance = ChatWebSocketService._internal();
@@ -41,8 +51,29 @@ class ChatWebSocketService {
       final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
       final portStr = uri.hasPort ? ':${uri.port}' : '';
       final wsToken = await _settingsService.getWsToken();
-      final effectiveToken = wsToken.isNotEmpty ? wsToken : 'iZiiServerSecretKey2026';
-      final wsUrl = '$scheme://${uri.host}$portStr/chat?token=${Uri.encodeComponent(effectiveToken)}';
+      final effectiveToken = wsToken.isNotEmpty ? wsToken : _kDevFallbackWsSecret;
+
+      // Danh tính máy để server chỉ giao tin hội thoại cho đúng thành viên.
+      // Thiếu cả hai thì server coi là bản cũ và KHÔNG giao tin hội thoại qua
+      // WS nữa (tin vẫn về qua /sync/pull, chỉ chậm hơn).
+      final query = <String, String>{'token': effectiveToken};
+      try {
+        final identity = await DeviceIdentityService().getOrCreateIdentity();
+        if (identity.deviceId.isNotEmpty) query['device_id'] = identity.deviceId;
+      } catch (_) {
+        if (_currentUserId != null) query['device_id'] = _currentUserId!;
+      }
+      final deviceToken = await _settingsService.getDeviceToken(baseUrl);
+      if (deviceToken != null && deviceToken.isNotEmpty) {
+        query['device_token'] = deviceToken;
+      }
+      final wsUrl = Uri(
+        scheme: scheme,
+        host: uri.host,
+        port: uri.hasPort ? uri.port : null,
+        path: '/chat',
+        queryParameters: query,
+      ).toString();
       final maskedToken = effectiveToken.length > 6 ? '${effectiveToken.substring(0, 4)}...' : '***';
 
       print('[ChatWS] Connecting to $scheme://${uri.host}$portStr/chat?token=$maskedToken ...');

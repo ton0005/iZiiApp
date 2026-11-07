@@ -65,4 +65,65 @@ void main() {
     expect(d.isAssigned, isFalse);
     expect(d.system, 'tetra');
   });
+
+  group('RadioCommand.fromJson', () {
+    test('Lone Worker status answered by the radio', () {
+      final c = RadioCommand.fromJson({
+        'id': 'rcmd_1',
+        'radio_id': '507',
+        'command': 'lone_worker_status',
+        'status': 'done',
+        'params': {},
+        'result': {'lone_worker': 'on'},
+        'reason': 'manual',
+        'created_at': '2026-11-02T08:00:00+00:00',
+      });
+      expect(c.isFinished, isTrue);
+      expect(c.isOk, isTrue);
+      expect(c.loneWorker, 'on');
+    });
+
+    test('time-out message still on its way', () {
+      final c = RadioCommand.fromJson({
+        'id': 'rcmd_2',
+        'radio_id': '507',
+        'command': 'text_message',
+        'status': 'sent',
+        'params': {'text': 'ALONE WORKER TIMEOUT - Room 6A.'},
+        'reason': 'alone_worker_timeout',
+        'job_id': 'job-1',
+      });
+      expect(c.isFinished, isFalse);
+      expect(c.text, contains('Room 6A'));
+      expect(c.jobId, 'job-1');
+      expect(c.loneWorker, isNull);
+    });
+
+    test('radio unreachable', () {
+      final c = RadioCommand.fromJson({
+        'id': 'rcmd_3',
+        'radio_id': '507',
+        'command': 'lone_worker_enable',
+        'status': 'failed',
+        'error': 'radio did not answer',
+      });
+      expect(c.isFinished, isTrue);
+      expect(c.isOk, isFalse);
+      expect(c.error, 'radio did not answer');
+    });
+  });
+
+  test('RadioDevice reads Lone Worker state and recency', () {
+    final d = RadioDevice.fromJson({
+      'radio_id': '507',
+      'active': 1,
+      'lone_worker_state': 'on',
+      'lone_worker_checked_at': DateTime.now().toUtc().toIso8601String(),
+      'last_seen_at': DateTime.now().toUtc().subtract(const Duration(seconds: 30)).toIso8601String(),
+    });
+    expect(d.loneWorkerState, 'on');
+    expect(d.loneWorkerCheckedAt, isNotNull);
+    expect(d.isRecentlySeen(), isTrue);
+    expect(d.isRecentlySeen(const Duration(seconds: 10)), isFalse);
+  });
 }

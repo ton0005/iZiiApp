@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/database/app_database.dart';
@@ -9,9 +10,11 @@ import '../../../core/sync/sync_service.dart';
 import '../../../core/device_identity/device_identity_service.dart';
 import '../../../core/device_identity/device_discovery_service.dart';
 import '../../../core/device_identity/device_identity_models.dart';
+import '../models/chat_envelope.dart';
 import '../models/chat_models.dart';
 import '../repository/chat_repository.dart';
 import '../services/chat_websocket_service.dart';
+import '../services/direct_e2ee_channel.dart';
 import '../../../core/settings/settings_service.dart';
 import '../../../core/enrollment/device_user_service.dart';
 import '../../../core/device_identity/ble_device_discovery_service.dart';
@@ -37,6 +40,14 @@ class OpenConversationEvent extends ChatEvent {
   List<Object?> get props => [conversationId];
 }
 
+/// Cuộn lên đầu danh sách — nạp thêm một trang tin cũ hơn.
+class LoadOlderMessagesEvent extends ChatEvent {
+  final String conversationId;
+  const LoadOlderMessagesEvent(this.conversationId);
+  @override
+  List<Object?> get props => [conversationId];
+}
+
 class OpenDirectChatWithUserEvent extends ChatEvent {
   final String otherUserId;
   const OpenDirectChatWithUserEvent(this.otherUserId);
@@ -49,16 +60,78 @@ class SendMessageEvent extends ChatEvent {
   final String text;
   final ChatMessageType type;
   final Map<String, dynamic>? extraContent;
+  final String? replyToId;
+  final String? forwardedFromId;
 
   const SendMessageEvent({
     required this.conversationId,
     required this.text,
     this.type = ChatMessageType.text,
     this.extraContent,
+    this.replyToId,
+    this.forwardedFromId,
   });
 
   @override
-  List<Object?> get props => [conversationId, text, type, extraContent];
+  List<Object?> get props =>
+      [conversationId, text, type, extraContent, replyToId, forwardedFromId];
+}
+
+/// Gửi một phong bì E2EE đã dựng sẵn (dùng cho cả sự kiện nền như tải tệp xong).
+class SendEnvelopeEvent extends ChatEvent {
+  final ChatEnvelope envelope;
+  const SendEnvelopeEvent(this.envelope);
+  @override
+  List<Object?> get props => [envelope.id];
+}
+
+class FlushE2eeOutboxEvent extends ChatEvent {}
+
+class EditMessageEvent extends ChatEvent {
+  final String conversationId;
+  final String messageId;
+  final String newText;
+  const EditMessageEvent(this.conversationId, this.messageId, this.newText);
+  @override
+  List<Object?> get props => [conversationId, messageId, newText];
+}
+
+/// [forEveryone] chỉ có hiệu lực ở hội thoại 1-1 (E2EE) và với tin của chính
+/// mình; ngoài ra chỉ xoá trên máy này.
+class RevokeMessageEvent extends ChatEvent {
+  final String conversationId;
+  final String messageId;
+  final bool forEveryone;
+  const RevokeMessageEvent(this.conversationId, this.messageId,
+      {this.forEveryone = false});
+  @override
+  List<Object?> get props => [conversationId, messageId, forEveryone];
+}
+
+class ToggleReactionEvent extends ChatEvent {
+  final String conversationId;
+  final String messageId;
+  final String emoji;
+  const ToggleReactionEvent(this.conversationId, this.messageId, this.emoji);
+  @override
+  List<Object?> get props => [conversationId, messageId, emoji];
+}
+
+class TogglePinEvent extends ChatEvent {
+  final String conversationId;
+  final String messageId;
+  const TogglePinEvent(this.conversationId, this.messageId);
+  @override
+  List<Object?> get props => [conversationId, messageId];
+}
+
+class ForwardMessagesEvent extends ChatEvent {
+  final List<ChatMessage> sources;
+  final List<String> targetConversationIds;
+  const ForwardMessagesEvent(this.sources, this.targetConversationIds);
+  @override
+  List<Object?> get props =>
+      [sources.map((m) => m.id).toList(), targetConversationIds];
 }
 
 class UpdateWsConnectionStateEvent extends ChatEvent {
@@ -180,6 +253,19 @@ class ChatState extends Equatable {
   final String? error;
   final List<AttachmentFile> draftAttachments;
   final Map<String, double> uploadProgressMap;
+  /// Còn tin cũ hơn trong DB local chưa nạp lên màn hình.
+  final bool hasMoreHistory;
+  final bool isLoadingOlder;
+
+  /// Cảm xúc theo id tin, cho các tin đang hiển thị.
+  final Map<String, List<ChatReaction>> reactionsMap;
+
+  /// Tin được ghim của hội thoại đang mở, mới ghim trước.
+  final List<ChatMessage> pinnedMessages;
+
+  /// Id tin/sự kiện còn nằm trong hàng đợi E2EE (chưa tới server) — UI hiện
+  /// đồng hồ thay vì dấu tích.
+  final Set<String> pendingSendIds;
 
   const ChatState({
     this.conversations = const [],
@@ -195,6 +281,11 @@ class ChatState extends Equatable {
     this.error,
     this.draftAttachments = const [],
     this.uploadProgressMap = const {},
+    this.hasMoreHistory = false,
+    this.isLoadingOlder = false,
+    this.reactionsMap = const {},
+    this.pinnedMessages = const [],
+    this.pendingSendIds = const {},
   });
 
   ChatState copyWith({
@@ -211,6 +302,11 @@ class ChatState extends Equatable {
     String? error,
     List<AttachmentFile>? draftAttachments,
     Map<String, double>? uploadProgressMap,
+    bool? hasMoreHistory,
+    bool? isLoadingOlder,
+    Map<String, List<ChatReaction>>? reactionsMap,
+    List<ChatMessage>? pinnedMessages,
+    Set<String>? pendingSendIds,
   }) {
     return ChatState(
       conversations: conversations ?? this.conversations,
@@ -226,6 +322,11 @@ class ChatState extends Equatable {
       error: error,
       draftAttachments: draftAttachments ?? this.draftAttachments,
       uploadProgressMap: uploadProgressMap ?? this.uploadProgressMap,
+      hasMoreHistory: hasMoreHistory ?? this.hasMoreHistory,
+      isLoadingOlder: isLoadingOlder ?? this.isLoadingOlder,
+      reactionsMap: reactionsMap ?? this.reactionsMap,
+      pinnedMessages: pinnedMessages ?? this.pinnedMessages,
+      pendingSendIds: pendingSendIds ?? this.pendingSendIds,
     );
   }
 
@@ -244,6 +345,11 @@ class ChatState extends Equatable {
         error,
         draftAttachments,
         uploadProgressMap,
+        hasMoreHistory,
+        isLoadingOlder,
+        reactionsMap,
+        pinnedMessages,
+        pendingSendIds,
       ];
 }
 
@@ -251,6 +357,7 @@ class ChatState extends Equatable {
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final ChatRepository _chatRepository;
   final ChatWebSocketService _wsService;
+  final DirectE2eeChannel _e2ee;
   final AppDatabase _db = AppDatabase();
   StreamSubscription? _wsEventSubscription;
   StreamSubscription? _wsConnSubscription;
@@ -272,12 +379,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ChatBloc({
     ChatRepository? chatRepository,
     ChatWebSocketService? wsService,
+    DirectE2eeChannel? e2eeChannel,
   })  : _chatRepository = chatRepository ?? ChatRepository(),
         _wsService = wsService ?? ChatWebSocketService(),
+        _e2ee = e2eeChannel ??
+            DirectE2eeChannel(repo: chatRepository ?? ChatRepository()),
         super(const ChatState()) {
     on<LoadConversationsEvent>(_onLoadConversations);
     on<LoadContactsEvent>(_onLoadContacts);
     on<OpenConversationEvent>(_onOpenConversation);
+    on<LoadOlderMessagesEvent>(_onLoadOlderMessages);
     on<OpenDirectChatWithUserEvent>(_onOpenDirectChatWithUser);
     on<SendMessageEvent>(_onSendMessage);
     on<UpdateWsConnectionStateEvent>(_onUpdateWsConnectionState);
@@ -286,7 +397,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<SwitchUserEvent>(_onSwitchUser);
     on<RefreshIdentityEvent>(_onRefreshIdentity);
     on<SendEncryptedMessageEvent>(_onSendEncryptedMessage);
-    on<PullEncryptedMessagesEvent>(_onPullEncryptedMessages);
+    on<PullEncryptedMessagesEvent>((event, emit) async {
+      await _onPullEncryptedMessages(event, emit);
+      // Mỗi nhịp kéo tin cũng là dịp gửi bù những gì còn kẹt trong hàng đợi.
+      await _flushOutbox(emit);
+    });
+    on<FlushE2eeOutboxEvent>((event, emit) => _flushOutbox(emit));
+    on<SendEnvelopeEvent>((event, emit) => _sendEnvelope(event.envelope, emit));
+    on<EditMessageEvent>(_onEditMessage);
+    on<RevokeMessageEvent>(_onRevokeMessage);
+    on<ToggleReactionEvent>(_onToggleReaction);
+    on<TogglePinEvent>(_onTogglePin);
+    on<ForwardMessagesEvent>(_onForwardMessages);
     on<RefreshPresenceEvent>(_onRefreshPresence);
     on<PickAttachmentsEvent>(_onPickAttachments);
     on<RemoveAttachmentEvent>(_onRemoveAttachment);
@@ -442,12 +564,32 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     if (isDifferentConvo && state.activeMessages.isEmpty) {
       emit(state.copyWith(
           isLoading: true, activeConversationId: event.conversationId));
+    } else if (isDifferentConvo) {
+      // Chuyển hội thoại: bỏ cảm xúc/ghim của hội thoại trước.
+      emit(state.copyWith(
+          activeConversationId: event.conversationId,
+          reactionsMap: const {},
+          pinnedMessages: const []));
     } else {
       emit(state.copyWith(activeConversationId: event.conversationId));
     }
     try {
-      final messages = await _chatRepository.getMessages(event.conversationId);
-      emit(state.copyWith(activeMessages: messages, isLoading: false));
+      // OpenConversationEvent còn được bắn lại sau xoá/tải tệp. Giữ nguyên số
+      // tin đang hiển thị, nếu không người dùng đang xem tin cũ sẽ bị cắt về
+      // trang cuối.
+      final limit = isDifferentConvo
+          ? ChatRepository.messagePageSize
+          : (state.activeMessages.length > ChatRepository.messagePageSize
+              ? state.activeMessages.length
+              : ChatRepository.messagePageSize);
+      final messages = await _chatRepository.getMessages(event.conversationId,
+          limit: limit);
+      emit(state.copyWith(
+        activeMessages: messages,
+        isLoading: false,
+        hasMoreHistory: messages.length >= limit,
+      ));
+      await _refreshExtras(emit);
 
       // Update read receipts
       if (_currentUserId != null && messages.isNotEmpty) {
@@ -467,6 +609,36 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
+    }
+  }
+
+  Future<void> _onLoadOlderMessages(
+    LoadOlderMessagesEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    if (state.activeConversationId != event.conversationId ||
+        state.isLoadingOlder ||
+        !state.hasMoreHistory ||
+        state.activeMessages.isEmpty) {
+      return;
+    }
+    emit(state.copyWith(isLoadingOlder: true));
+    try {
+      final older = await _chatRepository.getMessages(event.conversationId,
+          before: state.activeMessages.first);
+      // Người dùng có thể đã chuyển hội thoại trong lúc chờ DB.
+      if (state.activeConversationId != event.conversationId) {
+        emit(state.copyWith(isLoadingOlder: false));
+        return;
+      }
+      emit(state.copyWith(
+        activeMessages: [...older, ...state.activeMessages],
+        hasMoreHistory: older.length >= ChatRepository.messagePageSize,
+        isLoadingOlder: false,
+      ));
+      await _refreshExtras(emit);
+    } catch (e) {
+      emit(state.copyWith(isLoadingOlder: false, error: e.toString()));
     }
   }
 
@@ -509,6 +681,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       content: jsonEncode(contentMap),
       sentAt: now,
       isDeleted: false,
+      replyToId: event.replyToId,
+      forwardedFromId: event.forwardedFromId,
     );
 
     // 1. Optimistic UI: Hiển thị ngay tức thì trên màn hình người gửi (< 1ms)
@@ -516,6 +690,33 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       final updatedList = List<ChatMessage>.from(state.activeMessages)
         ..add(chatMsg);
       emit(state.copyWith(activeMessages: updatedList));
+    }
+
+    // Tin 1-1 CHỈ đi bằng E2EE: lưu cục bộ rồi xếp vào hàng đợi mã hoá. Không
+    // WebSocket plaintext, không outbox đồng bộ. Gửi chưa được thì nằm chờ,
+    // không bao giờ rơi về plaintext.
+    if (DirectE2eeChannel.isDirect(event.conversationId)) {
+      await _chatRepository.saveMessage(chatMsg);
+      await _sendEnvelope(
+        ChatEnvelope.message(
+          id: messageId,
+          conversationId: event.conversationId,
+          type: event.type.name,
+          content: contentMap,
+          ts: now,
+          replyToId: event.replyToId,
+          forwardedFromId: event.forwardedFromId,
+        ),
+        emit,
+      );
+      // Cùng phòng với đối tác qua BLE (không có mạng): gửi thẳng, bản E2EE
+      // vẫn nằm trong hàng đợi và bị khử trùng lặp theo id ở máy nhận.
+      if (!_wsService.isConnected) {
+        unawaited(_sendViaBleIfNearby(
+            messageId, event.conversationId, event.type.name, contentMap, now));
+      }
+      add(LoadConversationsEvent());
+      return;
     }
 
     // 2. Realtime WebSocket: Bắn ngay gói tin qua WebSocket ở mili-giây đầu tiên (< 30ms tới người nhận)
@@ -529,47 +730,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           'type': event.type.name,
           'content': contentMap,
           'sent_at': now.toIso8601String(),
+          if (event.replyToId != null) 'reply_to_id': event.replyToId,
+          if (event.forwardedFromId != null)
+            'forwarded_from_id': event.forwardedFromId,
         },
       ));
     } else {
       // Offline fallback: Kiểm tra nếu thiết bị đối phương có kết nối BLE P2P lân cận
-      unawaited(() async {
-        try {
-          final companion = await _chatRepository.getCompanion(
-              event.conversationId, _currentUserId!);
-          final bleDiscovery = BleDeviceDiscoveryService();
-          final companionId = companion?.id;
-          final bleDeviceId = companionId != null
-              ? bleDiscovery.getConnectedDeviceIdForUser(companionId)
-              : null;
-
-          if (bleDeviceId != null) {
-            print(
-                '[ChatBloc] Companion is connected via BLE P2P. Sending message directly...');
-            final payloadBytes = utf8.encode(jsonEncode({
-              'id': messageId,
-              'conversation_id': event.conversationId,
-              'sender_id': _currentUserId!,
-              'type': event.type.name,
-              'content': contentMap,
-              'sent_at': now.toIso8601String(),
-            }));
-
-            final packet = BleMeshPacket(
-              messageId: messageId,
-              senderDeviceId: 'local-device',
-              recipientDeviceId: bleDeviceId,
-              payload: payloadBytes,
-              ttl: 1,
-              messageType: BleMessageType.message,
-            );
-
-            await bleDiscovery.sendPacket(bleDeviceId, packet);
-          }
-        } catch (e) {
-          print('[ChatBloc] BLE fallback error: $e');
-        }
-      }());
+      unawaited(_sendViaBleIfNearby(
+          messageId, event.conversationId, event.type.name, contentMap, now));
     }
 
     // 3. Zero-Loss Guarantee: Lưu SQLite cục bộ và xếp hàng Outbox ngầm (không chặn UI chat)
@@ -586,6 +755,218 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     // Cập nhật preview tóm tắt cuộc hội thoại ngoài danh sách chat
     add(LoadConversationsEvent());
+  }
+
+  /// Gửi qua BLE P2P nếu đối tác đang ở gần. BLE có lớp mã hoá phiên riêng
+  /// (ble_p2p_handshake_service), khác với kênh server.
+  Future<void> _sendViaBleIfNearby(String messageId, String conversationId,
+      String type, Map<String, dynamic> contentMap, DateTime sentAt) async {
+    try {
+      final companion =
+          await _chatRepository.getCompanion(conversationId, _currentUserId!);
+      final bleDiscovery = BleDeviceDiscoveryService();
+      final companionId = companion?.id;
+      final bleDeviceId = companionId != null
+          ? bleDiscovery.getConnectedDeviceIdForUser(companionId)
+          : null;
+      if (bleDeviceId == null) return;
+
+      print(
+          '[ChatBloc] Companion is connected via BLE P2P. Sending message directly...');
+      final payloadBytes = utf8.encode(jsonEncode({
+        'id': messageId,
+        'conversation_id': conversationId,
+        'sender_id': _currentUserId!,
+        'type': type,
+        'content': contentMap,
+        'sent_at': sentAt.toIso8601String(),
+      }));
+      final packet = BleMeshPacket(
+        messageId: messageId,
+        senderDeviceId: 'local-device',
+        recipientDeviceId: bleDeviceId,
+        payload: payloadBytes,
+        ttl: 1,
+        messageType: BleMessageType.message,
+      );
+      await bleDiscovery.sendPacket(bleDeviceId, packet);
+    } catch (e) {
+      print('[ChatBloc] BLE fallback error: $e');
+    }
+  }
+
+  /// Xếp phong bì vào hàng đợi E2EE rồi thử gửi ngay. Trạng thái "đang chờ"
+  /// được phát TRƯỚC khi gửi để UI hiện đồng hồ ngay lập tức.
+  Future<void> _sendEnvelope(ChatEnvelope envelope, Emitter<ChatState> emit) async {
+    final me = _currentUserId;
+    if (me == null) return;
+    await _chatRepository.enqueueE2ee(envelope);
+    emit(state.copyWith(
+        pendingSendIds: await _chatRepository.pendingE2eeIds()));
+    await _e2ee.flush(myId: me);
+    emit(state.copyWith(
+        pendingSendIds: await _chatRepository.pendingE2eeIds()));
+  }
+
+  Future<void> _flushOutbox(Emitter<ChatState> emit) async {
+    final me = _currentUserId;
+    if (me == null) return;
+    await _e2ee.flush(myId: me);
+    emit(state.copyWith(
+        pendingSendIds: await _chatRepository.pendingE2eeIds()));
+  }
+
+  /// Nạp cảm xúc, tin ghim và trạng thái chờ cho hội thoại đang mở.
+  Future<void> _refreshExtras(Emitter<ChatState> emit) async {
+    final convoId = state.activeConversationId;
+    if (convoId == null) return;
+    final reactions = await _chatRepository
+        .getReactionsFor(state.activeMessages.map((m) => m.id));
+    final pinned = await _chatRepository.getPinnedMessages(convoId);
+    final pending = await _chatRepository.pendingE2eeIds();
+    if (state.activeConversationId != convoId) return;
+    emit(state.copyWith(
+        reactionsMap: reactions, pinnedMessages: pinned, pendingSendIds: pending));
+  }
+
+  /// Nạp lại hội thoại đang mở sau khi có sửa/thu hồi/cảm xúc/ghim, giữ nguyên
+  /// số tin đang hiển thị (người dùng có thể đã cuộn lên xem tin cũ).
+  Future<void> _reloadActive(Emitter<ChatState> emit) async {
+    final convoId = state.activeConversationId;
+    if (convoId == null) return;
+    final keep = state.activeMessages.length > ChatRepository.messagePageSize
+        ? state.activeMessages.length
+        : ChatRepository.messagePageSize;
+    final messages = await _chatRepository.getMessages(convoId, limit: keep);
+    if (state.activeConversationId != convoId) return;
+    emit(state.copyWith(activeMessages: messages));
+    await _refreshExtras(emit);
+  }
+
+  Future<void> _onEditMessage(
+      EditMessageEvent event, Emitter<ChatState> emit) async {
+    final me = _currentUserId;
+    final text = event.newText.trim();
+    if (me == null || text.isEmpty) return;
+    final msg = await _chatRepository.getMessageById(event.messageId);
+    if (msg == null ||
+        msg.senderId != me ||
+        msg.isDeleted ||
+        !DirectE2eeChannel.isDirect(msg.conversationId)) {
+      return;
+    }
+    final env = ChatEnvelope.edit(
+      id: const Uuid().v4(),
+      conversationId: msg.conversationId,
+      targetId: msg.id,
+      newText: text,
+      ts: DateTime.now(),
+    );
+    await _chatRepository.applyEnvelope(env, senderId: me);
+    await _reloadActive(emit);
+    await _sendEnvelope(env, emit);
+    add(LoadConversationsEvent());
+  }
+
+  Future<void> _onRevokeMessage(
+      RevokeMessageEvent event, Emitter<ChatState> emit) async {
+    final me = _currentUserId;
+    if (me == null) return;
+    final msg = await _chatRepository.getMessageById(event.messageId);
+    if (msg == null) return;
+
+    final everyone = event.forEveryone &&
+        msg.senderId == me &&
+        DirectE2eeChannel.isDirect(msg.conversationId);
+    if (everyone) {
+      final env = ChatEnvelope.revoke(
+        id: const Uuid().v4(),
+        conversationId: msg.conversationId,
+        targetId: msg.id,
+        ts: DateTime.now(),
+      );
+      await _chatRepository.applyEnvelope(env, senderId: me);
+      await _reloadActive(emit);
+      await _sendEnvelope(env, emit);
+    } else {
+      // Chỉ xoá trên máy này.
+      await _chatRepository.deleteMessage(msg.id);
+      await _reloadActive(emit);
+    }
+    add(LoadConversationsEvent());
+  }
+
+  Future<void> _onToggleReaction(
+      ToggleReactionEvent event, Emitter<ChatState> emit) async {
+    final me = _currentUserId;
+    if (me == null || !DirectE2eeChannel.isDirect(event.conversationId)) return;
+    final mine = (state.reactionsMap[event.messageId] ?? const [])
+        .where((r) => r.userId == me)
+        .map((r) => r.emoji)
+        .firstOrNull;
+    final env = ChatEnvelope.reaction(
+      id: const Uuid().v4(),
+      conversationId: event.conversationId,
+      targetId: event.messageId,
+      // Bấm lại đúng cảm xúc đang có = gỡ.
+      emoji: mine == event.emoji ? '' : event.emoji,
+      ts: DateTime.now(),
+    );
+    await _chatRepository.applyEnvelope(env, senderId: me);
+    await _refreshExtras(emit);
+    await _sendEnvelope(env, emit);
+  }
+
+  Future<void> _onTogglePin(
+      TogglePinEvent event, Emitter<ChatState> emit) async {
+    final me = _currentUserId;
+    if (me == null || !DirectE2eeChannel.isDirect(event.conversationId)) return;
+    final msg = await _chatRepository.getMessageById(event.messageId);
+    if (msg == null || msg.isDeleted) return;
+    final env = ChatEnvelope.pin(
+      id: const Uuid().v4(),
+      conversationId: event.conversationId,
+      targetId: msg.id,
+      pinned: msg.pinnedAt == null,
+      ts: DateTime.now(),
+    );
+    await _chatRepository.applyEnvelope(env, senderId: me);
+    await _reloadActive(emit);
+    await _sendEnvelope(env, emit);
+  }
+
+  Future<void> _onForwardMessages(
+      ForwardMessagesEvent event, Emitter<ChatState> emit) async {
+    if (_currentUserId == null) return;
+    for (final src in event.sources) {
+      if (src.isDeleted) continue;
+      final content = Map<String, dynamic>.from(
+          (jsonDecode(src.content) as Map?) ?? const {});
+      final text = (content.remove('text') ?? '').toString();
+      // Tên người gửi gốc đi cùng tin: máy nhận có thể không có tin gốc.
+      content['forwarded_from'] = await _displayNameOf(src.senderId);
+      final type = ChatMessageType.values.firstWhere(
+          (t) => t.name == src.type,
+          orElse: () => ChatMessageType.text);
+      for (final target in event.targetConversationIds) {
+        add(SendMessageEvent(
+          conversationId: target,
+          text: text,
+          type: type,
+          extraContent: content,
+          forwardedFromId: src.id,
+        ));
+      }
+    }
+  }
+
+  Future<String> _displayNameOf(String userId) async {
+    if (userId == _currentUserId && state.myDisplayName.isNotEmpty) {
+      return state.myDisplayName;
+    }
+    final u = await (_db.select(_db.users)..where((t) => t.id.equals(userId)))
+        .getSingleOrNull();
+    return u?.name ?? userId;
   }
 
   void _onUpdateWsConnectionState(
@@ -617,6 +998,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     final wsEvent = event.event;
     final data = wsEvent.data;
+
+    // Server mới chỉ giao gói hội thoại cho thành viên, nhưng server cũ, hội
+    // thoại chưa đăng ký và gói BLE vẫn có thể phát rộng. Không phải thành
+    // viên thì bỏ qua — không lưu tin, không cho người ngoài đánh dấu đã đọc.
+    final scopedConvoId = data['conversation_id']?.toString() ?? '';
+    if (scopedConvoId.isNotEmpty &&
+        _currentUserId != null &&
+        !await _chatRepository.isLocalMember(scopedConvoId, _currentUserId!)) {
+      return;
+    }
 
     switch (wsEvent.event) {
       case 'sync_trigger':
@@ -655,6 +1046,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         final msgId = (data['message_id'] ?? '').toString();
         final convoId = (data['conversation_id'] ?? '').toString();
         final senderId = (data['sender_id'] ?? '').toString();
+        // Tin 1-1 chỉ nhận qua E2EE. Gói plaintext 'send_message' cho hội thoại
+        // 1-1 đến từ bản app cũ hoặc kẻ giả mạo — bỏ. ('message_received' là
+        // đường BLE P2P, có mã hoá phiên riêng, nên vẫn nhận.)
+        if (wsEvent.event == 'send_message' &&
+            DirectE2eeChannel.isDirect(convoId)) {
+          print('[ChatWS] Bỏ tin plaintext vào hội thoại 1-1 $convoId.');
+          break;
+        }
         final type = (data['type'] ?? 'text').toString();
         final content = data['content'] is Map<String, dynamic>
             ? data['content'] as Map<String, dynamic>
@@ -679,6 +1078,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           sentAt: sentAt,
           deliveredAt: DateTime.now(),
           isDeleted: false,
+          replyToId: data['reply_to_id']?.toString(),
+          forwardedFromId: data['forwarded_from_id']?.toString(),
         );
 
         await _chatRepository.saveMessage(chatMsg);
@@ -804,16 +1205,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final index = activeMsgs.indexWhere((m) => m.id == messageId);
     if (index != -1) {
       final oldMsg = activeMsgs[index];
-      activeMsgs[index] = ChatMessage(
-        id: oldMsg.id,
-        conversationId: oldMsg.conversationId,
-        senderId: oldMsg.senderId,
-        type: oldMsg.type,
-        content: oldMsg.content,
-        sentAt: oldMsg.sentAt,
-        deliveredAt: deliveredAt ?? oldMsg.deliveredAt,
-        readAt: readAt ?? oldMsg.readAt,
-        isDeleted: oldMsg.isDeleted,
+      // copyWith thay vì dựng lại: dựng lại sẽ làm rơi các cột mới
+      // (replyToId, editedAt, forwardedFromId).
+      activeMsgs[index] = oldMsg.copyWith(
+        deliveredAt: Value(deliveredAt ?? oldMsg.deliveredAt),
+        readAt: Value(readAt ?? oldMsg.readAt),
       );
       emit(state.copyWith(activeMessages: activeMsgs));
     }
@@ -1023,7 +1419,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       final identityService = DeviceIdentityService();
       final discoveryService = DeviceDiscoveryService();
-      await identityService.getOrCreateIdentity();
+      final myIdentity = await identityService.getOrCreateIdentity();
 
       // Pull pending messages for this device
       final pendingMessages = await discoveryService.getPendingMessages();
@@ -1035,6 +1431,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // im lặng nên server tưởng chưa giao và gửi lại mãi mãi.
       final messageIdsFailed = <String>[];
       String? firstFailureReason;
+      final touchedConvos = <String>{};
 
       for (final msgMap in pendingMessages) {
         try {
@@ -1075,29 +1472,57 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             senderEd25519PubKeyBytes,
           );
 
-          // Save decrypted message locally
-          final chatMsg = ChatMessage(
-            id: msgId,
+          // Bản mã giải ra được một PHONG BÌ (tin/sửa/thu hồi/cảm xúc/ghim).
+          // processIncoming đối chiếu hội thoại + thành viên rồi mới áp vào DB.
+          final result = await _e2ee.processIncoming(
             conversationId: conversationId,
-            senderId: senderDevice.userId,
-            type: 'text',
-            content: jsonEncode({'text': plaintext}),
-            sentAt: sentAt,
-            deliveredAt: DateTime.now(),
-            isDeleted: false,
+            plaintext: plaintext,
+            senderIds: {senderDeviceId, senderDevice.userId},
+            myIds: {
+              if (_currentUserId != null) _currentUserId!,
+              myIdentity.deviceId,
+            },
+            receivedAt: DateTime.now(),
           );
-          await _chatRepository.saveMessage(chatMsg);
-
-          // Update UI if this conversation is active
-          if (state.activeConversationId == conversationId) {
-            final updatedList = List<ChatMessage>.from(state.activeMessages)
-              ..add(chatMsg);
-            emit(state.copyWith(activeMessages: updatedList));
+          if (result.isRejected) {
+            print('[E2EE] ⛔ Từ chối phong bì từ $senderDeviceId: '
+                '${result.rejectReason}');
+            messageIdsFailed.add(msgId);
+            firstFailureReason ??= result.rejectReason;
+            continue;
           }
 
           messageIdsToAck.add(msgId);
-          print(
-              '[E2EE] Decrypted message from $senderDeviceId: ${plaintext.length} chars');
+          touchedConvos.add(conversationId);
+
+          final env = result.envelope!;
+          if (env.kind == ChatEnvelopeKind.message &&
+              result.outcome == EnvelopeOutcome.applied) {
+            // Biên nhận chỉ mang id tin (không mang nội dung), đi qua WS và
+            // được server định tuyến theo hội thoại.
+            _wsService.sendEvent(ChatWebSocketEvent(
+              event: 'msg_delivered',
+              data: {
+                'message_id': env.id,
+                'conversation_id': conversationId,
+                'delivered_at': DateTime.now().toIso8601String(),
+              },
+            ));
+            if (state.activeConversationId == conversationId) {
+              final readAt = DateTime.now();
+              await _chatRepository.updateMessageStatus(env.id, readAt: readAt);
+              _wsService.sendEvent(ChatWebSocketEvent(
+                event: 'msg_read',
+                data: {
+                  'message_id': env.id,
+                  'conversation_id': conversationId,
+                  'read_at': readAt.toIso8601String(),
+                },
+              ));
+            }
+          }
+          print('[E2EE] ${env.kind.name} từ $senderDeviceId '
+              '(${result.outcome?.name}) — ${plaintext.length} ký tự');
         } catch (e) {
           print('[E2EE] Error decrypting message: $e');
           // Báo lỗi thay vì nuốt im. Server đếm số lần thất bại và sau 5 lần
@@ -1109,6 +1534,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             firstFailureReason ??= e.toString();
           }
         }
+      }
+
+      if (state.activeConversationId != null &&
+          touchedConvos.contains(state.activeConversationId)) {
+        await _reloadActive(emit);
       }
 
       // Báo kết quả cho server — CẢ tin thành công lẫn tin lỗi.
@@ -1395,23 +1825,44 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       attachments: updatedAttachments,
     );
 
-    final updatedMsg = ChatMessage(
-      id: message.id,
-      conversationId: message.conversationId,
-      senderId: message.senderId,
-      type: message.type,
-      content: finalContent.toJson(),
-      sentAt: message.sentAt,
-      deliveredAt: message.deliveredAt,
-      readAt: message.readAt,
-      isDeleted: message.isDeleted,
-    );
+    final updatedMsg = message.copyWith(content: finalContent.toJson());
 
     await _chatRepository.saveMessage(updatedMsg);
 
     // Update active message list in state
     if (state.activeConversationId == message.conversationId) {
       add(OpenConversationEvent(message.conversationId));
+    }
+
+    // Hội thoại 1-1: gửi phong bì E2EE khi tải lên xong, không outbox/WS plaintext.
+    // Tải lỗi thì giữ tin ở máy, người dùng bấm "thử lại" (RetryUploadAttachmentEvent).
+    // LƯU Ý: nội dung tệp trên server hiện CHƯA mã hoá (Phase 3) — chỉ liên kết
+    // và tên tệp đi trong phong bì mã hoá.
+    if (DirectE2eeChannel.isDirect(updatedMsg.conversationId)) {
+      if (hasFailure) {
+        print('[ChatBloc] Tải tệp lỗi — tin 1-1 giữ ở máy, chờ thử lại.');
+        return;
+      }
+      final contentMap = finalContent.toMap();
+      // Đường dẫn cục bộ của người gửi vô nghĩa với người nhận.
+      final atts = contentMap['attachments'];
+      if (atts is List) {
+        contentMap['attachments'] = [
+          for (final a in atts)
+            if (a is Map)
+              (Map<String, dynamic>.from(a)..remove('local_uri'))
+        ];
+      }
+      add(SendEnvelopeEvent(ChatEnvelope.message(
+        id: updatedMsg.id,
+        conversationId: updatedMsg.conversationId,
+        type: updatedMsg.type,
+        content: contentMap,
+        ts: updatedMsg.sentAt,
+        replyToId: updatedMsg.replyToId,
+        forwardedFromId: updatedMsg.forwardedFromId,
+      )));
+      return;
     }
 
     // Always queue message in offline outbox so SyncService can sync/retry upload

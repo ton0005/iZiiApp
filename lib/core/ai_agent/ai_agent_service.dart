@@ -19,8 +19,8 @@ class AiAgentService {
       id: 'system-init',
       role: MessageRole.assistant,
       content:
-          'Chào mừng bạn đến với iZii Agent! 🤖\nTôi được cấu hình với module Bán Hàng (CRM) và Quản lý Kho.\n\n'
-          '➡️ Nhấn ⚙️ Settings để nhập Gemini API Key trước khi bắt đầu.',
+          'Welcome to iZii Agent! 🤖\nI am configured with CRM and Inventory Management modules.\n\n'
+          '➡️ Tap ⚙️ Settings to enter your Gemini API Key before starting.',
       timestamp: DateTime.now(),
     ));
   }
@@ -59,7 +59,7 @@ class AiAgentService {
         _history.add(ChatMessage(
           id: '${DateTime.now().millisecondsSinceEpoch}_err',
           role: MessageRole.assistant,
-          content: 'Lỗi: Không tìm thấy tool ${pending.name}.',
+          content: 'Error: Tool ${pending.name} not found.',
           timestamp: DateTime.now(),
         ));
         _pendingToolCall = null;
@@ -75,7 +75,7 @@ class AiAgentService {
       _history.add(ChatMessage(
         id: '${DateTime.now().millisecondsSinceEpoch}_ai',
         role: MessageRole.assistant,
-        content: toolResponseText ?? 'Đã hoàn thành thao tác.',
+        content: toolResponseText ?? 'Operation completed.',
         timestamp: DateTime.now(),
       ));
     } catch (e) {
@@ -83,7 +83,7 @@ class AiAgentService {
       _history.add(ChatMessage(
         id: '${DateTime.now().millisecondsSinceEpoch}_err',
         role: MessageRole.assistant,
-        content: '❌ Lỗi khi xác nhận thao tác: $e',
+        content: '❌ Error confirming operation: $e',
         timestamp: DateTime.now(),
       ));
     } finally {
@@ -103,7 +103,7 @@ class AiAgentService {
       _history.add(ChatMessage(
         id: '${DateTime.now().millisecondsSinceEpoch}_ai',
         role: MessageRole.assistant,
-        content: toolResponseText ?? 'Đã hủy yêu cầu.',
+        content: toolResponseText ?? 'Request cancelled.',
         timestamp: DateTime.now(),
       ));
     } catch (e) {
@@ -111,7 +111,7 @@ class AiAgentService {
       _history.add(ChatMessage(
         id: '${DateTime.now().millisecondsSinceEpoch}_err',
         role: MessageRole.assistant,
-        content: '❌ Lỗi khi hủy thao tác: $e',
+        content: '❌ Error cancelling operation: $e',
         timestamp: DateTime.now(),
       ));
     } finally {
@@ -135,8 +135,8 @@ class AiAgentService {
         id: '${DateTime.now().millisecondsSinceEpoch}_err',
         role: MessageRole.assistant,
         content:
-            '⚠️ Chưa có API Key!\n\nVui lòng nhấn ⚙️ (góc phải trên) → Nhập Gemini API Key → Lưu.\n'
-            'Lấy key miễn phí tại: https://aistudio.google.com/app/apikey',
+            '⚠️ No API Key found!\n\nPlease tap ⚙️ (top right) → Enter Gemini API Key → Save.\n'
+            'Get a free key at: https://aistudio.google.com/app/apikey',
         timestamp: DateTime.now(),
       ));
       return;
@@ -166,7 +166,7 @@ class AiAgentService {
           ));
           return result;
         }
-        return 'Lỗi: Không tìm thấy tool $toolName';
+        return 'Error: Tool $toolName not found';
       });
 
       final responseTextWithConfirmation = _pendingToolCall != null
@@ -186,7 +186,7 @@ class AiAgentService {
         id: '${DateTime.now().millisecondsSinceEpoch}_err',
         role: MessageRole.assistant,
         content:
-            '❌ Lỗi kết nối AI:\n$e\n\nHãy kiểm tra API Key trong Settings.',
+            '❌ AI Connection Error:\n$e\n\nPlease check your API Key in Settings.',
         timestamp: DateTime.now(),
       ));
     }
@@ -196,10 +196,10 @@ class AiAgentService {
     final summaryText =
         pending.summary.isNotEmpty ? pending.summary : pending.description;
 
-    return '''Tin nhắn yêu cầu xác nhận:
+    return '''Confirmation required:
 $summaryText
 
-Nếu bạn đồng ý, hãy bấm "Xác nhận" để tiếp tục tạo booking. Nếu không, bấm "Từ chối" để hủy.''';
+If you agree, tap "Confirm" to proceed with booking. Otherwise, tap "Decline" to cancel.''';
   }
 
   void clearHistory() {

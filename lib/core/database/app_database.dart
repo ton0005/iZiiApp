@@ -97,6 +97,8 @@ part 'app_database.g.dart';
   ChatConversations,
   ChatParticipants,
   ChatMessages,
+  ChatReactions,
+  E2eeOutbox,
   // Track 3: Device Identity & E2EE
   DeviceRegistryEntries,
   EncryptedMessageQueue,
@@ -118,7 +120,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 33;
+  int get schemaVersion => 35;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -577,6 +579,35 @@ class AppDatabase extends _$AppDatabase {
               await customStatement("ALTER TABLE stock_moves ADD COLUMN transport_type TEXT DEFAULT 'forklift';");
             } catch (_) {}
           }
+          if (from < 34) {
+            // Chat: trả lời, sửa, chuyển tiếp (Phase 1 kiểu Telegram/WhatsApp).
+            try {
+              await m.addColumn(chatMessages, chatMessages.replyToId);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatMessages, chatMessages.editedAt);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatMessages, chatMessages.forwardedFromId);
+            } catch (_) {}
+            try {
+              await customStatement(
+                  'CREATE INDEX IF NOT EXISTS idx_chat_messages_convo_sent '
+                  'ON chat_messages (conversation_id, sent_at);');
+            } catch (_) {}
+          }
+          if (from < 35) {
+            // Chat Phase 1: ghim, cảm xúc, hàng đợi gửi E2EE.
+            try {
+              await m.addColumn(chatMessages, chatMessages.pinnedAt);
+            } catch (_) {}
+            try {
+              await m.createTable(chatReactions);
+            } catch (_) {}
+            try {
+              await m.createTable(e2eeOutbox);
+            } catch (_) {}
+          }
         },
         beforeOpen: (details) async {
           // Bảo đảm các cột color, label, icon, sort_order, department luôn tồn tại trên SQLite
@@ -681,7 +712,7 @@ LazyDatabase _openConnection() {
           legacyFlag.writeAsStringSync(
             'Legacy OneDrive DB migration handled at '
             '${DateTime.now().toIso8601String()}.\n'
-            'Xoá file này chỉ khi bạn thực sự muốn nạp lại DB cũ từ OneDrive.\n',
+            'Delete this file only if you really want to restore old DB from OneDrive.\n',
           );
         } catch (_) {}
       }

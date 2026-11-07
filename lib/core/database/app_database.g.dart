@@ -35424,6 +35424,30 @@ class $ChatMessagesTable extends ChatMessages
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("is_deleted" IN (0, 1))'),
       defaultValue: const Constant(false));
+  static const VerificationMeta _replyToIdMeta =
+      const VerificationMeta('replyToId');
+  @override
+  late final GeneratedColumn<String> replyToId = GeneratedColumn<String>(
+      'reply_to_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _editedAtMeta =
+      const VerificationMeta('editedAt');
+  @override
+  late final GeneratedColumn<DateTime> editedAt = GeneratedColumn<DateTime>(
+      'edited_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _forwardedFromIdMeta =
+      const VerificationMeta('forwardedFromId');
+  @override
+  late final GeneratedColumn<String> forwardedFromId = GeneratedColumn<String>(
+      'forwarded_from_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _pinnedAtMeta =
+      const VerificationMeta('pinnedAt');
+  @override
+  late final GeneratedColumn<DateTime> pinnedAt = GeneratedColumn<DateTime>(
+      'pinned_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -35434,7 +35458,11 @@ class $ChatMessagesTable extends ChatMessages
         sentAt,
         deliveredAt,
         readAt,
-        isDeleted
+        isDeleted,
+        replyToId,
+        editedAt,
+        forwardedFromId,
+        pinnedAt
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -35495,6 +35523,26 @@ class $ChatMessagesTable extends ChatMessages
       context.handle(_isDeletedMeta,
           isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
     }
+    if (data.containsKey('reply_to_id')) {
+      context.handle(
+          _replyToIdMeta,
+          replyToId.isAcceptableOrUnknown(
+              data['reply_to_id']!, _replyToIdMeta));
+    }
+    if (data.containsKey('edited_at')) {
+      context.handle(_editedAtMeta,
+          editedAt.isAcceptableOrUnknown(data['edited_at']!, _editedAtMeta));
+    }
+    if (data.containsKey('forwarded_from_id')) {
+      context.handle(
+          _forwardedFromIdMeta,
+          forwardedFromId.isAcceptableOrUnknown(
+              data['forwarded_from_id']!, _forwardedFromIdMeta));
+    }
+    if (data.containsKey('pinned_at')) {
+      context.handle(_pinnedAtMeta,
+          pinnedAt.isAcceptableOrUnknown(data['pinned_at']!, _pinnedAtMeta));
+    }
     return context;
   }
 
@@ -35522,6 +35570,14 @@ class $ChatMessagesTable extends ChatMessages
           .read(DriftSqlType.dateTime, data['${effectivePrefix}read_at']),
       isDeleted: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_deleted'])!,
+      replyToId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}reply_to_id']),
+      editedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}edited_at']),
+      forwardedFromId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}forwarded_from_id']),
+      pinnedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}pinned_at']),
     );
   }
 
@@ -35541,6 +35597,13 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
   final DateTime? deliveredAt;
   final DateTime? readAt;
   final bool isDeleted;
+  final String? replyToId;
+  final DateTime? editedAt;
+  final String? forwardedFromId;
+
+  /// Có giá trị = tin đang được ghim (thời điểm ghim). Ghim là trạng thái chung
+  /// của hội thoại, đồng bộ giữa các thành viên bằng sự kiện `pin` mã hoá.
+  final DateTime? pinnedAt;
   const ChatMessage(
       {required this.id,
       required this.conversationId,
@@ -35550,7 +35613,11 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       required this.sentAt,
       this.deliveredAt,
       this.readAt,
-      required this.isDeleted});
+      required this.isDeleted,
+      this.replyToId,
+      this.editedAt,
+      this.forwardedFromId,
+      this.pinnedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -35567,6 +35634,18 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       map['read_at'] = Variable<DateTime>(readAt);
     }
     map['is_deleted'] = Variable<bool>(isDeleted);
+    if (!nullToAbsent || replyToId != null) {
+      map['reply_to_id'] = Variable<String>(replyToId);
+    }
+    if (!nullToAbsent || editedAt != null) {
+      map['edited_at'] = Variable<DateTime>(editedAt);
+    }
+    if (!nullToAbsent || forwardedFromId != null) {
+      map['forwarded_from_id'] = Variable<String>(forwardedFromId);
+    }
+    if (!nullToAbsent || pinnedAt != null) {
+      map['pinned_at'] = Variable<DateTime>(pinnedAt);
+    }
     return map;
   }
 
@@ -35584,6 +35663,18 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       readAt:
           readAt == null && nullToAbsent ? const Value.absent() : Value(readAt),
       isDeleted: Value(isDeleted),
+      replyToId: replyToId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(replyToId),
+      editedAt: editedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(editedAt),
+      forwardedFromId: forwardedFromId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(forwardedFromId),
+      pinnedAt: pinnedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pinnedAt),
     );
   }
 
@@ -35600,6 +35691,10 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       deliveredAt: serializer.fromJson<DateTime?>(json['deliveredAt']),
       readAt: serializer.fromJson<DateTime?>(json['readAt']),
       isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      replyToId: serializer.fromJson<String?>(json['replyToId']),
+      editedAt: serializer.fromJson<DateTime?>(json['editedAt']),
+      forwardedFromId: serializer.fromJson<String?>(json['forwardedFromId']),
+      pinnedAt: serializer.fromJson<DateTime?>(json['pinnedAt']),
     );
   }
   @override
@@ -35615,6 +35710,10 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       'deliveredAt': serializer.toJson<DateTime?>(deliveredAt),
       'readAt': serializer.toJson<DateTime?>(readAt),
       'isDeleted': serializer.toJson<bool>(isDeleted),
+      'replyToId': serializer.toJson<String?>(replyToId),
+      'editedAt': serializer.toJson<DateTime?>(editedAt),
+      'forwardedFromId': serializer.toJson<String?>(forwardedFromId),
+      'pinnedAt': serializer.toJson<DateTime?>(pinnedAt),
     };
   }
 
@@ -35627,7 +35726,11 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           DateTime? sentAt,
           Value<DateTime?> deliveredAt = const Value.absent(),
           Value<DateTime?> readAt = const Value.absent(),
-          bool? isDeleted}) =>
+          bool? isDeleted,
+          Value<String?> replyToId = const Value.absent(),
+          Value<DateTime?> editedAt = const Value.absent(),
+          Value<String?> forwardedFromId = const Value.absent(),
+          Value<DateTime?> pinnedAt = const Value.absent()}) =>
       ChatMessage(
         id: id ?? this.id,
         conversationId: conversationId ?? this.conversationId,
@@ -35638,6 +35741,12 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
         deliveredAt: deliveredAt.present ? deliveredAt.value : this.deliveredAt,
         readAt: readAt.present ? readAt.value : this.readAt,
         isDeleted: isDeleted ?? this.isDeleted,
+        replyToId: replyToId.present ? replyToId.value : this.replyToId,
+        editedAt: editedAt.present ? editedAt.value : this.editedAt,
+        forwardedFromId: forwardedFromId.present
+            ? forwardedFromId.value
+            : this.forwardedFromId,
+        pinnedAt: pinnedAt.present ? pinnedAt.value : this.pinnedAt,
       );
   ChatMessage copyWithCompanion(ChatMessagesCompanion data) {
     return ChatMessage(
@@ -35653,6 +35762,12 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           data.deliveredAt.present ? data.deliveredAt.value : this.deliveredAt,
       readAt: data.readAt.present ? data.readAt.value : this.readAt,
       isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      replyToId: data.replyToId.present ? data.replyToId.value : this.replyToId,
+      editedAt: data.editedAt.present ? data.editedAt.value : this.editedAt,
+      forwardedFromId: data.forwardedFromId.present
+          ? data.forwardedFromId.value
+          : this.forwardedFromId,
+      pinnedAt: data.pinnedAt.present ? data.pinnedAt.value : this.pinnedAt,
     );
   }
 
@@ -35667,14 +35782,30 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           ..write('sentAt: $sentAt, ')
           ..write('deliveredAt: $deliveredAt, ')
           ..write('readAt: $readAt, ')
-          ..write('isDeleted: $isDeleted')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('replyToId: $replyToId, ')
+          ..write('editedAt: $editedAt, ')
+          ..write('forwardedFromId: $forwardedFromId, ')
+          ..write('pinnedAt: $pinnedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, conversationId, senderId, type, content,
-      sentAt, deliveredAt, readAt, isDeleted);
+  int get hashCode => Object.hash(
+      id,
+      conversationId,
+      senderId,
+      type,
+      content,
+      sentAt,
+      deliveredAt,
+      readAt,
+      isDeleted,
+      replyToId,
+      editedAt,
+      forwardedFromId,
+      pinnedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -35687,7 +35818,11 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           other.sentAt == this.sentAt &&
           other.deliveredAt == this.deliveredAt &&
           other.readAt == this.readAt &&
-          other.isDeleted == this.isDeleted);
+          other.isDeleted == this.isDeleted &&
+          other.replyToId == this.replyToId &&
+          other.editedAt == this.editedAt &&
+          other.forwardedFromId == this.forwardedFromId &&
+          other.pinnedAt == this.pinnedAt);
 }
 
 class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
@@ -35700,6 +35835,10 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
   final Value<DateTime?> deliveredAt;
   final Value<DateTime?> readAt;
   final Value<bool> isDeleted;
+  final Value<String?> replyToId;
+  final Value<DateTime?> editedAt;
+  final Value<String?> forwardedFromId;
+  final Value<DateTime?> pinnedAt;
   final Value<int> rowid;
   const ChatMessagesCompanion({
     this.id = const Value.absent(),
@@ -35711,6 +35850,10 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     this.deliveredAt = const Value.absent(),
     this.readAt = const Value.absent(),
     this.isDeleted = const Value.absent(),
+    this.replyToId = const Value.absent(),
+    this.editedAt = const Value.absent(),
+    this.forwardedFromId = const Value.absent(),
+    this.pinnedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChatMessagesCompanion.insert({
@@ -35723,6 +35866,10 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     this.deliveredAt = const Value.absent(),
     this.readAt = const Value.absent(),
     this.isDeleted = const Value.absent(),
+    this.replyToId = const Value.absent(),
+    this.editedAt = const Value.absent(),
+    this.forwardedFromId = const Value.absent(),
+    this.pinnedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         conversationId = Value(conversationId),
@@ -35739,6 +35886,10 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     Expression<DateTime>? deliveredAt,
     Expression<DateTime>? readAt,
     Expression<bool>? isDeleted,
+    Expression<String>? replyToId,
+    Expression<DateTime>? editedAt,
+    Expression<String>? forwardedFromId,
+    Expression<DateTime>? pinnedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -35751,6 +35902,10 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
       if (deliveredAt != null) 'delivered_at': deliveredAt,
       if (readAt != null) 'read_at': readAt,
       if (isDeleted != null) 'is_deleted': isDeleted,
+      if (replyToId != null) 'reply_to_id': replyToId,
+      if (editedAt != null) 'edited_at': editedAt,
+      if (forwardedFromId != null) 'forwarded_from_id': forwardedFromId,
+      if (pinnedAt != null) 'pinned_at': pinnedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -35765,6 +35920,10 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
       Value<DateTime?>? deliveredAt,
       Value<DateTime?>? readAt,
       Value<bool>? isDeleted,
+      Value<String?>? replyToId,
+      Value<DateTime?>? editedAt,
+      Value<String?>? forwardedFromId,
+      Value<DateTime?>? pinnedAt,
       Value<int>? rowid}) {
     return ChatMessagesCompanion(
       id: id ?? this.id,
@@ -35776,6 +35935,10 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
       deliveredAt: deliveredAt ?? this.deliveredAt,
       readAt: readAt ?? this.readAt,
       isDeleted: isDeleted ?? this.isDeleted,
+      replyToId: replyToId ?? this.replyToId,
+      editedAt: editedAt ?? this.editedAt,
+      forwardedFromId: forwardedFromId ?? this.forwardedFromId,
+      pinnedAt: pinnedAt ?? this.pinnedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -35810,6 +35973,18 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     if (isDeleted.present) {
       map['is_deleted'] = Variable<bool>(isDeleted.value);
     }
+    if (replyToId.present) {
+      map['reply_to_id'] = Variable<String>(replyToId.value);
+    }
+    if (editedAt.present) {
+      map['edited_at'] = Variable<DateTime>(editedAt.value);
+    }
+    if (forwardedFromId.present) {
+      map['forwarded_from_id'] = Variable<String>(forwardedFromId.value);
+    }
+    if (pinnedAt.present) {
+      map['pinned_at'] = Variable<DateTime>(pinnedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -35828,6 +36003,630 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
           ..write('deliveredAt: $deliveredAt, ')
           ..write('readAt: $readAt, ')
           ..write('isDeleted: $isDeleted, ')
+          ..write('replyToId: $replyToId, ')
+          ..write('editedAt: $editedAt, ')
+          ..write('forwardedFromId: $forwardedFromId, ')
+          ..write('pinnedAt: $pinnedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ChatReactionsTable extends ChatReactions
+    with TableInfo<$ChatReactionsTable, ChatReaction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ChatReactionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _messageIdMeta =
+      const VerificationMeta('messageId');
+  @override
+  late final GeneratedColumn<String> messageId = GeneratedColumn<String>(
+      'message_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _emojiMeta = const VerificationMeta('emoji');
+  @override
+  late final GeneratedColumn<String> emoji = GeneratedColumn<String>(
+      'emoji', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _reactedAtMeta =
+      const VerificationMeta('reactedAt');
+  @override
+  late final GeneratedColumn<DateTime> reactedAt = GeneratedColumn<DateTime>(
+      'reacted_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [messageId, userId, emoji, reactedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'chat_reactions';
+  @override
+  VerificationContext validateIntegrity(Insertable<ChatReaction> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('message_id')) {
+      context.handle(_messageIdMeta,
+          messageId.isAcceptableOrUnknown(data['message_id']!, _messageIdMeta));
+    } else if (isInserting) {
+      context.missing(_messageIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('emoji')) {
+      context.handle(
+          _emojiMeta, emoji.isAcceptableOrUnknown(data['emoji']!, _emojiMeta));
+    } else if (isInserting) {
+      context.missing(_emojiMeta);
+    }
+    if (data.containsKey('reacted_at')) {
+      context.handle(_reactedAtMeta,
+          reactedAt.isAcceptableOrUnknown(data['reacted_at']!, _reactedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {messageId, userId};
+  @override
+  ChatReaction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ChatReaction(
+      messageId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}message_id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      emoji: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}emoji'])!,
+      reactedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}reacted_at'])!,
+    );
+  }
+
+  @override
+  $ChatReactionsTable createAlias(String alias) {
+    return $ChatReactionsTable(attachedDatabase, alias);
+  }
+}
+
+class ChatReaction extends DataClass implements Insertable<ChatReaction> {
+  final String messageId;
+  final String userId;
+  final String emoji;
+  final DateTime reactedAt;
+  const ChatReaction(
+      {required this.messageId,
+      required this.userId,
+      required this.emoji,
+      required this.reactedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['message_id'] = Variable<String>(messageId);
+    map['user_id'] = Variable<String>(userId);
+    map['emoji'] = Variable<String>(emoji);
+    map['reacted_at'] = Variable<DateTime>(reactedAt);
+    return map;
+  }
+
+  ChatReactionsCompanion toCompanion(bool nullToAbsent) {
+    return ChatReactionsCompanion(
+      messageId: Value(messageId),
+      userId: Value(userId),
+      emoji: Value(emoji),
+      reactedAt: Value(reactedAt),
+    );
+  }
+
+  factory ChatReaction.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ChatReaction(
+      messageId: serializer.fromJson<String>(json['messageId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      emoji: serializer.fromJson<String>(json['emoji']),
+      reactedAt: serializer.fromJson<DateTime>(json['reactedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'messageId': serializer.toJson<String>(messageId),
+      'userId': serializer.toJson<String>(userId),
+      'emoji': serializer.toJson<String>(emoji),
+      'reactedAt': serializer.toJson<DateTime>(reactedAt),
+    };
+  }
+
+  ChatReaction copyWith(
+          {String? messageId,
+          String? userId,
+          String? emoji,
+          DateTime? reactedAt}) =>
+      ChatReaction(
+        messageId: messageId ?? this.messageId,
+        userId: userId ?? this.userId,
+        emoji: emoji ?? this.emoji,
+        reactedAt: reactedAt ?? this.reactedAt,
+      );
+  ChatReaction copyWithCompanion(ChatReactionsCompanion data) {
+    return ChatReaction(
+      messageId: data.messageId.present ? data.messageId.value : this.messageId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      emoji: data.emoji.present ? data.emoji.value : this.emoji,
+      reactedAt: data.reactedAt.present ? data.reactedAt.value : this.reactedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChatReaction(')
+          ..write('messageId: $messageId, ')
+          ..write('userId: $userId, ')
+          ..write('emoji: $emoji, ')
+          ..write('reactedAt: $reactedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(messageId, userId, emoji, reactedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ChatReaction &&
+          other.messageId == this.messageId &&
+          other.userId == this.userId &&
+          other.emoji == this.emoji &&
+          other.reactedAt == this.reactedAt);
+}
+
+class ChatReactionsCompanion extends UpdateCompanion<ChatReaction> {
+  final Value<String> messageId;
+  final Value<String> userId;
+  final Value<String> emoji;
+  final Value<DateTime> reactedAt;
+  final Value<int> rowid;
+  const ChatReactionsCompanion({
+    this.messageId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.emoji = const Value.absent(),
+    this.reactedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ChatReactionsCompanion.insert({
+    required String messageId,
+    required String userId,
+    required String emoji,
+    this.reactedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : messageId = Value(messageId),
+        userId = Value(userId),
+        emoji = Value(emoji);
+  static Insertable<ChatReaction> custom({
+    Expression<String>? messageId,
+    Expression<String>? userId,
+    Expression<String>? emoji,
+    Expression<DateTime>? reactedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (messageId != null) 'message_id': messageId,
+      if (userId != null) 'user_id': userId,
+      if (emoji != null) 'emoji': emoji,
+      if (reactedAt != null) 'reacted_at': reactedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ChatReactionsCompanion copyWith(
+      {Value<String>? messageId,
+      Value<String>? userId,
+      Value<String>? emoji,
+      Value<DateTime>? reactedAt,
+      Value<int>? rowid}) {
+    return ChatReactionsCompanion(
+      messageId: messageId ?? this.messageId,
+      userId: userId ?? this.userId,
+      emoji: emoji ?? this.emoji,
+      reactedAt: reactedAt ?? this.reactedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (messageId.present) {
+      map['message_id'] = Variable<String>(messageId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (emoji.present) {
+      map['emoji'] = Variable<String>(emoji.value);
+    }
+    if (reactedAt.present) {
+      map['reacted_at'] = Variable<DateTime>(reactedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChatReactionsCompanion(')
+          ..write('messageId: $messageId, ')
+          ..write('userId: $userId, ')
+          ..write('emoji: $emoji, ')
+          ..write('reactedAt: $reactedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $E2eeOutboxTable extends E2eeOutbox
+    with TableInfo<$E2eeOutboxTable, E2eeOutboxData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $E2eeOutboxTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _conversationIdMeta =
+      const VerificationMeta('conversationId');
+  @override
+  late final GeneratedColumn<String> conversationId = GeneratedColumn<String>(
+      'conversation_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _envelopeMeta =
+      const VerificationMeta('envelope');
+  @override
+  late final GeneratedColumn<String> envelope = GeneratedColumn<String>(
+      'envelope', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _attemptsMeta =
+      const VerificationMeta('attempts');
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+      'attempts', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _lastErrorMeta =
+      const VerificationMeta('lastError');
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+      'last_error', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, conversationId, envelope, attempts, lastError, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'e2ee_outbox';
+  @override
+  VerificationContext validateIntegrity(Insertable<E2eeOutboxData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('conversation_id')) {
+      context.handle(
+          _conversationIdMeta,
+          conversationId.isAcceptableOrUnknown(
+              data['conversation_id']!, _conversationIdMeta));
+    } else if (isInserting) {
+      context.missing(_conversationIdMeta);
+    }
+    if (data.containsKey('envelope')) {
+      context.handle(_envelopeMeta,
+          envelope.isAcceptableOrUnknown(data['envelope']!, _envelopeMeta));
+    } else if (isInserting) {
+      context.missing(_envelopeMeta);
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(_attemptsMeta,
+          attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta));
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(_lastErrorMeta,
+          lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  E2eeOutboxData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return E2eeOutboxData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      conversationId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}conversation_id'])!,
+      envelope: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}envelope'])!,
+      attempts: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}attempts'])!,
+      lastError: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}last_error']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $E2eeOutboxTable createAlias(String alias) {
+    return $E2eeOutboxTable(attachedDatabase, alias);
+  }
+}
+
+class E2eeOutboxData extends DataClass implements Insertable<E2eeOutboxData> {
+  final String id;
+  final String conversationId;
+  final String envelope;
+  final int attempts;
+  final String? lastError;
+  final DateTime createdAt;
+  const E2eeOutboxData(
+      {required this.id,
+      required this.conversationId,
+      required this.envelope,
+      required this.attempts,
+      this.lastError,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['conversation_id'] = Variable<String>(conversationId);
+    map['envelope'] = Variable<String>(envelope);
+    map['attempts'] = Variable<int>(attempts);
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  E2eeOutboxCompanion toCompanion(bool nullToAbsent) {
+    return E2eeOutboxCompanion(
+      id: Value(id),
+      conversationId: Value(conversationId),
+      envelope: Value(envelope),
+      attempts: Value(attempts),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory E2eeOutboxData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return E2eeOutboxData(
+      id: serializer.fromJson<String>(json['id']),
+      conversationId: serializer.fromJson<String>(json['conversationId']),
+      envelope: serializer.fromJson<String>(json['envelope']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'conversationId': serializer.toJson<String>(conversationId),
+      'envelope': serializer.toJson<String>(envelope),
+      'attempts': serializer.toJson<int>(attempts),
+      'lastError': serializer.toJson<String?>(lastError),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  E2eeOutboxData copyWith(
+          {String? id,
+          String? conversationId,
+          String? envelope,
+          int? attempts,
+          Value<String?> lastError = const Value.absent(),
+          DateTime? createdAt}) =>
+      E2eeOutboxData(
+        id: id ?? this.id,
+        conversationId: conversationId ?? this.conversationId,
+        envelope: envelope ?? this.envelope,
+        attempts: attempts ?? this.attempts,
+        lastError: lastError.present ? lastError.value : this.lastError,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  E2eeOutboxData copyWithCompanion(E2eeOutboxCompanion data) {
+    return E2eeOutboxData(
+      id: data.id.present ? data.id.value : this.id,
+      conversationId: data.conversationId.present
+          ? data.conversationId.value
+          : this.conversationId,
+      envelope: data.envelope.present ? data.envelope.value : this.envelope,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('E2eeOutboxData(')
+          ..write('id: $id, ')
+          ..write('conversationId: $conversationId, ')
+          ..write('envelope: $envelope, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastError: $lastError, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, conversationId, envelope, attempts, lastError, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is E2eeOutboxData &&
+          other.id == this.id &&
+          other.conversationId == this.conversationId &&
+          other.envelope == this.envelope &&
+          other.attempts == this.attempts &&
+          other.lastError == this.lastError &&
+          other.createdAt == this.createdAt);
+}
+
+class E2eeOutboxCompanion extends UpdateCompanion<E2eeOutboxData> {
+  final Value<String> id;
+  final Value<String> conversationId;
+  final Value<String> envelope;
+  final Value<int> attempts;
+  final Value<String?> lastError;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const E2eeOutboxCompanion({
+    this.id = const Value.absent(),
+    this.conversationId = const Value.absent(),
+    this.envelope = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  E2eeOutboxCompanion.insert({
+    required String id,
+    required String conversationId,
+    required String envelope,
+    this.attempts = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        conversationId = Value(conversationId),
+        envelope = Value(envelope);
+  static Insertable<E2eeOutboxData> custom({
+    Expression<String>? id,
+    Expression<String>? conversationId,
+    Expression<String>? envelope,
+    Expression<int>? attempts,
+    Expression<String>? lastError,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (conversationId != null) 'conversation_id': conversationId,
+      if (envelope != null) 'envelope': envelope,
+      if (attempts != null) 'attempts': attempts,
+      if (lastError != null) 'last_error': lastError,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  E2eeOutboxCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? conversationId,
+      Value<String>? envelope,
+      Value<int>? attempts,
+      Value<String?>? lastError,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return E2eeOutboxCompanion(
+      id: id ?? this.id,
+      conversationId: conversationId ?? this.conversationId,
+      envelope: envelope ?? this.envelope,
+      attempts: attempts ?? this.attempts,
+      lastError: lastError ?? this.lastError,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (conversationId.present) {
+      map['conversation_id'] = Variable<String>(conversationId.value);
+    }
+    if (envelope.present) {
+      map['envelope'] = Variable<String>(envelope.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('E2eeOutboxCompanion(')
+          ..write('id: $id, ')
+          ..write('conversationId: $conversationId, ')
+          ..write('envelope: $envelope, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastError: $lastError, ')
+          ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -38480,6 +39279,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ChatParticipantsTable chatParticipants =
       $ChatParticipantsTable(this);
   late final $ChatMessagesTable chatMessages = $ChatMessagesTable(this);
+  late final $ChatReactionsTable chatReactions = $ChatReactionsTable(this);
+  late final $E2eeOutboxTable e2eeOutbox = $E2eeOutboxTable(this);
   late final $DeviceRegistryEntriesTable deviceRegistryEntries =
       $DeviceRegistryEntriesTable(this);
   late final $EncryptedMessageQueueTable encryptedMessageQueue =
@@ -38588,6 +39389,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         chatConversations,
         chatParticipants,
         chatMessages,
+        chatReactions,
+        e2eeOutbox,
         deviceRegistryEntries,
         encryptedMessageQueue,
         deviceTrustLedger,
@@ -55820,6 +56623,10 @@ typedef $$ChatMessagesTableCreateCompanionBuilder = ChatMessagesCompanion
   Value<DateTime?> deliveredAt,
   Value<DateTime?> readAt,
   Value<bool> isDeleted,
+  Value<String?> replyToId,
+  Value<DateTime?> editedAt,
+  Value<String?> forwardedFromId,
+  Value<DateTime?> pinnedAt,
   Value<int> rowid,
 });
 typedef $$ChatMessagesTableUpdateCompanionBuilder = ChatMessagesCompanion
@@ -55833,6 +56640,10 @@ typedef $$ChatMessagesTableUpdateCompanionBuilder = ChatMessagesCompanion
   Value<DateTime?> deliveredAt,
   Value<DateTime?> readAt,
   Value<bool> isDeleted,
+  Value<String?> replyToId,
+  Value<DateTime?> editedAt,
+  Value<String?> forwardedFromId,
+  Value<DateTime?> pinnedAt,
   Value<int> rowid,
 });
 
@@ -55872,6 +56683,19 @@ class $$ChatMessagesTableFilterComposer
 
   ColumnFilters<bool> get isDeleted => $composableBuilder(
       column: $table.isDeleted, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get replyToId => $composableBuilder(
+      column: $table.replyToId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get editedAt => $composableBuilder(
+      column: $table.editedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get forwardedFromId => $composableBuilder(
+      column: $table.forwardedFromId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get pinnedAt => $composableBuilder(
+      column: $table.pinnedAt, builder: (column) => ColumnFilters(column));
 }
 
 class $$ChatMessagesTableOrderingComposer
@@ -55910,6 +56734,19 @@ class $$ChatMessagesTableOrderingComposer
 
   ColumnOrderings<bool> get isDeleted => $composableBuilder(
       column: $table.isDeleted, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get replyToId => $composableBuilder(
+      column: $table.replyToId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get editedAt => $composableBuilder(
+      column: $table.editedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get forwardedFromId => $composableBuilder(
+      column: $table.forwardedFromId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get pinnedAt => $composableBuilder(
+      column: $table.pinnedAt, builder: (column) => ColumnOrderings(column));
 }
 
 class $$ChatMessagesTableAnnotationComposer
@@ -55947,6 +56784,18 @@ class $$ChatMessagesTableAnnotationComposer
 
   GeneratedColumn<bool> get isDeleted =>
       $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<String> get replyToId =>
+      $composableBuilder(column: $table.replyToId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get editedAt =>
+      $composableBuilder(column: $table.editedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get forwardedFromId => $composableBuilder(
+      column: $table.forwardedFromId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get pinnedAt =>
+      $composableBuilder(column: $table.pinnedAt, builder: (column) => column);
 }
 
 class $$ChatMessagesTableTableManager extends RootTableManager<
@@ -55984,6 +56833,10 @@ class $$ChatMessagesTableTableManager extends RootTableManager<
             Value<DateTime?> deliveredAt = const Value.absent(),
             Value<DateTime?> readAt = const Value.absent(),
             Value<bool> isDeleted = const Value.absent(),
+            Value<String?> replyToId = const Value.absent(),
+            Value<DateTime?> editedAt = const Value.absent(),
+            Value<String?> forwardedFromId = const Value.absent(),
+            Value<DateTime?> pinnedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               ChatMessagesCompanion(
@@ -55996,6 +56849,10 @@ class $$ChatMessagesTableTableManager extends RootTableManager<
             deliveredAt: deliveredAt,
             readAt: readAt,
             isDeleted: isDeleted,
+            replyToId: replyToId,
+            editedAt: editedAt,
+            forwardedFromId: forwardedFromId,
+            pinnedAt: pinnedAt,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -56008,6 +56865,10 @@ class $$ChatMessagesTableTableManager extends RootTableManager<
             Value<DateTime?> deliveredAt = const Value.absent(),
             Value<DateTime?> readAt = const Value.absent(),
             Value<bool> isDeleted = const Value.absent(),
+            Value<String?> replyToId = const Value.absent(),
+            Value<DateTime?> editedAt = const Value.absent(),
+            Value<String?> forwardedFromId = const Value.absent(),
+            Value<DateTime?> pinnedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               ChatMessagesCompanion.insert(
@@ -56020,6 +56881,10 @@ class $$ChatMessagesTableTableManager extends RootTableManager<
             deliveredAt: deliveredAt,
             readAt: readAt,
             isDeleted: isDeleted,
+            replyToId: replyToId,
+            editedAt: editedAt,
+            forwardedFromId: forwardedFromId,
+            pinnedAt: pinnedAt,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -56043,6 +56908,352 @@ typedef $$ChatMessagesTableProcessedTableManager = ProcessedTableManager<
       BaseReferences<_$AppDatabase, $ChatMessagesTable, ChatMessage>
     ),
     ChatMessage,
+    PrefetchHooks Function()>;
+typedef $$ChatReactionsTableCreateCompanionBuilder = ChatReactionsCompanion
+    Function({
+  required String messageId,
+  required String userId,
+  required String emoji,
+  Value<DateTime> reactedAt,
+  Value<int> rowid,
+});
+typedef $$ChatReactionsTableUpdateCompanionBuilder = ChatReactionsCompanion
+    Function({
+  Value<String> messageId,
+  Value<String> userId,
+  Value<String> emoji,
+  Value<DateTime> reactedAt,
+  Value<int> rowid,
+});
+
+class $$ChatReactionsTableFilterComposer
+    extends Composer<_$AppDatabase, $ChatReactionsTable> {
+  $$ChatReactionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get messageId => $composableBuilder(
+      column: $table.messageId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get emoji => $composableBuilder(
+      column: $table.emoji, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get reactedAt => $composableBuilder(
+      column: $table.reactedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$ChatReactionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ChatReactionsTable> {
+  $$ChatReactionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get messageId => $composableBuilder(
+      column: $table.messageId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get emoji => $composableBuilder(
+      column: $table.emoji, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get reactedAt => $composableBuilder(
+      column: $table.reactedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ChatReactionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ChatReactionsTable> {
+  $$ChatReactionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get messageId =>
+      $composableBuilder(column: $table.messageId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get emoji =>
+      $composableBuilder(column: $table.emoji, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get reactedAt =>
+      $composableBuilder(column: $table.reactedAt, builder: (column) => column);
+}
+
+class $$ChatReactionsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ChatReactionsTable,
+    ChatReaction,
+    $$ChatReactionsTableFilterComposer,
+    $$ChatReactionsTableOrderingComposer,
+    $$ChatReactionsTableAnnotationComposer,
+    $$ChatReactionsTableCreateCompanionBuilder,
+    $$ChatReactionsTableUpdateCompanionBuilder,
+    (
+      ChatReaction,
+      BaseReferences<_$AppDatabase, $ChatReactionsTable, ChatReaction>
+    ),
+    ChatReaction,
+    PrefetchHooks Function()> {
+  $$ChatReactionsTableTableManager(_$AppDatabase db, $ChatReactionsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ChatReactionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ChatReactionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ChatReactionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> messageId = const Value.absent(),
+            Value<String> userId = const Value.absent(),
+            Value<String> emoji = const Value.absent(),
+            Value<DateTime> reactedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ChatReactionsCompanion(
+            messageId: messageId,
+            userId: userId,
+            emoji: emoji,
+            reactedAt: reactedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String messageId,
+            required String userId,
+            required String emoji,
+            Value<DateTime> reactedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ChatReactionsCompanion.insert(
+            messageId: messageId,
+            userId: userId,
+            emoji: emoji,
+            reactedAt: reactedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ChatReactionsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ChatReactionsTable,
+    ChatReaction,
+    $$ChatReactionsTableFilterComposer,
+    $$ChatReactionsTableOrderingComposer,
+    $$ChatReactionsTableAnnotationComposer,
+    $$ChatReactionsTableCreateCompanionBuilder,
+    $$ChatReactionsTableUpdateCompanionBuilder,
+    (
+      ChatReaction,
+      BaseReferences<_$AppDatabase, $ChatReactionsTable, ChatReaction>
+    ),
+    ChatReaction,
+    PrefetchHooks Function()>;
+typedef $$E2eeOutboxTableCreateCompanionBuilder = E2eeOutboxCompanion Function({
+  required String id,
+  required String conversationId,
+  required String envelope,
+  Value<int> attempts,
+  Value<String?> lastError,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+typedef $$E2eeOutboxTableUpdateCompanionBuilder = E2eeOutboxCompanion Function({
+  Value<String> id,
+  Value<String> conversationId,
+  Value<String> envelope,
+  Value<int> attempts,
+  Value<String?> lastError,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$E2eeOutboxTableFilterComposer
+    extends Composer<_$AppDatabase, $E2eeOutboxTable> {
+  $$E2eeOutboxTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get conversationId => $composableBuilder(
+      column: $table.conversationId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get envelope => $composableBuilder(
+      column: $table.envelope, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+      column: $table.attempts, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+      column: $table.lastError, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$E2eeOutboxTableOrderingComposer
+    extends Composer<_$AppDatabase, $E2eeOutboxTable> {
+  $$E2eeOutboxTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get conversationId => $composableBuilder(
+      column: $table.conversationId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get envelope => $composableBuilder(
+      column: $table.envelope, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+      column: $table.attempts, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+      column: $table.lastError, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$E2eeOutboxTableAnnotationComposer
+    extends Composer<_$AppDatabase, $E2eeOutboxTable> {
+  $$E2eeOutboxTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get conversationId => $composableBuilder(
+      column: $table.conversationId, builder: (column) => column);
+
+  GeneratedColumn<String> get envelope =>
+      $composableBuilder(column: $table.envelope, builder: (column) => column);
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$E2eeOutboxTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $E2eeOutboxTable,
+    E2eeOutboxData,
+    $$E2eeOutboxTableFilterComposer,
+    $$E2eeOutboxTableOrderingComposer,
+    $$E2eeOutboxTableAnnotationComposer,
+    $$E2eeOutboxTableCreateCompanionBuilder,
+    $$E2eeOutboxTableUpdateCompanionBuilder,
+    (
+      E2eeOutboxData,
+      BaseReferences<_$AppDatabase, $E2eeOutboxTable, E2eeOutboxData>
+    ),
+    E2eeOutboxData,
+    PrefetchHooks Function()> {
+  $$E2eeOutboxTableTableManager(_$AppDatabase db, $E2eeOutboxTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$E2eeOutboxTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$E2eeOutboxTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$E2eeOutboxTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> conversationId = const Value.absent(),
+            Value<String> envelope = const Value.absent(),
+            Value<int> attempts = const Value.absent(),
+            Value<String?> lastError = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              E2eeOutboxCompanion(
+            id: id,
+            conversationId: conversationId,
+            envelope: envelope,
+            attempts: attempts,
+            lastError: lastError,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String conversationId,
+            required String envelope,
+            Value<int> attempts = const Value.absent(),
+            Value<String?> lastError = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              E2eeOutboxCompanion.insert(
+            id: id,
+            conversationId: conversationId,
+            envelope: envelope,
+            attempts: attempts,
+            lastError: lastError,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$E2eeOutboxTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $E2eeOutboxTable,
+    E2eeOutboxData,
+    $$E2eeOutboxTableFilterComposer,
+    $$E2eeOutboxTableOrderingComposer,
+    $$E2eeOutboxTableAnnotationComposer,
+    $$E2eeOutboxTableCreateCompanionBuilder,
+    $$E2eeOutboxTableUpdateCompanionBuilder,
+    (
+      E2eeOutboxData,
+      BaseReferences<_$AppDatabase, $E2eeOutboxTable, E2eeOutboxData>
+    ),
+    E2eeOutboxData,
     PrefetchHooks Function()>;
 typedef $$DeviceRegistryEntriesTableCreateCompanionBuilder
     = DeviceRegistryEntriesCompanion Function({
@@ -57516,6 +58727,10 @@ class $AppDatabaseManager {
       $$ChatParticipantsTableTableManager(_db, _db.chatParticipants);
   $$ChatMessagesTableTableManager get chatMessages =>
       $$ChatMessagesTableTableManager(_db, _db.chatMessages);
+  $$ChatReactionsTableTableManager get chatReactions =>
+      $$ChatReactionsTableTableManager(_db, _db.chatReactions);
+  $$E2eeOutboxTableTableManager get e2eeOutbox =>
+      $$E2eeOutboxTableTableManager(_db, _db.e2eeOutbox);
   $$DeviceRegistryEntriesTableTableManager get deviceRegistryEntries =>
       $$DeviceRegistryEntriesTableTableManager(_db, _db.deviceRegistryEntries);
   $$EncryptedMessageQueueTableTableManager get encryptedMessageQueue =>

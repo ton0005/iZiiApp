@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/events/app_event_bus.dart';
 import '../services/radio_gateway_service.dart';
+import 'radio_alone_worker_test_screen.dart';
 
 /// Hytera radio alarms (SOS / Man Down / Lone Worker) and radio ↔ employee
 /// assignment. Alarms linked to an Alone Worker job ALSO raise the normal job
@@ -28,6 +29,9 @@ class _RadioSafetyScreenState extends State<RadioSafetyScreen> {
 
   List<RadioAlarm> _alarms = [];
   List<RadioDevice> _devices = [];
+  // Room names from the local synced DB. HP682 radios have no GPS, so for an
+  // alarm linked to an Alone Worker job the job's room IS the location.
+  Map<String, String> _roomNames = {};
   bool _showHistory = false;
   bool _loading = false;
   String? _error;
@@ -55,10 +59,13 @@ class _RadioSafetyScreenState extends State<RadioSafetyScreen> {
         _service.listAlarms(activeOnly: !_showHistory),
         _service.listDevices(),
       ]);
+      final db = AppDatabase();
+      final rooms = await db.select(db.growRooms).get();
       if (!mounted) return;
       setState(() {
         _alarms = results[0] as List<RadioAlarm>;
         _devices = results[1] as List<RadioDevice>;
+        _roomNames = {for (final r in rooms) r.id: r.name};
         _error = null;
         _loading = false;
       });
@@ -89,6 +96,16 @@ class _RadioSafetyScreenState extends State<RadioSafetyScreen> {
         appBar: AppBar(
           title: const Text('Hytera Radios — Lone Worker / Man Down'),
           actions: [
+            TextButton.icon(
+              icon: const Icon(Icons.science_outlined),
+              label: const Text('Test Alone Worker'),
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const RadioAloneWorkerTestScreen()),
+                );
+                _reload();
+              },
+            ),
             IconButton(
               tooltip: 'Refresh',
               icon: const Icon(Icons.refresh),
@@ -235,8 +252,15 @@ class _RadioSafetyScreenState extends State<RadioSafetyScreen> {
                     label: Text('${a.latitude!.toStringAsFixed(5)}, ${a.longitude!.toStringAsFixed(5)}'),
                     onPressed: () => _openMap(a.latitude!, a.longitude!),
                   )
+                else if (a.roomId != null)
+                  Row(children: [
+                    const Icon(Icons.meeting_room_outlined, size: 20, color: Colors.deepOrange),
+                    const SizedBox(width: 6),
+                    Text('${_roomNames[a.roomId] ?? a.roomId} (Alone Worker job)',
+                        style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.deepOrange)),
+                  ])
                 else
-                  const Text('No GPS fix', style: TextStyle(color: Colors.grey)),
+                  const Text('No GPS fix — location unknown', style: TextStyle(color: Colors.grey)),
                 const Spacer(),
                 if (urgent)
                   FilledButton.icon(

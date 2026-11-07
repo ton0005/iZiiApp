@@ -230,11 +230,11 @@ class _WriteJobTagSheetState extends State<_WriteJobTagSheet> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (_failed)
-                  TextButton(onPressed: _write, child: const Text('Thử lại')),
+                  TextButton(onPressed: _write, child: const Text('Retry')),
                 const SizedBox(width: 8),
                 FilledButton(
                   onPressed: () => Navigator.pop(context, _done),
-                  child: Text(_done ? 'Xong' : 'Bỏ qua'),
+                  child: Text(_done ? 'Done' : 'Skip'),
                 ),
               ],
             ),

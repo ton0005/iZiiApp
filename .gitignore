@@ -62,3 +62,6 @@ _reset_backup_20260803-130428/
 
 /docs/Fastapi
 /plan/Hytera
+# Radio bridge runtime
+radio_bridge/spool/
+radio_bridge/capture*.jsonl

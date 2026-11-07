@@ -46,6 +46,14 @@ def _make_db() -> sqlite3.Connection:
     """)
     with open(_MIGRATION, encoding="utf-8") as f:
         conn.executescript(f.read())
+    # 0012 dùng ALTER ... ADD COLUMN IF NOT EXISTS (cú pháp Postgres): chạy từng câu,
+    # cột thì thêm kiểu SQLite như db_init.py.
+    with open(_MIGRATION.replace("0011_radio_gateway", "0012_radio_commands"), encoding="utf-8") as f:
+        for stmt in f.read().split(";"):
+            if stmt.strip() and "ALTER TABLE" not in stmt:
+                conn.execute(stmt)
+    for col in ("lone_worker_state", "lone_worker_checked_at"):
+        conn.execute(f"ALTER TABLE radio_devices ADD COLUMN {col} TEXT")
     return conn
 
 
@@ -84,6 +92,12 @@ class TestNormalizeEvent(unittest.TestCase):
             re_.normalize_event({"event_type": "SOS"})
         with self.assertRaises(re_.RadioEventError):
             re_.normalize_event({"radio_id": "1"})
+
+    def test_job_matched_through_alternative_assignee_fields(self):
+        jobs = {"j": {"id": "j", "status": "in_progress", "job_type": "alone_worker", "assigned_to": "Nguyen Van A (EMP001)"}}
+        assert re_.find_active_solo_job(jobs, "EMP001", None)["id"] == "j"
+        jobs["j"] = {"id": "j", "status": "in_progress", "is_solo_job": True, "employee_id": "EMP001"}
+        assert re_.find_active_solo_job(jobs, "EMP001", None)["id"] == "j"
 
     def test_assignee_matching(self):
         self.assertTrue(re_.assignee_matches("Nguyen Van A (EMP001)", "EMP001", None))
@@ -324,6 +338,166 @@ class TestEndpointAuth(unittest.TestCase):
             self.assertEqual(res.status_code, 200, res.text)
             self.assertEqual(res.json()["device"]["employee_id"], "EMP001")
             self.assertTrue(res.json()["device"]["active"])
+
+
+class TestTimeoutAlertsToRadio(unittest.TestCase):
+    """Đồng hồ Alone Worker trong app hết giờ → tin nhắn xuống bộ đàm của người làm job."""
+
+    def setUp(self):
+        self._patch = mock.patch.object(CONFIG, "db_backend", "sqlite")
+        self._patch.start()
+        from routers import radio_gateway
+        self.rg = radio_gateway
+        self.conn = _make_db()
+        self.repo = SQLiteSyncRepository(self.conn)
+        self.started = "2026-11-02T08:00:00+00:00"
+        self.repo.push_mutations([
+            {"id": "m1", "table": "grow_rooms", "operation": "insert",
+             "data": {"id": "room_6a", "name": "Room 6A", "status": "active"}},
+            {"id": "m2", "table": "mushroom_jobs", "operation": "insert",
+             "data": {"id": "job-a", "room_id": "room_6a", "job_type": "alone_worker", "status": "in_progress",
+                      "assignee": "Andrew", "is_solo_job": True, "started_at": self.started}},
+            {"id": "m3", "table": "mushroom_jobs", "operation": "insert",
+             "data": {"id": "job-w", "room_id": "room_6a", "job_type": "watering", "status": "in_progress",
+                      "assignee": "Andrew"}},
+        ], self.started)
+        self.conn.execute(
+            "INSERT INTO radio_devices (radio_id, system, model, employee_id, employee_name, active) "
+            "VALUES ('507', 'dmr', 'HP682', 'EMP507', 'Andrew', 1)"
+        )
+        self.conn.commit()
+
+    def tearDown(self):
+        self._patch.stop()
+        self.conn.close()
+
+    def _timeout(self, job_id, **extra):
+        muts = [{"id": f"t-{job_id}-{len(extra)}", "table": "mushroom_jobs", "operation": "update",
+                 "data": {"id": job_id, "alarm_triggered": True, **extra}}]
+        self.repo.push_mutations(muts, self.started)
+        return self.rg.enqueue_timeout_alerts(self.conn, self.repo, muts)
+
+    def test_timeout_queues_text_message_for_holders_radio(self):
+        (cmd,) = self._timeout("job-a")
+        self.assertEqual((cmd["radio_id"], cmd["command"], cmd["status"]), ("507", "text_message", "pending"))
+        self.assertIn("ALONE WORKER TIMEOUT", cmd["params"]["text"])
+        self.assertIn("Room 6A", cmd["params"]["text"])
+        self.assertEqual((cmd["reason"], cmd["job_id"]), ("alone_worker_timeout", "job-a"))
+
+    def test_same_timeout_is_not_sent_twice_but_next_cycle_is(self):
+        self.assertEqual(len(self._timeout("job-a")), 1)
+        self.assertEqual(self._timeout("job-a"), [], "đồng bộ lại cùng mutation không được nhắn lần nữa")
+        # check-in → đồng hồ chạy lại → hết giờ lần 2 là một lần time out mới
+        self.assertEqual(len(self._timeout("job-a", started_at="2026-11-02T09:00:00+00:00")), 1)
+
+    def test_non_solo_job_and_person_without_radio_get_nothing(self):
+        self.assertEqual(self._timeout("job-w"), [])
+        self.conn.execute("UPDATE radio_devices SET employee_id = NULL, employee_name = NULL")
+        self.conn.commit()
+        self.assertEqual(self._timeout("job-a"), [])
+
+    def test_alarm_false_or_other_tables_are_ignored(self):
+        muts = [{"id": "x", "table": "mushroom_jobs", "operation": "update", "data": {"id": "job-a", "alarm_triggered": False}},
+                {"id": "y", "table": "grow_rooms", "operation": "update", "data": {"id": "room_6a", "alarm_triggered": True}}]
+        self.assertEqual(self.rg.enqueue_timeout_alerts(self.conn, self.repo, muts), [])
+
+
+class TestRadioCommandEndpoints(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from starlette.testclient import TestClient
+        import app as app_module
+        cls.client = TestClient(app_module.app)
+
+    def setUp(self):
+        from routers import radio_gateway
+        self.conn = _make_db()
+
+        @contextmanager
+        def fake_open(*_a, **_k):
+            yield self.conn
+
+        self._patches = [
+            mock.patch.object(CONFIG, "db_backend", "sqlite"),
+            mock.patch.object(CONFIG, "admin_secret", "admin-secret"),
+            mock.patch.object(CONFIG, "radio_gateway_secret", "radio-secret"),
+            mock.patch.object(radio_gateway, "open_connection", fake_open),
+            mock.patch.object(radio_gateway, "make_sync_repo", SQLiteSyncRepository),
+        ]
+        for p in self._patches:
+            p.start()
+        self.admin = {"X-iZii-Admin-Token": "admin-secret"}
+        self.bridge = {"Authorization": "Bearer radio-secret"}
+        self.client.put("/api/v1/radio/devices/507", headers=self.admin,
+                        json={"employee_id": "EMP507", "employee_name": "Andrew", "model": "HP682"})
+
+    def tearDown(self):
+        for p in self._patches:
+            p.stop()
+        self.conn.close()
+
+    def _create(self, command, params=None):
+        return self.client.post("/api/v1/radio/devices/507/commands", headers=self.admin,
+                                json={"command": command, "params": params})
+
+    def test_lone_worker_status_round_trip_updates_device(self):
+        res = self._create("lone_worker_status")
+        self.assertEqual(res.status_code, 200, res.text)
+        cid = res.json()["command"]["id"]
+
+        claimed = self.client.get("/api/v1/radio/bridge/commands", headers=self.bridge).json()["commands"]
+        self.assertEqual([c["id"] for c in claimed], [cid])
+        self.assertEqual(claimed[0]["status"], "pending", "bản trả về là trạng thái trước khi thuê")
+        self.assertEqual(self.client.get("/api/v1/radio/bridge/commands", headers=self.bridge).json()["commands"], [],
+                         "lệnh đang được thuê không cấp lại ngay")
+
+        done = self.client.post(f"/api/v1/radio/bridge/commands/{cid}/result", headers=self.bridge,
+                                json={"ok": True, "result": {"lone_worker": "on"}})
+        self.assertEqual(done.json()["command"]["status"], "done")
+        dev = self.client.get("/api/v1/radio/devices", headers=self.admin).json()["devices"][0]
+        self.assertEqual(dev["lone_worker_state"], "on")
+        listed = self.client.get("/api/v1/radio/commands?radio_id=507", headers=self.admin).json()["commands"]
+        self.assertEqual((listed[0]["status"], listed[0]["result"]), ("done", {"lone_worker": "on"}))
+
+    def test_enable_without_explicit_state_sets_on(self):
+        cid = self._create("lone_worker_enable").json()["command"]["id"]
+        self.client.get("/api/v1/radio/bridge/commands", headers=self.bridge)
+        self.client.post(f"/api/v1/radio/bridge/commands/{cid}/result", headers=self.bridge, json={"ok": True})
+        dev = self.client.get("/api/v1/radio/devices", headers=self.admin).json()["devices"][0]
+        self.assertEqual(dev["lone_worker_state"], "on")
+
+    def test_failed_result_keeps_error_and_state(self):
+        cid = self._create("lone_worker_status").json()["command"]["id"]
+        self.client.get("/api/v1/radio/bridge/commands", headers=self.bridge)
+        res = self.client.post(f"/api/v1/radio/bridge/commands/{cid}/result", headers=self.bridge,
+                               json={"ok": False, "error": "radio not reachable"})
+        self.assertEqual((res.json()["command"]["status"], res.json()["command"]["error"]), ("failed", "radio not reachable"))
+        dev = self.client.get("/api/v1/radio/devices", headers=self.admin).json()["devices"][0]
+        self.assertIsNone(dev["lone_worker_state"])
+
+    def test_lease_expiry_reoffers_then_fails(self):
+        cid = self._create("text_message", {"text": "hello"}).json()["command"]["id"]
+        for attempt in range(3):
+            self.conn.execute("UPDATE radio_commands SET sent_at = '2000-01-01T00:00:00+00:00' WHERE id = ?", (cid,))
+            self.conn.commit()
+            got = self.client.get("/api/v1/radio/bridge/commands", headers=self.bridge).json()["commands"]
+            if attempt == 0:
+                self.assertEqual(len(got), 1)
+        self.conn.execute("UPDATE radio_commands SET sent_at = '2000-01-01T00:00:00+00:00' WHERE id = ?", (cid,))
+        self.conn.commit()
+        self.client.get("/api/v1/radio/bridge/commands", headers=self.bridge)
+        row = self.conn.execute("SELECT status, attempts FROM radio_commands WHERE id = ?", (cid,)).fetchone()
+        self.assertEqual(row["status"], "failed")
+
+    def test_validation_and_auth(self):
+        self.assertEqual(self._create("format_radio").status_code, 400)
+        self.assertEqual(self._create("text_message", {"text": "  "}).status_code, 400)
+        self.assertEqual(self.client.post("/api/v1/radio/devices/999/commands", headers=self.admin,
+                                          json={"command": "lone_worker_status"}).status_code, 404)
+        self.assertEqual(self.client.post("/api/v1/radio/devices/507/commands",
+                                          json={"command": "lone_worker_status"}).status_code, 401)
+        self.assertEqual(self.client.get("/api/v1/radio/bridge/commands", headers=self.admin).status_code, 401,
+                         "admin token không phải token của bridge")
 
 
 if __name__ == "__main__":

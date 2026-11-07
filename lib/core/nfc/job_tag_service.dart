@@ -83,8 +83,8 @@ class JobTagService {
   }) async {
     if (!tag.fitsNtag213) {
       throw NfcTagException(
-        'Nội dung ${tag.estimatedBytes} byte, vượt quá $ntag213Capacity byte của '
-        'NTAG213. Rút ngắn nhãn hoặc dùng thẻ NTAG215.',
+        'Content ${tag.estimatedBytes} bytes exceeds $ntag213Capacity bytes of '
+        'NTAG213. Shorten label or use NTAG215.',
       );
     }
     await NfcUriService.writeUri(tag.toUri(), onStatus: onStatus);
@@ -96,8 +96,8 @@ class JobTagService {
     final tag = JobTag.tryParse(raw);
     if (tag == null) {
       throw NfcTagException(
-        'Thẻ này không phải thẻ công việc iZii. '
-        'Có thể là thẻ đăng ký thiết bị hoặc thẻ của hệ thống khác.',
+        'This tag is not an iZii job tag. '
+        'It might be an enrollment tag or a tag from another system.',
       );
     }
     return tag;

@@ -235,7 +235,7 @@ class _SessionBannerState extends State<SessionBanner> {
                                         color: const Color(0xFFF59E0B), width: 0.8),
                                   ),
                                   child: const Text(
-                                    'Đang nghỉ',
+                                    'On Break',
                                     style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,

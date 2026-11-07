@@ -21,17 +21,17 @@ class VisibilityToggleWidget extends StatelessWidget {
       case 'team':
         icon = Icons.people_alt_rounded;
         color = const Color(0xFF6366F1); // Primary indigo
-        label = 'Nhóm';
+        label = 'Group';
         break;
       case 'community':
         icon = Icons.public_rounded;
         color = const Color(0xFF10B981); // Emerald
-        label = 'Cộng đồng';
+        label = 'Community';
         break;
       default:
         icon = Icons.lock_outline_rounded;
         color = Colors.grey;
-        label = 'Riêng tư';
+        label = 'Private';
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -120,19 +120,19 @@ class _AudienceSelectorBottomSheetState
         _mockUsers = [
           User(
               id: 'usr-1',
-              name: 'Nguyễn Văn An',
+              name: 'Alex An',
               type: 'both',
               kycStatus: 'verified',
               createdAt: DateTime(2026)),
           User(
               id: 'usr-2',
-              name: 'Trần Thị Bình',
+              name: 'Sarah Tran',
               type: 'both',
               kycStatus: 'verified',
               createdAt: DateTime(2026)),
           User(
               id: 'usr-3',
-              name: 'Lê Hoàng Nam',
+              name: 'David Lee',
               type: 'both',
               kycStatus: 'none',
               createdAt: DateTime(2026)),
@@ -169,7 +169,7 @@ class _AudienceSelectorBottomSheetState
           ),
           const SizedBox(height: 18),
           const Text(
-            'Thiết lập quyền chia sẻ',
+            'Sharing Settings',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             textAlign: TextAlign.center,
           ),
@@ -181,19 +181,19 @@ class _AudienceSelectorBottomSheetState
             children: [
               _buildVisibilityOption(
                 type: 'private',
-                label: 'Riêng tư',
+                label: 'Private',
                 icon: Icons.lock_outline_rounded,
                 color: Colors.grey,
               ),
               _buildVisibilityOption(
                 type: 'team',
-                label: 'Nhóm',
+                label: 'Group',
                 icon: Icons.people_alt_rounded,
                 color: const Color(0xFF6366F1),
               ),
               _buildVisibilityOption(
                 type: 'community',
-                label: 'Cộng đồng',
+                label: 'Community',
                 icon: Icons.public_rounded,
                 color: const Color(0xFF10B981),
               ),
@@ -205,7 +205,7 @@ class _AudienceSelectorBottomSheetState
           // Dynamic settings for Team/Network sharing
           if (_visibility == 'team') ...[
             const Text(
-              'Chọn thành viên muốn chia sẻ:',
+              'Select members to share with:',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
@@ -249,7 +249,7 @@ class _AudienceSelectorBottomSheetState
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Chỉ số Tín tối thiểu:',
+                const Text('Minimum Trust Score:',
                     style:
                         TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                 Text(_minTin.toStringAsFixed(1),
@@ -284,7 +284,7 @@ class _AudienceSelectorBottomSheetState
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Bản ghi này sẽ xuất hiện trên Community Feed và tất cả người dùng trong hệ thống đều có quyền xem.',
+                      'This record will appear on Community Feed and all users in the system will have permission to view.',
                       style: TextStyle(fontSize: 12),
                     ),
                   )
@@ -299,14 +299,14 @@ class _AudienceSelectorBottomSheetState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Hạn chia sẻ:',
+              const Text('Sharing expiration:',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
               TextButton.icon(
                 icon: const Icon(Icons.calendar_today_rounded,
                     size: 16, color: Color(0xFF6366F1)),
                 label: Text(
                   _expiresAt == null
-                      ? 'Vô thời hạn'
+                      ? 'Indefinite'
                       : '${_expiresAt!.day}/${_expiresAt!.month}/${_expiresAt!.year}',
                   style: const TextStyle(
                       color: Color(0xFF6366F1), fontWeight: FontWeight.bold),
@@ -341,7 +341,7 @@ class _AudienceSelectorBottomSheetState
                   _visibility, _selectedAudience, _minTin, _expiresAt);
               Navigator.pop(context);
             },
-            child: const Text('Xác nhận lưu',
+            child: const Text('Confirm & Save',
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],

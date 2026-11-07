@@ -107,7 +107,7 @@ class DeviceListViewState extends State<DeviceListView> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Thu hồi thiết bị?'),
+        title: const Text('Revoke device?'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,11 +122,11 @@ class DeviceListViewState extends State<DeviceListView> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Huỷ')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Thu hồi'),
+            child: const Text('Revoke'),
           ),
         ],
       ),
@@ -139,7 +139,7 @@ class DeviceListViewState extends State<DeviceListView> {
       await reload();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã thu hồi thiết bị.')),
+          const SnackBar(content: Text('Device revoked.')),
         );
       }
     } catch (e) {

@@ -36,7 +36,7 @@ class NfcUriService {
     Duration timeout = const Duration(seconds: 60),
   }) async {
     final completer = Completer<void>();
-    onStatus?.call('Đưa thẻ NFC lại gần mặt sau máy...');
+    onStatus?.call('Hold NFC tag near the back of the device...');
 
     await NfcManager.instance.startSession(
       pollingOptions: {NfcPollingOption.iso14443, NfcPollingOption.iso15693},
@@ -44,22 +44,22 @@ class NfcUriService {
         try {
           final ndef = Ndef.from(tag);
           if (ndef == null) {
-            throw NfcTagException('Thẻ này không hỗ trợ NDEF. Dùng thẻ NTAG213/215.');
+            throw NfcTagException('This tag does not support NDEF. Use NTAG213/215 tag.');
           }
           if (!ndef.isWritable) {
-            throw NfcTagException('Thẻ đang khoá chỉ đọc, không ghi được.');
+            throw NfcTagException('Tag is read-only, cannot write.');
           }
 
           final message = NdefMessage(records: [createUriRecord(uri)]);
           if (ndef.maxSize < message.byteLength) {
             throw NfcTagException(
-              'Nội dung ${message.byteLength} byte nhưng thẻ chỉ chứa được '
-              '${ndef.maxSize} byte. Dùng NTAG215 hoặc rút ngắn nhãn.',
+              'Content ${message.byteLength} bytes but tag only holds '
+              '${ndef.maxSize} bytes. Use NTAG215 or shorten label.',
             );
           }
 
           await ndef.write(message: message);
-          onStatus?.call('✅ Đã ghi thẻ.');
+          onStatus?.call('✅ Tag written successfully.');
           if (!completer.isCompleted) completer.complete();
         } catch (e) {
           if (!completer.isCompleted) completer.completeError(e);
@@ -71,7 +71,7 @@ class NfcUriService {
 
     return completer.future.timeout(timeout, onTimeout: () async {
       await NfcManager.instance.stopSession();
-      throw NfcTagException('Hết thời gian chờ thẻ. Thử lại và giữ máy lâu hơn.');
+      throw NfcTagException('Tag timeout. Try again and hold device longer.');
     });
   }
 
@@ -81,7 +81,7 @@ class NfcUriService {
     Duration timeout = const Duration(seconds: 60),
   }) async {
     final completer = Completer<String>();
-    onStatus?.call('Chạm máy vào thẻ...');
+    onStatus?.call('Tap device against tag...');
 
     await NfcManager.instance.startSession(
       pollingOptions: {NfcPollingOption.iso14443, NfcPollingOption.iso15693},
@@ -90,7 +90,7 @@ class NfcUriService {
           final ndef = Ndef.from(tag);
           final message = await ndef?.read();
           if (message == null || message.records.isEmpty) {
-            throw NfcTagException('Thẻ trống hoặc không đọc được.');
+            throw NfcTagException('Tag is empty or unreadable.');
           }
 
           String? found;
@@ -102,10 +102,10 @@ class NfcUriService {
             }
           }
           if (found == null) {
-            throw NfcTagException('Không đọc được nội dung trên thẻ.');
+            throw NfcTagException('Unable to read content from tag.');
           }
 
-          onStatus?.call('✅ Đã đọc thẻ.');
+          onStatus?.call('✅ Tag read successfully.');
           if (!completer.isCompleted) completer.complete(found);
         } catch (e) {
           if (!completer.isCompleted) completer.completeError(e);
@@ -117,7 +117,7 @@ class NfcUriService {
 
     return completer.future.timeout(timeout, onTimeout: () async {
       await NfcManager.instance.stopSession();
-      throw NfcTagException('Hết thời gian chờ thẻ.');
+      throw NfcTagException('Tag read timeout.');
     });
   }
 

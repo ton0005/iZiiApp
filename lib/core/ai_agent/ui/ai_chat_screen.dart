@@ -85,10 +85,10 @@ class _AiChatScreenState extends State<AiChatScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text(
-                'Vui lòng cấp quyền Micro để sử dụng tính năng ghi âm.'),
+                'Please grant Microphone permission to use voice recording.'),
             backgroundColor: const Color(0xFFF43F5E),
             action: SnackBarAction(
-              label: 'Cài đặt',
+              label: 'Settings',
               textColor: Colors.white,
               onPressed: () => openAppSettings(),
             ),
@@ -101,7 +101,7 @@ class _AiChatScreenState extends State<AiChatScreen>
     if (!_speechAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Microphone không khả dụng. Vui lòng thử lại sau.'),
+          content: Text('Microphone is unavailable. Please try again later.'),
           backgroundColor: Color(0xFFF43F5E),
         ),
       );
@@ -213,7 +213,7 @@ class _AiChatScreenState extends State<AiChatScreen>
                 Text('iZii AI Agent',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                Text('Sẵn sàng hỗ trợ',
+                Text('Ready to assist',
                     style: TextStyle(fontSize: 12, color: Colors.greenAccent)),
               ],
             ),
@@ -333,7 +333,7 @@ class _AiChatScreenState extends State<AiChatScreen>
               ),
               const SizedBox(width: 12),
               const Text(
-                '🎤 Đang nghe...',
+                '🎤 Listening...',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -355,7 +355,7 @@ class _AiChatScreenState extends State<AiChatScreen>
                 ),
               TextButton(
                 onPressed: _toggleListening,
-                child: const Text('Dừng',
+                child: const Text('Stop',
                     style: TextStyle(
                         color: Color(0xFFF43F5E), fontWeight: FontWeight.bold)),
               ),
@@ -393,7 +393,7 @@ class _AiChatScreenState extends State<AiChatScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Xác nhận tạo đơn dịch vụ',
+                'Confirm Service Booking',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -402,11 +402,11 @@ class _AiChatScreenState extends State<AiChatScreen>
               ),
               const SizedBox(height: 12),
               if (serviceName.isNotEmpty || customerName.isNotEmpty) ...[
-                _buildPendingInfoRow('Dịch vụ', serviceName),
+                _buildPendingInfoRow('Service', serviceName),
                 if (customerName.isNotEmpty)
-                  _buildPendingInfoRow('Khách hàng', customerName),
+                  _buildPendingInfoRow('Customer', customerName),
                 if (customerPhone.isNotEmpty)
-                  _buildPendingInfoRow('SĐT', customerPhone),
+                  _buildPendingInfoRow('Phone', customerPhone),
                 const SizedBox(height: 12),
               ],
               if (scheduledDate.isNotEmpty || customerAddress.isNotEmpty) ...[
@@ -421,11 +421,11 @@ class _AiChatScreenState extends State<AiChatScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (scheduledDate.isNotEmpty)
-                        _buildPendingInfoRow('Hẹn', scheduledDate,
+                        _buildPendingInfoRow('Schedule', scheduledDate,
                             valueStyle: const TextStyle(
                                 color: Colors.white, fontSize: 14)),
                       if (customerAddress.isNotEmpty)
-                        _buildPendingInfoRow('Địa chỉ', customerAddress,
+                        _buildPendingInfoRow('Address', customerAddress,
                             valueStyle: const TextStyle(
                                 color: Colors.white, fontSize: 14)),
                     ],
@@ -434,12 +434,12 @@ class _AiChatScreenState extends State<AiChatScreen>
                 const SizedBox(height: 12),
               ],
               if (notes.isNotEmpty)
-                _buildPendingInfoRow('Ghi chú', notes,
+                _buildPendingInfoRow('Notes', notes,
                     valueStyle:
                         const TextStyle(color: Colors.white70, fontSize: 13)),
               if (notes.isNotEmpty) const SizedBox(height: 12),
               const Text(
-                'Vui lòng kiểm tra kỹ thời gian và địa chỉ trước khi xác nhận.',
+                'Please review the time and address carefully before confirming.',
                 style: TextStyle(color: Colors.white70, fontSize: 12),
               ),
               const SizedBox(height: 16),
@@ -454,7 +454,7 @@ class _AiChatScreenState extends State<AiChatScreen>
                       onPressed: () {
                         context.read<ChatBloc>().add(ConfirmToolCallEvent());
                       },
-                      child: const Text('✅ Xác nhận'),
+                      child: const Text('✅ Confirm'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -467,7 +467,7 @@ class _AiChatScreenState extends State<AiChatScreen>
                       onPressed: () {
                         context.read<ChatBloc>().add(RejectToolCallEvent());
                       },
-                      child: const Text('❌ Từ chối'),
+                      child: const Text('❌ Decline'),
                     ),
                   ),
                 ],
@@ -517,12 +517,12 @@ class _AiChatScreenState extends State<AiChatScreen>
               .shimmer(duration: 2000.ms, color: const Color(0xFF06B6D4)),
           const SizedBox(height: 24),
           const Text(
-            'Tôi có thể giúp gì cho bạn?',
+            'How can I help you today?',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           const Text(
-            'Nhập văn bản hoặc bấm 🎤 để nói chuyện.',
+            'Type a message or tap 🎤 to talk.',
             style: TextStyle(color: Colors.grey),
           ),
           const SizedBox(height: 32),
@@ -531,9 +531,9 @@ class _AiChatScreenState extends State<AiChatScreen>
             runSpacing: 8,
             alignment: WrapAlignment.center,
             children: [
-              _buildSuggestionChip('Lên đơn hàng mới'),
-              _buildSuggestionChip('Kiểm tra tồn kho'),
-              _buildSuggestionChip('Cài đặt CRM'),
+              _buildSuggestionChip('Create new order'),
+              _buildSuggestionChip('Check inventory'),
+              _buildSuggestionChip('CRM Settings'),
             ],
           ),
         ],
@@ -569,7 +569,7 @@ class _AiChatScreenState extends State<AiChatScreen>
               .animate(onPlay: (c) => c.repeat(reverse: true))
               .scaleXY(begin: 0.9, end: 1.1, duration: 500.ms),
           const SizedBox(width: 12),
-          const Text('AI đang suy nghĩ...',
+          const Text('AI is thinking...',
               style:
                   TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
         ],
@@ -609,7 +609,7 @@ class _AiChatScreenState extends State<AiChatScreen>
                   border: Border.all(color: const Color(0xFFFFD54F)),
                 ),
                 child: const Text(
-                  'Xác nhận trước khi gửi yêu cầu tạo đơn dịch vụ.',
+                  'Confirm details before submitting service booking request.',
                   style: TextStyle(
                     color: Color(0xFF8A6E22),
                     fontWeight: FontWeight.w600,
@@ -642,10 +642,10 @@ class _AiChatScreenState extends State<AiChatScreen>
                       enabled: !hasPendingTool,
                       decoration: InputDecoration(
                         hintText: hasPendingTool
-                            ? 'Chờ xác nhận thao tác...'
+                            ? 'Waiting for confirmation...'
                             : _isListening
-                                ? 'Đang nghe giọng nói...'
-                                : 'Nhập tin nhắn...',
+                                ? 'Listening...'
+                                : 'Type a message...',
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 12),

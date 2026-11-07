@@ -551,7 +551,10 @@ class SyncService {
       if (pendingMessages.isEmpty) return;
 
       for (var msg in pendingMessages) {
-        
+        // Tin 1-1 do ChatBloc tự tải lên và gửi bằng E2EE; đồng bộ plaintext
+        // không được đụng vào (queueMessageOffline cũng đã chặn).
+        if (msg.conversationId.startsWith('direct_')) continue;
+
         try {
           final contentMap = Map<String, dynamic>.from(jsonDecode(msg.content) as Map);
           if (contentMap['attachments'] == null) continue;
@@ -600,17 +603,7 @@ class SyncService {
               'attachments': newAttachments,
             };
             
-            final updatedMsg = ChatMessage(
-              id: msg.id,
-              conversationId: msg.conversationId,
-              senderId: msg.senderId,
-              type: msg.type,
-              content: jsonEncode(newContentMap),
-              sentAt: msg.sentAt,
-              deliveredAt: msg.deliveredAt,
-              readAt: msg.readAt,
-              isDeleted: msg.isDeleted,
-            );
+            final updatedMsg = msg.copyWith(content: jsonEncode(newContentMap));
             
             await _db.into(_db.chatMessages).insertOnConflictUpdate(updatedMsg);
             
@@ -1400,6 +1393,15 @@ class SyncService {
           ? DateTime.tryParse(recordData['read_at'].toString())
           : existing?.readAt,
       isDeleted: recordData['is_deleted'] as bool? ?? (existing?.isDeleted ?? false),
+      replyToId: recordData.containsKey('reply_to_id')
+          ? recordData['reply_to_id'] as String?
+          : existing?.replyToId,
+      editedAt: recordData['edited_at'] != null
+          ? DateTime.tryParse(recordData['edited_at'].toString())
+          : existing?.editedAt,
+      forwardedFromId: recordData.containsKey('forwarded_from_id')
+          ? recordData['forwarded_from_id'] as String?
+          : existing?.forwardedFromId,
     );
     
     await _db.into(_db.chatMessages).insertOnConflictUpdate(chatMsg);
@@ -1437,7 +1439,7 @@ class SyncService {
     dynamic body,
   ) async {
     String errorCode = 'rejected';
-    String message = 'Server từ chối thay đổi này.';
+    String message = 'Server rejected this change.';
     String? subject;
 
     try {

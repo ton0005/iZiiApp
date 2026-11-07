@@ -53,22 +53,22 @@ class PendingToolCall {
     final notes = arguments['notes']?.toString();
 
     if (serviceName != null && serviceName.isNotEmpty) {
-      parts.add('Dịch vụ: $serviceName');
+      parts.add('Service: $serviceName');
     }
     if (customerName != null && customerName.isNotEmpty) {
-      parts.add('Khách hàng: $customerName');
+      parts.add('Customer: $customerName');
     }
     if (customerPhone != null && customerPhone.isNotEmpty) {
-      parts.add('SĐT: $customerPhone');
+      parts.add('Phone: $customerPhone');
     }
     if (scheduledDate != null && scheduledDate.isNotEmpty) {
-      parts.add('Hẹn: $scheduledDate');
+      parts.add('Schedule: $scheduledDate');
     }
     if (customerAddress != null && customerAddress.isNotEmpty) {
-      parts.add('Địa chỉ: $customerAddress');
+      parts.add('Address: $customerAddress');
     }
     if (notes != null && notes.isNotEmpty) {
-      parts.add('Ghi chú: $notes');
+      parts.add('Notes: $notes');
     }
     return parts.join(' • ');
   }

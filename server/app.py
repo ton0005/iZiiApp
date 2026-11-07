@@ -101,7 +101,7 @@ if log_file:
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from typing import List, Optional
+from typing import Optional
 import hmac
 import json
 import os
@@ -118,10 +118,11 @@ from security_tls import httpx_client_kwargs, uvicorn_ssl_kwargs, describe as de
 from routers import (
     sync, devices, messages, notifications, attachments,
     peer_sync, call, webhooks, admin, enrollment, sessions,
-    workforce, metadata, agv_gateway, radio_gateway,
+    workforce, metadata, agv_gateway, radio_gateway, conversations,
 )
 from security_auth import describe_scopes
 from event_engine import iZiiEventEngine, close_http_client
+from chat_ws import ChatConnectionManager, parse_payload
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -418,11 +419,19 @@ async def lifespan(app: FastAPI):
 #  FastAPI Application
 # ══════════════════════════════════════════════════════════════════════════════
 
+# Trang tài liệu API (/docs, /redoc, /openapi.json) phơi bày toàn bộ bản đồ
+# endpoint — mặc định TẮT ở production. Bật lại khi cần debug bằng:
+#     IZIIAPP_ENABLE_DOCS=1
+_enable_docs = os.environ.get("IZIIAPP_ENABLE_DOCS", "").strip().lower() in ("1", "true", "yes")
+
 app = FastAPI(
     title="iZiiApp Sync & E2EE Server (FastAPI Standalone)",
     version="2.0.0",
     description="Modular server with Repository Pattern (Architecture Plan v2)",
-    lifespan=lifespan
+    lifespan=lifespan,
+    docs_url="/docs" if _enable_docs else None,
+    redoc_url="/redoc" if _enable_docs else None,
+    openapi_url="/openapi.json" if _enable_docs else None,
 )
 
 # CORS Configuration
@@ -461,6 +470,7 @@ app.include_router(workforce.router)   # /api/v1/workforce/* — chấm công & 
 app.include_router(metadata.router)    # /api/v1/meta/* & /api/v1/settings (P3)
 app.include_router(agv_gateway.router) # /api/v1/agv/* — VDA 5050 AGV & Door Interlock (Phase 3)
 app.include_router(radio_gateway.router) # /api/v1/radio/* — bộ đàm Hytera ↔ Alone Worker (X-iZii-Radio-Token)
+app.include_router(conversations.router) # /api/v1/conversations/* — thành viên hội thoại (device token)
 
 # Cho admin router chạm tới con trỏ sync đang nằm trong RAM, để lệnh reset xoá
 # được cả bộ nhớ chứ không chỉ bảng known_servers dưới đĩa.
@@ -491,29 +501,8 @@ async def device_health_check():
 #  WebSockets (RFC 6455 over FastAPI) — Kept in app.py for ConnectionManager
 # ══════════════════════════════════════════════════════════════════════════════
 
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-        print(f"\n🔌 [WS] Client connected. Active clients: {len(self.active_connections)}")
-
-    def disconnect(self, websocket: WebSocket):
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
-        print(f"🔌 [WS] Client disconnected. Active clients: {len(self.active_connections)}")
-
-    async def broadcast(self, message: str, exclude: WebSocket):
-        for connection in self.active_connections:
-            if connection is not exclude:
-                try:
-                    await connection.send_text(message)
-                except Exception:
-                    pass
-
-ws_manager = ConnectionManager()
+# Định tuyến theo thành viên hội thoại — xem chat_ws.py.
+ws_manager = ChatConnectionManager()
 app.state.ws_manager = ws_manager
 
 
@@ -573,7 +562,12 @@ def _ws_token_is_valid(token: Optional[str]) -> bool:
 
 
 @app.websocket("/chat")
-async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(None)):
+async def websocket_endpoint(
+    websocket: WebSocket,
+    token: Optional[str] = Query(None),
+    device_id: Optional[str] = Query(None),
+    device_token_q: Optional[str] = Query(None, alias="device_token"),
+):
     valid_secrets = _get_valid_ws_secrets()
     # Không cấu hình secret => từ chối tất cả, thay vì âm thầm mở toang.
     if not valid_secrets:
@@ -605,7 +599,39 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(
         await websocket.close(code=1008, reason="Invalid token")
         return
 
-    await ws_manager.connect(websocket)
+    # ── Danh tính máy: để chỉ giao tin hội thoại cho đúng thành viên ────────
+    # Secret ở trên chỉ chứng minh "là app iZii", không cho biết LÀ MÁY NÀO.
+    # Ưu tiên device token (đã xác thực); không có thì nhận device_id tự khai
+    # để bản app chưa enroll vẫn nhận được tin 1-1 của chính mình.
+    member_id: Optional[str] = None
+    verified = False
+    device_token = websocket.headers.get("X-iZii-Device-Token") or device_token_q
+    if device_token:
+        from security_auth import lookup_device_by_token
+
+        def _lookup():
+            with open_connection() as conn:
+                return lookup_device_by_token(conn, device_token)
+
+        try:
+            identity = await asyncio.to_thread(_lookup)
+        except Exception as e:
+            print(f"⚠️ [WS] Lỗi tra device token: {e}")
+            identity = None
+        if identity is None:
+            # Token sai/đã thu hồi: máy bị thu hồi không được nghe lén chat.
+            print(f"⛔ [WS] Từ chối kết nối từ {websocket.client}: device token không hợp lệ hoặc đã thu hồi.")
+            await websocket.close(code=1008, reason="Invalid device token")
+            return
+        member_id, verified = identity.device_id, True
+    elif CONFIG.require_device_token:
+        print(f"⛔ [WS] Từ chối kết nối từ {websocket.client}: thiếu device token (IZIIAPP_REQUIRE_DEVICE_TOKEN bật).")
+        await websocket.close(code=1008, reason="Missing device token")
+        return
+    elif device_id:
+        member_id = device_id
+
+    await ws_manager.connect(websocket, member_id=member_id, verified=verified)
     try:
         while True:
             data = await websocket.receive_text()
@@ -613,18 +639,12 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(
                 await websocket.send_text(json.dumps({"event": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}))
                 continue
 
-            try:
-                payload = json.loads(data)
-                event = payload.get("event")
-                if event == "ping":
-                    await websocket.send_text(json.dumps({"event": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}))
-                    continue
-            except Exception:
-                payload = None
-                event = None
+            payload = parse_payload(data)
+            event = payload.get("event") if payload else None
+            if event == "ping":
+                await websocket.send_text(json.dumps({"event": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}))
+                continue
 
-            print(f"💬 [WS] Broadcast message: {data[:120]}...")
-            
             # Log latency measurement asynchronously for events containing 'sent_at' or 'timestamp'
             if payload and isinstance(payload, dict):
                 try:
@@ -637,8 +657,10 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = Query(
                             _t.add_done_callback(_ws_background_tasks.discard)
                 except Exception:
                     pass
-                
-            await ws_manager.broadcast(data, exclude=websocket)
+
+            outcome = await ws_manager.route(websocket, data, payload)
+            # Không in nội dung gói: log server không được chứa nội dung tin riêng.
+            print(f"💬 [WS] {event or 'raw'} từ {ws_manager.member_of(websocket) or '?'} → {outcome}")
     except WebSocketDisconnect:
         ws_manager.disconnect(websocket)
     except Exception as e:

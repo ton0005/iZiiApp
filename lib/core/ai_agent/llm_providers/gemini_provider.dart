@@ -93,14 +93,14 @@ class GeminiProvider {
           ? [Tool(functionDeclarations: functionDeclarations)]
           : null,
       systemInstruction: Content.system(
-          'Bạn là iZii Agent - Trợ lý thông minh cho ứng dụng iZiiApp. '
-          'Nhiệm vụ của bạn là hỗ trợ người dùng thực hiện các thao tác quản lý dữ liệu (CRM, Kho, Dịch vụ) thông qua trò chuyện. '
-          'Khi người dùng hỏi về khách hàng, hãy dùng tool search_leads hoặc list_all_leads. '
-          'Khi người dùng hỏi về sản phẩm, hãy dùng tool search_products, list_all_products hoặc check_stock. '
-          'Khi bạn cần tạo đơn dịch vụ, nêu rõ các trường sau: service_name, scheduled_date, customer_phone, customer_address, notes. '
-          'Nếu đã đủ thông tin để tạo booking, hãy gọi tool create_service_booking. '
-          'Nếu tool yêu cầu xác nhận, trước tiên tạo bản tóm tắt nội dung đặt dịch vụ với đầy đủ các trường trên và yêu cầu người dùng xác nhận. '
-          'Luôn trả lời ngắn gọn, thân thiện và chuyên nghiệp bằng Tiếng Việt.'),
+          'You are iZii Agent - Smart assistant for the iZiiApp application. '
+          'Your mission is to help users manage data (CRM, Inventory, Services) via conversation. '
+          'When users ask about customers/leads, use the search_leads or list_all_leads tool. '
+          'When users ask about products, use search_products, list_all_products, or check_stock. '
+          'When you need to create a service booking, specify the following fields: service_name, scheduled_date, customer_phone, customer_address, notes. '
+          'If there is enough information to create a booking, call create_service_booking. '
+          'If a tool requires confirmation, first provide a concise summary with all relevant details and ask the user to confirm. '
+          'Always respond concisely, friendly, and professionally in English.'),
     );
 
     _chatSession = _model.startChat();
@@ -134,15 +134,15 @@ class GeminiProvider {
           final toolResponse = await _chatSession.sendMessage(
             Content.functionResponse(call.name, {'result': toolResult}),
           );
-          return toolResponse.text ?? 'Đã hoàn thành thao tác.';
+          return toolResponse.text ?? 'Operation completed.';
         }
       }
 
-      return response.text ?? 'Xin lỗi, tôi không hiểu yêu cầu.';
+      return response.text ?? 'Sorry, I did not understand the request.';
     } catch (e, st) {
       print('[GeminiProvider] ERROR: $e');
       print(st);
-      return '❌ Lỗi kết nối Gemini:\n${e.toString().length > 200 ? e.toString().substring(0, 200) : e}';
+      return '❌ Gemini connection error:\n${e.toString().length > 200 ? e.toString().substring(0, 200) : e}';
     }
   }
 
@@ -154,11 +154,11 @@ class GeminiProvider {
       final response = await _chatSession.sendMessage(
         Content.functionResponse(functionName, result),
       );
-      return response.text ?? 'Đã hoàn thành thao tác.';
+      return response.text ?? 'Operation completed.';
     } catch (e, st) {
       print('[GeminiProvider] Function response error: $e');
       print(st);
-      return '❌ Lỗi gửi phản hồi function: ${e.toString().length > 200 ? e.toString().substring(0, 200) : e}';
+      return '❌ Error sending function response: ${e.toString().length > 200 ? e.toString().substring(0, 200) : e}';
     }
   }
 
@@ -167,16 +167,16 @@ class GeminiProvider {
     Map<String, dynamic> args,
   ) {
     if (toolName != 'create_service_booking') {
-      return 'AI yêu cầu xác nhận để tiếp tục thực hiện thao tác này.';
+      return 'AI requires confirmation to proceed with this operation.';
     }
 
-    final serviceName = args['service_name']?.toString() ?? 'Không xác định';
-    final scheduledDate = args['scheduled_date']?.toString() ?? 'Không có';
-    final customerPhone = args['customer_phone']?.toString() ?? 'Không có';
-    final customerAddress = args['customer_address']?.toString() ?? 'Không có';
-    final notes = args['notes']?.toString() ?? 'Không có';
+    final serviceName = args['service_name']?.toString() ?? 'Unknown';
+    final scheduledDate = args['scheduled_date']?.toString() ?? 'None';
+    final customerPhone = args['customer_phone']?.toString() ?? 'None';
+    final customerAddress = args['customer_address']?.toString() ?? 'None';
+    final notes = args['notes']?.toString() ?? 'None';
 
-    return '''AI muốn tạo đơn dịch vụ với thông tin sau:
+    return '''AI wants to create a service booking with the following information:
 
 • service_name: $serviceName
 • scheduled_date: $scheduledDate
@@ -184,6 +184,6 @@ class GeminiProvider {
 • customer_address: $customerAddress
 • notes: $notes
 
-Nếu bạn đồng ý, vui lòng xác nhận để tiếp tục tạo booking. Nếu không, hãy hủy thao tác này.''';
+If you agree, please confirm to proceed with booking. Otherwise, please cancel this operation.''';
   }
 }

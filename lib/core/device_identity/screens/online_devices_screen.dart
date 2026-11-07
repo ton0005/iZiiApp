@@ -67,7 +67,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
           backgroundColor: _surfaceDark,
           elevation: 0,
           title: Text(
-            '📡 Thiết bị kết nối',
+            '📡 Connected Devices',
             style: GoogleFonts.outfit(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -702,7 +702,7 @@ class _OnlineDevicesScreenState extends State<OnlineDevicesScreen>
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Gửi tin nhắn',
+                        'Send Message',
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,

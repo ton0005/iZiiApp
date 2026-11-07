@@ -539,6 +539,56 @@ def init_db():
     )""")
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_radio_events_open ON radio_events(radio_id, event_type, status)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_radio_events_received ON radio_events(received_at)')
+    # Lệnh iZii → bộ đàm (hỏi/bật Lone Worker, nhắn tin khi Alone Worker time out).
+    # Bridge lấy lệnh qua /api/v1/radio/bridge/commands và báo kết quả lại.
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS radio_commands (
+        id            TEXT PRIMARY KEY,
+        radio_id      TEXT NOT NULL,
+        command       TEXT NOT NULL,
+        params        TEXT,
+        status        TEXT NOT NULL,
+        dedup_key     TEXT UNIQUE,
+        reason        TEXT,
+        job_id        TEXT,
+        attempts      INTEGER DEFAULT 0,
+        created_at    TEXT NOT NULL,
+        created_by    TEXT,
+        sent_at       TEXT,
+        done_at       TEXT,
+        result        TEXT,
+        error         TEXT
+    )""")
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_radio_commands_status ON radio_commands(status, created_at)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_radio_commands_radio ON radio_commands(radio_id, created_at)')
+    cursor.execute('PRAGMA table_info(radio_devices)')
+    _radio_cols = {row[1] for row in cursor.fetchall()}
+    for col in ("lone_worker_state", "lone_worker_checked_at"):
+        if col not in _radio_cols:
+            cursor.execute(f'ALTER TABLE radio_devices ADD COLUMN {col} TEXT')
+
+    # Sổ đăng ký hội thoại + thành viên (migration 0013) — để WS /chat và
+    # /sync/pull chỉ giao tin cho đúng thành viên (chat_access.py).
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS chat_conversations (
+        id           TEXT PRIMARY KEY,
+        type         TEXT NOT NULL,
+        record_type  TEXT,
+        record_id    TEXT,
+        created_by   TEXT,
+        created_at   TEXT NOT NULL,
+        updated_at   TEXT NOT NULL
+    )""")
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS chat_conversation_members (
+        conversation_id  TEXT NOT NULL,
+        member_id        TEXT NOT NULL,
+        role             TEXT NOT NULL DEFAULT 'member',
+        joined_at        TEXT NOT NULL,
+        left_at          TEXT,
+        PRIMARY KEY (conversation_id, member_id)
+    )""")
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_chat_members_member ON chat_conversation_members(member_id)')
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS grow_rooms (

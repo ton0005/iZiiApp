@@ -21,6 +21,7 @@ from repository.interface import ISyncRepository
 from security_auth import DeviceIdentity, optional_device
 from server_config import CONFIG
 from event_engine import iZiiEventEngine
+import chat_access
 
 router = APIRouter(prefix="/sync", tags=["Sync Engine"])
 
@@ -186,6 +187,22 @@ def _filter_valid_mutations(
     from routers.sessions import get_active_session_for_person
 
     for m in mutations:
+        # 0. Tin 1-1 chỉ đi bằng E2EE — không nhận nội dung rõ qua đồng bộ.
+        if CONFIG.reject_plaintext_direct_chat and m.table in chat_access.CHAT_SYNC_TABLES:
+            convo = str(
+                m.data.get("id") if m.table == "chat_conversations"
+                else m.data.get("conversation_id") or ""
+            )
+            if chat_access.is_direct(convo):
+                rejected.append({
+                    "id": m.data.get("id"),
+                    "table": m.table,
+                    "operation": m.operation,
+                    "error": "plaintext_direct_chat_forbidden",
+                    "message": "Tin nhắn 1-1 phải gửi bằng E2EE (/api/v1/messages/send).",
+                })
+                continue
+
         # A. Kiểm tra Room Number
         if m.table in ROOM_TABLES and str(m.operation).lower() in ("insert", "create"):
             key = _room_identity(m.data)
@@ -351,6 +368,14 @@ async def sync_push(
                 actor_device_id=(device.device_id if device else payload.actor_device_id),
             )
 
+            # Job Alone Worker vừa time out → xếp tin nhắn xuống bộ đàm của người làm job.
+            # Lỗi ở đây không được làm hỏng lần đồng bộ: báo động trong app vẫn đã lưu.
+            try:
+                from routers.radio_gateway import enqueue_timeout_alerts_for_push
+                await run_in_threadpool(enqueue_timeout_alerts_for_push, mutations_dicts)
+            except Exception as e:
+                print(f"⚠️  [RADIO] Không xếp được tin time out xuống bộ đàm: {e}")
+
             # Broadcast real-time domain events & Webhooks cho các mutation hợp lệ
             ws_manager = getattr(request.app.state, "ws_manager", None)
             engine = iZiiEventEngine()
@@ -408,6 +433,25 @@ async def sync_push(
     }
 
 
+def _filter_chat_for_device(repo, updates, device: Optional[DeviceIdentity]):
+    """
+    Máy đã xác thực chỉ nhận chat của hội thoại mình tham gia (chat_access).
+
+    Máy CHƯA xác thực vẫn nhận đủ như cũ: chưa biết là ai thì không lọc được,
+    và chặn hẳn sẽ làm máy chưa enroll mất toàn bộ lịch sử chat. Bật
+    IZIIAPP_REQUIRE_DEVICE_TOKEN để đóng hẳn đường này.
+    """
+    if device is None or not device.device_id:
+        return updates
+    if not any(u.get("table") in chat_access.CHAT_SYNC_TABLES for u in updates):
+        return updates
+    conn = getattr(repo, "conn", None)
+    if conn is not None:
+        return chat_access.filter_chat_updates(conn, updates, device.device_id)
+    with open_connection() as c:
+        return chat_access.filter_chat_updates(c, updates, device.device_id)
+
+
 @router.get("/pull")
 def sync_pull(since: Optional[str] = None,
               after_seq: Optional[int] = None,
@@ -430,17 +474,19 @@ def sync_pull(since: Optional[str] = None,
 
     try:
         page = repo.pull_mutations(since=since, after_seq=after_seq, limit=limit)
+        updates = _filter_chat_for_device(repo, page["updates"], device)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
     return {
         # Giữ nguyên tên trường cũ để client chưa cập nhật không vỡ.
-        "updates": page["updates"],
+        "updates": updates,
         "timestamp": now,
-        # Trường mới.
+        # Trường mới. next_cursor lấy từ trang GỐC (trước khi lọc) — lấy theo
+        # bản ghi cuối sau lọc sẽ khiến client kéo lại mãi các bản ghi bị lọc.
         "next_cursor": page["next_cursor"],
         "has_more": page["has_more"],
-        "count": page["count"],
+        "count": len(updates),
         # True = con trỏ client vượt quá log của server (thường do server vừa
         # bị reset dữ liệu). Server đã tự phục vụ lại từ đầu.
         "cursor_reset": page.get("cursor_reset", False),
@@ -465,6 +511,7 @@ def get_record_by_id(
     table: str,
     record_id: str,
     repo: ISyncRepository = Depends(get_sync_repo),
+    device: Optional[DeviceIdentity] = Depends(optional_device),
 ):
     """
     Endpoint P0.1c: Lấy bản ghi đầy đủ hiện tại theo table và record_id.
@@ -478,6 +525,12 @@ def get_record_by_id(
                 status_code=404,
                 detail=f"Record '{record_id}' not found in table '{table}'",
             )
+        if table in chat_access.CHAT_SYNC_TABLES:
+            # Cùng quy tắc với /sync/pull — đây là đường client lấy NỘI DUNG
+            # khi mutation chỉ mang id + trạng thái.
+            visible = _filter_chat_for_device(repo, [{"table": table, "data": record}], device)
+            if not visible:
+                raise HTTPException(status_code=403, detail="Không phải thành viên hội thoại này.")
         return record
     except HTTPException:
         raise

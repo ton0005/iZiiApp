@@ -103,6 +103,9 @@ class RadioDevice {
   final double? lastBattery;
   final double? lastLatitude;
   final double? lastLongitude;
+  /// 'on' | 'off' | null (chưa hỏi) — theo kết quả lệnh gần nhất gửi xuống bộ đàm.
+  final String? loneWorkerState;
+  final DateTime? loneWorkerCheckedAt;
 
   const RadioDevice({
     required this.radioId,
@@ -117,7 +120,13 @@ class RadioDevice {
     this.lastBattery,
     this.lastLatitude,
     this.lastLongitude,
+    this.loneWorkerState,
+    this.loneWorkerCheckedAt,
   });
+
+  /// Bridge thấy bộ đàm gửi gói trong [window] gần đây (đăng ký RRS định kỳ, báo động...).
+  bool isRecentlySeen([Duration window = const Duration(minutes: 2)]) =>
+      lastSeenAt != null && DateTime.now().difference(lastSeenAt!) <= window;
 
   bool get isAssigned =>
       (employeeId ?? '').isNotEmpty || (employeeName ?? '').isNotEmpty;
@@ -135,6 +144,58 @@ class RadioDevice {
         lastBattery: (j['last_battery'] as num?)?.toDouble(),
         lastLatitude: (j['last_latitude'] as num?)?.toDouble(),
         lastLongitude: (j['last_longitude'] as num?)?.toDouble(),
+        loneWorkerState: j['lone_worker_state'] as String?,
+        loneWorkerCheckedAt: DateTime.tryParse((j['lone_worker_checked_at'] ?? '').toString())?.toLocal(),
+      );
+}
+
+/// Lệnh iZii → bộ đàm, đi qua radio_bridge: pending → sent → done | failed | expired.
+class RadioCommand {
+  final String id;
+  final String radioId;
+  final String command; // lone_worker_status | lone_worker_enable | lone_worker_disable | text_message
+  final String status;
+  final Map<String, dynamic> params;
+  final Map<String, dynamic>? result;
+  final String? error;
+  final String? reason; // manual | alone_worker_timeout
+  final String? jobId;
+  final DateTime? createdAt;
+  final DateTime? doneAt;
+
+  const RadioCommand({
+    required this.id,
+    required this.radioId,
+    required this.command,
+    required this.status,
+    this.params = const {},
+    this.result,
+    this.error,
+    this.reason,
+    this.jobId,
+    this.createdAt,
+    this.doneAt,
+  });
+
+  bool get isFinished => status == 'done' || status == 'failed' || status == 'expired';
+  bool get isOk => status == 'done';
+
+  /// 'on' / 'off' khi lệnh Lone Worker thành công.
+  String? get loneWorker => result?['lone_worker'] as String?;
+  String? get text => params['text'] as String?;
+
+  factory RadioCommand.fromJson(Map<String, dynamic> j) => RadioCommand(
+        id: j['id'].toString(),
+        radioId: (j['radio_id'] ?? '').toString(),
+        command: (j['command'] ?? '').toString(),
+        status: (j['status'] ?? '').toString(),
+        params: j['params'] is Map ? Map<String, dynamic>.from(j['params'] as Map) : const {},
+        result: j['result'] is Map ? Map<String, dynamic>.from(j['result'] as Map) : null,
+        error: j['error'] as String?,
+        reason: j['reason'] as String?,
+        jobId: j['job_id'] as String?,
+        createdAt: DateTime.tryParse((j['created_at'] ?? '').toString())?.toLocal(),
+        doneAt: DateTime.tryParse((j['done_at'] ?? '').toString())?.toLocal(),
       );
 }
 
@@ -227,6 +288,42 @@ class RadioGatewayService {
       '${await _baseUrl()}/api/v1/radio/devices/${Uri.encodeComponent(radioId)}',
       options: Options(headers: await _headers()),
     );
+  }
+
+  Future<RadioCommand> sendCommand(String radioId, String command, {Map<String, dynamic>? params}) async {
+    final resp = await _dio.post(
+      '${await _baseUrl()}/api/v1/radio/devices/${Uri.encodeComponent(radioId.trim())}/commands',
+      data: {'command': command, if (params != null) 'params': params},
+      options: Options(headers: await _headers()),
+    );
+    return RadioCommand.fromJson(Map<String, dynamic>.from(resp.data['command'] as Map));
+  }
+
+  Future<List<RadioCommand>> listCommands({String? radioId, int limit = 50}) async {
+    final resp = await _dio.get(
+      '${await _baseUrl()}/api/v1/radio/commands',
+      queryParameters: {if (radioId != null) 'radio_id': radioId.trim(), 'limit': limit},
+      options: Options(headers: await _headers()),
+    );
+    final list = (resp.data['commands'] as List?) ?? const [];
+    return list.map((e) => RadioCommand.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+  }
+
+  /// Gửi lệnh rồi chờ bridge báo kết quả (bộ đàm trả lời) — tối đa [timeout].
+  Future<RadioCommand> runCommand(
+    String radioId,
+    String command, {
+    Map<String, dynamic>? params,
+    Duration timeout = const Duration(seconds: 20),
+  }) async {
+    var cmd = await sendCommand(radioId, command, params: params);
+    final end = DateTime.now().add(timeout);
+    while (!cmd.isFinished && DateTime.now().isBefore(end)) {
+      await Future<void>.delayed(const Duration(milliseconds: 700));
+      final list = await listCommands(radioId: radioId, limit: 20);
+      cmd = list.firstWhere((c) => c.id == cmd.id, orElse: () => cmd);
+    }
+    return cmd;
   }
 
   /// Commissioning: push a fake alarm through the real server pipeline.

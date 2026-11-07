@@ -35,6 +35,44 @@ class ChatMessages extends Table {
   DateTimeColumn get deliveredAt => dateTime().nullable()();
   DateTimeColumn get readAt => dateTime().nullable()();
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
+  // Không đặt references(): tin gốc có thể chưa về máy này (sync lệch thứ tự)
+  // hoặc đã bị dọn — trả lời/chuyển tiếp vẫn phải lưu được.
+  TextColumn get replyToId => text().nullable()();
+  DateTimeColumn get editedAt => dateTime().nullable()();
+  TextColumn get forwardedFromId => text().nullable()();
+  /// Có giá trị = tin đang được ghim (thời điểm ghim). Ghim là trạng thái chung
+  /// của hội thoại, đồng bộ giữa các thành viên bằng sự kiện `pin` mã hoá.
+  DateTimeColumn get pinnedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Cảm xúc (emoji) thả vào tin nhắn. Mỗi người một cảm xúc cho mỗi tin.
+/// KHÔNG đi qua outbox đồng bộ plaintext — chỉ đến từ sự kiện E2EE `reaction`.
+class ChatReactions extends Table {
+  TextColumn get messageId => text()();
+  TextColumn get userId => text()();
+  TextColumn get emoji => text()();
+  DateTimeColumn get reactedAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {messageId, userId};
+}
+
+/// Hàng đợi gửi E2EE cục bộ: phong bì CHƯA gửi được (mất mạng, server sập,
+/// chưa lấy được khoá người nhận).
+///
+/// Chứa plaintext của phong bì nên TUYỆT ĐỐI không được đưa vào OutboxMutations
+/// hay bất kỳ đường đồng bộ nào — bảng này không có trong sync_config_repository.
+/// Thà tin nằm chờ còn hơn rơi về đường plaintext.
+class E2eeOutbox extends Table {
+  TextColumn get id => text()(); // id phong bì
+  TextColumn get conversationId => text()();
+  TextColumn get envelope => text()(); // ChatEnvelope.toJson()
+  IntColumn get attempts => integer().withDefault(const Constant(0))();
+  TextColumn get lastError => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};
