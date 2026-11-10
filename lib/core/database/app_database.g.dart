@@ -34666,6 +34666,67 @@ class $ChatConversationsTable extends ChatConversations
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
       'type', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _avatarUrlMeta =
+      const VerificationMeta('avatarUrl');
+  @override
+  late final GeneratedColumn<String> avatarUrl = GeneratedColumn<String>(
+      'avatar_url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isBroadcastMeta =
+      const VerificationMeta('isBroadcast');
+  @override
+  late final GeneratedColumn<bool> isBroadcast = GeneratedColumn<bool>(
+      'is_broadcast', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_broadcast" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _isPinnedMeta =
+      const VerificationMeta('isPinned');
+  @override
+  late final GeneratedColumn<bool> isPinned = GeneratedColumn<bool>(
+      'is_pinned', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_pinned" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _isArchivedMeta =
+      const VerificationMeta('isArchived');
+  @override
+  late final GeneratedColumn<bool> isArchived = GeneratedColumn<bool>(
+      'is_archived', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_archived" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _mutedUntilMeta =
+      const VerificationMeta('mutedUntil');
+  @override
+  late final GeneratedColumn<DateTime> mutedUntil = GeneratedColumn<DateTime>(
+      'muted_until', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _unreadCountMeta =
+      const VerificationMeta('unreadCount');
+  @override
+  late final GeneratedColumn<int> unreadCount = GeneratedColumn<int>(
+      'unread_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _recordTypeMeta =
       const VerificationMeta('recordType');
   @override
@@ -34699,8 +34760,23 @@ class $ChatConversationsTable extends ChatConversations
       GeneratedColumn<DateTime>('last_message_at', aliasedName, true,
           type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, type, recordType, recordId, createdBy, createdAt, lastMessageAt];
+  List<GeneratedColumn> get $columns => [
+        id,
+        type,
+        title,
+        description,
+        avatarUrl,
+        isBroadcast,
+        isPinned,
+        isArchived,
+        mutedUntil,
+        unreadCount,
+        recordType,
+        recordId,
+        createdBy,
+        createdAt,
+        lastMessageAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -34721,6 +34797,48 @@ class $ChatConversationsTable extends ChatConversations
           _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
     } else if (isInserting) {
       context.missing(_typeMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('avatar_url')) {
+      context.handle(_avatarUrlMeta,
+          avatarUrl.isAcceptableOrUnknown(data['avatar_url']!, _avatarUrlMeta));
+    }
+    if (data.containsKey('is_broadcast')) {
+      context.handle(
+          _isBroadcastMeta,
+          isBroadcast.isAcceptableOrUnknown(
+              data['is_broadcast']!, _isBroadcastMeta));
+    }
+    if (data.containsKey('is_pinned')) {
+      context.handle(_isPinnedMeta,
+          isPinned.isAcceptableOrUnknown(data['is_pinned']!, _isPinnedMeta));
+    }
+    if (data.containsKey('is_archived')) {
+      context.handle(
+          _isArchivedMeta,
+          isArchived.isAcceptableOrUnknown(
+              data['is_archived']!, _isArchivedMeta));
+    }
+    if (data.containsKey('muted_until')) {
+      context.handle(
+          _mutedUntilMeta,
+          mutedUntil.isAcceptableOrUnknown(
+              data['muted_until']!, _mutedUntilMeta));
+    }
+    if (data.containsKey('unread_count')) {
+      context.handle(
+          _unreadCountMeta,
+          unreadCount.isAcceptableOrUnknown(
+              data['unread_count']!, _unreadCountMeta));
     }
     if (data.containsKey('record_type')) {
       context.handle(
@@ -34761,6 +34879,22 @@ class $ChatConversationsTable extends ChatConversations
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title']),
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      avatarUrl: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}avatar_url']),
+      isBroadcast: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_broadcast'])!,
+      isPinned: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_pinned'])!,
+      isArchived: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_archived'])!,
+      mutedUntil: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}muted_until']),
+      unreadCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}unread_count'])!,
       recordType: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}record_type']),
       recordId: attachedDatabase.typeMapping
@@ -34784,6 +34918,14 @@ class ChatConversation extends DataClass
     implements Insertable<ChatConversation> {
   final String id;
   final String type;
+  final String? title;
+  final String? description;
+  final String? avatarUrl;
+  final bool isBroadcast;
+  final bool isPinned;
+  final bool isArchived;
+  final DateTime? mutedUntil;
+  final int unreadCount;
   final String? recordType;
   final String? recordId;
   final String createdBy;
@@ -34792,6 +34934,14 @@ class ChatConversation extends DataClass
   const ChatConversation(
       {required this.id,
       required this.type,
+      this.title,
+      this.description,
+      this.avatarUrl,
+      required this.isBroadcast,
+      required this.isPinned,
+      required this.isArchived,
+      this.mutedUntil,
+      required this.unreadCount,
       this.recordType,
       this.recordId,
       required this.createdBy,
@@ -34802,6 +34952,22 @@ class ChatConversation extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['type'] = Variable<String>(type);
+    if (!nullToAbsent || title != null) {
+      map['title'] = Variable<String>(title);
+    }
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || avatarUrl != null) {
+      map['avatar_url'] = Variable<String>(avatarUrl);
+    }
+    map['is_broadcast'] = Variable<bool>(isBroadcast);
+    map['is_pinned'] = Variable<bool>(isPinned);
+    map['is_archived'] = Variable<bool>(isArchived);
+    if (!nullToAbsent || mutedUntil != null) {
+      map['muted_until'] = Variable<DateTime>(mutedUntil);
+    }
+    map['unread_count'] = Variable<int>(unreadCount);
     if (!nullToAbsent || recordType != null) {
       map['record_type'] = Variable<String>(recordType);
     }
@@ -34820,6 +34986,21 @@ class ChatConversation extends DataClass
     return ChatConversationsCompanion(
       id: Value(id),
       type: Value(type),
+      title:
+          title == null && nullToAbsent ? const Value.absent() : Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      avatarUrl: avatarUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarUrl),
+      isBroadcast: Value(isBroadcast),
+      isPinned: Value(isPinned),
+      isArchived: Value(isArchived),
+      mutedUntil: mutedUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mutedUntil),
+      unreadCount: Value(unreadCount),
       recordType: recordType == null && nullToAbsent
           ? const Value.absent()
           : Value(recordType),
@@ -34840,6 +35021,14 @@ class ChatConversation extends DataClass
     return ChatConversation(
       id: serializer.fromJson<String>(json['id']),
       type: serializer.fromJson<String>(json['type']),
+      title: serializer.fromJson<String?>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
+      avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
+      isBroadcast: serializer.fromJson<bool>(json['isBroadcast']),
+      isPinned: serializer.fromJson<bool>(json['isPinned']),
+      isArchived: serializer.fromJson<bool>(json['isArchived']),
+      mutedUntil: serializer.fromJson<DateTime?>(json['mutedUntil']),
+      unreadCount: serializer.fromJson<int>(json['unreadCount']),
       recordType: serializer.fromJson<String?>(json['recordType']),
       recordId: serializer.fromJson<String?>(json['recordId']),
       createdBy: serializer.fromJson<String>(json['createdBy']),
@@ -34853,6 +35042,14 @@ class ChatConversation extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'type': serializer.toJson<String>(type),
+      'title': serializer.toJson<String?>(title),
+      'description': serializer.toJson<String?>(description),
+      'avatarUrl': serializer.toJson<String?>(avatarUrl),
+      'isBroadcast': serializer.toJson<bool>(isBroadcast),
+      'isPinned': serializer.toJson<bool>(isPinned),
+      'isArchived': serializer.toJson<bool>(isArchived),
+      'mutedUntil': serializer.toJson<DateTime?>(mutedUntil),
+      'unreadCount': serializer.toJson<int>(unreadCount),
       'recordType': serializer.toJson<String?>(recordType),
       'recordId': serializer.toJson<String?>(recordId),
       'createdBy': serializer.toJson<String>(createdBy),
@@ -34864,6 +35061,14 @@ class ChatConversation extends DataClass
   ChatConversation copyWith(
           {String? id,
           String? type,
+          Value<String?> title = const Value.absent(),
+          Value<String?> description = const Value.absent(),
+          Value<String?> avatarUrl = const Value.absent(),
+          bool? isBroadcast,
+          bool? isPinned,
+          bool? isArchived,
+          Value<DateTime?> mutedUntil = const Value.absent(),
+          int? unreadCount,
           Value<String?> recordType = const Value.absent(),
           Value<String?> recordId = const Value.absent(),
           String? createdBy,
@@ -34872,6 +35077,14 @@ class ChatConversation extends DataClass
       ChatConversation(
         id: id ?? this.id,
         type: type ?? this.type,
+        title: title.present ? title.value : this.title,
+        description: description.present ? description.value : this.description,
+        avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
+        isBroadcast: isBroadcast ?? this.isBroadcast,
+        isPinned: isPinned ?? this.isPinned,
+        isArchived: isArchived ?? this.isArchived,
+        mutedUntil: mutedUntil.present ? mutedUntil.value : this.mutedUntil,
+        unreadCount: unreadCount ?? this.unreadCount,
         recordType: recordType.present ? recordType.value : this.recordType,
         recordId: recordId.present ? recordId.value : this.recordId,
         createdBy: createdBy ?? this.createdBy,
@@ -34883,6 +35096,19 @@ class ChatConversation extends DataClass
     return ChatConversation(
       id: data.id.present ? data.id.value : this.id,
       type: data.type.present ? data.type.value : this.type,
+      title: data.title.present ? data.title.value : this.title,
+      description:
+          data.description.present ? data.description.value : this.description,
+      avatarUrl: data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
+      isBroadcast:
+          data.isBroadcast.present ? data.isBroadcast.value : this.isBroadcast,
+      isPinned: data.isPinned.present ? data.isPinned.value : this.isPinned,
+      isArchived:
+          data.isArchived.present ? data.isArchived.value : this.isArchived,
+      mutedUntil:
+          data.mutedUntil.present ? data.mutedUntil.value : this.mutedUntil,
+      unreadCount:
+          data.unreadCount.present ? data.unreadCount.value : this.unreadCount,
       recordType:
           data.recordType.present ? data.recordType.value : this.recordType,
       recordId: data.recordId.present ? data.recordId.value : this.recordId,
@@ -34899,6 +35125,14 @@ class ChatConversation extends DataClass
     return (StringBuffer('ChatConversation(')
           ..write('id: $id, ')
           ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('avatarUrl: $avatarUrl, ')
+          ..write('isBroadcast: $isBroadcast, ')
+          ..write('isPinned: $isPinned, ')
+          ..write('isArchived: $isArchived, ')
+          ..write('mutedUntil: $mutedUntil, ')
+          ..write('unreadCount: $unreadCount, ')
           ..write('recordType: $recordType, ')
           ..write('recordId: $recordId, ')
           ..write('createdBy: $createdBy, ')
@@ -34910,13 +35144,35 @@ class ChatConversation extends DataClass
 
   @override
   int get hashCode => Object.hash(
-      id, type, recordType, recordId, createdBy, createdAt, lastMessageAt);
+      id,
+      type,
+      title,
+      description,
+      avatarUrl,
+      isBroadcast,
+      isPinned,
+      isArchived,
+      mutedUntil,
+      unreadCount,
+      recordType,
+      recordId,
+      createdBy,
+      createdAt,
+      lastMessageAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ChatConversation &&
           other.id == this.id &&
           other.type == this.type &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.avatarUrl == this.avatarUrl &&
+          other.isBroadcast == this.isBroadcast &&
+          other.isPinned == this.isPinned &&
+          other.isArchived == this.isArchived &&
+          other.mutedUntil == this.mutedUntil &&
+          other.unreadCount == this.unreadCount &&
           other.recordType == this.recordType &&
           other.recordId == this.recordId &&
           other.createdBy == this.createdBy &&
@@ -34927,6 +35183,14 @@ class ChatConversation extends DataClass
 class ChatConversationsCompanion extends UpdateCompanion<ChatConversation> {
   final Value<String> id;
   final Value<String> type;
+  final Value<String?> title;
+  final Value<String?> description;
+  final Value<String?> avatarUrl;
+  final Value<bool> isBroadcast;
+  final Value<bool> isPinned;
+  final Value<bool> isArchived;
+  final Value<DateTime?> mutedUntil;
+  final Value<int> unreadCount;
   final Value<String?> recordType;
   final Value<String?> recordId;
   final Value<String> createdBy;
@@ -34936,6 +35200,14 @@ class ChatConversationsCompanion extends UpdateCompanion<ChatConversation> {
   const ChatConversationsCompanion({
     this.id = const Value.absent(),
     this.type = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
+    this.isBroadcast = const Value.absent(),
+    this.isPinned = const Value.absent(),
+    this.isArchived = const Value.absent(),
+    this.mutedUntil = const Value.absent(),
+    this.unreadCount = const Value.absent(),
     this.recordType = const Value.absent(),
     this.recordId = const Value.absent(),
     this.createdBy = const Value.absent(),
@@ -34946,6 +35218,14 @@ class ChatConversationsCompanion extends UpdateCompanion<ChatConversation> {
   ChatConversationsCompanion.insert({
     required String id,
     required String type,
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
+    this.isBroadcast = const Value.absent(),
+    this.isPinned = const Value.absent(),
+    this.isArchived = const Value.absent(),
+    this.mutedUntil = const Value.absent(),
+    this.unreadCount = const Value.absent(),
     this.recordType = const Value.absent(),
     this.recordId = const Value.absent(),
     required String createdBy,
@@ -34958,6 +35238,14 @@ class ChatConversationsCompanion extends UpdateCompanion<ChatConversation> {
   static Insertable<ChatConversation> custom({
     Expression<String>? id,
     Expression<String>? type,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<String>? avatarUrl,
+    Expression<bool>? isBroadcast,
+    Expression<bool>? isPinned,
+    Expression<bool>? isArchived,
+    Expression<DateTime>? mutedUntil,
+    Expression<int>? unreadCount,
     Expression<String>? recordType,
     Expression<String>? recordId,
     Expression<String>? createdBy,
@@ -34968,6 +35256,14 @@ class ChatConversationsCompanion extends UpdateCompanion<ChatConversation> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (type != null) 'type': type,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (avatarUrl != null) 'avatar_url': avatarUrl,
+      if (isBroadcast != null) 'is_broadcast': isBroadcast,
+      if (isPinned != null) 'is_pinned': isPinned,
+      if (isArchived != null) 'is_archived': isArchived,
+      if (mutedUntil != null) 'muted_until': mutedUntil,
+      if (unreadCount != null) 'unread_count': unreadCount,
       if (recordType != null) 'record_type': recordType,
       if (recordId != null) 'record_id': recordId,
       if (createdBy != null) 'created_by': createdBy,
@@ -34980,6 +35276,14 @@ class ChatConversationsCompanion extends UpdateCompanion<ChatConversation> {
   ChatConversationsCompanion copyWith(
       {Value<String>? id,
       Value<String>? type,
+      Value<String?>? title,
+      Value<String?>? description,
+      Value<String?>? avatarUrl,
+      Value<bool>? isBroadcast,
+      Value<bool>? isPinned,
+      Value<bool>? isArchived,
+      Value<DateTime?>? mutedUntil,
+      Value<int>? unreadCount,
       Value<String?>? recordType,
       Value<String?>? recordId,
       Value<String>? createdBy,
@@ -34989,6 +35293,14 @@ class ChatConversationsCompanion extends UpdateCompanion<ChatConversation> {
     return ChatConversationsCompanion(
       id: id ?? this.id,
       type: type ?? this.type,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      isBroadcast: isBroadcast ?? this.isBroadcast,
+      isPinned: isPinned ?? this.isPinned,
+      isArchived: isArchived ?? this.isArchived,
+      mutedUntil: mutedUntil ?? this.mutedUntil,
+      unreadCount: unreadCount ?? this.unreadCount,
       recordType: recordType ?? this.recordType,
       recordId: recordId ?? this.recordId,
       createdBy: createdBy ?? this.createdBy,
@@ -35006,6 +35318,30 @@ class ChatConversationsCompanion extends UpdateCompanion<ChatConversation> {
     }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (avatarUrl.present) {
+      map['avatar_url'] = Variable<String>(avatarUrl.value);
+    }
+    if (isBroadcast.present) {
+      map['is_broadcast'] = Variable<bool>(isBroadcast.value);
+    }
+    if (isPinned.present) {
+      map['is_pinned'] = Variable<bool>(isPinned.value);
+    }
+    if (isArchived.present) {
+      map['is_archived'] = Variable<bool>(isArchived.value);
+    }
+    if (mutedUntil.present) {
+      map['muted_until'] = Variable<DateTime>(mutedUntil.value);
+    }
+    if (unreadCount.present) {
+      map['unread_count'] = Variable<int>(unreadCount.value);
     }
     if (recordType.present) {
       map['record_type'] = Variable<String>(recordType.value);
@@ -35033,6 +35369,14 @@ class ChatConversationsCompanion extends UpdateCompanion<ChatConversation> {
     return (StringBuffer('ChatConversationsCompanion(')
           ..write('id: $id, ')
           ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('avatarUrl: $avatarUrl, ')
+          ..write('isBroadcast: $isBroadcast, ')
+          ..write('isPinned: $isPinned, ')
+          ..write('isArchived: $isArchived, ')
+          ..write('mutedUntil: $mutedUntil, ')
+          ..write('unreadCount: $unreadCount, ')
           ..write('recordType: $recordType, ')
           ..write('recordId: $recordId, ')
           ..write('createdBy: $createdBy, ')
@@ -35061,6 +35405,13 @@ class $ChatParticipantsTable extends ChatParticipants
   late final GeneratedColumn<String> userId = GeneratedColumn<String>(
       'user_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+      'role', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('member'));
   static const VerificationMeta _joinedAtMeta =
       const VerificationMeta('joinedAt');
   @override
@@ -35086,7 +35437,7 @@ class $ChatParticipantsTable extends ChatParticipants
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [conversationId, userId, joinedAt, muted, lastReadAt];
+      [conversationId, userId, role, joinedAt, muted, lastReadAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -35110,6 +35461,10 @@ class $ChatParticipantsTable extends ChatParticipants
           userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
     } else if (isInserting) {
       context.missing(_userIdMeta);
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+          _roleMeta, role.isAcceptableOrUnknown(data['role']!, _roleMeta));
     }
     if (data.containsKey('joined_at')) {
       context.handle(_joinedAtMeta,
@@ -35138,6 +35493,8 @@ class $ChatParticipantsTable extends ChatParticipants
           DriftSqlType.string, data['${effectivePrefix}conversation_id'])!,
       userId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      role: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}role'])!,
       joinedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}joined_at'])!,
       muted: attachedDatabase.typeMapping
@@ -35156,12 +35513,14 @@ class $ChatParticipantsTable extends ChatParticipants
 class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
   final String conversationId;
   final String userId;
+  final String role;
   final DateTime joinedAt;
   final bool muted;
   final DateTime? lastReadAt;
   const ChatParticipant(
       {required this.conversationId,
       required this.userId,
+      required this.role,
       required this.joinedAt,
       required this.muted,
       this.lastReadAt});
@@ -35170,6 +35529,7 @@ class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
     final map = <String, Expression>{};
     map['conversation_id'] = Variable<String>(conversationId);
     map['user_id'] = Variable<String>(userId);
+    map['role'] = Variable<String>(role);
     map['joined_at'] = Variable<DateTime>(joinedAt);
     map['muted'] = Variable<bool>(muted);
     if (!nullToAbsent || lastReadAt != null) {
@@ -35182,6 +35542,7 @@ class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
     return ChatParticipantsCompanion(
       conversationId: Value(conversationId),
       userId: Value(userId),
+      role: Value(role),
       joinedAt: Value(joinedAt),
       muted: Value(muted),
       lastReadAt: lastReadAt == null && nullToAbsent
@@ -35196,6 +35557,7 @@ class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
     return ChatParticipant(
       conversationId: serializer.fromJson<String>(json['conversationId']),
       userId: serializer.fromJson<String>(json['userId']),
+      role: serializer.fromJson<String>(json['role']),
       joinedAt: serializer.fromJson<DateTime>(json['joinedAt']),
       muted: serializer.fromJson<bool>(json['muted']),
       lastReadAt: serializer.fromJson<DateTime?>(json['lastReadAt']),
@@ -35207,6 +35569,7 @@ class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
     return <String, dynamic>{
       'conversationId': serializer.toJson<String>(conversationId),
       'userId': serializer.toJson<String>(userId),
+      'role': serializer.toJson<String>(role),
       'joinedAt': serializer.toJson<DateTime>(joinedAt),
       'muted': serializer.toJson<bool>(muted),
       'lastReadAt': serializer.toJson<DateTime?>(lastReadAt),
@@ -35216,12 +35579,14 @@ class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
   ChatParticipant copyWith(
           {String? conversationId,
           String? userId,
+          String? role,
           DateTime? joinedAt,
           bool? muted,
           Value<DateTime?> lastReadAt = const Value.absent()}) =>
       ChatParticipant(
         conversationId: conversationId ?? this.conversationId,
         userId: userId ?? this.userId,
+        role: role ?? this.role,
         joinedAt: joinedAt ?? this.joinedAt,
         muted: muted ?? this.muted,
         lastReadAt: lastReadAt.present ? lastReadAt.value : this.lastReadAt,
@@ -35232,6 +35597,7 @@ class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
           ? data.conversationId.value
           : this.conversationId,
       userId: data.userId.present ? data.userId.value : this.userId,
+      role: data.role.present ? data.role.value : this.role,
       joinedAt: data.joinedAt.present ? data.joinedAt.value : this.joinedAt,
       muted: data.muted.present ? data.muted.value : this.muted,
       lastReadAt:
@@ -35244,6 +35610,7 @@ class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
     return (StringBuffer('ChatParticipant(')
           ..write('conversationId: $conversationId, ')
           ..write('userId: $userId, ')
+          ..write('role: $role, ')
           ..write('joinedAt: $joinedAt, ')
           ..write('muted: $muted, ')
           ..write('lastReadAt: $lastReadAt')
@@ -35253,13 +35620,14 @@ class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
 
   @override
   int get hashCode =>
-      Object.hash(conversationId, userId, joinedAt, muted, lastReadAt);
+      Object.hash(conversationId, userId, role, joinedAt, muted, lastReadAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ChatParticipant &&
           other.conversationId == this.conversationId &&
           other.userId == this.userId &&
+          other.role == this.role &&
           other.joinedAt == this.joinedAt &&
           other.muted == this.muted &&
           other.lastReadAt == this.lastReadAt);
@@ -35268,6 +35636,7 @@ class ChatParticipant extends DataClass implements Insertable<ChatParticipant> {
 class ChatParticipantsCompanion extends UpdateCompanion<ChatParticipant> {
   final Value<String> conversationId;
   final Value<String> userId;
+  final Value<String> role;
   final Value<DateTime> joinedAt;
   final Value<bool> muted;
   final Value<DateTime?> lastReadAt;
@@ -35275,6 +35644,7 @@ class ChatParticipantsCompanion extends UpdateCompanion<ChatParticipant> {
   const ChatParticipantsCompanion({
     this.conversationId = const Value.absent(),
     this.userId = const Value.absent(),
+    this.role = const Value.absent(),
     this.joinedAt = const Value.absent(),
     this.muted = const Value.absent(),
     this.lastReadAt = const Value.absent(),
@@ -35283,6 +35653,7 @@ class ChatParticipantsCompanion extends UpdateCompanion<ChatParticipant> {
   ChatParticipantsCompanion.insert({
     required String conversationId,
     required String userId,
+    this.role = const Value.absent(),
     this.joinedAt = const Value.absent(),
     this.muted = const Value.absent(),
     this.lastReadAt = const Value.absent(),
@@ -35292,6 +35663,7 @@ class ChatParticipantsCompanion extends UpdateCompanion<ChatParticipant> {
   static Insertable<ChatParticipant> custom({
     Expression<String>? conversationId,
     Expression<String>? userId,
+    Expression<String>? role,
     Expression<DateTime>? joinedAt,
     Expression<bool>? muted,
     Expression<DateTime>? lastReadAt,
@@ -35300,6 +35672,7 @@ class ChatParticipantsCompanion extends UpdateCompanion<ChatParticipant> {
     return RawValuesInsertable({
       if (conversationId != null) 'conversation_id': conversationId,
       if (userId != null) 'user_id': userId,
+      if (role != null) 'role': role,
       if (joinedAt != null) 'joined_at': joinedAt,
       if (muted != null) 'muted': muted,
       if (lastReadAt != null) 'last_read_at': lastReadAt,
@@ -35310,6 +35683,7 @@ class ChatParticipantsCompanion extends UpdateCompanion<ChatParticipant> {
   ChatParticipantsCompanion copyWith(
       {Value<String>? conversationId,
       Value<String>? userId,
+      Value<String>? role,
       Value<DateTime>? joinedAt,
       Value<bool>? muted,
       Value<DateTime?>? lastReadAt,
@@ -35317,6 +35691,7 @@ class ChatParticipantsCompanion extends UpdateCompanion<ChatParticipant> {
     return ChatParticipantsCompanion(
       conversationId: conversationId ?? this.conversationId,
       userId: userId ?? this.userId,
+      role: role ?? this.role,
       joinedAt: joinedAt ?? this.joinedAt,
       muted: muted ?? this.muted,
       lastReadAt: lastReadAt ?? this.lastReadAt,
@@ -35332,6 +35707,9 @@ class ChatParticipantsCompanion extends UpdateCompanion<ChatParticipant> {
     }
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
     }
     if (joinedAt.present) {
       map['joined_at'] = Variable<DateTime>(joinedAt.value);
@@ -35353,6 +35731,7 @@ class ChatParticipantsCompanion extends UpdateCompanion<ChatParticipant> {
     return (StringBuffer('ChatParticipantsCompanion(')
           ..write('conversationId: $conversationId, ')
           ..write('userId: $userId, ')
+          ..write('role: $role, ')
           ..write('joinedAt: $joinedAt, ')
           ..write('muted: $muted, ')
           ..write('lastReadAt: $lastReadAt, ')
@@ -35448,6 +35827,18 @@ class $ChatMessagesTable extends ChatMessages
   late final GeneratedColumn<DateTime> pinnedAt = GeneratedColumn<DateTime>(
       'pinned_at', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _burnAfterSecondsMeta =
+      const VerificationMeta('burnAfterSeconds');
+  @override
+  late final GeneratedColumn<int> burnAfterSeconds = GeneratedColumn<int>(
+      'burn_after_seconds', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _scheduledAtMeta =
+      const VerificationMeta('scheduledAt');
+  @override
+  late final GeneratedColumn<DateTime> scheduledAt = GeneratedColumn<DateTime>(
+      'scheduled_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -35462,7 +35853,9 @@ class $ChatMessagesTable extends ChatMessages
         replyToId,
         editedAt,
         forwardedFromId,
-        pinnedAt
+        pinnedAt,
+        burnAfterSeconds,
+        scheduledAt
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -35543,6 +35936,18 @@ class $ChatMessagesTable extends ChatMessages
       context.handle(_pinnedAtMeta,
           pinnedAt.isAcceptableOrUnknown(data['pinned_at']!, _pinnedAtMeta));
     }
+    if (data.containsKey('burn_after_seconds')) {
+      context.handle(
+          _burnAfterSecondsMeta,
+          burnAfterSeconds.isAcceptableOrUnknown(
+              data['burn_after_seconds']!, _burnAfterSecondsMeta));
+    }
+    if (data.containsKey('scheduled_at')) {
+      context.handle(
+          _scheduledAtMeta,
+          scheduledAt.isAcceptableOrUnknown(
+              data['scheduled_at']!, _scheduledAtMeta));
+    }
     return context;
   }
 
@@ -35578,6 +35983,10 @@ class $ChatMessagesTable extends ChatMessages
           DriftSqlType.string, data['${effectivePrefix}forwarded_from_id']),
       pinnedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}pinned_at']),
+      burnAfterSeconds: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}burn_after_seconds']),
+      scheduledAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}scheduled_at']),
     );
   }
 
@@ -35604,6 +36013,8 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
   /// Có giá trị = tin đang được ghim (thời điểm ghim). Ghim là trạng thái chung
   /// của hội thoại, đồng bộ giữa các thành viên bằng sự kiện `pin` mã hoá.
   final DateTime? pinnedAt;
+  final int? burnAfterSeconds;
+  final DateTime? scheduledAt;
   const ChatMessage(
       {required this.id,
       required this.conversationId,
@@ -35617,7 +36028,9 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       this.replyToId,
       this.editedAt,
       this.forwardedFromId,
-      this.pinnedAt});
+      this.pinnedAt,
+      this.burnAfterSeconds,
+      this.scheduledAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -35645,6 +36058,12 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
     }
     if (!nullToAbsent || pinnedAt != null) {
       map['pinned_at'] = Variable<DateTime>(pinnedAt);
+    }
+    if (!nullToAbsent || burnAfterSeconds != null) {
+      map['burn_after_seconds'] = Variable<int>(burnAfterSeconds);
+    }
+    if (!nullToAbsent || scheduledAt != null) {
+      map['scheduled_at'] = Variable<DateTime>(scheduledAt);
     }
     return map;
   }
@@ -35675,6 +36094,12 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       pinnedAt: pinnedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(pinnedAt),
+      burnAfterSeconds: burnAfterSeconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(burnAfterSeconds),
+      scheduledAt: scheduledAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(scheduledAt),
     );
   }
 
@@ -35695,6 +36120,8 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       editedAt: serializer.fromJson<DateTime?>(json['editedAt']),
       forwardedFromId: serializer.fromJson<String?>(json['forwardedFromId']),
       pinnedAt: serializer.fromJson<DateTime?>(json['pinnedAt']),
+      burnAfterSeconds: serializer.fromJson<int?>(json['burnAfterSeconds']),
+      scheduledAt: serializer.fromJson<DateTime?>(json['scheduledAt']),
     );
   }
   @override
@@ -35714,6 +36141,8 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       'editedAt': serializer.toJson<DateTime?>(editedAt),
       'forwardedFromId': serializer.toJson<String?>(forwardedFromId),
       'pinnedAt': serializer.toJson<DateTime?>(pinnedAt),
+      'burnAfterSeconds': serializer.toJson<int?>(burnAfterSeconds),
+      'scheduledAt': serializer.toJson<DateTime?>(scheduledAt),
     };
   }
 
@@ -35730,7 +36159,9 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           Value<String?> replyToId = const Value.absent(),
           Value<DateTime?> editedAt = const Value.absent(),
           Value<String?> forwardedFromId = const Value.absent(),
-          Value<DateTime?> pinnedAt = const Value.absent()}) =>
+          Value<DateTime?> pinnedAt = const Value.absent(),
+          Value<int?> burnAfterSeconds = const Value.absent(),
+          Value<DateTime?> scheduledAt = const Value.absent()}) =>
       ChatMessage(
         id: id ?? this.id,
         conversationId: conversationId ?? this.conversationId,
@@ -35747,6 +36178,10 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
             ? forwardedFromId.value
             : this.forwardedFromId,
         pinnedAt: pinnedAt.present ? pinnedAt.value : this.pinnedAt,
+        burnAfterSeconds: burnAfterSeconds.present
+            ? burnAfterSeconds.value
+            : this.burnAfterSeconds,
+        scheduledAt: scheduledAt.present ? scheduledAt.value : this.scheduledAt,
       );
   ChatMessage copyWithCompanion(ChatMessagesCompanion data) {
     return ChatMessage(
@@ -35768,6 +36203,11 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           ? data.forwardedFromId.value
           : this.forwardedFromId,
       pinnedAt: data.pinnedAt.present ? data.pinnedAt.value : this.pinnedAt,
+      burnAfterSeconds: data.burnAfterSeconds.present
+          ? data.burnAfterSeconds.value
+          : this.burnAfterSeconds,
+      scheduledAt:
+          data.scheduledAt.present ? data.scheduledAt.value : this.scheduledAt,
     );
   }
 
@@ -35786,7 +36226,9 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           ..write('replyToId: $replyToId, ')
           ..write('editedAt: $editedAt, ')
           ..write('forwardedFromId: $forwardedFromId, ')
-          ..write('pinnedAt: $pinnedAt')
+          ..write('pinnedAt: $pinnedAt, ')
+          ..write('burnAfterSeconds: $burnAfterSeconds, ')
+          ..write('scheduledAt: $scheduledAt')
           ..write(')'))
         .toString();
   }
@@ -35805,7 +36247,9 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
       replyToId,
       editedAt,
       forwardedFromId,
-      pinnedAt);
+      pinnedAt,
+      burnAfterSeconds,
+      scheduledAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -35822,7 +36266,9 @@ class ChatMessage extends DataClass implements Insertable<ChatMessage> {
           other.replyToId == this.replyToId &&
           other.editedAt == this.editedAt &&
           other.forwardedFromId == this.forwardedFromId &&
-          other.pinnedAt == this.pinnedAt);
+          other.pinnedAt == this.pinnedAt &&
+          other.burnAfterSeconds == this.burnAfterSeconds &&
+          other.scheduledAt == this.scheduledAt);
 }
 
 class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
@@ -35839,6 +36285,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
   final Value<DateTime?> editedAt;
   final Value<String?> forwardedFromId;
   final Value<DateTime?> pinnedAt;
+  final Value<int?> burnAfterSeconds;
+  final Value<DateTime?> scheduledAt;
   final Value<int> rowid;
   const ChatMessagesCompanion({
     this.id = const Value.absent(),
@@ -35854,6 +36302,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     this.editedAt = const Value.absent(),
     this.forwardedFromId = const Value.absent(),
     this.pinnedAt = const Value.absent(),
+    this.burnAfterSeconds = const Value.absent(),
+    this.scheduledAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChatMessagesCompanion.insert({
@@ -35870,6 +36320,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     this.editedAt = const Value.absent(),
     this.forwardedFromId = const Value.absent(),
     this.pinnedAt = const Value.absent(),
+    this.burnAfterSeconds = const Value.absent(),
+    this.scheduledAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         conversationId = Value(conversationId),
@@ -35890,6 +36342,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     Expression<DateTime>? editedAt,
     Expression<String>? forwardedFromId,
     Expression<DateTime>? pinnedAt,
+    Expression<int>? burnAfterSeconds,
+    Expression<DateTime>? scheduledAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -35906,6 +36360,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
       if (editedAt != null) 'edited_at': editedAt,
       if (forwardedFromId != null) 'forwarded_from_id': forwardedFromId,
       if (pinnedAt != null) 'pinned_at': pinnedAt,
+      if (burnAfterSeconds != null) 'burn_after_seconds': burnAfterSeconds,
+      if (scheduledAt != null) 'scheduled_at': scheduledAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -35924,6 +36380,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
       Value<DateTime?>? editedAt,
       Value<String?>? forwardedFromId,
       Value<DateTime?>? pinnedAt,
+      Value<int?>? burnAfterSeconds,
+      Value<DateTime?>? scheduledAt,
       Value<int>? rowid}) {
     return ChatMessagesCompanion(
       id: id ?? this.id,
@@ -35939,6 +36397,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
       editedAt: editedAt ?? this.editedAt,
       forwardedFromId: forwardedFromId ?? this.forwardedFromId,
       pinnedAt: pinnedAt ?? this.pinnedAt,
+      burnAfterSeconds: burnAfterSeconds ?? this.burnAfterSeconds,
+      scheduledAt: scheduledAt ?? this.scheduledAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -35985,6 +36445,12 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
     if (pinnedAt.present) {
       map['pinned_at'] = Variable<DateTime>(pinnedAt.value);
     }
+    if (burnAfterSeconds.present) {
+      map['burn_after_seconds'] = Variable<int>(burnAfterSeconds.value);
+    }
+    if (scheduledAt.present) {
+      map['scheduled_at'] = Variable<DateTime>(scheduledAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -36007,6 +36473,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessage> {
           ..write('editedAt: $editedAt, ')
           ..write('forwardedFromId: $forwardedFromId, ')
           ..write('pinnedAt: $pinnedAt, ')
+          ..write('burnAfterSeconds: $burnAfterSeconds, ')
+          ..write('scheduledAt: $scheduledAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -36627,6 +37095,281 @@ class E2eeOutboxCompanion extends UpdateCompanion<E2eeOutboxData> {
           ..write('attempts: $attempts, ')
           ..write('lastError: $lastError, ')
           ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ChatMessageReadsTable extends ChatMessageReads
+    with TableInfo<$ChatMessageReadsTable, ChatMessageRead> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ChatMessageReadsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _conversationIdMeta =
+      const VerificationMeta('conversationId');
+  @override
+  late final GeneratedColumn<String> conversationId = GeneratedColumn<String>(
+      'conversation_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _messageIdMeta =
+      const VerificationMeta('messageId');
+  @override
+  late final GeneratedColumn<String> messageId = GeneratedColumn<String>(
+      'message_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _readAtMeta = const VerificationMeta('readAt');
+  @override
+  late final GeneratedColumn<DateTime> readAt = GeneratedColumn<DateTime>(
+      'read_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [conversationId, messageId, userId, readAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'chat_message_reads';
+  @override
+  VerificationContext validateIntegrity(Insertable<ChatMessageRead> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('conversation_id')) {
+      context.handle(
+          _conversationIdMeta,
+          conversationId.isAcceptableOrUnknown(
+              data['conversation_id']!, _conversationIdMeta));
+    } else if (isInserting) {
+      context.missing(_conversationIdMeta);
+    }
+    if (data.containsKey('message_id')) {
+      context.handle(_messageIdMeta,
+          messageId.isAcceptableOrUnknown(data['message_id']!, _messageIdMeta));
+    } else if (isInserting) {
+      context.missing(_messageIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('read_at')) {
+      context.handle(_readAtMeta,
+          readAt.isAcceptableOrUnknown(data['read_at']!, _readAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {messageId, userId};
+  @override
+  ChatMessageRead map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ChatMessageRead(
+      conversationId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}conversation_id'])!,
+      messageId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}message_id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      readAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}read_at'])!,
+    );
+  }
+
+  @override
+  $ChatMessageReadsTable createAlias(String alias) {
+    return $ChatMessageReadsTable(attachedDatabase, alias);
+  }
+}
+
+class ChatMessageRead extends DataClass implements Insertable<ChatMessageRead> {
+  final String conversationId;
+  final String messageId;
+  final String userId;
+  final DateTime readAt;
+  const ChatMessageRead(
+      {required this.conversationId,
+      required this.messageId,
+      required this.userId,
+      required this.readAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['conversation_id'] = Variable<String>(conversationId);
+    map['message_id'] = Variable<String>(messageId);
+    map['user_id'] = Variable<String>(userId);
+    map['read_at'] = Variable<DateTime>(readAt);
+    return map;
+  }
+
+  ChatMessageReadsCompanion toCompanion(bool nullToAbsent) {
+    return ChatMessageReadsCompanion(
+      conversationId: Value(conversationId),
+      messageId: Value(messageId),
+      userId: Value(userId),
+      readAt: Value(readAt),
+    );
+  }
+
+  factory ChatMessageRead.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ChatMessageRead(
+      conversationId: serializer.fromJson<String>(json['conversationId']),
+      messageId: serializer.fromJson<String>(json['messageId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      readAt: serializer.fromJson<DateTime>(json['readAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'conversationId': serializer.toJson<String>(conversationId),
+      'messageId': serializer.toJson<String>(messageId),
+      'userId': serializer.toJson<String>(userId),
+      'readAt': serializer.toJson<DateTime>(readAt),
+    };
+  }
+
+  ChatMessageRead copyWith(
+          {String? conversationId,
+          String? messageId,
+          String? userId,
+          DateTime? readAt}) =>
+      ChatMessageRead(
+        conversationId: conversationId ?? this.conversationId,
+        messageId: messageId ?? this.messageId,
+        userId: userId ?? this.userId,
+        readAt: readAt ?? this.readAt,
+      );
+  ChatMessageRead copyWithCompanion(ChatMessageReadsCompanion data) {
+    return ChatMessageRead(
+      conversationId: data.conversationId.present
+          ? data.conversationId.value
+          : this.conversationId,
+      messageId: data.messageId.present ? data.messageId.value : this.messageId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      readAt: data.readAt.present ? data.readAt.value : this.readAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChatMessageRead(')
+          ..write('conversationId: $conversationId, ')
+          ..write('messageId: $messageId, ')
+          ..write('userId: $userId, ')
+          ..write('readAt: $readAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(conversationId, messageId, userId, readAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ChatMessageRead &&
+          other.conversationId == this.conversationId &&
+          other.messageId == this.messageId &&
+          other.userId == this.userId &&
+          other.readAt == this.readAt);
+}
+
+class ChatMessageReadsCompanion extends UpdateCompanion<ChatMessageRead> {
+  final Value<String> conversationId;
+  final Value<String> messageId;
+  final Value<String> userId;
+  final Value<DateTime> readAt;
+  final Value<int> rowid;
+  const ChatMessageReadsCompanion({
+    this.conversationId = const Value.absent(),
+    this.messageId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.readAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ChatMessageReadsCompanion.insert({
+    required String conversationId,
+    required String messageId,
+    required String userId,
+    this.readAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : conversationId = Value(conversationId),
+        messageId = Value(messageId),
+        userId = Value(userId);
+  static Insertable<ChatMessageRead> custom({
+    Expression<String>? conversationId,
+    Expression<String>? messageId,
+    Expression<String>? userId,
+    Expression<DateTime>? readAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (conversationId != null) 'conversation_id': conversationId,
+      if (messageId != null) 'message_id': messageId,
+      if (userId != null) 'user_id': userId,
+      if (readAt != null) 'read_at': readAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ChatMessageReadsCompanion copyWith(
+      {Value<String>? conversationId,
+      Value<String>? messageId,
+      Value<String>? userId,
+      Value<DateTime>? readAt,
+      Value<int>? rowid}) {
+    return ChatMessageReadsCompanion(
+      conversationId: conversationId ?? this.conversationId,
+      messageId: messageId ?? this.messageId,
+      userId: userId ?? this.userId,
+      readAt: readAt ?? this.readAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (conversationId.present) {
+      map['conversation_id'] = Variable<String>(conversationId.value);
+    }
+    if (messageId.present) {
+      map['message_id'] = Variable<String>(messageId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (readAt.present) {
+      map['read_at'] = Variable<DateTime>(readAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChatMessageReadsCompanion(')
+          ..write('conversationId: $conversationId, ')
+          ..write('messageId: $messageId, ')
+          ..write('userId: $userId, ')
+          ..write('readAt: $readAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -39281,6 +40024,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ChatMessagesTable chatMessages = $ChatMessagesTable(this);
   late final $ChatReactionsTable chatReactions = $ChatReactionsTable(this);
   late final $E2eeOutboxTable e2eeOutbox = $E2eeOutboxTable(this);
+  late final $ChatMessageReadsTable chatMessageReads =
+      $ChatMessageReadsTable(this);
   late final $DeviceRegistryEntriesTable deviceRegistryEntries =
       $DeviceRegistryEntriesTable(this);
   late final $EncryptedMessageQueueTable encryptedMessageQueue =
@@ -39391,6 +40136,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         chatMessages,
         chatReactions,
         e2eeOutbox,
+        chatMessageReads,
         deviceRegistryEntries,
         encryptedMessageQueue,
         deviceTrustLedger,
@@ -56234,6 +56980,14 @@ typedef $$ChatConversationsTableCreateCompanionBuilder
     = ChatConversationsCompanion Function({
   required String id,
   required String type,
+  Value<String?> title,
+  Value<String?> description,
+  Value<String?> avatarUrl,
+  Value<bool> isBroadcast,
+  Value<bool> isPinned,
+  Value<bool> isArchived,
+  Value<DateTime?> mutedUntil,
+  Value<int> unreadCount,
   Value<String?> recordType,
   Value<String?> recordId,
   required String createdBy,
@@ -56245,6 +56999,14 @@ typedef $$ChatConversationsTableUpdateCompanionBuilder
     = ChatConversationsCompanion Function({
   Value<String> id,
   Value<String> type,
+  Value<String?> title,
+  Value<String?> description,
+  Value<String?> avatarUrl,
+  Value<bool> isBroadcast,
+  Value<bool> isPinned,
+  Value<bool> isArchived,
+  Value<DateTime?> mutedUntil,
+  Value<int> unreadCount,
   Value<String?> recordType,
   Value<String?> recordId,
   Value<String> createdBy,
@@ -56267,6 +57029,30 @@ class $$ChatConversationsTableFilterComposer
 
   ColumnFilters<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get avatarUrl => $composableBuilder(
+      column: $table.avatarUrl, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isBroadcast => $composableBuilder(
+      column: $table.isBroadcast, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isPinned => $composableBuilder(
+      column: $table.isPinned, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isArchived => $composableBuilder(
+      column: $table.isArchived, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get mutedUntil => $composableBuilder(
+      column: $table.mutedUntil, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get unreadCount => $composableBuilder(
+      column: $table.unreadCount, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get recordType => $composableBuilder(
       column: $table.recordType, builder: (column) => ColumnFilters(column));
@@ -56299,6 +57085,30 @@ class $$ChatConversationsTableOrderingComposer
   ColumnOrderings<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get avatarUrl => $composableBuilder(
+      column: $table.avatarUrl, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isBroadcast => $composableBuilder(
+      column: $table.isBroadcast, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isPinned => $composableBuilder(
+      column: $table.isPinned, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isArchived => $composableBuilder(
+      column: $table.isArchived, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get mutedUntil => $composableBuilder(
+      column: $table.mutedUntil, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get unreadCount => $composableBuilder(
+      column: $table.unreadCount, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get recordType => $composableBuilder(
       column: $table.recordType, builder: (column) => ColumnOrderings(column));
 
@@ -56330,6 +57140,30 @@ class $$ChatConversationsTableAnnotationComposer
 
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get avatarUrl =>
+      $composableBuilder(column: $table.avatarUrl, builder: (column) => column);
+
+  GeneratedColumn<bool> get isBroadcast => $composableBuilder(
+      column: $table.isBroadcast, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPinned =>
+      $composableBuilder(column: $table.isPinned, builder: (column) => column);
+
+  GeneratedColumn<bool> get isArchived => $composableBuilder(
+      column: $table.isArchived, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get mutedUntil => $composableBuilder(
+      column: $table.mutedUntil, builder: (column) => column);
+
+  GeneratedColumn<int> get unreadCount => $composableBuilder(
+      column: $table.unreadCount, builder: (column) => column);
 
   GeneratedColumn<String> get recordType => $composableBuilder(
       column: $table.recordType, builder: (column) => column);
@@ -56377,6 +57211,14 @@ class $$ChatConversationsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> type = const Value.absent(),
+            Value<String?> title = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String?> avatarUrl = const Value.absent(),
+            Value<bool> isBroadcast = const Value.absent(),
+            Value<bool> isPinned = const Value.absent(),
+            Value<bool> isArchived = const Value.absent(),
+            Value<DateTime?> mutedUntil = const Value.absent(),
+            Value<int> unreadCount = const Value.absent(),
             Value<String?> recordType = const Value.absent(),
             Value<String?> recordId = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -56387,6 +57229,14 @@ class $$ChatConversationsTableTableManager extends RootTableManager<
               ChatConversationsCompanion(
             id: id,
             type: type,
+            title: title,
+            description: description,
+            avatarUrl: avatarUrl,
+            isBroadcast: isBroadcast,
+            isPinned: isPinned,
+            isArchived: isArchived,
+            mutedUntil: mutedUntil,
+            unreadCount: unreadCount,
             recordType: recordType,
             recordId: recordId,
             createdBy: createdBy,
@@ -56397,6 +57247,14 @@ class $$ChatConversationsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             required String id,
             required String type,
+            Value<String?> title = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String?> avatarUrl = const Value.absent(),
+            Value<bool> isBroadcast = const Value.absent(),
+            Value<bool> isPinned = const Value.absent(),
+            Value<bool> isArchived = const Value.absent(),
+            Value<DateTime?> mutedUntil = const Value.absent(),
+            Value<int> unreadCount = const Value.absent(),
             Value<String?> recordType = const Value.absent(),
             Value<String?> recordId = const Value.absent(),
             required String createdBy,
@@ -56407,6 +57265,14 @@ class $$ChatConversationsTableTableManager extends RootTableManager<
               ChatConversationsCompanion.insert(
             id: id,
             type: type,
+            title: title,
+            description: description,
+            avatarUrl: avatarUrl,
+            isBroadcast: isBroadcast,
+            isPinned: isPinned,
+            isArchived: isArchived,
+            mutedUntil: mutedUntil,
+            unreadCount: unreadCount,
             recordType: recordType,
             recordId: recordId,
             createdBy: createdBy,
@@ -56440,6 +57306,7 @@ typedef $$ChatParticipantsTableCreateCompanionBuilder
     = ChatParticipantsCompanion Function({
   required String conversationId,
   required String userId,
+  Value<String> role,
   Value<DateTime> joinedAt,
   Value<bool> muted,
   Value<DateTime?> lastReadAt,
@@ -56449,6 +57316,7 @@ typedef $$ChatParticipantsTableUpdateCompanionBuilder
     = ChatParticipantsCompanion Function({
   Value<String> conversationId,
   Value<String> userId,
+  Value<String> role,
   Value<DateTime> joinedAt,
   Value<bool> muted,
   Value<DateTime?> lastReadAt,
@@ -56470,6 +57338,9 @@ class $$ChatParticipantsTableFilterComposer
 
   ColumnFilters<String> get userId => $composableBuilder(
       column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get role => $composableBuilder(
+      column: $table.role, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get joinedAt => $composableBuilder(
       column: $table.joinedAt, builder: (column) => ColumnFilters(column));
@@ -56497,6 +57368,9 @@ class $$ChatParticipantsTableOrderingComposer
   ColumnOrderings<String> get userId => $composableBuilder(
       column: $table.userId, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get role => $composableBuilder(
+      column: $table.role, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get joinedAt => $composableBuilder(
       column: $table.joinedAt, builder: (column) => ColumnOrderings(column));
 
@@ -56521,6 +57395,9 @@ class $$ChatParticipantsTableAnnotationComposer
 
   GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
 
   GeneratedColumn<DateTime> get joinedAt =>
       $composableBuilder(column: $table.joinedAt, builder: (column) => column);
@@ -56561,6 +57438,7 @@ class $$ChatParticipantsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<String> conversationId = const Value.absent(),
             Value<String> userId = const Value.absent(),
+            Value<String> role = const Value.absent(),
             Value<DateTime> joinedAt = const Value.absent(),
             Value<bool> muted = const Value.absent(),
             Value<DateTime?> lastReadAt = const Value.absent(),
@@ -56569,6 +57447,7 @@ class $$ChatParticipantsTableTableManager extends RootTableManager<
               ChatParticipantsCompanion(
             conversationId: conversationId,
             userId: userId,
+            role: role,
             joinedAt: joinedAt,
             muted: muted,
             lastReadAt: lastReadAt,
@@ -56577,6 +57456,7 @@ class $$ChatParticipantsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             required String conversationId,
             required String userId,
+            Value<String> role = const Value.absent(),
             Value<DateTime> joinedAt = const Value.absent(),
             Value<bool> muted = const Value.absent(),
             Value<DateTime?> lastReadAt = const Value.absent(),
@@ -56585,6 +57465,7 @@ class $$ChatParticipantsTableTableManager extends RootTableManager<
               ChatParticipantsCompanion.insert(
             conversationId: conversationId,
             userId: userId,
+            role: role,
             joinedAt: joinedAt,
             muted: muted,
             lastReadAt: lastReadAt,
@@ -56627,6 +57508,8 @@ typedef $$ChatMessagesTableCreateCompanionBuilder = ChatMessagesCompanion
   Value<DateTime?> editedAt,
   Value<String?> forwardedFromId,
   Value<DateTime?> pinnedAt,
+  Value<int?> burnAfterSeconds,
+  Value<DateTime?> scheduledAt,
   Value<int> rowid,
 });
 typedef $$ChatMessagesTableUpdateCompanionBuilder = ChatMessagesCompanion
@@ -56644,6 +57527,8 @@ typedef $$ChatMessagesTableUpdateCompanionBuilder = ChatMessagesCompanion
   Value<DateTime?> editedAt,
   Value<String?> forwardedFromId,
   Value<DateTime?> pinnedAt,
+  Value<int?> burnAfterSeconds,
+  Value<DateTime?> scheduledAt,
   Value<int> rowid,
 });
 
@@ -56696,6 +57581,13 @@ class $$ChatMessagesTableFilterComposer
 
   ColumnFilters<DateTime> get pinnedAt => $composableBuilder(
       column: $table.pinnedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get burnAfterSeconds => $composableBuilder(
+      column: $table.burnAfterSeconds,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get scheduledAt => $composableBuilder(
+      column: $table.scheduledAt, builder: (column) => ColumnFilters(column));
 }
 
 class $$ChatMessagesTableOrderingComposer
@@ -56747,6 +57639,13 @@ class $$ChatMessagesTableOrderingComposer
 
   ColumnOrderings<DateTime> get pinnedAt => $composableBuilder(
       column: $table.pinnedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get burnAfterSeconds => $composableBuilder(
+      column: $table.burnAfterSeconds,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get scheduledAt => $composableBuilder(
+      column: $table.scheduledAt, builder: (column) => ColumnOrderings(column));
 }
 
 class $$ChatMessagesTableAnnotationComposer
@@ -56796,6 +57695,12 @@ class $$ChatMessagesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get pinnedAt =>
       $composableBuilder(column: $table.pinnedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get burnAfterSeconds => $composableBuilder(
+      column: $table.burnAfterSeconds, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get scheduledAt => $composableBuilder(
+      column: $table.scheduledAt, builder: (column) => column);
 }
 
 class $$ChatMessagesTableTableManager extends RootTableManager<
@@ -56837,6 +57742,8 @@ class $$ChatMessagesTableTableManager extends RootTableManager<
             Value<DateTime?> editedAt = const Value.absent(),
             Value<String?> forwardedFromId = const Value.absent(),
             Value<DateTime?> pinnedAt = const Value.absent(),
+            Value<int?> burnAfterSeconds = const Value.absent(),
+            Value<DateTime?> scheduledAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               ChatMessagesCompanion(
@@ -56853,6 +57760,8 @@ class $$ChatMessagesTableTableManager extends RootTableManager<
             editedAt: editedAt,
             forwardedFromId: forwardedFromId,
             pinnedAt: pinnedAt,
+            burnAfterSeconds: burnAfterSeconds,
+            scheduledAt: scheduledAt,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -56869,6 +57778,8 @@ class $$ChatMessagesTableTableManager extends RootTableManager<
             Value<DateTime?> editedAt = const Value.absent(),
             Value<String?> forwardedFromId = const Value.absent(),
             Value<DateTime?> pinnedAt = const Value.absent(),
+            Value<int?> burnAfterSeconds = const Value.absent(),
+            Value<DateTime?> scheduledAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               ChatMessagesCompanion.insert(
@@ -56885,6 +57796,8 @@ class $$ChatMessagesTableTableManager extends RootTableManager<
             editedAt: editedAt,
             forwardedFromId: forwardedFromId,
             pinnedAt: pinnedAt,
+            burnAfterSeconds: burnAfterSeconds,
+            scheduledAt: scheduledAt,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -57254,6 +58167,167 @@ typedef $$E2eeOutboxTableProcessedTableManager = ProcessedTableManager<
       BaseReferences<_$AppDatabase, $E2eeOutboxTable, E2eeOutboxData>
     ),
     E2eeOutboxData,
+    PrefetchHooks Function()>;
+typedef $$ChatMessageReadsTableCreateCompanionBuilder
+    = ChatMessageReadsCompanion Function({
+  required String conversationId,
+  required String messageId,
+  required String userId,
+  Value<DateTime> readAt,
+  Value<int> rowid,
+});
+typedef $$ChatMessageReadsTableUpdateCompanionBuilder
+    = ChatMessageReadsCompanion Function({
+  Value<String> conversationId,
+  Value<String> messageId,
+  Value<String> userId,
+  Value<DateTime> readAt,
+  Value<int> rowid,
+});
+
+class $$ChatMessageReadsTableFilterComposer
+    extends Composer<_$AppDatabase, $ChatMessageReadsTable> {
+  $$ChatMessageReadsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get conversationId => $composableBuilder(
+      column: $table.conversationId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get messageId => $composableBuilder(
+      column: $table.messageId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get readAt => $composableBuilder(
+      column: $table.readAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$ChatMessageReadsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ChatMessageReadsTable> {
+  $$ChatMessageReadsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get conversationId => $composableBuilder(
+      column: $table.conversationId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get messageId => $composableBuilder(
+      column: $table.messageId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get readAt => $composableBuilder(
+      column: $table.readAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ChatMessageReadsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ChatMessageReadsTable> {
+  $$ChatMessageReadsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get conversationId => $composableBuilder(
+      column: $table.conversationId, builder: (column) => column);
+
+  GeneratedColumn<String> get messageId =>
+      $composableBuilder(column: $table.messageId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get readAt =>
+      $composableBuilder(column: $table.readAt, builder: (column) => column);
+}
+
+class $$ChatMessageReadsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ChatMessageReadsTable,
+    ChatMessageRead,
+    $$ChatMessageReadsTableFilterComposer,
+    $$ChatMessageReadsTableOrderingComposer,
+    $$ChatMessageReadsTableAnnotationComposer,
+    $$ChatMessageReadsTableCreateCompanionBuilder,
+    $$ChatMessageReadsTableUpdateCompanionBuilder,
+    (
+      ChatMessageRead,
+      BaseReferences<_$AppDatabase, $ChatMessageReadsTable, ChatMessageRead>
+    ),
+    ChatMessageRead,
+    PrefetchHooks Function()> {
+  $$ChatMessageReadsTableTableManager(
+      _$AppDatabase db, $ChatMessageReadsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ChatMessageReadsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ChatMessageReadsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ChatMessageReadsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> conversationId = const Value.absent(),
+            Value<String> messageId = const Value.absent(),
+            Value<String> userId = const Value.absent(),
+            Value<DateTime> readAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ChatMessageReadsCompanion(
+            conversationId: conversationId,
+            messageId: messageId,
+            userId: userId,
+            readAt: readAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String conversationId,
+            required String messageId,
+            required String userId,
+            Value<DateTime> readAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ChatMessageReadsCompanion.insert(
+            conversationId: conversationId,
+            messageId: messageId,
+            userId: userId,
+            readAt: readAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ChatMessageReadsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ChatMessageReadsTable,
+    ChatMessageRead,
+    $$ChatMessageReadsTableFilterComposer,
+    $$ChatMessageReadsTableOrderingComposer,
+    $$ChatMessageReadsTableAnnotationComposer,
+    $$ChatMessageReadsTableCreateCompanionBuilder,
+    $$ChatMessageReadsTableUpdateCompanionBuilder,
+    (
+      ChatMessageRead,
+      BaseReferences<_$AppDatabase, $ChatMessageReadsTable, ChatMessageRead>
+    ),
+    ChatMessageRead,
     PrefetchHooks Function()>;
 typedef $$DeviceRegistryEntriesTableCreateCompanionBuilder
     = DeviceRegistryEntriesCompanion Function({
@@ -58731,6 +59805,8 @@ class $AppDatabaseManager {
       $$ChatReactionsTableTableManager(_db, _db.chatReactions);
   $$E2eeOutboxTableTableManager get e2eeOutbox =>
       $$E2eeOutboxTableTableManager(_db, _db.e2eeOutbox);
+  $$ChatMessageReadsTableTableManager get chatMessageReads =>
+      $$ChatMessageReadsTableTableManager(_db, _db.chatMessageReads);
   $$DeviceRegistryEntriesTableTableManager get deviceRegistryEntries =>
       $$DeviceRegistryEntriesTableTableManager(_db, _db.deviceRegistryEntries);
   $$EncryptedMessageQueueTableTableManager get encryptedMessageQueue =>

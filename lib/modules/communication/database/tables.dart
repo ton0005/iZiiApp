@@ -4,6 +4,14 @@ import '../../../core/database/core_tables.dart';
 class ChatConversations extends Table {
   TextColumn get id => text()(); // UUID
   TextColumn get type => text()(); // 'direct' | 'record_linked' | 'group'
+  TextColumn get title => text().nullable()(); // Tên nhóm / Kênh
+  TextColumn get description => text().nullable()(); // Mô tả
+  TextColumn get avatarUrl => text().nullable()(); // URL ảnh đại diện
+  BoolColumn get isBroadcast => boolean().withDefault(const Constant(false))(); // Kênh thông báo (chỉ admin đăng tin)
+  BoolColumn get isPinned => boolean().withDefault(const Constant(false))(); // Ghim lên đầu inbox
+  BoolColumn get isArchived => boolean().withDefault(const Constant(false))(); // Lưu trữ cuộc hội thoại
+  DateTimeColumn get mutedUntil => dateTime().nullable()(); // Tắt thông báo đến thời điểm
+  IntColumn get unreadCount => integer().withDefault(const Constant(0))(); // Số tin chưa đọc
   TextColumn get recordType => text().nullable()(); // 'lead' | 'deal' | 'job' | 'service'
   TextColumn get recordId => text().nullable()(); // Linked UUID
   TextColumn get createdBy => text().references(Users, #id)();
@@ -17,12 +25,24 @@ class ChatConversations extends Table {
 class ChatParticipants extends Table {
   TextColumn get conversationId => text().references(ChatConversations, #id)();
   TextColumn get userId => text().references(Users, #id)();
+  TextColumn get role => text().withDefault(const Constant('member'))(); // 'owner' | 'admin' | 'member'
   DateTimeColumn get joinedAt => dateTime().withDefault(currentDateAndTime)();
   BoolColumn get muted => boolean().withDefault(const Constant(false))();
   DateTimeColumn get lastReadAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {conversationId, userId};
+}
+
+/// Đã đọc tin nhắn trong nhóm / kênh (Phase 2)
+class ChatMessageReads extends Table {
+  TextColumn get conversationId => text()();
+  TextColumn get messageId => text()();
+  TextColumn get userId => text()();
+  DateTimeColumn get readAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {messageId, userId};
 }
 
 class ChatMessages extends Table {
@@ -43,6 +63,8 @@ class ChatMessages extends Table {
   /// Có giá trị = tin đang được ghim (thời điểm ghim). Ghim là trạng thái chung
   /// của hội thoại, đồng bộ giữa các thành viên bằng sự kiện `pin` mã hoá.
   DateTimeColumn get pinnedAt => dateTime().nullable()();
+  IntColumn get burnAfterSeconds => integer().nullable()(); // Tin nhắn tự huỷ sau N giây
+  DateTimeColumn get scheduledAt => dateTime().nullable()(); // Lên lịch gửi tin vào thời điểm
 
   @override
   Set<Column> get primaryKey => {id};

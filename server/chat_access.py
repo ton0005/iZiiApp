@@ -25,7 +25,7 @@ DIRECT_PREFIX = "direct_"
 
 # Bảng sync mang nội dung hội thoại. chat_conversations/chat_participants dùng
 # trường `id`/`conversation_id` khác nhau nên tách hàm lấy id ở dưới.
-CHAT_SYNC_TABLES = {"chat_messages", "chat_conversations", "chat_participants"}
+CHAT_SYNC_TABLES = {"chat_messages", "chat_conversations", "chat_participants", "chat_read_receipts"}
 
 
 def is_direct(conversation_id: str) -> bool:
@@ -82,6 +82,94 @@ def can_access(conn, conversation_id: str, member_id: str) -> Optional[bool]:
     return member_id in members
 
 
+def get_conversation(conn, conversation_id: str) -> Optional[Dict[str, Any]]:
+    """Lấy thông tin đầy đủ của cuộc hội thoại, kèm danh sách thành viên và vai trò."""
+    row = conn.execute(
+        sql(
+            "SELECT id, type, title, description, avatar_url, is_broadcast, "
+            "record_type, record_id, created_by, created_at, updated_at "
+            "FROM chat_conversations WHERE id = ?"
+        ),
+        (conversation_id,),
+    ).fetchone()
+    if not row:
+        return None
+
+    members_rows = conn.execute(
+        sql(
+            "SELECT member_id, role, joined_at FROM chat_conversation_members "
+            "WHERE conversation_id = ? AND left_at IS NULL ORDER BY joined_at ASC"
+        ),
+        (conversation_id,),
+    ).fetchall()
+
+    members = [
+        {
+            "member_id": m["member_id"],
+            "role": m["role"] or "member",
+            "joined_at": m["joined_at"],
+        }
+        for m in members_rows
+    ]
+
+    return {
+        "id": row["id"],
+        "type": row["type"],
+        "title": row["title"],
+        "description": row["description"],
+        "avatar_url": row["avatar_url"],
+        "is_broadcast": bool(row["is_broadcast"]),
+        "record_type": row["record_type"],
+        "record_id": row["record_id"],
+        "created_by": row["created_by"],
+        "created_at": row["created_at"],
+        "updated_at": row["updated_at"],
+        "members": members,
+    }
+
+
+def get_member_role(conn, conversation_id: str, member_id: str) -> Optional[str]:
+    """Vai trò của thành viên trong hội thoại ('owner' | 'admin' | 'member'), None nếu không phải thành viên."""
+    if not conversation_id or not member_id:
+        return None
+    if is_direct(conversation_id):
+        return "member" if is_direct_member(conversation_id, member_id) else None
+    row = conn.execute(
+        sql(
+            "SELECT role FROM chat_conversation_members "
+            "WHERE conversation_id = ? AND member_id = ? AND left_at IS NULL"
+        ),
+        (conversation_id, member_id),
+    ).fetchone()
+    return row["role"] if row else None
+
+
+def is_group_admin(conn, conversation_id: str, member_id: str) -> bool:
+    """Kiểm tra người dùng có quyền quản trị viên hoặc trưởng nhóm không."""
+    role = get_member_role(conn, conversation_id, member_id)
+    return role in ("owner", "admin")
+
+
+def can_post_in_conversation(conn, conversation_id: str, member_id: str) -> Optional[bool]:
+    """
+    True nếu được phép gửi tin.
+    Trong kênh thông báo (is_broadcast = True), chỉ owner hoặc admin mới được đăng tin.
+    None nếu hội thoại chưa đăng ký.
+    """
+    if is_direct(conversation_id):
+        return is_direct_member(conversation_id, member_id)
+
+    conv = get_conversation(conn, conversation_id)
+    if conv is None:
+        return None
+    role = get_member_role(conn, conversation_id, member_id)
+    if role is None:
+        return False
+    if conv.get("is_broadcast"):
+        return role in ("owner", "admin")
+    return True
+
+
 def upsert_conversation(
     conn,
     conversation_id: str,
@@ -91,9 +179,14 @@ def upsert_conversation(
     members: Iterable[str],
     record_type: Optional[str] = None,
     record_id: Optional[str] = None,
+    title: Optional[str] = None,
+    description: Optional[str] = None,
+    avatar_url: Optional[str] = None,
+    is_broadcast: bool = False,
+    member_roles: Optional[Dict[str, str]] = None,
 ) -> Dict[str, Any]:
     """
-    Đăng ký/cập nhật hội thoại và danh sách thành viên.
+    Đăng ký/cập nhật hội thoại và danh sách thành viên kèm vai trò và metadata nhóm.
 
     Thành viên vắng mặt trong [members] bị đánh dấu left_at chứ không xoá —
     giữ lại để biết ai TỪNG ở trong nhóm (cần cho xoay khoá E2EE nhóm sau này).
@@ -101,29 +194,50 @@ def upsert_conversation(
     """
     now = datetime.now(timezone.utc).isoformat()
     wanted = {m for m in members if m}
+    roles = member_roles or {}
 
     conn.execute(
         sql(
             "INSERT INTO chat_conversations "
-            "(id, type, record_type, record_id, created_by, created_at, updated_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?) "
+            "(id, type, title, description, avatar_url, is_broadcast, "
+            "record_type, record_id, created_by, created_at, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             "ON CONFLICT (id) DO UPDATE SET "
-            "type = excluded.type, record_type = excluded.record_type, "
-            "record_id = excluded.record_id, updated_at = excluded.updated_at"
+            "type = excluded.type, title = COALESCE(excluded.title, chat_conversations.title), "
+            "description = COALESCE(excluded.description, chat_conversations.description), "
+            "avatar_url = COALESCE(excluded.avatar_url, chat_conversations.avatar_url), "
+            "is_broadcast = excluded.is_broadcast, "
+            "record_type = excluded.record_type, record_id = excluded.record_id, "
+            "updated_at = excluded.updated_at"
         ),
-        (conversation_id, conv_type, record_type, record_id, created_by, now, now),
+        (
+            conversation_id,
+            conv_type,
+            title,
+            description,
+            avatar_url,
+            1 if is_broadcast else 0,
+            record_type,
+            record_id,
+            created_by,
+            now,
+            now,
+        ),
     )
 
     for member_id in wanted:
+        default_role = "owner" if member_id == created_by else "member"
+        role_to_set = roles.get(member_id, default_role)
         conn.execute(
             sql(
                 "INSERT INTO chat_conversation_members "
                 "(conversation_id, member_id, role, joined_at, left_at) "
                 "VALUES (?, ?, ?, ?, NULL) "
-                "ON CONFLICT (conversation_id, member_id) DO UPDATE SET left_at = NULL"
+                "ON CONFLICT (conversation_id, member_id) DO UPDATE SET "
+                "role = CASE WHEN excluded.role != 'member' THEN excluded.role ELSE chat_conversation_members.role END, "
+                "left_at = NULL"
             ),
-            (conversation_id, member_id,
-             "owner" if member_id == created_by else "member", now),
+            (conversation_id, member_id, role_to_set, now),
         )
 
     current = conn.execute(
@@ -143,7 +257,42 @@ def upsert_conversation(
                 (now, conversation_id, row["member_id"]),
             )
 
-    return {"id": conversation_id, "members": sorted(wanted), "updated_at": now}
+    return {
+        "id": conversation_id,
+        "title": title,
+        "is_broadcast": is_broadcast,
+        "members": sorted(wanted),
+        "updated_at": now,
+    }
+
+
+def record_read_receipt(
+    conn, conversation_id: str, message_id: str, member_id: str, read_at: Optional[str] = None
+) -> Dict[str, Any]:
+    """Ghi nhận đã đọc tin nhắn trong nhóm/kênh."""
+    ts = read_at or datetime.now(timezone.utc).isoformat()
+    conn.execute(
+        sql(
+            "INSERT INTO chat_read_receipts "
+            "(conversation_id, message_id, member_id, read_at) "
+            "VALUES (?, ?, ?, ?) "
+            "ON CONFLICT (message_id, member_id) DO UPDATE SET read_at = excluded.read_at"
+        ),
+        (conversation_id, message_id, member_id, ts),
+    )
+    return {"conversation_id": conversation_id, "message_id": message_id, "member_id": member_id, "read_at": ts}
+
+
+def get_message_readers(conn, message_id: str) -> List[Dict[str, str]]:
+    """Lấy danh sách người đã đọc một tin nhắn."""
+    rows = conn.execute(
+        sql(
+            "SELECT member_id, read_at FROM chat_read_receipts "
+            "WHERE message_id = ? ORDER BY read_at ASC"
+        ),
+        (message_id,),
+    ).fetchall()
+    return [{"member_id": r["member_id"], "read_at": r["read_at"]} for r in rows]
 
 
 def _conversation_id_of(update: Dict[str, Any]) -> str:

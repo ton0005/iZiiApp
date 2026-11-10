@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/database/app_database.dart';
 import '../../../core/device_identity/screens/online_devices_screen.dart';
 import '../../../core/device_identity/ble_device_discovery_service.dart';
 import '../bloc/chat_bloc.dart';
@@ -11,6 +12,7 @@ import '../models/chat_models.dart';
 import '../widgets/presence_avatar.dart';
 import '../theme/chat_theme.dart';
 import 'conversation_screen.dart';
+import '../widgets/create_group_dialog.dart';
 
 class ChatInboxScreen extends StatefulWidget {
   final bool embedded;
@@ -24,6 +26,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String? _selectedConversationId; // For split screen views
+  String _currentFilter = 'all'; // 'all' | 'unread' | 'groups' | 'archived'
 
   @override
   void initState() {
@@ -71,6 +74,45 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.add_circle_outline_rounded, color: Color(0xFF10B981)),
+            tooltip: 'Create New Group / Channel',
+            onSelected: (val) async {
+              if (val == 'group') {
+                final gid = await CreateGroupDialog.show(context, isBroadcast: false);
+                if (gid != null && context.mounted) {
+                  context.push('/chat/conversation/$gid');
+                }
+              } else if (val == 'broadcast') {
+                final gid = await CreateGroupDialog.show(context, isBroadcast: true);
+                if (gid != null && context.mounted) {
+                  context.push('/chat/conversation/$gid');
+                }
+              }
+            },
+            itemBuilder: (ctx) => [
+              const PopupMenuItem(
+                value: 'group',
+                child: Row(
+                  children: [
+                    Icon(Icons.groups_rounded, color: Color(0xFF0284C7), size: 20),
+                    SizedBox(width: 10),
+                    Text('Create New Group'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'broadcast',
+                child: Row(
+                  children: [
+                    Icon(Icons.campaign_rounded, color: Colors.orange, size: 20),
+                    SizedBox(width: 10),
+                    Text('Create Broadcast Channel'),
+                  ],
+                ),
+              ),
+            ],
+          ),
           // Track 3: Online devices discovery
           IconButton(
             icon: const Icon(Icons.devices_rounded, color: Color(0xFF06B6D4)),
@@ -100,12 +142,116 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
     );
   }
 
+  Widget _buildFilterChips(bool isDark) {
+    final accent = ChatTheme.getAccent(isDark);
+    final filters = [
+      {'key': 'all', 'label': 'All'},
+      {'key': 'unread', 'label': 'Unread'},
+      {'key': 'groups', 'label': 'Groups & Channels'},
+      {'key': 'archived', 'label': 'Archived'},
+    ];
+
+    return SizedBox(
+      height: 36,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: filters.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, idx) {
+          final f = filters[idx];
+          final isSelected = _currentFilter == f['key'];
+          return ChoiceChip(
+            label: Text(f['label']!, style: TextStyle(
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: isSelected ? Colors.white : ChatTheme.getTextPrimary(isDark),
+            )),
+            selected: isSelected,
+            selectedColor: accent,
+            backgroundColor: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.grey.shade100,
+            onSelected: (_) {
+              setState(() {
+                _currentFilter = f['key']!;
+              });
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  void _showConversationOptionsSheet(BuildContext context, ChatConversation convo, bool isDark) {
+    final bloc = context.read<ChatBloc>();
+    final isPinned = convo.isPinned;
+    final isArchived = convo.isArchived;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(isPinned ? Icons.push_pin_outlined : Icons.push_pin_rounded),
+              title: Text(isPinned ? 'Unpin conversation' : 'Pin to top'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await bloc.chatRepository.setConversationPinned(convo.id, !isPinned);
+                bloc.add(LoadConversationsEvent());
+              },
+            ),
+            ListTile(
+              leading: Icon(isArchived ? Icons.unarchive_rounded : Icons.archive_rounded),
+              title: Text(isArchived ? 'Unarchive conversation' : 'Archive conversation'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await bloc.chatRepository.setConversationArchived(convo.id, !isArchived);
+                bloc.add(LoadConversationsEvent());
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.notifications_off_outlined),
+              title: const Text('Mute notifications (8 hours)'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await bloc.chatRepository.setConversationMuted(
+                  convo.id,
+                  DateTime.now().add(const Duration(hours: 8)),
+                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Notifications muted for 8 hours')),
+                  );
+                }
+                bloc.add(LoadConversationsEvent());
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.mark_chat_read_outlined),
+              title: const Text('Mark as read'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await bloc.chatRepository.markConversationRead(convo.id);
+                bloc.add(LoadConversationsEvent());
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // Mobile Single-column Inbox
   Widget _buildMobileLayout(bool isDark) {
     return Column(
       children: [
         _buildTestUserBanner(isDark),
         _buildSearchField(isDark),
+        _buildFilterChips(isDark),
         _buildContactsStrip(isDark),
         const Divider(thickness: 1, height: 16),
         Expanded(child: _buildConversationsList(isDark, isMobile: true)),
@@ -350,11 +496,19 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
           );
         }
 
+        final filteredConvos = state.conversations.where((c) {
+          if (_currentFilter == 'unread' && c.unreadCount == 0) return false;
+          if (_currentFilter == 'groups' && !(c.type == 'group' || c.isBroadcast)) return false;
+          if (_currentFilter == 'archived' && !c.isArchived) return false;
+          if (_currentFilter != 'archived' && c.isArchived) return false;
+          return true;
+        }).toList();
+
         return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          itemCount: state.conversations.length,
+          itemCount: filteredConvos.length,
           itemBuilder: (context, index) {
-            final convo = state.conversations[index];
+            final convo = filteredConvos[index];
 
             return FutureBuilder<Map<String, dynamic>?>(
               future: _getConvoDetail(context, convo),
@@ -404,7 +558,9 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                   onDismissed: (_) {
                     // Trigger delete mutation logic
                   },
-                  child: Card(
+                  child: InkWell(
+                    onLongPress: () => _showConversationOptionsSheet(context, convo, isDark),
+                    child: Card(
                     color: _selectedConversationId == convo.id
                         ? ChatTheme.getAccent(isDark).withValues(alpha: 0.15)
                         : (isDark
@@ -508,6 +664,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                       ),
                     ),
                   ),
+                  ),
                 );
               },
             );
@@ -587,9 +744,11 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
         await chatBloc.chatRepository.getCompanion(convo.id, currentUserId);
     final lastMsg = await chatBloc.chatRepository.getLatestMessage(convo.id);
 
-    final String name = convo.type == 'record_linked'
-        ? '${convo.recordType.toString().toUpperCase()} - ${convo.recordId.toString().substring(0, 4)}'
-        : (companion?.name ?? 'Companion');
+    final String name = convo.type == 'group'
+        ? (convo.title ?? 'Group Chat')
+        : (convo.type == 'record_linked'
+            ? '${convo.recordType.toString().toUpperCase()} - ${convo.recordId.toString().substring(0, 4)}'
+            : (companion?.name ?? 'Companion'));
 
     final String id = companion?.id ?? '';
     String lastSnippet = '';
@@ -714,7 +873,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                   }
                 }
                 if (currentName.isEmpty) {
-                  currentName = currentUserId ?? 'Máy này';
+                  currentName = currentUserId ?? 'This device';
                 }
 
                 return Text(

@@ -99,6 +99,7 @@ TABLES = [
     ("chat_messages",                 "id"),
     ("chat_conversations",            "id"),
     ("chat_conversation_members",     "conversation_id, member_id"),
+    ("chat_read_receipts",            "message_id, member_id"),
     ("mushroom_window_issues",        "id"),
     # Phase 2: Module System & Model Registry (3 tables)
     ("tenant_modules",                "tenant_id, module_name"),

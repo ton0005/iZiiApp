@@ -114,19 +114,36 @@ class DirectE2eeChannel {
       for (final row in await _repo.pendingE2ee()) {
         if (blocked.contains(row.conversationId)) continue;
 
-        final peer = ChatRepository.directPeer(row.conversationId, myId);
-        if (peer == null) {
-          // Không phải hội thoại của máy này (ví dụ đổi tài khoản) — bỏ, giữ lại
-          // sẽ kẹt hàng đợi vĩnh viễn.
-          await _repo.removeE2ee(row.id);
-          continue;
+        final isDirectConvo = isDirect(row.conversationId);
+        List<String> targetPeers = [];
+        if (isDirectConvo) {
+          final peer = ChatRepository.directPeer(row.conversationId, myId);
+          if (peer == null) {
+            await _repo.removeE2ee(row.id);
+            continue;
+          }
+          targetPeers = [peer];
+        } else {
+          final participants = await _repo.getParticipants(row.conversationId);
+          targetPeers = participants.map((p) => p.userId).where((uid) => uid != myId).toList();
+          if (targetPeers.isEmpty) {
+            await _repo.removeE2ee(row.id);
+            sent++;
+            continue;
+          }
         }
 
         final String plaintext = row.envelope;
         try {
-          final recipients = await _resolve(peer);
+          final recipients = <RemoteDevice>[];
+          for (final p in targetPeers) {
+            recipients.addAll(await _resolve(p));
+          }
           if (recipients.isEmpty) {
-            await _repo.markE2eeFailed(row.id, 'Chưa có khoá của $peer');
+            final reason = isDirectConvo
+                ? 'Chưa có khoá của người nhận: ${targetPeers.first}'
+                : 'Chưa có khoá của thành viên (${targetPeers.join(", ")})';
+            await _repo.markE2eeFailed(row.id, reason);
             blocked.add(row.conversationId);
             continue;
           }
@@ -185,25 +202,44 @@ class DirectE2eeChannel {
     if (envelope.conversationId != conversationId) {
       return const IncomingResult.rejected('conversation_mismatch');
     }
-    if (!isDirect(conversationId)) {
-      return const IncomingResult.rejected('not_direct');
-    }
 
     String? senderId;
-    for (final id in senderIds) {
-      if (ChatRepository.isDirectMember(conversationId, id)) {
-        senderId = id;
-        break;
+    bool iAmMember = false;
+
+    if (isDirect(conversationId)) {
+      for (final id in senderIds) {
+        if (ChatRepository.isDirectMember(conversationId, id)) {
+          senderId = id;
+          break;
+        }
       }
-    }
-    final iAmMember =
-        myIds.any((id) => ChatRepository.isDirectMember(conversationId, id));
-    if (senderId == null || !iAmMember) {
-      return const IncomingResult.rejected('not_member');
-    }
-    // Người gửi và người nhận phải là HAI đầu khác nhau của hội thoại.
-    if (myIds.contains(senderId)) {
-      return const IncomingResult.rejected('self_loop');
+      iAmMember =
+          myIds.any((id) => ChatRepository.isDirectMember(conversationId, id));
+      if (senderId == null || !iAmMember) {
+        return const IncomingResult.rejected('not_member');
+      }
+      // Người gửi và người nhận phải là HAI đầu khác nhau của hội thoại 1-1.
+      if (myIds.contains(senderId)) {
+        return const IncomingResult.rejected('self_loop');
+      }
+    } else {
+      // Nhóm hoặc hội thoại theo bản ghi (Phase 2)
+      final participants = await _repo.getParticipants(conversationId);
+      final memberSet = participants.map((p) => p.userId).toSet();
+      for (final id in senderIds) {
+        if (memberSet.contains(id)) {
+          senderId = id;
+          break;
+        }
+      }
+      iAmMember = myIds.any((id) => memberSet.contains(id));
+      if (!iAmMember) {
+        return const IncomingResult.rejected('not_member');
+      }
+      senderId ??= senderIds.isNotEmpty ? senderIds.first : null;
+      if (senderId == null) {
+        return const IncomingResult.rejected('not_member');
+      }
     }
 
     final outcome = await _repo.applyEnvelope(envelope,

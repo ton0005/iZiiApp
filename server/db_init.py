@@ -567,12 +567,16 @@ def init_db():
         if col not in _radio_cols:
             cursor.execute(f'ALTER TABLE radio_devices ADD COLUMN {col} TEXT')
 
-    # Sổ đăng ký hội thoại + thành viên (migration 0013) — để WS /chat và
+    # Sổ đăng ký hội thoại + thành viên (migration 0013, 0014) — để WS /chat và
     # /sync/pull chỉ giao tin cho đúng thành viên (chat_access.py).
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS chat_conversations (
         id           TEXT PRIMARY KEY,
         type         TEXT NOT NULL,
+        title        TEXT,
+        description  TEXT,
+        avatar_url   TEXT,
+        is_broadcast INTEGER DEFAULT 0,
         record_type  TEXT,
         record_id    TEXT,
         created_by   TEXT,
@@ -589,6 +593,27 @@ def init_db():
         PRIMARY KEY (conversation_id, member_id)
     )""")
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_chat_members_member ON chat_conversation_members(member_id)')
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS chat_read_receipts (
+        conversation_id  TEXT NOT NULL,
+        message_id       TEXT NOT NULL,
+        member_id        TEXT NOT NULL,
+        read_at          TEXT NOT NULL,
+        PRIMARY KEY (message_id, member_id)
+    )""")
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_chat_reads_convo ON chat_read_receipts(conversation_id)')
+
+    for col_def in [
+        'title TEXT',
+        'description TEXT',
+        'avatar_url TEXT',
+        'is_broadcast INTEGER DEFAULT 0',
+    ]:
+        try:
+            cursor.execute(f'ALTER TABLE chat_conversations ADD COLUMN {col_def}')
+        except Exception:
+            pass
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS grow_rooms (

@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/enrollment/device_user_service.dart';
 import '../models/chat_envelope.dart';
+import '../models/chat_models.dart';
 
 class ChatRepository {
   final AppDatabase _db;
@@ -21,6 +22,8 @@ class ChatRepository {
         return c.id.isInQuery(subquery);
       })
       ..orderBy([
+        (c) =>
+            OrderingTerm(expression: c.isPinned, mode: OrderingMode.desc),
         (c) =>
             OrderingTerm(expression: c.lastMessageAt, mode: OrderingMode.desc)
       ]);
@@ -131,6 +134,10 @@ class ChatRepository {
       createdBy: currentUserId,
       createdAt: now,
       lastMessageAt: now,
+      isBroadcast: false,
+      isPinned: false,
+      isArchived: false,
+      unreadCount: 0,
     );
 
     await _db.into(_db.chatConversations).insert(newConvo);
@@ -140,6 +147,7 @@ class ChatRepository {
           userId: currentUserId,
           joinedAt: now,
           muted: false,
+          role: 'member',
         ));
 
     await _db.into(_db.chatParticipants).insert(ChatParticipant(
@@ -147,6 +155,7 @@ class ChatRepository {
           userId: otherUserId,
           joinedAt: now,
           muted: false,
+          role: 'member',
         ));
 
     return newConvo;
@@ -177,6 +186,10 @@ class ChatRepository {
       createdBy: currentUserId,
       createdAt: now,
       lastMessageAt: now,
+      isBroadcast: false,
+      isPinned: false,
+      isArchived: false,
+      unreadCount: 0,
     );
 
     await _db.into(_db.chatConversations).insert(newConvo);
@@ -187,10 +200,164 @@ class ChatRepository {
             userId: userId,
             joinedAt: now,
             muted: false,
+            role: userId == currentUserId ? 'owner' : 'member',
           ));
     }
 
     return newConvo;
+  }
+
+  // === PHASE 2: GROUPS & CHANNELS ===
+
+  Future<ChatConversation> createGroup({
+    required String title,
+    String? description,
+    String? avatarUrl,
+    bool isBroadcast = false,
+    required List<String> memberUserIds,
+    required String creatorId,
+    String? customId,
+  }) async {
+    final convoId = customId ?? 'group_${const Uuid().v4().replaceAll('-', '').substring(0, 16)}';
+    final now = DateTime.now();
+
+    final newConvo = ChatConversation(
+      id: convoId,
+      type: 'group',
+      title: title,
+      description: description,
+      avatarUrl: avatarUrl,
+      isBroadcast: isBroadcast,
+      createdBy: creatorId,
+      createdAt: now,
+      lastMessageAt: now,
+      isPinned: false,
+      isArchived: false,
+      unreadCount: 0,
+    );
+
+    await _db.into(_db.chatConversations).insertOnConflictUpdate(newConvo);
+
+    final allMembers = {creatorId, ...memberUserIds};
+    for (final uid in allMembers) {
+      await _db.into(_db.chatParticipants).insertOnConflictUpdate(ChatParticipant(
+        conversationId: convoId,
+        userId: uid,
+        role: uid == creatorId ? 'owner' : 'member',
+        joinedAt: now,
+        muted: false,
+      ));
+    }
+
+    return newConvo;
+  }
+
+  Future<void> updateGroupInfo(String conversationId, {
+    String? title,
+    String? description,
+    String? avatarUrl,
+    bool? isBroadcast,
+  }) async {
+    final existing = await (_db.select(_db.chatConversations)..where((c) => c.id.equals(conversationId))).getSingleOrNull();
+    if (existing == null) return;
+
+    await (_db.update(_db.chatConversations)..where((c) => c.id.equals(conversationId))).write(
+      ChatConversationsCompanion(
+        title: title != null ? Value(title) : const Value.absent(),
+        description: description != null ? Value(description) : const Value.absent(),
+        avatarUrl: avatarUrl != null ? Value(avatarUrl) : const Value.absent(),
+        isBroadcast: isBroadcast != null ? Value(isBroadcast) : const Value.absent(),
+      ),
+    );
+  }
+
+  Future<void> addGroupParticipant(String conversationId, String userId, {String role = 'member'}) async {
+    await _db.into(_db.chatParticipants).insertOnConflictUpdate(ChatParticipant(
+      conversationId: conversationId,
+      userId: userId,
+      role: role,
+      joinedAt: DateTime.now(),
+      muted: false,
+    ));
+  }
+
+  Future<void> removeGroupParticipant(String conversationId, String userId) async {
+    await (_db.delete(_db.chatParticipants)
+          ..where((p) => p.conversationId.equals(conversationId) & p.userId.equals(userId)))
+        .go();
+  }
+
+  Future<void> setParticipantRole(String conversationId, String userId, String role) async {
+    await (_db.update(_db.chatParticipants)
+          ..where((p) => p.conversationId.equals(conversationId) & p.userId.equals(userId)))
+        .write(ChatParticipantsCompanion(role: Value(role)));
+  }
+
+  Future<void> leaveGroup(String conversationId, String userId) async {
+    await removeGroupParticipant(conversationId, userId);
+  }
+
+  Future<GroupDetails?> getGroupDetails(String conversationId) async {
+    final conv = await (_db.select(_db.chatConversations)
+          ..where((c) => c.id.equals(conversationId)))
+        .getSingleOrNull();
+    if (conv == null) return null;
+
+    final participants = await (_db.select(_db.chatParticipants)
+          ..where((p) => p.conversationId.equals(conversationId)))
+        .get();
+
+    final members = participants.map((p) {
+      return GroupMemberInfo(
+        userId: p.userId,
+        name: p.userId,
+        role: p.role,
+        joinedAt: p.joinedAt,
+      );
+    }).toList();
+
+    return GroupDetails(
+      id: conv.id,
+      title: conv.title ?? 'Group',
+      description: conv.description,
+      avatarUrl: conv.avatarUrl,
+      isBroadcast: conv.isBroadcast,
+      createdBy: conv.createdBy,
+      createdAt: conv.createdAt,
+      members: members,
+    );
+  }
+
+  Future<bool> isUserAdmin(String conversationId, String userId) async {
+    final p = await (_db.select(_db.chatParticipants)
+          ..where((p) => p.conversationId.equals(conversationId) & p.userId.equals(userId)))
+        .getSingleOrNull();
+    if (p == null) return false;
+    return p.role == 'owner' || p.role == 'admin';
+  }
+
+  Future<bool> canUserPost(String conversationId, String userId) async {
+    if (conversationId.startsWith('direct_')) return true;
+    final conv = await (_db.select(_db.chatConversations)..where((c) => c.id.equals(conversationId))).getSingleOrNull();
+    if (conv == null || !conv.isBroadcast) return true;
+    return isUserAdmin(conversationId, userId);
+  }
+
+  Future<void> recordMessageRead(String conversationId, String messageId, String userId, {DateTime? readAt}) async {
+    final ts = readAt ?? DateTime.now();
+    await _db.into(_db.chatMessageReads).insertOnConflictUpdate(ChatMessageRead(
+      conversationId: conversationId,
+      messageId: messageId,
+      userId: userId,
+      readAt: ts,
+    ));
+  }
+
+  Future<List<ChatMessageRead>> getMessageReads(String messageId) async {
+    return (_db.select(_db.chatMessageReads)
+          ..where((r) => r.messageId.equals(messageId))
+          ..orderBy([(r) => OrderingTerm(expression: r.readAt)]))
+        .get();
   }
 
   // === MESSAGES ===
@@ -247,6 +414,10 @@ class ChatRepository {
                 createdBy: message.senderId,
                 createdAt: now,
                 lastMessageAt: now,
+                isBroadcast: false,
+                isPinned: false,
+                isArchived: false,
+                unreadCount: 0,
               ),
             );
         for (final uid in parts) {
@@ -256,6 +427,7 @@ class ChatRepository {
                   userId: uid,
                   joinedAt: now,
                   muted: false,
+                  role: 'member',
                 ),
               );
         }
@@ -686,6 +858,112 @@ class ChatRepository {
   Future<List<DeviceRegistryEntry>> getAllRegisteredDevices() async {
     final query = _db.select(_db.deviceRegistryEntries)
       ..where((d) => d.isRevoked.equals(false));
+    return query.get();
+  }
+
+  // ============================================================
+  // Phase 4 & 6: Inbox Organization, Search & Advanced
+  // ============================================================
+
+  /// Ghim / bỏ ghim cuộc hội thoại trong Inbox
+  Future<void> setConversationPinned(String conversationId, bool isPinned) async {
+    await (_db.update(_db.chatConversations)
+          ..where((c) => c.id.equals(conversationId)))
+        .write(ChatConversationsCompanion(isPinned: Value(isPinned)));
+  }
+
+  /// Lưu trữ / bỏ lưu trữ cuộc hội thoại
+  Future<void> setConversationArchived(String conversationId, bool isArchived) async {
+    await (_db.update(_db.chatConversations)
+          ..where((c) => c.id.equals(conversationId)))
+        .write(ChatConversationsCompanion(isArchived: Value(isArchived)));
+  }
+
+  /// Tắt thông báo cuộc hội thoại có thời hạn
+  Future<void> setConversationMuted(String conversationId, DateTime? until) async {
+    await (_db.update(_db.chatConversations)
+          ..where((c) => c.id.equals(conversationId)))
+        .write(ChatConversationsCompanion(mutedUntil: Value(until)));
+  }
+
+  /// Đánh dấu đã đọc cuộc hội thoại (đặt unreadCount về 0)
+  Future<void> markConversationRead(String conversationId) async {
+    await (_db.update(_db.chatConversations)
+          ..where((c) => c.id.equals(conversationId)))
+        .write(const ChatConversationsCompanion(unreadCount: Value(0)));
+  }
+
+  /// Tăng số lượng tin chưa đọc
+  Future<void> incrementUnreadCount(String conversationId) async {
+    final conv = await (_db.select(_db.chatConversations)
+          ..where((c) => c.id.equals(conversationId)))
+        .getSingleOrNull();
+    final count = (conv?.unreadCount ?? 0) + 1;
+    await (_db.update(_db.chatConversations)
+          ..where((c) => c.id.equals(conversationId)))
+        .write(ChatConversationsCompanion(unreadCount: Value(count)));
+  }
+
+  /// Tìm kiếm tin nhắn cục bộ (FTS-style search giữ nguyên E2EE)
+  Future<List<ChatMessage>> searchMessages({
+    String? conversationId,
+    required String query,
+    int limit = 50,
+  }) async {
+    if (query.trim().isEmpty) return [];
+    final q = query.trim().toLowerCase();
+    final queryObj = _db.select(_db.chatMessages)
+      ..where((m) => m.isDeleted.equals(false));
+    if (conversationId != null) {
+      queryObj.where((m) => m.conversationId.equals(conversationId));
+    }
+    queryObj.orderBy([(m) => OrderingTerm(expression: m.sentAt, mode: OrderingMode.desc)]);
+
+    final all = await queryObj.get();
+    return all.where((m) {
+      try {
+        final decoded = jsonDecode(m.content);
+        if (decoded is Map) {
+          final text = decoded['text']?.toString().toLowerCase() ?? '';
+          return text.contains(q);
+        }
+      } catch (_) {}
+      return false;
+    }).take(limit).toList();
+  }
+
+  /// Phase 6: Xoá tin nhắn tự huỷ đã hết hạn (Disappearing Messages)
+  Future<int> purgeDisappearingMessages() async {
+    final now = DateTime.now();
+    final query = _db.select(_db.chatMessages)
+      ..where((m) => m.burnAfterSeconds.isNotNull() & m.readAt.isNotNull() & m.isDeleted.equals(false));
+    final messages = await query.get();
+    int purged = 0;
+
+    for (final m in messages) {
+      final burnSeconds = m.burnAfterSeconds ?? 0;
+      if (burnSeconds > 0 && m.readAt != null) {
+        final expiry = m.readAt!.add(Duration(seconds: burnSeconds));
+        if (now.isAfter(expiry)) {
+          await (_db.update(_db.chatMessages)..where((row) => row.id.equals(m.id))).write(
+            const ChatMessagesCompanion(
+              isDeleted: Value(true),
+              content: Value('{"text":"[Disappearing message expired]"}'),
+            ),
+          );
+          purged++;
+        }
+      }
+    }
+    return purged;
+  }
+
+  /// Phase 6: Lấy danh sách tin nhắn đã lên lịch đến giờ gửi
+  Future<List<ChatMessage>> getScheduledMessagesToSend() async {
+    final now = DateTime.now();
+    final query = _db.select(_db.chatMessages)
+      ..where((m) => m.scheduledAt.isNotNull() & m.deliveredAt.isNull() & m.isDeleted.equals(false))
+      ..where((m) => m.scheduledAt.isSmallerOrEqualValue(now));
     return query.get();
   }
 }

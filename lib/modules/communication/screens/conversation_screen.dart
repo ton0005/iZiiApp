@@ -29,6 +29,13 @@ import '../widgets/presence_avatar.dart';
 import '../widgets/quick_reply_tray.dart';
 import '../widgets/message_extras.dart';
 import '../widgets/coach_marks.dart';
+import '../widgets/group_info_sheet.dart';
+import '../widgets/readers_bottom_sheet.dart';
+import '../widgets/voice_record_bar.dart';
+import '../widgets/voice_message_bubble.dart';
+import '../widgets/link_preview_card.dart';
+import '../widgets/poll_message_widget.dart';
+import 'media_gallery_screen.dart';
 import '../theme/chat_theme.dart';
 
 class ConversationScreen extends StatefulWidget {
@@ -59,6 +66,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
   bool _isTyping = false;
   bool _showScrollToBottom = false;
   bool _showQuickReplyTray = false;
+  bool _isRecordingVoice = false;
+  bool _isSearching = false;
+  final TextEditingController _inConvoSearchController = TextEditingController();
+  String _inConvoSearchQuery = '';
 
   // Phase 1: trả lời / sửa / chọn nhiều tin / nháp
   ChatMessage? _replyingTo;
@@ -70,7 +81,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
   /// Sửa/thu hồi với mọi người, cảm xúc, ghim đi bằng sự kiện E2EE nên chỉ có
   /// ở hội thoại 1-1. Trả lời, sao chép, chuyển tiếp, xoá ở máy tôi dùng được
   /// ở mọi hội thoại.
-  bool get _isDirect => widget.conversationId.startsWith('direct_');
+  bool get _isDirect =>
+      widget.conversationId.startsWith('direct_') ||
+      widget.conversationId.startsWith('group_');
+  bool get _isGroup => widget.conversationId.startsWith('group_');
   bool get _selecting => _selected.isNotEmpty;
   String get _draftKey => 'chat_draft::${widget.conversationId}';
 
@@ -117,6 +131,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void dispose() {
     _saveDraft();
     _messageController.dispose();
+    _inConvoSearchController.dispose();
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     _typingTimer?.cancel();
@@ -244,6 +259,21 @@ class _ConversationScreenState extends State<ConversationScreen> {
     _onTextChanged(draft);
   }
 
+  void _onSendVoiceMessage(VoiceRecordingResult res) {
+    setState(() => _isRecordingVoice = false);
+    context.read<ChatBloc>().add(SendMessageEvent(
+          conversationId: widget.conversationId,
+          text: '🎤 Voice message (${res.durationSeconds}s)',
+          type: ChatMessageType.audio,
+          extraContent: {
+            'duration_sec': res.durationSeconds,
+            'waveform': res.waveform,
+            'audio_path': res.audioPath,
+          },
+        ));
+    Timer(const Duration(milliseconds: 100), _scrollToBottom);
+  }
+
   void _submitMessageFlow() {
     final text = _messageController.text.trim();
     final draftAttachments = context.read<ChatBloc>().state.draftAttachments;
@@ -269,7 +299,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (companion.id == currentUserId) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không thể tự gọi cho chính mình.')),
+          const SnackBar(content: Text('Cannot call yourself.')),
         );
       }
       return;
@@ -286,20 +316,20 @@ class _ConversationScreenState extends State<ConversationScreen> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Cần cấp quyền Micro'),
+            title: const Text('Microphone Permission Required'),
             content: const Text(
-                'Ứng dụng cần quyền Micro để thực hiện cuộc gọi. Bạn hãy bấm "Mở Cài đặt" để cho phép iZiiApp sử dụng Micro.'),
+                'Microphone permission is required to make calls. Please tap "Open Settings" to grant access.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Hủy'),
+                child: const Text('Cancel'),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(ctx);
                   openAppSettings();
                 },
-                child: const Text('Mở Cài đặt'),
+                child: const Text('Open Settings'),
               ),
             ],
           ),
@@ -355,7 +385,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       
       // On Windows/Desktop: camera might not be supported via image_picker
       if (isDesktop && source == ImageSource.camera) {
-        _showErrorSnackBar('Máy ảnh không hỗ trợ trực tiếp trên máy tính. Vui lòng chọn ảnh từ Thư viện ảnh (Gallery/Files).');
+        _showErrorSnackBar('Camera is not supported directly on desktop. Please select an image from Gallery or Files.');
         return;
       }
 
@@ -363,7 +393,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         final permission = source == ImageSource.camera ? Permission.camera : Permission.photos;
         final granted = await permission.request().isGranted;
         if (!granted && source == ImageSource.camera) {
-          _showPermissionWarning('Quyền truy cập Máy ảnh bị từ chối.');
+          _showPermissionWarning('Camera access was denied.');
           return;
         }
       }
@@ -393,7 +423,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       final File file = File(pickedPath);
       final size = await file.length();
       if (size > 20 * 1024 * 1024) {
-        _showErrorSnackBar('Dung lượng tệp vượt quá giới hạn 20MB.');
+        _showErrorSnackBar('File size exceeds the 20MB limit.');
         return;
       }
       
@@ -412,7 +442,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       if (!mounted) return;
       context.read<ChatBloc>().add(PickAttachmentsEvent([att]));
     } catch (e) {
-      _showErrorSnackBar('Lỗi chọn ảnh: $e');
+      _showErrorSnackBar('Failed to select image: $e');
     }
   }
 
@@ -433,7 +463,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         final file = File(f.path!);
         final size = f.size;
         if (size > 20 * 1024 * 1024) {
-          _showErrorSnackBar('Tệp ${f.name} vượt quá giới hạn 20MB.');
+          _showErrorSnackBar('File ${f.name} exceeds the 20MB limit.');
           continue;
         }
         
@@ -454,7 +484,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         context.read<ChatBloc>().add(PickAttachmentsEvent(pickedFiles));
       }
     } catch (e) {
-      _showErrorSnackBar('Lỗi chọn tài liệu: $e');
+      _showErrorSnackBar('Failed to select document: $e');
     }
   }
 
@@ -487,15 +517,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Yêu cầu quyền truy cập'),
+        title: const Text('Permission Required'),
         content: Text(message),
         actions: [
           TextButton(
-            child: const Text('Đóng'),
+            child: const Text('Close'),
             onPressed: () => Navigator.pop(context),
           ),
           TextButton(
-            child: const Text('Cài đặt'),
+            child: const Text('Settings'),
             onPressed: () {
               Navigator.pop(context);
               openAppSettings();
@@ -529,7 +559,83 @@ class _ConversationScreenState extends State<ConversationScreen> {
           backgroundColor: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
           elevation: 1,
           titleSpacing: widget.embedded ? 16 : 0,
-          title: FutureBuilder<User?>(
+          title: _isGroup
+              ? FutureBuilder<GroupDetails?>(
+                  future: chatBloc.chatRepository
+                      .getGroupDetails(widget.conversationId),
+                  builder: (context, groupSnapshot) {
+                    final group = groupSnapshot.data;
+                    final title = group?.title ?? 'Group';
+                    final memberCount = group?.members.length ?? 0;
+                    final isBroadcast = group?.isBroadcast ?? false;
+                    return InkWell(
+                      onTap: () => GroupInfoSheet.show(
+                          context, widget.conversationId),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 2),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: ChatTheme.getAccent(isDark)
+                                  .withValues(alpha: 0.15),
+                              child: Icon(
+                                isBroadcast
+                                    ? Icons.campaign_rounded
+                                    : Icons.groups_rounded,
+                                color: ChatTheme.getAccent(isDark),
+                                size: 22,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          title,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: ChatTheme.getTextPrimary(
+                                                isDark),
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      const Icon(
+                                        Icons.lock_outline_rounded,
+                                        size: 15,
+                                        color: Color(0xFF10B981),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    isBroadcast
+                                        ? '$memberCount subscribers • Broadcast channel'
+                                        : '$memberCount members',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: ChatTheme.getTextMuted(isDark),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                )
+              : FutureBuilder<User?>(
             future: chatBloc.chatRepository
                 .getCompanion(widget.conversationId, currentUserId),
             builder: (context, companionSnapshot) {
@@ -617,49 +723,79 @@ class _ConversationScreenState extends State<ConversationScreen> {
             },
           ),
           actions: [
-            FutureBuilder<User?>(
-              future: chatBloc.chatRepository
-                  .getCompanion(widget.conversationId, currentUserId),
-              builder: (context, snapshot) {
-                final companion = snapshot.data;
-                if (companion == null) return const SizedBox();
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 38,
-                      height: 38,
-                      margin: const EdgeInsets.only(right: 6),
-                      decoration: BoxDecoration(
-                        color: ChatTheme.getAccent(isDark).withValues(alpha: 0.12),
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.phone_rounded, color: ChatTheme.getAccent(isDark), size: 19),
-                        tooltip: 'Voice Call',
-                        padding: EdgeInsets.zero,
-                        onPressed: () => _startCall(context, 'audio', companion),
-                      ),
-                    ),
-                    Container(
-                      width: 38,
-                      height: 38,
-                      margin: const EdgeInsets.only(right: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF06B6D4).withValues(alpha: 0.14),
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.videocam_rounded, color: Color(0xFF06B6D4), size: 20),
-                        tooltip: 'Video Call',
-                        padding: EdgeInsets.zero,
-                        onPressed: () => _startCall(context, 'video', companion),
-                      ),
-                    ),
-                  ],
-                );
+            IconButton(
+              icon: Icon(_isSearching ? Icons.close_rounded : Icons.search_rounded,
+                  color: ChatTheme.getAccent(isDark)),
+              tooltip: 'Search messages',
+              onPressed: () {
+                setState(() {
+                  _isSearching = !_isSearching;
+                  if (!_isSearching) {
+                    _inConvoSearchController.clear();
+                    _inConvoSearchQuery = '';
+                  }
+                });
               },
             ),
+            IconButton(
+              icon: Icon(Icons.perm_media_outlined,
+                  color: ChatTheme.getAccent(isDark)),
+              tooltip: 'Media & Files',
+              onPressed: () => MediaGalleryScreen.show(
+                  context, widget.conversationId, chatBloc.chatRepository),
+            ),
+            if (_isGroup)
+              IconButton(
+                icon: Icon(Icons.info_outline_rounded,
+                    color: ChatTheme.getAccent(isDark)),
+                tooltip: 'Group info',
+                onPressed: () =>
+                    GroupInfoSheet.show(context, widget.conversationId),
+              )
+            else
+              FutureBuilder<User?>(
+                future: chatBloc.chatRepository
+                    .getCompanion(widget.conversationId, currentUserId),
+                builder: (context, snapshot) {
+                  final companion = snapshot.data;
+                  if (companion == null) return const SizedBox();
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        margin: const EdgeInsets.only(right: 6),
+                        decoration: BoxDecoration(
+                          color: ChatTheme.getAccent(isDark).withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: Icon(Icons.phone_rounded, color: ChatTheme.getAccent(isDark), size: 19),
+                          tooltip: 'Voice Call',
+                          padding: EdgeInsets.zero,
+                          onPressed: () => _startCall(context, 'audio', companion),
+                        ),
+                      ),
+                      Container(
+                        width: 38,
+                        height: 38,
+                        margin: const EdgeInsets.only(right: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF06B6D4).withValues(alpha: 0.14),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.videocam_rounded, color: Color(0xFF06B6D4), size: 20),
+                          tooltip: 'Video Call',
+                          padding: EdgeInsets.zero,
+                          onPressed: () => _startCall(context, 'video', companion),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             // Font Size Selection Menu
             PopupMenuButton<ChatFontSizeOption>(
               icon: Icon(Icons.text_fields_rounded,
@@ -978,6 +1114,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
       crossAxisAlignment:
           isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
+        if (!isMe && _isGroup)
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 2),
+            child: Text(
+              message.senderId,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: accent,
+              ),
+            ),
+          ),
         Container(
           margin: EdgeInsets.only(top: 6, bottom: reactions.isEmpty ? 6 : 2),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -1034,7 +1182,32 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   myId: myId,
                   onTap: () => _scrollToMessage(message.replyToId!),
                 ),
-              if (text.isNotEmpty)
+              if (message.type == 'audio' || content['duration_sec'] != null)
+                VoiceMessageBubble(
+                  durationSeconds: (content['duration_sec'] as num?)?.toInt() ?? 5,
+                  waveform: (content['waveform'] as List?)
+                          ?.map((e) => (e as num).toDouble())
+                          .toList() ??
+                      const [],
+                  isMe: isMe,
+                  isDark: isDark,
+                )
+              else if (message.type == 'poll' || content['poll_question'] != null)
+                PollMessageWidget(
+                  question: content['poll_question']?.toString() ?? 'Poll',
+                  options: (content['poll_options'] as List?)
+                          ?.map((e) => PollOption.fromMap(Map<String, dynamic>.from(e as Map)))
+                          .toList() ??
+                      const [],
+                  allowMultiple: content['poll_allow_multiple'] == true,
+                  currentUserId: myId,
+                  isDark: isDark,
+                  isMe: isMe,
+                  onVote: (optId) {
+                    // Cập nhật vote
+                  },
+                )
+              else if (text.isNotEmpty) ...[
                 Text(
                   text,
                   style: TextStyle(
@@ -1043,6 +1216,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     height: 1.5,
                   ),
                 ),
+                for (final u in LinkPreviewCard.extractUrls(text))
+                  LinkPreviewCard(url: u, isDark: isDark, isMe: isMe),
+              ],
               if (bubbleAttachments.isNotEmpty)
                 _buildBubbleAttachments(
                     message, bubbleAttachments, isMe, isDark),
@@ -1072,7 +1248,20 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     ),
                     if (isMe) ...[
                       const SizedBox(width: 4),
-                      _buildStatusTick(message, pending: pending),
+                      if (_isGroup)
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () =>
+                              ReadersBottomSheet.show(
+                            context,
+                            conversationId: widget.conversationId,
+                            messageId: message.id,
+                            repository: bloc.chatRepository,
+                          ),
+                          child: _buildStatusTick(message, pending: pending),
+                        )
+                      else
+                        _buildStatusTick(message, pending: pending),
                     ],
                   ],
                 ),
@@ -1137,6 +1326,55 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Widget _buildInputBar(BuildContext context, bool isDark) {
+    if (_isGroup) {
+      final bloc = context.read<ChatBloc>();
+      final me = bloc.currentUserId ?? '';
+      return FutureBuilder<bool>(
+        future: bloc.chatRepository.canUserPost(widget.conversationId, me),
+        builder: (context, snapshot) {
+          final canPost = snapshot.data ?? true;
+          if (!canPost) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              color: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
+              child: SafeArea(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.campaign_rounded,
+                        size: 20, color: ChatTheme.getTextMuted(isDark)),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Only administrators can send messages in this channel',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: ChatTheme.getTextMuted(isDark),
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          return _buildInputBarContent(context, isDark);
+        },
+      );
+    }
+    return _buildInputBarContent(context, isDark);
+  }
+
+  Widget _buildInputBarContent(BuildContext context, bool isDark) {
+    if (_isRecordingVoice) {
+      return VoiceRecordBar(
+        isDark: isDark,
+        onSend: _onSendVoiceMessage,
+        onCancel: () => setState(() => _isRecordingVoice = false),
+      );
+    }
     return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, state) {
         return Container(
@@ -1277,14 +1515,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             onPressed: showSend
                                 ? _submitMessageFlow
                                 : () {
-                                    // Voice message recorder trigger placeholder
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            context.tr('chat_voice_recording_snack')),
-                                        duration: const Duration(seconds: 1),
-                                      ),
-                                    );
+                                    setState(() => _isRecordingVoice = true);
                                   },
                           ),
                         );
@@ -1300,14 +1531,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
-  void _openMessageActions(
-      BuildContext context, ChatMessage message, bool isMe) {
+  Future<void> _openMessageActions(
+      BuildContext context, ChatMessage message, bool isMe) async {
     final bloc = context.read<ChatBloc>();
+    final me = bloc.currentUserId ?? '';
+    final isGroupAdmin = _isGroup &&
+        await bloc.chatRepository.isUserAdmin(widget.conversationId, me);
+    if (!context.mounted) return;
     showMessageActionsSheet(
       context: context,
       message: message,
       isMe: isMe,
       isDirect: _isDirect,
+      canDeleteEveryone: isGroupAdmin,
       onAction: (action) => _handleMessageAction(action, message),
       onReact: (emoji) => bloc.add(
           ToggleReactionEvent(widget.conversationId, message.id, emoji)),
@@ -1542,7 +1778,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt_rounded, color: Colors.purple),
-                title: const Text('Máy ảnh (Camera)', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Camera', style: TextStyle(fontWeight: FontWeight.bold)),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.camera);
@@ -1550,7 +1786,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library_rounded, color: Colors.blue),
-                title: const Text('Thư viện ảnh (Gallery)', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Photo Gallery', style: TextStyle(fontWeight: FontWeight.bold)),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.gallery);
@@ -1558,7 +1794,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.description_rounded, color: Colors.green),
-                title: const Text('Tài liệu & Tệp (Files)', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Documents & Files', style: TextStyle(fontWeight: FontWeight.bold)),
                 onTap: () {
                   Navigator.pop(context);
                   _pickFiles();
@@ -1792,7 +2028,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 4),
                             child: Text(
-                              'Đang tải lên: ${(progress * 100).toStringAsFixed(0)}%',
+                              'Uploading: ${(progress * 100).toStringAsFixed(0)}%',
                               style: const TextStyle(
                                   fontSize: 10, color: Colors.cyanAccent),
                             ),
@@ -1811,7 +2047,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             const SizedBox(width: 4),
                             const Expanded(
                               child: Text(
-                                'Tải lên thất bại. Sẽ thử lại khi trực tuyến.',
+                                'Upload failed. Will retry when online.',
                                 style: TextStyle(
                                     color: Colors.redAccent, fontSize: 10),
                               ),
@@ -1833,7 +2069,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                                           color: Colors.cyanAccent, size: 14),
                                       SizedBox(width: 2),
                                       Text(
-                                        'Thử lại',
+                                        'Retry',
                                         style: TextStyle(
                                           color: Colors.cyanAccent,
                                           fontSize: 10,
@@ -1901,14 +2137,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Future<void> _downloadFile(AttachmentFile file) async {
     if (file.remoteUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tệp chưa được tải lên máy chủ.')),
+        const SnackBar(content: Text('File has not been uploaded to server.')),
       );
       return;
     }
 
     try {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Đang tải xuống: ${file.name}...')),
+        SnackBar(content: Text('Downloading: ${file.name}...')),
       );
 
       final serverUrl = await SettingsService().getSyncServerUrl();
@@ -1924,10 +2160,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Tải xuống thành công: ${file.name}'),
+          content: Text('Downloaded successfully: ${file.name}'),
           duration: const Duration(seconds: 5),
           action: SnackBarAction(
-            label: 'Mở thư mục',
+            label: 'Open folder',
             onPressed: () async {
               final folderPath = dir.path;
               if (Platform.isWindows) {
@@ -1945,7 +2181,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     } catch (e) {
       print('[DownloadError] $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Tải xuống thất bại: $e')),
+        SnackBar(content: Text('Download failed: $e')),
       );
     }
   }

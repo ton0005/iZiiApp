@@ -99,6 +99,7 @@ part 'app_database.g.dart';
   ChatMessages,
   ChatReactions,
   E2eeOutbox,
+  ChatMessageReads,
   // Track 3: Device Identity & E2EE
   DeviceRegistryEntries,
   EncryptedMessageQueue,
@@ -120,7 +121,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 35;
+  int get schemaVersion => 37;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -606,6 +607,52 @@ class AppDatabase extends _$AppDatabase {
             } catch (_) {}
             try {
               await m.createTable(e2eeOutbox);
+            } catch (_) {}
+          }
+          if (from < 36) {
+            // Chat Phase 2: Nhóm, kênh, vai trò, đã đọc
+            try {
+              await m.addColumn(chatConversations, chatConversations.title);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatConversations, chatConversations.description);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatConversations, chatConversations.avatarUrl);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatConversations, chatConversations.isBroadcast);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatParticipants, chatParticipants.role);
+            } catch (_) {}
+            try {
+              await m.createTable(chatMessageReads);
+            } catch (_) {}
+            try {
+              await customStatement(
+                  'CREATE INDEX IF NOT EXISTS idx_chat_message_reads_convo '
+                  'ON chat_message_reads (conversation_id);');
+            } catch (_) {}
+          }
+          if (from < 37) {
+            try {
+              await m.addColumn(chatConversations, chatConversations.isPinned);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatConversations, chatConversations.isArchived);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatConversations, chatConversations.mutedUntil);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatConversations, chatConversations.unreadCount);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatMessages, chatMessages.burnAfterSeconds);
+            } catch (_) {}
+            try {
+              await m.addColumn(chatMessages, chatMessages.scheduledAt);
             } catch (_) {}
           }
         },

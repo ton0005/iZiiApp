@@ -203,8 +203,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         if (!status.isGranted) status = await p.request();
 
         if (status.isPermanentlyDenied) {
-          return 'Quyền ${p == Permission.microphone ? 'micro' : 'camera'} đã bị '
-              'chặn vĩnh viễn. Vào Cài đặt → Ứng dụng → iZiiApp → Quyền để bật lại.';
+          return '${p == Permission.microphone ? 'Microphone' : 'Camera'} permission permanently denied. Go to Settings → Apps → iZiiApp → Permissions to re-enable.';
         }
         if (!status.isGranted) {
           missing.add(p == Permission.microphone ? 'micro' : 'camera');
@@ -212,7 +211,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       }
 
       if (missing.isNotEmpty) {
-        return 'Cần quyền ${missing.join(' và ')} để thực hiện cuộc gọi.';
+        return '${missing.join(' and ')} permission is required to make calls.';
       }
       return null;
     } catch (e) {
@@ -249,7 +248,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         }
       } else if (event == 'call_reject' || event == 'call_end') {
         add(_PeerTerminatedEvent(
-            event == 'call_reject' ? 'Đầu kia từ chối' : 'Cuộc gọi đã kết thúc'));
+            event == 'call_reject' ? 'Call declined by recipient' : 'Call ended'));
       } else if (event == 'sdp_offer') {
         final sdp = data['sdp'];
         final callId = activeCallId;
@@ -378,9 +377,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       switch (state) {
         case RTCPeerConnectionState.RTCPeerConnectionStateFailed:
           add(_PeerTerminatedEvent(
-              'Không thiết lập được kết nối trực tiếp giữa hai máy. '
-              'Kiểm tra hai máy có cùng mạng Wi-Fi không, và Wi-Fi có bật '
-              '"cách ly thiết bị" (AP isolation) hay không.'));
+              'Could not establish direct peer connection between devices. Check if both are on the same Wi-Fi and AP isolation is disabled.'));
           break;
         case RTCPeerConnectionState.RTCPeerConnectionStateDisconnected:
           print('[Call] Mất kết nối tạm thời — chờ ICE tự khôi phục.');
@@ -408,7 +405,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       await engine.initialize();
       await engine.openUserMedia(video: event.callType == 'video');
     } catch (e) {
-      add(_PeerTerminatedEvent('Không mở được micro/camera: $e'));
+      add(_PeerTerminatedEvent('Could not access microphone/camera: $e'));
       return;
     }
 
@@ -467,7 +464,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       await engine.setupPeerConnection(await _resolveIceServers());
       _watchConnectionState();
     } catch (e) {
-      add(_PeerTerminatedEvent('Không mở được micro/camera: $e'));
+      add(_PeerTerminatedEvent('Could not access microphone/camera: $e'));
       return;
     }
 
@@ -530,7 +527,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       final offer = await engine.createOffer();
       signaling.sendSdpOffer(callId: callId, targetId: peerId, sdp: offer.sdp!);
     } catch (e) {
-      add(_PeerTerminatedEvent('Không thiết lập được kết nối: $e'));
+      add(_PeerTerminatedEvent('Failed to establish connection: $e'));
       return;
     }
 
@@ -569,7 +566,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       signaling.sendCallReject(callId: cId, calleeId: myClientId ?? '', targetId: pId);
     }
     await _cleanupCall();
-    emit(CallEndedState('Đã từ chối cuộc gọi'));
+    emit(CallEndedState('Call declined'));
   }
 
   Future<void> _onEndCall(EndCallEvent event, Emitter<CallState> emit) async {
@@ -579,7 +576,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       signaling.sendCallEnd(callId: cId, targetId: pId);
     }
     await _cleanupCall();
-    emit(CallEndedState('Cuộc gọi đã kết thúc'));
+    emit(CallEndedState('Call ended'));
   }
 
   void _onToggleMic(ToggleMicEvent event, Emitter<CallState> emit) {

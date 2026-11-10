@@ -27,14 +27,11 @@ import chat_access
 from chat_ws import ChatConnectionManager
 from server_config import CONFIG
 
-_MIGRATION = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "migrations", "versions", "0013_chat_core.sql",
-)
+_MIGRATIONS = [
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "migrations", "versions", "0013_chat_core.sql"),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "migrations", "versions", "0014_chat_groups.sql"),
+]
 
-
-# .env trên máy dev có thể đặt backend=postgres — sql() sẽ đổi '?' thành '%s'
-# và hỏng truy vấn trên SQLite in-memory.
 _backend_patch = mock.patch.object(CONFIG, "db_backend", "sqlite")
 
 
@@ -49,8 +46,10 @@ def tearDownModule():
 def _make_db() -> sqlite3.Connection:
     conn = sqlite3.connect(":memory:", check_same_thread=False)
     conn.row_factory = sqlite3.Row
-    with open(_MIGRATION, encoding="utf-8") as f:
-        conn.executescript(f.read())
+    for mig in _MIGRATIONS:
+        if os.path.exists(mig):
+            with open(mig, encoding="utf-8") as f:
+                conn.executescript(f.read())
     return conn
 
 
@@ -410,3 +409,159 @@ class TestRejectPlaintextDirectChat(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+from routers import conversations
+from security_auth import DeviceIdentity
+from dependencies import get_db
+from security_auth import optional_device
+
+class TestChatPhase2GroupsAndChannels(unittest.TestCase):
+    def setUp(self):
+        self.conn = _make_db()
+        self.app = FastAPI()
+        self.app.include_router(conversations.router)
+        self.app.state.ws_manager = ChatConnectionManager()
+
+        def _db():
+            return self.conn
+
+        async def _device(request: Request):
+            dev = request.headers.get("X-Test-Device")
+            return DeviceIdentity(device_id=dev, user_id=f"u-{dev}") if dev else None
+
+        self.app.dependency_overrides[get_db] = _db
+        self.app.dependency_overrides[optional_device] = _device
+        self.client = TestClient(self.app)
+
+    def tearDown(self):
+        self.conn.close()
+
+    def _auth_header(self, device_id: str) -> dict:
+        return {"X-Test-Device": device_id}
+
+    def test_group_create_with_metadata_and_roles(self):
+        res = self.client.post(
+            "/api/v1/conversations",
+            headers=self._auth_header("alice"),
+            json={
+                "type": "group",
+                "title": "Costa Mushrooms Room 34",
+                "description": "Nhóm vận hành phòng trồng nấm 34",
+                "avatar_url": "https://izii.app/avatar/r34.png",
+                "is_broadcast": False,
+                "members": ["alice", "bob", "charlie"],
+                "member_roles": {"alice": "owner", "bob": "admin", "charlie": "member"}
+            }
+        )
+        self.assertEqual(res.status_code, 200, res.text)
+        data = res.json()
+        gid = data["id"]
+        self.assertTrue(gid.startswith("group_"))
+        self.assertEqual(data["details"]["title"], "Costa Mushrooms Room 34")
+        self.assertEqual(data["details"]["created_by"], "alice")
+        self.assertFalse(data["details"]["is_broadcast"])
+
+        member_list = data["details"]["members"] if isinstance(data["details"]["members"][0], dict) else data["details"]["member_details"]
+        members = {m["member_id"]: m["role"] for m in member_list}
+        self.assertEqual(members["alice"], "owner")
+        self.assertEqual(members["bob"], "admin")
+        self.assertEqual(members["charlie"], "member")
+
+    def test_broadcast_channel_permissions(self):
+        res = self.client.put(
+            "/api/v1/conversations/kpi_broadcast",
+            headers=self._auth_header("alice"),
+            json={
+                "type": "group",
+                "title": "Thông báo ca sản xuất",
+                "is_broadcast": True,
+                "members": ["alice", "bob", "charlie"],
+                "member_roles": {"alice": "owner", "bob": "admin", "charlie": "member"}
+            }
+        )
+        self.assertEqual(res.status_code, 200, res.text)
+
+        self.assertTrue(chat_access.can_post_in_conversation(self.conn, "kpi_broadcast", "alice"))
+        self.assertTrue(chat_access.can_post_in_conversation(self.conn, "kpi_broadcast", "bob"))
+        self.assertFalse(chat_access.can_post_in_conversation(self.conn, "kpi_broadcast", "charlie"))
+
+    def test_member_management_and_leave(self):
+        self.client.put(
+            "/api/v1/conversations/team_alpha",
+            headers=self._auth_header("alice"),
+            json={"type": "group", "members": ["alice", "bob"], "member_roles": {"alice": "owner", "bob": "member"}}
+        )
+
+        res = self.client.post(
+            "/api/v1/conversations/team_alpha/members",
+            headers=self._auth_header("bob"),
+            json={"member_id": "charlie", "role": "member"}
+        )
+        self.assertEqual(res.status_code, 403)
+
+        res = self.client.post(
+            "/api/v1/conversations/team_alpha/members",
+            headers=self._auth_header("alice"),
+            json={"member_id": "bob", "role": "admin"}
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(chat_access.get_member_role(self.conn, "team_alpha", "bob"), "admin")
+
+        res = self.client.post(
+            "/api/v1/conversations/team_alpha/members",
+            headers=self._auth_header("bob"),
+            json={"member_id": "charlie", "role": "member"}
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue("charlie" in chat_access.get_members(self.conn, "team_alpha"))
+
+        res = self.client.post("/api/v1/conversations/team_alpha/leave", headers=self._auth_header("charlie"))
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse("charlie" in chat_access.get_members(self.conn, "team_alpha"))
+
+    def test_group_read_receipts(self):
+        self.client.put(
+            "/api/v1/conversations/team_read",
+            headers=self._auth_header("alice"),
+            json={"type": "group", "members": ["alice", "bob", "charlie"]}
+        )
+
+        res = self.client.post(
+            "/api/v1/conversations/team_read/read",
+            headers=self._auth_header("bob"),
+            json={"message_id": "msg_100"}
+        )
+        self.assertEqual(res.status_code, 200)
+
+        self.client.post(
+            "/api/v1/conversations/team_read/read",
+            headers=self._auth_header("charlie"),
+            json={"message_id": "msg_100"}
+        )
+
+        res = self.client.get(
+            "/api/v1/conversations/team_read/messages/msg_100/readers",
+            headers=self._auth_header("alice")
+        )
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertEqual(data["count"], 2)
+        reader_ids = {r["member_id"] for r in data["readers"]}
+        self.assertEqual(reader_ids, {"bob", "charlie"})
+
+    def test_group_invite_and_join(self):
+        self.client.put(
+            "/api/v1/conversations/open_group",
+            headers=self._auth_header("alice"),
+            json={"type": "group", "members": ["alice"]}
+        )
+
+        res = self.client.post("/api/v1/conversations/open_group/invite", headers=self._auth_header("alice"))
+        self.assertEqual(res.status_code, 200)
+        invite_url = res.json()["invite_url"]
+        self.assertIn("open_group", invite_url)
+
+        res = self.client.post("/api/v1/conversations/open_group/join", headers=self._auth_header("dave"))
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue("dave" in chat_access.get_members(self.conn, "open_group"))

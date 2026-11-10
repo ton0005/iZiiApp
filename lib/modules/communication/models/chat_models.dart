@@ -3,9 +3,11 @@ import 'dart:convert';
 enum ChatMessageType {
   text,
   file,
+  audio,
   recordLink,
   location,
   sos,
+  poll,
 }
 
 class AttachmentFile {
@@ -300,4 +302,97 @@ class DeviceChatEnvelope {
 
   factory DeviceChatEnvelope.fromJson(String source) =>
       DeviceChatEnvelope.fromMap(json.decode(source) as Map<String, dynamic>);
+}
+
+
+// ============================================================
+// Phase 2: Group & Channel Models
+// ============================================================
+
+class GroupMemberInfo {
+  final String userId;
+  final String name;
+  final String role; // 'owner' | 'admin' | 'member'
+  final DateTime joinedAt;
+  final String? avatarUrl;
+
+  const GroupMemberInfo({
+    required this.userId,
+    required this.name,
+    required this.role,
+    required this.joinedAt,
+    this.avatarUrl,
+  });
+
+  bool get isOwner => role == 'owner';
+  bool get isAdmin => role == 'admin' || role == 'owner';
+
+  Map<String, dynamic> toMap() => {
+        'user_id': userId,
+        'name': name,
+        'role': role,
+        'joined_at': joinedAt.toIso8601String(),
+        if (avatarUrl != null) 'avatar_url': avatarUrl,
+      };
+
+  factory GroupMemberInfo.fromMap(Map<String, dynamic> map) => GroupMemberInfo(
+        userId: map['user_id'] as String? ?? map['member_id'] as String? ?? '',
+        name: map['name'] as String? ?? (map['member_id'] as String? ?? ''),
+        role: map['role'] as String? ?? 'member',
+        joinedAt: DateTime.tryParse(map['joined_at']?.toString() ?? '') ??
+            DateTime.now(),
+        avatarUrl: map['avatar_url'] as String?,
+      );
+}
+
+class GroupDetails {
+  final String id;
+  final String title;
+  final String? description;
+  final String? avatarUrl;
+  final bool isBroadcast;
+  final String createdBy;
+  final DateTime createdAt;
+  final List<GroupMemberInfo> members;
+
+  const GroupDetails({
+    required this.id,
+    required this.title,
+    this.description,
+    this.avatarUrl,
+    this.isBroadcast = false,
+    required this.createdBy,
+    required this.createdAt,
+    this.members = const [],
+  });
+
+  GroupMemberInfo? getMember(String userId) {
+    try {
+      return members.firstWhere((m) => m.userId == userId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool isUserAdmin(String userId) {
+    final m = getMember(userId);
+    return m?.isAdmin ?? false;
+  }
+
+  bool canUserPost(String userId) {
+    if (!isBroadcast) return true;
+    return isUserAdmin(userId);
+  }
+}
+
+class MessageReader {
+  final String userId;
+  final String userName;
+  final DateTime readAt;
+
+  const MessageReader({
+    required this.userId,
+    required this.userName,
+    required this.readAt,
+  });
 }

@@ -36,10 +36,29 @@ def _db_membership_lookup(conversation_id: str) -> Optional[Set[str]]:
         return chat_access.get_members(conn, conversation_id)
 
 
+def _db_can_post_lookup(conversation_id: str, member_id: str) -> Optional[bool]:
+    if chat_access.is_direct(conversation_id):
+        return chat_access.is_direct_member(conversation_id, member_id)
+    try:
+        from dependencies import open_connection
+        with open_connection() as conn:
+            return chat_access.can_post_in_conversation(conn, conversation_id, member_id)
+    except Exception:
+        return True
+
+
+def _db_record_read_receipt(conversation_id: str, message_id: str, member_id: str):
+    from dependencies import open_connection
+    with open_connection() as conn:
+        chat_access.record_read_receipt(conn, conversation_id, message_id, member_id)
+        conn.commit()
+
+
 class ChatConnectionManager:
     def __init__(
         self,
         membership_lookup: Callable[[str], Optional[Set[str]]] = _db_membership_lookup,
+        can_post_lookup: Callable[[str, str], Optional[bool]] = _db_can_post_lookup,
         cache_ttl: float = 15.0,
     ):
         self.active_connections: List[WebSocket] = []
@@ -47,6 +66,7 @@ class ChatConnectionManager:
         self._member_of: Dict[WebSocket, Optional[str]] = {}
         self._verified: Dict[WebSocket, bool] = {}
         self._lookup = membership_lookup
+        self._can_post_lookup = can_post_lookup
         self._cache_ttl = cache_ttl
         # Typing/read gửi dồn dập; tra DB mỗi gói là thừa. Router hội thoại gọi
         # invalidate() khi danh sách thành viên đổi.
@@ -162,6 +182,24 @@ class ChatConnectionManager:
                     print(f"⛔ [WS] {sender} mạo danh {claimed} trong {conversation_id} — bỏ.")
                     return "dropped:spoofed_sender"
 
+                # Kênh thông báo (broadcast channel): chỉ admin/owner được đăng tin
+                ev = payload.get("event") if payload else None
+                if ev == "send_message" and not chat_access.is_direct(conversation_id):
+                    can_post = await asyncio.to_thread(self._can_post_lookup, conversation_id, sender)
+                    if can_post is False:
+                        print(f"⛔ [WS] {sender} không có quyền đăng bài trong kênh thông báo {conversation_id} — bỏ.")
+                        return "dropped:broadcast_not_admin"
+
+            # Xử lý mention & read receipt
+            ev = payload.get("event") if payload else None
+            if ev == "send_message" and sender:
+                content_val = data.get("content") or ""
+                await self._check_and_notify_mentions(conversation_id, sender, content_val, membership)
+            elif ev == "msg_read_receipt" and sender:
+                msg_id = data.get("message_id")
+                if msg_id:
+                    await asyncio.to_thread(_db_record_read_receipt, conversation_id, str(msg_id), sender)
+
             targets = [
                 c for c in self.active_connections
                 if c is not websocket
@@ -182,6 +220,54 @@ class ChatConnectionManager:
 
         await self.broadcast(raw, exclude=websocket)
         return "broadcast"
+
+
+    async def _check_and_notify_mentions(
+        self, conversation_id: str, sender: str, content: Any, membership: Membership
+    ):
+        import re, uuid
+        from datetime import datetime, timezone
+        text = ""
+        if isinstance(content, str):
+            try:
+                parsed = json.loads(content)
+                if isinstance(parsed, dict):
+                    text = str(parsed.get("text") or "")
+                else:
+                    text = content
+            except Exception:
+                text = content
+        elif isinstance(content, dict):
+            text = str(content.get("text") or "")
+        if not text:
+            return
+
+        mentions = re.findall(r"@([A-Za-z0-9_.-]+)", text)
+        if not mentions:
+            return
+
+        members = membership[1] or set()
+        for target in set(mentions):
+            if target in members and target != sender:
+                try:
+                    def _notify():
+                        from dependencies import open_connection, get_notification_repo
+                        with open_connection() as conn:
+                            repo = get_notification_repo(conn)
+                            now = datetime.now(timezone.utc).isoformat()
+                            repo.create_notification({
+                                "id": str(uuid.uuid4()),
+                                "user_id": target,
+                                "title": "Bạn được nhắc đến",
+                                "body": f"@{sender} đã nhắc đến bạn trong một tin nhắn.",
+                                "event_type": "mention",
+                                "resource_id": conversation_id,
+                                "created_at": now,
+                            })
+                            conn.commit()
+                    await asyncio.to_thread(_notify)
+                except Exception as e:
+                    print(f"⚠️ [WS] Lỗi thông báo mention: {e}")
 
 
 def parse_payload(raw: str) -> Optional[Dict[str, Any]]:

@@ -102,3 +102,70 @@ async def upload_attachment(file: UploadFile = File(...)):
     except Exception as e:
         print(f"❌ [ATTACHMENT] Lỗi tải lên tệp đính kèm: {e}")
         raise HTTPException(status_code=500, detail="Upload failed")
+
+
+@router.get("/verify/{file_hash}")
+async def verify_attachment_hash(file_hash: str):
+    """Kiểm tra xem file đã tồn tại trên máy chủ hay chưa bằng SHA-256 hash để tránh upload trùng lặp."""
+    uploads_dir = os.path.join(get_stable_data_dir(), "uploads")
+    if not os.path.exists(uploads_dir):
+        return {"exists": False}
+
+    for fname in os.listdir(uploads_dir):
+        if fname.startswith(file_hash):
+            fpath = os.path.join(uploads_dir, fname)
+            return {
+                "exists": True,
+                "filename": fname,
+                "url": f"/uploads/{fname}",
+                "size": os.path.getsize(fpath)
+            }
+    return {"exists": False}
+
+
+@router.post("/chunk")
+async def upload_attachment_chunk(
+    file_hash: str = File(...),
+    chunk_index: int = File(...),
+    total_chunks: int = File(...),
+    file_ext: str = File(...),
+    chunk: UploadFile = File(...)
+):
+    """Tải lên tệp đính kèm theo từng chunk nhỏ để hỗ trợ resume."""
+    uploads_dir = os.path.join(get_stable_data_dir(), "uploads")
+    temp_dir = os.path.join(uploads_dir, "_chunks", file_hash)
+    os.makedirs(temp_dir, exist_ok=True)
+
+    chunk_path = os.path.join(temp_dir, f"part_{chunk_index}")
+    chunk_bytes = await chunk.read()
+    with open(chunk_path, "wb") as f:
+        f.write(chunk_bytes)
+
+    # Kiểm tra xem đủ tất cả chunks chưa
+    parts = [os.path.join(temp_dir, f"part_{i}") for i in range(total_chunks)]
+    if all(os.path.exists(p) for p in parts):
+        target_fname = f"{file_hash}{file_ext}"
+        final_path = os.path.join(uploads_dir, target_fname)
+        with open(final_path, "wb") as outfile:
+            for p in parts:
+                with open(p, "rb") as infile:
+                    outfile.write(infile.read())
+                try:
+                    os.remove(p)
+                except Exception:
+                    pass
+        try:
+            os.rmdir(temp_dir)
+        except Exception:
+            pass
+        return {
+            "status": "completed",
+            "url": f"/uploads/{target_fname}",
+            "size": os.path.getsize(final_path)
+        }
+
+    return {
+        "status": "chunk_received",
+        "chunk_index": chunk_index,
+        "total_chunks": total_chunks
+    }

@@ -67,6 +67,7 @@ Future<void> showMessageActionsSheet({
   required ChatMessage message,
   required bool isMe,
   required bool isDirect,
+  bool canDeleteEveryone = false,
   required void Function(MessageAction action) onAction,
   required void Function(String emoji) onReact,
 }) {
@@ -158,7 +159,7 @@ Future<void> showMessageActionsSheet({
             tile(Icons.delete_outline_rounded, 'chat_action_delete_me',
                 MessageAction.deleteForMe,
                 color: danger),
-            if (isMe && isDirect && !message.isDeleted)
+            if ((isMe || canDeleteEveryone) && isDirect && !message.isDeleted)
               tile(Icons.delete_forever_rounded, 'chat_action_delete_everyone',
                   MessageAction.deleteForEveryone,
                   color: danger),

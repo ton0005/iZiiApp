@@ -85,15 +85,15 @@ class _NotificationSettingsScreenState
   String _getEventLabel(String eventType) {
     switch (eventType) {
       case 'new_message':
-        return 'Tin nhắn mới (1-1)';
+        return 'New message (1-on-1)';
       case 'new_group_message':
-        return 'Tin nhắn nhóm (Group)';
+        return 'Group message';
       case 'mention':
-        return 'Nhắc tên (@mention)';
+        return 'Mentions (@mention)';
       case 'added_to_group':
-        return 'Được thêm vào nhóm';
+        return 'Added to group';
       case 'missed_call':
-        return 'Cuộc gọi nhỡ';
+        return 'Missed call';
       default:
         return eventType;
     }
@@ -139,7 +139,7 @@ class _NotificationSettingsScreenState
     final success = await _notificationService.updateSetting(updated);
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lỗi đồng bộ cấu hình với server.')),
+        const SnackBar(content: Text('Failed to sync settings with server.')),
       );
     }
   }
@@ -173,7 +173,7 @@ class _NotificationSettingsScreenState
     return Scaffold(
       backgroundColor: ChatTheme.getBgPrimary(isDark),
       appBar: AppBar(
-        title: const Text('Cấu hình Thông báo',
+        title: const Text('Notification Settings',
             style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: isDark ? ChatTheme.bgBubbleTheirsDark : Colors.white,
         elevation: 1,
@@ -183,7 +183,7 @@ class _NotificationSettingsScreenState
           : _settings.isEmpty
               ? Center(
                   child: Text(
-                    'Không tìm thấy cấu hình thông báo.',
+                    'No notification settings found.',
                     style: TextStyle(color: ChatTheme.getTextMuted(isDark)),
                   ),
                 )
@@ -236,7 +236,7 @@ class _NotificationSettingsScreenState
                               isDark: isDark,
                             ),
                             _buildChannelToggle(
-                              label: 'In-app Notification (Hộp thư)',
+                              label: 'In-app Notification (Inbox)',
                               value: setting.enableInApp,
                               onChanged: (val) =>
                                   _toggleChannel(setting, 'in_app', val),
@@ -256,7 +256,7 @@ class _NotificationSettingsScreenState
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Tần suất Email:',
+                                    'Email Frequency:',
                                     style: TextStyle(
                                       fontSize: 13,
                                       color: ChatTheme.getTextMuted(isDark),
@@ -275,16 +275,16 @@ class _NotificationSettingsScreenState
                                     items: const [
                                       DropdownMenuItem(
                                           value: 'instant',
-                                          child: Text('Tức thời')),
+                                          child: Text('Instant')),
                                       DropdownMenuItem(
                                           value: 'hourly',
-                                          child: Text('Hàng giờ')),
+                                          child: Text('Hourly')),
                                       DropdownMenuItem(
                                           value: 'daily',
-                                          child: Text('Hàng ngày (Digest)')),
+                                          child: Text('Daily (Digest)')),
                                       DropdownMenuItem(
                                           value: 'never',
-                                          child: Text('Không bao giờ')),
+                                          child: Text('Never')),
                                     ],
                                     onChanged: (val) {
                                       if (val != null) {

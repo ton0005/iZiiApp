@@ -595,16 +595,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       if (_currentUserId != null && messages.isNotEmpty) {
         final lastMsg = messages.last;
         if (lastMsg.senderId != _currentUserId && lastMsg.readAt == null) {
+          final isGroup = event.conversationId.startsWith('group_');
           _wsService.sendEvent(ChatWebSocketEvent(
-            event: 'msg_read',
+            event: isGroup ? 'msg_read_receipt' : 'msg_read',
             data: {
               'message_id': lastMsg.id,
               'conversation_id': event.conversationId,
+              'sender_id': _currentUserId,
               'read_at': DateTime.now().toIso8601String(),
             },
           ));
           await _chatRepository.updateMessageStatus(lastMsg.id,
               readAt: DateTime.now());
+          if (isGroup) {
+            await _chatRepository.recordMessageRead(
+                event.conversationId, lastMsg.id, _currentUserId!);
+          }
         }
       }
     } catch (e) {
@@ -692,10 +698,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(state.copyWith(activeMessages: updatedList));
     }
 
-    // Tin 1-1 CHỈ đi bằng E2EE: lưu cục bộ rồi xếp vào hàng đợi mã hoá. Không
-    // WebSocket plaintext, không outbox đồng bộ. Gửi chưa được thì nằm chờ,
-    // không bao giờ rơi về plaintext.
-    if (DirectE2eeChannel.isDirect(event.conversationId)) {
+    // Tin 1-1 và Nhóm (Phase 2): đi qua kênh E2EE & hàng đợi mã hoá
+    if (DirectE2eeChannel.isDirect(event.conversationId) || event.conversationId.startsWith('group_')) {
+      final canPost = await _chatRepository.canUserPost(event.conversationId, _currentUserId!);
+      if (!canPost) {
+        emit(state.copyWith(error: 'Only administrators can post messages in this channel'));
+        return;
+      }
       await _chatRepository.saveMessage(chatMsg);
       await _sendEnvelope(
         ChatEnvelope.message(
@@ -709,9 +718,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ),
         emit,
       );
-      // Cùng phòng với đối tác qua BLE (không có mạng): gửi thẳng, bản E2EE
-      // vẫn nằm trong hàng đợi và bị khử trùng lặp theo id ở máy nhận.
-      if (!_wsService.isConnected) {
+      if (_wsService.isConnected) {
+        _wsService.sendEvent(ChatWebSocketEvent(
+          event: 'send_message',
+          data: {
+            'message_id': messageId,
+            'conversation_id': event.conversationId,
+            'sender_id': _currentUserId,
+            'type': event.type.name,
+            'content': contentMap,
+            'sent_at': now.toIso8601String(),
+            if (event.replyToId != null) 'reply_to_id': event.replyToId,
+            if (event.forwardedFromId != null)
+              'forwarded_from_id': event.forwardedFromId,
+          },
+        ));
+      }
+      if (!_wsService.isConnected && DirectE2eeChannel.isDirect(event.conversationId)) {
         unawaited(_sendViaBleIfNearby(
             messageId, event.conversationId, event.type.name, contentMap, now));
       }
@@ -849,10 +872,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final text = event.newText.trim();
     if (me == null || text.isEmpty) return;
     final msg = await _chatRepository.getMessageById(event.messageId);
+    final isDirectOrGroup = DirectE2eeChannel.isDirect(msg?.conversationId ?? '') || (msg?.conversationId.startsWith('group_') ?? false);
     if (msg == null ||
         msg.senderId != me ||
         msg.isDeleted ||
-        !DirectE2eeChannel.isDirect(msg.conversationId)) {
+        !isDirectOrGroup) {
       return;
     }
     final env = ChatEnvelope.edit(
@@ -875,9 +899,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final msg = await _chatRepository.getMessageById(event.messageId);
     if (msg == null) return;
 
+    final isDirectOrGroup = DirectE2eeChannel.isDirect(msg.conversationId) || msg.conversationId.startsWith('group_');
+    final isGroupAdmin = msg.conversationId.startsWith('group_') && await _chatRepository.isUserAdmin(msg.conversationId, me);
     final everyone = event.forEveryone &&
-        msg.senderId == me &&
-        DirectE2eeChannel.isDirect(msg.conversationId);
+        (msg.senderId == me || isGroupAdmin) &&
+        isDirectOrGroup;
     if (everyone) {
       final env = ChatEnvelope.revoke(
         id: const Uuid().v4(),
@@ -899,7 +925,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   Future<void> _onToggleReaction(
       ToggleReactionEvent event, Emitter<ChatState> emit) async {
     final me = _currentUserId;
-    if (me == null || !DirectE2eeChannel.isDirect(event.conversationId)) return;
+    final isAllowed = DirectE2eeChannel.isDirect(event.conversationId) || event.conversationId.startsWith('group_');
+    if (me == null || !isAllowed) return;
     final mine = (state.reactionsMap[event.messageId] ?? const [])
         .where((r) => r.userId == me)
         .map((r) => r.emoji)
@@ -920,7 +947,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   Future<void> _onTogglePin(
       TogglePinEvent event, Emitter<ChatState> emit) async {
     final me = _currentUserId;
-    if (me == null || !DirectE2eeChannel.isDirect(event.conversationId)) return;
+    final isAllowed = DirectE2eeChannel.isDirect(event.conversationId) || event.conversationId.startsWith('group_');
+    if (me == null || !isAllowed) return;
     final msg = await _chatRepository.getMessageById(event.messageId);
     if (msg == null || msg.isDeleted) return;
     final env = ChatEnvelope.pin(
@@ -1132,6 +1160,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         final readAt = DateTime.parse(data['read_at'] as String);
         await _chatRepository.updateMessageStatus(msgId, readAt: readAt);
         _updateActiveMessageStatus(msgId, readAt: readAt, emit: emit);
+        break;
+
+      case 'msg_read_receipt':
+        final rMsgId = data['message_id'] as String?;
+        final rSender = data['sender_id'] as String?;
+        final rCid = data['conversation_id'] as String?;
+        if (rMsgId != null && rSender != null && rCid != null) {
+          await _chatRepository.recordMessageRead(rCid, rMsgId, rSender);
+          if (state.activeConversationId == rCid) {
+            await _reloadActive(emit);
+          }
+        }
         break;
 
       case 'presence_update':

@@ -1337,10 +1337,10 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
       ),
       builder: (ctx) {
         final replies = [
-          'Tôi đang bận, sẽ gọi lại sau.',
-          'Đang trong cuộc họp quan trọng.',
-          'Vui lòng để lại tin nhắn trong chat.',
-          'Đang lái xe, không tiện nghe máy.',
+          'I am busy, will call back later.',
+          'In an important meeting.',
+          'Please leave a message in chat.',
+          'Driving, cannot answer right now.',
         ];
 
         return SafeArea(

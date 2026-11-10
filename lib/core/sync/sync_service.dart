@@ -1330,6 +1330,10 @@ class SyncService {
         lastMessageAt: data['last_message_at'] != null
             ? Value(DateTime.tryParse(data['last_message_at'].toString()) ?? DateTime.now())
             : Value(DateTime.now()),
+        title: data['title'] != null ? Value(data['title'] as String?) : const Value.absent(),
+        description: data['description'] != null ? Value(data['description'] as String?) : const Value.absent(),
+        avatarUrl: data['avatar_url'] != null ? Value(data['avatar_url'] as String?) : const Value.absent(),
+        isBroadcast: data['is_broadcast'] != null ? Value(data['is_broadcast'] == 1 || data['is_broadcast'] == true) : const Value.absent(),
       ),
     );
     return true;
@@ -1347,6 +1351,7 @@ class SyncService {
             ? DateTime.tryParse(data['joined_at'].toString()) ?? DateTime.now()
             : DateTime.now(),
         muted: data['muted'] as bool? ?? false,
+        role: data['role'] as String? ?? 'member',
       ),
     );
     return true;
